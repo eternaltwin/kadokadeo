@@ -1,0 +1,23 @@
+{
+  "name": "eternaltwin/kadokadeo",
+  "description": "Main Kadokadéo repository",
+  "type": "project",
+  "require": {
+    "php": "^8.2.0",
+    "ext-pdo": "*",
+    "ext-pdo_pgsql": "*",
+    "eternaltwin/oauth-client": "^1.0.0",
+    "eternaltwin/etwin": "^0.9.2"
+  },
+  "scripts": {
+    "build": "Kadokadeo\\Scripts\\Build::build",
+    "db:reset": "Kadokadeo\\Scripts\\Db::reset",
+    "db:sync": "Kadokadeo\\Scripts\\Db::sync"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kadokadeo\\": "src/"
+    }
+  },
+  "license": "AGPL-3.0-or-later"
+}
