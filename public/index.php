@@ -17,5 +17,9 @@ require_once "../vendor/autoload.php";
         <li><?php echo htmlspecialchars($game) ?></li>
     <?php } ?>
 </ul>
+<dl>
+    <dt>Request URI:</dt>
+    <dd><?php echo htmlspecialchars($_SERVER["REQUEST_URI"] ?? "/")?></dd>
+</dl>
 </body>
 </html>
