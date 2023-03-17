@@ -1,0 +1,337 @@
+/* CUSTOMIZED FONT */
+
+@font-face {
+	font-family: "Junegull-Regular";
+	src: url("fonts/Junegull-Regular.eot");
+	src: url("fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
+		url("fonts/Junegull-Regular.woff") format("otf"),
+		url("fonts/Junegull-Regular.woff") format("woff"),
+		url("fonts/Junegull-Regular.ttf") format("truetype"),
+		url("fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
+}
+
+@font-face {
+	font-family: "Jost-Medium";
+	src: url("fonts/Jost-Medium.ttf") format("truetype");
+}
+
+#loadFonts p {
+	width: 0;
+	margin: 0;
+	position: absolute;
+	left: -1000px;
+	visibility: hidden;
+}
+
+
+/* GLOBAL */
+
+body {
+	width: 890px;
+	margin: 0 auto;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	background: url("images/bgHeader.jpg") top repeat-x, url("images/bgBodyPattern.jpg") repeat;
+	background-color: #f1f9fb;
+	font-size: 1em;
+	font-family: Trebuchet MS, Arial, sans-serif;
+	color: #0687b1;
+}
+
+p {
+	margin: 16px 10px;
+	padding: 0;
+}
+
+a {
+	color: #ffa400;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+img {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+#container h1 {
+	margin: 25px 10px 20px 10px;
+	padding: 0;
+	font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
+	font-size: 2.5em;
+	letter-spacing: 0.1em;
+	-webkit-text-stroke: 1px #1f6776;
+	font-weight: bold;
+	background: linear-gradient(to bottom, #fff 15%, #caf4fc 55%, #82e1f3 56%, #d3f4fa 85%);
+	background-color: #defaff;
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.italic {
+	font-style: italic;
+}
+
+.center {
+	text-align: center;
+}
+
+.centerMargin {
+	margin: auto;
+}
+
+.nomargin {
+	margin: 0;
+	padding: 0;
+}
+
+
+/* HEADER, TOP NAV, TOP BANNER */
+
+header#topPage {
+	width: 800px;
+	height: 100px;
+	margin: 0 auto 15px auto;
+	display: flex;
+	justify-content: space-between;
+}
+
+header#topPage h1 {
+	width: 424px;
+	height: 78px;
+	margin: 0;
+	padding: 0;
+	background: url("images/logoBasic.png") no-repeat;
+}
+
+header#topPage h1 span {
+	display: none;
+}
+
+header#topPage nav#topNav {
+	width: 376px;
+	margin: 5px 0 0 0;
+}
+
+header#topPage nav#topNav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: space-around
+}
+
+header#topPage nav#topNav ul li, header#topPage nav#topNav ul li a {
+	width: 117px;
+	height: 95px;
+	display: block;
+	text-decoration: none;
+}
+
+header#topPage nav#topNav ul li a#topNavGames {
+	background: url("images/menuGames.png") no-repeat;
+}
+
+header#topPage nav#topNav ul li a#topNavSite {
+	background: url("images/menuSite.png") no-repeat;
+}
+
+header#topPage nav#topNav ul li a#topNavShop {
+	background: url("images/menuShop.png") no-repeat;
+}
+
+header#topPage nav#topNav ul li:hover {
+	background: url("images/menuHover.png") no-repeat;
+}
+
+header#topPage nav#topNav ul li a span {
+	display: none;
+}
+
+
+/* MAIN CONTENT SECTION */
+
+#container {
+	width: 890px;
+	margin: 30px auto;
+	background: url("images/bgContainerTop.jpg") top left no-repeat, url("images/bgContainerTopRepeat.jpg") top repeat-x;
+	background-color: #eaf8fb;
+	border: 3px solid #5caab7;
+	box-shadow: 0 0 0 2px #ffffff, 0 0 30px 1px rgba(0, 0, 0, 0.5);
+}
+
+.inColumns {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.inColumns .twoCols {
+	width: 46%;
+	margin: 0 2% 0 2%;
+}
+
+.halfWidth {
+	width: 50%;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
+
+/* GAME PAGE */
+
+.gameInterface {
+	width: 724px;
+	height: 370px;
+	margin: 10px auto 50px auto;
+	padding: 0;
+	background: url("images/gameInterface.png") no-repeat;
+	position: relative;
+}
+
+canvas#gameCanvas {
+	width: 300px;
+	height: 320px;
+	position: absolute;
+	top: 23px;
+	left: 22px;
+	display: block;
+	margin: 0;
+	padding: 0;
+	border: 1px solid #56b7c1;
+}
+
+.gameSide {
+	width: 300px;
+	height: 320px;
+	position: absolute;
+	top: 23px;
+	left: 396px;
+	margin: 0;
+	padding: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	font-size: 0.75em;
+}
+
+.gameSide p {
+	margin: 8px;
+}
+
+.gameSide hr {
+	width: 200px;
+	margin: 8px auto;
+	border: 0;
+	border-top: 1px solid #0687b1;
+}
+
+.gameSide .gameNav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: space-around;
+	font-size: 1.2em;
+}
+
+.gameSide .gameNav ul li {
+	width: 23%;
+	display: block;
+	text-align: center;
+	margin: 0;
+}
+
+.gameSide .gameNav ul li a {
+	color: #0687b1;
+}
+
+.gameSide .gameNav ul li a:hover {
+	color: #ffa400;
+}
+
+.gameInfo table.gameCommands {
+	width: 284px;
+	margin: 8px auto;
+	border: 0;
+	text-align: left;
+}
+
+.gameInfo table.gameCommands th, .gameInfo table.gameCommands td {
+	vertical-align: middle;
+	text-align: center;
+}
+
+.gameInfo table.gameCommands th {
+	font-size: 0.9em;
+}
+
+.gameInfo table.gameCommands .col1 {
+	width: 80px;
+}
+
+
+/* FORMS */
+
+form div {
+	margin-top: 16px;
+	margin-bottom: 16px;
+}
+
+form div label {
+	font-weight: bold;
+}
+
+form div input, input[type=submit], input[type=button], input[type=reset] {
+	width: 100%;
+	min-width: 80px;
+	margin: 5px 0 5px 0;
+	padding: 5px;
+	box-sizing: border-box;
+	border: 2px solid #fff;
+	border-left: 7px solid #fff;
+	color: #20a8c3;
+	background: url("images/bgInput.jpg") repeat-x;
+}
+
+form div input:focus {
+	color: #89bc24;
+	background: url("images/bgInputFocus.jpg") repeat-x;
+}
+
+input[type=submit], input[type=button], input[type=reset] {
+	height: 32px;
+	padding-left: 15px;
+	color: #6fa20a;
+	font-size: 1em;
+	font-weight: bold;
+	text-decoration: none;
+	border: 1px solid #6fa20a;
+	background: url("images/bgFormButtonLeft.jpg") left no-repeat, url("images/bgFormButtonFill.jpg") repeat-x;
+	background-color: #e6ffbd;
+	cursor: pointer;
+}
+
+input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover {
+	background: url("images/bgFormButtonLeftHover.jpg") left no-repeat, url("images/bgFormButtonFillHover.jpg") repeat-x;
+}

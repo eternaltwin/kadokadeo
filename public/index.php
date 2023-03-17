@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 require_once "../vendor/autoload.php";
+
+use \Kadokadeo\Games\Games;
 ?>
 <!doctype html>
 <html lang="en-US">
@@ -9,11 +11,12 @@ require_once "../vendor/autoload.php";
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+	<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <h1>Kadokadéo</h1>
 <ul>
-    <?php foreach (\Kadokadeo\Games\Games::getAll() as $game) { ?>
+    <?php foreach (Games::getAll() as $game) { ?>
         <li><?php echo htmlspecialchars($game) ?></li>
     <?php } ?>
 </ul>

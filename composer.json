@@ -3,7 +3,7 @@
   "description": "Main Kadokadéo repository",
   "type": "project",
   "require": {
-    "php": "^8.2.0",
+    "php": "^8.1.10",
     "ext-pdo": "*",
     "ext-pdo_pgsql": "*",
     "eternaltwin/oauth-client": "^1.0.0",
