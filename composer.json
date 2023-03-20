@@ -10,7 +10,7 @@
     "eternaltwin/etwin": "^0.9.2"
   },
   "scripts": {
-    "build": "Kadokadeo\\Scripts\\Build::build",
+    "katal:config": "Kadokadeo\\Scripts\\Config::config",
     "db:reset": "Kadokadeo\\Scripts\\Db::reset",
     "db:sync": "Kadokadeo\\Scripts\\Db::sync"
   },

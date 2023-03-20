@@ -3,6 +3,9 @@ require_once "../vendor/autoload.php";
 
 use \Kadokadeo\Controllers\Home;
 use \Kadokadeo\Controllers\Game;
+use \Kadokadeo\Config;
+
+$config = Config::load();
 
 $Home = new Home();
 $Game = new Game();
