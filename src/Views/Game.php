@@ -1,4 +1,4 @@
-<?php 
+<?php
 	$gameName = "Xian-Xiang";
 	$title = "KadoKadeo - Jouer - ".$gameName;
 ?>
@@ -41,4 +41,4 @@
 </main>
 <?php $bodyContent = ob_get_clean(); ?>
 
-<?php require('layouts/loggedLayout.php'); ?>
+<?php require('Layouts/LoggedLayout.php'); ?>

@@ -47,4 +47,4 @@
 </main>
 <?php $bodyContent = ob_get_clean(); ?>
 
-<?php require('layouts/unloggedLayout.php'); ?>
+<?php include('Layouts/UnloggedLayout.php'); ?>

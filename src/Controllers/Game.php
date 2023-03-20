@@ -3,6 +3,6 @@ namespace Kadokadeo\Controllers;
 
 final class Game {
 	public static function render() {
-		include("../src/views/game.php");
+		include("../src/Views/Game.php");
 	}
 }
