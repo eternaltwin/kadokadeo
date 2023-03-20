@@ -2,17 +2,17 @@
 
 @font-face {
 	font-family: "Junegull-Regular";
-	src: url("fonts/Junegull-Regular.eot");
-	src: url("fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
-		url("fonts/Junegull-Regular.woff") format("otf"),
-		url("fonts/Junegull-Regular.woff") format("woff"),
-		url("fonts/Junegull-Regular.ttf") format("truetype"),
-		url("fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
+	src: url("/fonts/Junegull-Regular.eot");
+	src: url("/fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
+		url("/fonts/Junegull-Regular.woff") format("otf"),
+		url("/fonts/Junegull-Regular.woff") format("woff"),
+		url("/fonts/Junegull-Regular.ttf") format("truetype"),
+		url("/fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
 }
 
 @font-face {
 	font-family: "Jost-Medium";
-	src: url("fonts/Jost-Medium.ttf") format("truetype");
+	src: url("/fonts/Jost-Medium.ttf") format("truetype");
 }
 
 #loadFonts p {
@@ -34,7 +34,7 @@ body {
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
-	background: url("images/bgHeader.jpg") top repeat-x, url("images/bgBodyPattern.jpg") repeat;
+	background: url("/images/bgHeader.jpg") top repeat-x, url("/images/bgBodyPattern.jpg") repeat;
 	background-color: #f1f9fb;
 	font-size: 1em;
 	font-family: Trebuchet MS, Arial, sans-serif;
@@ -118,7 +118,7 @@ header#topPage h1 {
 	height: 78px;
 	margin: 0;
 	padding: 0;
-	background: url("images/logoBasic.png") no-repeat;
+	background: url("/images/logoBasic.png") no-repeat;
 }
 
 header#topPage h1 span {
@@ -146,19 +146,19 @@ header#topPage nav#topNav ul li, header#topPage nav#topNav ul li a {
 }
 
 header#topPage nav#topNav ul li a#topNavGames {
-	background: url("images/menuGames.png") no-repeat;
+	background: url("/images/menuGames.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavSite {
-	background: url("images/menuSite.png") no-repeat;
+	background: url("/images/menuSite.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavShop {
-	background: url("images/menuShop.png") no-repeat;
+	background: url("/images/menuShop.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li:hover {
-	background: url("images/menuHover.png") no-repeat;
+	background: url("/images/menuHover.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a span {
@@ -171,7 +171,7 @@ header#topPage nav#topNav ul li a span {
 #container {
 	width: 890px;
 	margin: 30px auto;
-	background: url("images/bgContainerTop.jpg") top left no-repeat, url("images/bgContainerTopRepeat.jpg") top repeat-x;
+	background: url("/images/bgContainerTop.jpg") top left no-repeat, url("/images/bgContainerTopRepeat.jpg") top repeat-x;
 	background-color: #eaf8fb;
 	border: 3px solid #5caab7;
 	box-shadow: 0 0 0 2px #ffffff, 0 0 30px 1px rgba(0, 0, 0, 0.5);
@@ -206,7 +206,7 @@ header#topPage nav#topNav ul li a span {
 	height: 370px;
 	margin: 10px auto 50px auto;
 	padding: 0;
-	background: url("images/gameInterface.png") no-repeat;
+	background: url("/images/gameInterface.png") no-repeat;
 	position: relative;
 }
 
@@ -311,12 +311,12 @@ form div input, input[type=submit], input[type=button], input[type=reset] {
 	border: 2px solid #fff;
 	border-left: 7px solid #fff;
 	color: #20a8c3;
-	background: url("images/bgInput.jpg") repeat-x;
+	background: url("/images/bgInput.jpg") repeat-x;
 }
 
 form div input:focus {
 	color: #89bc24;
-	background: url("images/bgInputFocus.jpg") repeat-x;
+	background: url("/images/bgInputFocus.jpg") repeat-x;
 }
 
 input[type=submit], input[type=button], input[type=reset] {
@@ -327,11 +327,11 @@ input[type=submit], input[type=button], input[type=reset] {
 	font-weight: bold;
 	text-decoration: none;
 	border: 1px solid #6fa20a;
-	background: url("images/bgFormButtonLeft.jpg") left no-repeat, url("images/bgFormButtonFill.jpg") repeat-x;
+	background: url("/images/bgFormButtonLeft.jpg") left no-repeat, url("/images/bgFormButtonFill.jpg") repeat-x;
 	background-color: #e6ffbd;
 	cursor: pointer;
 }
 
 input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover {
-	background: url("images/bgFormButtonLeftHover.jpg") left no-repeat, url("images/bgFormButtonFillHover.jpg") repeat-x;
+	background: url("/images/bgFormButtonLeftHover.jpg") left no-repeat, url("/images/bgFormButtonFillHover.jpg") repeat-x;
 }
