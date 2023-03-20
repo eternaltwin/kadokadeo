@@ -16,3 +16,17 @@ This is an example of Apache config
     </Directory>
 </VirtualHost>
 ```
+
+## Project commands
+
+### Ensure the database is up-to-date
+
+```
+composer run-script db:sync
+```
+
+### Reset the DB
+
+```
+composer run-script db:reset
+```
