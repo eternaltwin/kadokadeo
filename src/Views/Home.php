@@ -30,16 +30,9 @@
 	<section class="twoCols">
 		<h1 class="center">Connexion</h1>
 		<p class="center">Si vous avez déjà un compte, vous pouvez directement vous connecter.</p>
-		<form method="post" action="#" name="formSignIn" class="centerMargin halfWidth">
+		<form method="post" action="/actions/login" name="formSignIn" class="centerMargin halfWidth">
 			<div>
-				<label for="pseudo">Pseudo : </label><br>
-				<input type="text" name="pseudo" id="pseudo" maxlength="20">
-			</div>
-			<div>
-				<label for="password">Mot de passe : </label><br>
-				<input type="password" name="password" id="password" maxlength="20">
-			</div>
-			<div>
+				<?php echo htmlspecialchars($_SESSION['userUuid']); ?>
 				<input type="submit" value="Se connecter" class="center">
 			</div>
 		</form>
