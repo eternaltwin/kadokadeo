@@ -2,7 +2,7 @@
 namespace Kadokadeo\Controllers;
 
 final class Home {
-	public static function render() {
+	public static function view() {
 		include("../src/Views/Home.php");
 	}
 }

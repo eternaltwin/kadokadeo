@@ -11,8 +11,8 @@
 			<canvas id="gameCanvas" width="300" height="320">
 				<p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.</p>
 			</canvas>
-			<script src="../src/games/phaser/dist/phaser.js"></script>
-			<script src="../src/games/Xian-Xiang/xian-xiang.js"></script>
+			<script src="/games/phaser/dist/phaser.js"></script>
+			<script src="/games/Xian-Xiang/xian-xiang.js"></script>
 			<div class="gameSide">
 				<nav class="gameNav">
 					<ul>
@@ -30,7 +30,7 @@
 							<th>Fonction</th>
 						</tr>
 						<tr>
-							<td class="col1"><img src="images/gameCommandLeftClic.png" title="Clic gauche" alt="Clic gauche"></td>
+							<td class="col1"><img src="/images/gameCommandLeftClic.png" title="Clic gauche" alt="Clic gauche"></td>
 							<td>Sélectionner une pièce</td>
 						</tr>
 					</table>
