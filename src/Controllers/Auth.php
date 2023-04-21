@@ -6,6 +6,7 @@ use \Eternaltwin\Client\Auth as EtwinAuth;
 use \Eternaltwin\Client\HttpEtwinClient;
 use \Eternaltwin\User\UserId;
 use \Eternaltwin\User\UserDisplayName;
+use \Kadokadeo\Config;
 
 function upsertUser(\PDO $pdo, UserId $id, UserDisplayName $userDisplayName) {
     $query = $pdo->prepare(
@@ -27,21 +28,25 @@ final class Auth {
 	public readonly \PDO $pdo;
 	public readonly HttpEtwinClient $etwinClient;
 	
-	public function __construct(
-		RfcOauthClient $oauthClient,
-		\PDO $pdo, 
-		HttpEtwinClient $etwinClient
-	) {
-		$this->oauthClient = $oauthClient;
-		$this->pdo = $pdo;
-		$this->etwinClient = $etwinClient;
+	public function __construct() {
+		$config = Config::load();
+		$pdoOptions = Config::dbUrlToPdo($config->databaseUrl);
+		$this->pdo = new \PDO($pdoOptions['dsn'], $pdoOptions['username'], $pdoOptions['password']);
+		$this->etwinClient = new HttpEtwinClient($config->eternaltwinUrl);
+
+		$this->oauthClient = new RfcOauthClient(
+			$config->eternaltwinUrl . 'oauth/authorize',
+			$config->eternaltwinUrl . 'oauth/token',
+			$config->externalUrl . 'oauth/callback',
+			$config->oauthId,
+			$config->oauthSecret
+		);
 	}
 	
 	public function handleLogin() {
 		// No need to change this (sets the privileges and Eternaltwin has only
 		// one level of permissions at the moment)
 		$scope = 'base';
-
 		$state = 'kadokadeo';
 
 		$authorizationUri = $this->oauthClient->getAuthorizationUri($scope, $state);
@@ -49,6 +54,7 @@ final class Auth {
 	}
 	
 	public function handleCallback() {
+		echo 'hi';
 		$code = $_GET["code"];
 		$state = $_GET["state"];
 		$accessToken = $this->oauthClient->getAccessTokenSync($code);
@@ -56,9 +62,10 @@ final class Auth {
 		$user = $self->getUser();
 		$userDisplayName = $user->getDisplayName()->getCurrent()->getValue();
 		$userUuid = $user->getId();
-
-		upsertUser($this->pdo, $userUuid, $userDisplayName);
+		var_dump($userDisplayName);
+		/*upsertUser($this->pdo, $userUuid, $userDisplayName);*/
 		$_SESSION['userUuid'] = $userUuid->toString();
+		$_SESSION['userName'] = $userDisplayName;
 		header("Location: /", true, 302);
 	}
 }

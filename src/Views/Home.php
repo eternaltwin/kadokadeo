@@ -30,9 +30,8 @@
 	<section class="twoCols">
 		<h1 class="center">Connexion</h1>
 		<p class="center">Si vous avez déjà un compte, vous pouvez directement vous connecter.</p>
-		<form method="post" action="/actions/login" name="formSignIn" class="centerMargin halfWidth">
+		<form method="post" action="/login" name="formSignIn" class="centerMargin halfWidth">
 			<div>
-				<?php echo htmlspecialchars($_SESSION['userUuid']); ?>
 				<input type="submit" value="Se connecter" class="center">
 			</div>
 		</form>
