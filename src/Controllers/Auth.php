@@ -23,6 +23,7 @@ function upsertUser(\PDO $pdo, UserId $id, UserDisplayName $userDisplayName) {
     ]);
 }
 
+/* Connection to KadoKadeo via Eternal-twin */
 final class Auth {
 	public readonly RfcOauthClient $oauthClient;
 	public readonly \PDO $pdo;
@@ -42,28 +43,31 @@ final class Auth {
 			$config->oauthSecret
 		);
 	}
-	
-	public function handleLogin() {
-		// No need to change this (sets the privileges and Eternaltwin has only
-		// one level of permissions at the moment)
+
+	// Send the user the the Eternal-twin connection form
+	public static function login() {
+		$authObject = new Auth();
+
 		$scope = 'base';
 		$state = 'kadokadeo';
 
-		$authorizationUri = $this->oauthClient->getAuthorizationUri($scope, $state);
+		$authorizationUri = $authObject->oauthClient->getAuthorizationUri($scope, $state);
 		header("Location: " . $authorizationUri, true, 302);
 	}
 	
-	public function handleCallback() {
-		echo 'hi';
+	// Get the callback from Eternal-twin when connected successfully, then create the session
+	public static function loginCallback() {
+		$authObject = new Auth();
+		
 		$code = $_GET["code"];
 		$state = $_GET["state"];
-		$accessToken = $this->oauthClient->getAccessTokenSync($code);
-		$self = $this->etwinClient->getSelf(EtwinAuth::fromToken($accessToken->getAccessToken()));
+		$accessToken = $authObject->oauthClient->getAccessTokenSync($code);
+		$self = $authObject->etwinClient->getSelf(EtwinAuth::fromToken($accessToken->getAccessToken()));
 		$user = $self->getUser();
 		$userDisplayName = $user->getDisplayName()->getCurrent()->getValue();
 		$userUuid = $user->getId();
-		var_dump($userDisplayName);
-		/*upsertUser($this->pdo, $userUuid, $userDisplayName);*/
+		
+		/*upsertUser($authObject->pdo, $userUuid, $userDisplayName);*/
 		$_SESSION['userUuid'] = $userUuid->toString();
 		$_SESSION['userName'] = $userDisplayName;
 		header("Location: /", true, 302);
