@@ -2,7 +2,7 @@
 namespace Kadokadeo\Controllers;
 
 final class Game {
-	public static function view() {
+	public static function view(): void {
 		include("../src/Views/Game.php");
 	}
 }

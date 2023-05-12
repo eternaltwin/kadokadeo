@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 /* A FAIRE :
-- PDO singleton
 - Ajouter le pseudo dans la BDD, avec le timestamp inscription / 1ère connexion et éventuellement d'autres valeurs
 - Lien de déconnexion
 - Quand connecté, accéder à la page listant tous les jeux

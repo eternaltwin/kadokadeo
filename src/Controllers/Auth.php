@@ -7,6 +7,7 @@ use \Eternaltwin\Client\HttpEtwinClient;
 use \Eternaltwin\User\UserId;
 use \Eternaltwin\User\UserDisplayName;
 use \Kadokadeo\Config;
+use \Kadokadeo\Scripts\PdoSingleton;
 
 function upsertUser(\PDO $pdo, UserId $id, UserDisplayName $userDisplayName) {
     $query = $pdo->prepare(
@@ -31,8 +32,8 @@ final class Auth {
 	
 	public function __construct() {
 		$config = Config::load();
-		$pdoOptions = Config::dbUrlToPdo($config->databaseUrl);
-		$this->pdo = new \PDO($pdoOptions['dsn'], $pdoOptions['username'], $pdoOptions['password']);
+        $pdoSingleton = PdoSingleton::getInstance();
+        $this->pdo = $pdoSingleton->getPdo();
 		$this->etwinClient = new HttpEtwinClient($config->eternaltwinUrl);
 
 		$this->oauthClient = new RfcOauthClient(
@@ -45,7 +46,7 @@ final class Auth {
 	}
 
 	// Send the user the the Eternal-twin connection form
-	public static function login() {
+	public static function login(): void {
 		$authObject = new Auth();
 
 		$scope = 'base';
@@ -56,7 +57,7 @@ final class Auth {
 	}
 	
 	// Get the callback from Eternal-twin when connected successfully, then create the session
-	public static function loginCallback() {
+	public static function loginCallback(): void {
 		$authObject = new Auth();
 		
 		$code = $_GET["code"];
@@ -67,8 +68,8 @@ final class Auth {
 		$userDisplayName = $user->getDisplayName()->getCurrent()->getValue();
 		$userUuid = $user->getId();
 		
-		/*upsertUser($authObject->pdo, $userUuid, $userDisplayName);*/
-		$_SESSION['userUuid'] = $userUuid->toString();
+		upsertUser($authObject->pdo, $userUuid, $userDisplayName);
+        $_SESSION['userUuid'] = $userUuid->toString();
 		$_SESSION['userName'] = $userDisplayName;
 		header("Location: /", true, 302);
 	}
