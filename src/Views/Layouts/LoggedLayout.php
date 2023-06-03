@@ -11,6 +11,11 @@
 		<p style="font-family:Jost-Medium;">.</p>
 	</div>
 	<header id="topPage">
+        <nav id="languageNav">
+            <ul>
+                <li><a href="#" title="Français"><img src="images/langFrench.gif" alt="french" title="Français"></a></li>
+            </ul>
+        </nav>
 		<h1><span>KadoKadeo</span></h1>
 		<nav id="topNav">
 			<ul>
@@ -19,6 +24,20 @@
 				<li><a href="#" id="topNavShop"><span>Kado</span></a></li>
 			</ul>
 		</nav>
+        <nav id="kalendrier">
+            <ul>
+                <li id="kalUser">
+                    <a href="#" title="Préférences du compte">
+                    <?= htmlspecialchars($_SESSION['username']); ?>
+                    </a> (<a href="signout" title="Déconnexion">déconnecter</a>)
+                </li>
+            </ul>
+        </nav>
+        <aside id="topBarInfo">
+            <ul>
+                <li id="topBarKadoPoints"><span>1265</span></li>
+            </ul>
+        </aside>
 	</header>
 	<?= $bodyContent ?>
 </body>

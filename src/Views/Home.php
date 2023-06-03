@@ -2,39 +2,14 @@
 
 <?php ob_start(); ?>
 <main id="container" class="inColumns">
-	<section class="twoCols">
-		<h1 class="center">Inscription</h1>
-		<p class="center">Si vous n'avez pas encore de compte, inscrivez-vous à l'aide du formulaire ci-dessous.</p>
-		<form method="post" action="#" name="formRegister" class="centerMargin halfWidth">
-			<div>
-				<label for="pseudo">Pseudo : </label><br>
-				<input type="text" name="pseudo" id="pseudo" maxlength="20">
-			</div>
-			<div>
-				<label for="password1">Mot de passe : </label><br>
-				<input type="password" name="password1" id="password1" maxlength="20">
-			</div>
-			<div>
-				<label for="password2">Mot de passe (vérification) : </label><br>
-				<input type="password" name="password2" id="password2" maxlength="20">
-			</div>
-			<div>
-				<label for="emailAddress">Adresse e-mail : </label><br>
-				<input type="email" name="emailAddress" id="emailAddress">
-			</div>
-			<div>
-				<input type="submit" value="S'inscrire" class="center">
-			</div>
-		</form>
-	</section>
-	<section class="twoCols">
-		<h1 class="center">Connexion</h1>
-		<p class="center">Si vous avez déjà un compte, vous pouvez directement vous connecter.</p>
-		<form method="post" action="/login" name="formSignIn" class="centerMargin halfWidth">
-			<div>
-				<input type="submit" value="Se connecter" class="center">
-			</div>
-		</form>
+	<section class="homeLeftColumn"></section>
+	<section class="homeRightColumn">
+        <h1 class="center">Bienvenue</h1>
+        <h2 style="margin:0;">Des jeux</h2>
+        <p>Plus de 70 jeux exclusifs à débloquer !</p>
+        <h2>Plein d'amis</h2>
+        <p>... et d'adversaires dans une communauté de joueurs pleine de bonne humeur !</p>
+        <p class="center btnHomepagePlay"><a href="/login" title="S'identifier / s'inscrire">>> Jouer <<</a></p>
 	</section>
 </main>
 <?php $bodyContent = ob_get_clean(); ?>

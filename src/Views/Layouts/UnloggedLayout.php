@@ -11,6 +11,11 @@
 		<p style="font-family:Jost-Medium;">.</p>
 	</div>
 	<header id="topPage">
+        <nav id="languageNav">
+            <ul>
+                <li><a href="#" title="Français"><img src="images/langFrench.gif" alt="french" title="Français"></a></li>
+            </ul>
+        </nav>
 		<h1><span>KadoKadeo</span></h1>
 	</header>
 	<?= $bodyContent ?>

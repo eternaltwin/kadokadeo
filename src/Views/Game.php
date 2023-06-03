@@ -1,12 +1,12 @@
 <?php
-	$gameName = "Xian-Xiang";
+    $gameName = "Xian-Xiang";
 	$title = "KadoKadeo - Jouer - ".$gameName;
 ?>
 
 <?php ob_start(); ?>
 <main id="container">
 	<section class="gameSection">
-		<h1 class="center fullWidth"><?php echo $gameName; ?></h1>
+		<h1 class="center fullWidth"><?= $gameName; ?></h1>
 		<div class="gameInterface">
 			<canvas id="gameCanvas" width="300" height="320">
 				<p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.</p>

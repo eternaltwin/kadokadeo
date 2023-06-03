@@ -8,7 +8,7 @@ final class PdoSingleton {
     private static $instance = null;
     private ?\PDO $pdo = null;
 
-    // Not allowing to create instances with keyword "new"
+    // Not allowing to create instances with keyword "new" outside this class
     private function __construct() {
         $config = Config::load();
 		$pdoOptions = Config::dbUrlToPdo($config->databaseUrl);

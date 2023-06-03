@@ -8,6 +8,7 @@ use \Eternaltwin\User\UserId;
 use \Eternaltwin\User\UserDisplayName;
 use \Kadokadeo\Config;
 use \Kadokadeo\Scripts\PdoSingleton;
+use \Kadokadeo\Scripts\SessionManager;
 
 function upsertUser(\PDO $pdo, UserId $id, UserDisplayName $userDisplayName) {
     $query = $pdo->prepare(
@@ -69,8 +70,24 @@ final class Auth {
 		$userUuid = $user->getId();
 		
 		upsertUser($authObject->pdo, $userUuid, $userDisplayName);
-        $_SESSION['userUuid'] = $userUuid->toString();
-		$_SESSION['userName'] = $userDisplayName;
+
+        // Vars used to define the $_SESSION variables
+        $userUuid = $userUuid->toString();
+		$username = $userDisplayName;
+        // $sessionDatas has to respect the $sessionVars property as defined in class SessionManager
+        $sessionDatas = array(
+            $userUuid,
+            $username
+        );
+        // The creation of the $_SESSION vars is done in SessionManager class
+        SessionManager::setSession($sessionDatas);
+
 		header("Location: /", true, 302);
+	}
+
+    // Signs the user out
+	public static function signOut(): void {
+		SessionManager::killSession();
+        header("Location: /", true, 302);
 	}
 }

@@ -34,7 +34,7 @@ body {
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
-	background: url("/images/bgHeader.jpg") top repeat-x, url("/images/bgBodyPattern.jpg") repeat;
+	background: url("/images/bgHeader.png") top repeat-x, url("/images/bgBodyPattern.jpg") repeat;
 	background-color: #f1f9fb;
 	font-size: 1em;
 	font-family: Trebuchet MS, Arial, sans-serif;
@@ -66,19 +66,37 @@ table {
 	border-collapse: collapse;
 }
 
-#container h1 {
+#container h1 { /* Mozilla Firefox and IE doesn't support the background-clip:text; and -webkit-text-stroke properties */
 	margin: 25px 10px 20px 10px;
-	padding: 0;
-	font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
-	font-size: 2.5em;
-	letter-spacing: 0.1em;
-	-webkit-text-stroke: 1px #1f6776;
-	font-weight: bold;
-	background: linear-gradient(to bottom, #fff 15%, #caf4fc 55%, #82e1f3 56%, #d3f4fa 85%);
-	background-color: #defaff;
-	background-clip: text;
-	-webkit-background-clip: text;
-	color: transparent;
+    padding: 0;
+    font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
+    font-size: 2.5em;
+    letter-spacing: 0.1em;
+    color: #44cce7;
+    font-weight: bold;
+    text-shadow: -1px -1px 0 #1f6776, 1px -1px 0 #1f6776, -1px 1px 0 #1f6776, 1px 1px 0 #1f6776;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) { /* For compatible browsers */
+    #container h1 {
+        -webkit-text-stroke: 1px #1f6776;
+        background: linear-gradient(to bottom, #fff 15%, #caf4fc 55%, #82e1f3 56%, #d3f4fa 85%);
+        background-color: #defaff;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        text-shadow: none;
+    }
+}
+
+#container h2 {
+    width: 90%;
+    height: 35px;
+    margin: 40px 0 10px 0;
+    padding: 4px 5px 0 40px;
+    font-size: 1.5em;
+    background: url("images/bgTitleBlue.jpg") no-repeat;
+    text-transform: uppercase;
 }
 
 .bold {
@@ -106,11 +124,37 @@ table {
 /* HEADER, TOP NAV, TOP BANNER */
 
 header#topPage {
-	width: 800px;
+	width: 1010px;
 	height: 100px;
-	margin: 0 auto 15px auto;
+	margin: 0 auto 20px auto;
 	display: flex;
 	justify-content: space-between;
+    position: relative;
+}
+
+header#topPage nav#languageNav {
+    width: 32px;
+    margin: 5px 0 0 0;
+    padding: 0;
+}
+
+header#topPage nav#languageNav ul {
+	width: 32px;
+    list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+    flex-direction: column;
+	justify-content: flex-start;
+    align-items: flex-start;
+}
+
+header#topPage nav#languageNav ul li a {
+	width: 29px;
+	height: 22px;
+    margin: 0 0 1px 0;
+	display: block;
+	text-decoration: none;
 }
 
 header#topPage h1 {
@@ -126,7 +170,6 @@ header#topPage h1 span {
 }
 
 header#topPage nav#topNav {
-	width: 376px;
 	margin: 5px 0 0 0;
 }
 
@@ -165,6 +208,72 @@ header#topPage nav#topNav ul li a span {
 	display: none;
 }
 
+header#topPage nav#kalendrier {
+    width: 201px;
+    height: 141px;
+    margin: 2px 0 0 0;
+	padding: 0;
+    background: url("images/bgKalendrier.png") no-repeat;
+    font-size: 0.75em;
+    position: relative;
+}
+
+header#topPage nav#kalendrier ul {
+    list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+header#topPage nav#kalendrier ul li#kalUser {
+    position: absolute;
+    top: 8px;
+    left: 15px;
+}
+
+header#topPage aside#topBarInfo {
+    width: 389px;
+    height: 40px;
+    background: url("images/bgTopBarInfo.png") no-repeat;
+    position: absolute;
+    top: 73px;
+    left: 49px;
+}
+
+header#topPage aside#topBarInfo ul {
+	width: 349px;
+    height: 27px;
+    list-style: none;
+	margin: 4px 18px 9px 22px;
+	padding: 0;
+	display: flex;
+	justify-content: space-between;
+}
+
+header#topPage aside#topBarInfo ul li#topBarKadoPoints {
+	padding: 0 0 0 28px;
+    background: url("images/pointsKado.png") left no-repeat;
+}
+
+header#topPage aside#topBarInfo ul span { /* Mozilla Firefox and IE doesn't support the background-clip:text; and -webkit-text-stroke properties */
+    font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
+    font-size: 1.5em;
+    letter-spacing: 0.05em;
+    color: #e3fc9b;
+    font-weight: bold;
+    text-shadow: -1px -1px 0 #61880f, 1px -1px 0 #61880f, -1px 1px 0 #61880f, 1px 1px 0 #61880f;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) { /* For compatible browsers */
+    header#topPage aside#topBarInfo ul span {
+        -webkit-text-stroke: 1px #61880f;
+        background: linear-gradient(to bottom, #fff 0%, #e3fc9b 45%, #94ca19 46%, #cdf564 100%);
+        background-color: #e3fc9b;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        text-shadow: none;
+    }
+}
 
 /* MAIN CONTENT SECTION */
 
@@ -196,6 +305,64 @@ header#topPage nav#topNav ul li a span {
 
 .fullWidth {
 	width: 100%;
+}
+
+
+/* HOME PAGE */
+
+.inColumns .homeLeftColumn {
+	width: 488px;
+    height: 475px;
+    background: url("/images/bgIntroHomePage.png") no-repeat;
+	margin: 0;
+}
+
+.inColumns .homeRightColumn {
+	width: 365px;
+    margin: 0 16px;
+}
+
+p.btnHomepagePlay {
+    width: 362px;
+    height: 52px;
+    background: url("/images/btnHomepagePlay.png") no-repeat;
+    margin: 40px 0 0 0;
+    padding: 5px 0 0 0;
+    font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
+	font-size: 2em;
+	letter-spacing: 0.1em;
+    text-align: center;
+}
+
+p.btnHomepagePlay:hover {
+    background: url("/images/btnHomepagePlayHover.png") no-repeat;
+    padding: 8px 0 0 0;
+    text-decoration: none;
+}
+
+.btnHomepagePlay a { /* Mozilla Firefox and IE doesn't support the background-clip:text; property */
+	width: 290px;
+    margin: 0 10px 0 62px;
+    font-weight: bold;
+    color: #037601;
+    text-shadow: #fffe03 0 3px 0;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) { /* For compatible browsers */
+    .btnHomepagePlay a {
+        width: 290px;
+        margin: 0 10px 0 62px;
+        font-weight: bold;
+        background: -webkit-linear-gradient(to bottom, #22bc00 0%, #0c8e06 40%, #014400 41%, #037601 100%);
+        background: linear-gradient(to bottom, #22bc00 0%, #0c8e06 40%, #014400 41%, #037601 100%);
+        background-color: #037601;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        text-shadow: none;
+        filter: drop-shadow(0 3px 0 #fffe03);
+    }
 }
 
 
