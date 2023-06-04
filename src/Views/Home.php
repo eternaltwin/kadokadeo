@@ -9,7 +9,7 @@
         <p>Plus de 70 jeux exclusifs à débloquer !</p>
         <h2>Plein d'amis</h2>
         <p>... et d'adversaires dans une communauté de joueurs pleine de bonne humeur !</p>
-        <p class="center btnHomepagePlay"><a href="/login" title="S'identifier / s'inscrire">>> Jouer <<</a></p>
+        <p class="center btnHomepagePlay"><a href="/signin" title="S'identifier / s'inscrire">>> Jouer <<</a></p>
 	</section>
 </main>
 <?php $bodyContent = ob_get_clean(); ?>

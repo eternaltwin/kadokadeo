@@ -9,8 +9,7 @@
 
 require_once '../vendor/autoload.php';
 
-use \Kadokadeo\Scripts\SessionManager;
-use \Kadokadeo\Controllers\Auth;
+use \Kadokadeo\Controllers\SessionManager;
 use \Kadokadeo\Controllers\Home;
 use \Kadokadeo\Controllers\Game;
 
@@ -19,14 +18,14 @@ session_start();
 if (!SessionManager::isConnected()) {
     $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
         $r->get('/', '\Kadokadeo\Controllers\Home::view');
-        $r->get('/login', '\Kadokadeo\Controllers\Auth::login');
-        $r->get('/oauth/callback', '\Kadokadeo\Controllers\Auth::loginCallback');
+        $r->get('/signin', '\Kadokadeo\Controllers\SessionManager::signin');
+        $r->get('/oauth/callback', '\Kadokadeo\Controllers\SessionManager::signinCallback');
     });
 } else {
     $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
         $r->get('/', '\Kadokadeo\Controllers\Game::view');
         $r->get('/game', '\Kadokadeo\Controllers\Game::view');
-        $r->get('/signout', '\Kadokadeo\Controllers\Auth::signOut');
+        $r->get('/signout', '\Kadokadeo\Controllers\SessionManager::signout');
     });
 }
 
