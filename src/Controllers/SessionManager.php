@@ -8,21 +8,7 @@ use \Eternaltwin\User\UserId;
 use \Eternaltwin\User\UserDisplayName;
 use \Kadokadeo\Config;
 use \Kadokadeo\Scripts\PdoSingleton;
-
-function upsertUser(\PDO $pdo, UserId $id, UserDisplayName $userDisplayName) {
-    $query = $pdo->prepare(
-        "INSERT INTO \"user\"(user_id, display_name)
-        VALUES(:userId, :displayName)
-        ON CONFLICT (user_id)
-        DO UPDATE SET
-          display_name = :displayName;
-    ");
-
-    $query->execute([
-        'userId' => $id->toString(),
-        'displayName' => $userDisplayName->toString(),
-    ]);
-}
+Use \Kadokadeo\Models\User;
 
 /* Connection to KadoKadeo via Eternal-twin */
 final class SessionManager {
@@ -86,15 +72,14 @@ final class SessionManager {
 		$userDisplayName = $user->getDisplayName()->getCurrent()->getValue();
 		$userUuid = $user->getId();
 		
-		upsertUser($authObject->pdo, $userUuid, $userDisplayName);
-
-        // Vars used to define the $_SESSION variables
-        $userUuid = $userUuid->toString();
-		$username = $userDisplayName;
-        // $sessionDatas has to respect the $sessionVars property
+        // Creating new user in DB
+        $newUser = new User($userUuid->toString(), 0, $userDisplayName->toString());
+        $newUser->upsert();
+        
+        // $sessionDatas has to respect the $sessionVars property to create the $_SESSION variables
         $sessionDatas = array(
             $userUuid,
-            $username
+            $userDisplayName
         );
         // Creation of $_SESSION vars according to $sessionVars as keys and $sessionDatas as values
         if (count(self::$sessionVars) == count($sessionDatas)) {

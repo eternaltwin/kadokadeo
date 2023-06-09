@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /* A FAIRE :
-- Ajouter le pseudo dans la BDD, avec le timestamp inscription / 1ère connexion et éventuellement d'autres valeurs
+- Dans le BDD table user, ajouter le timestamp inscription
 - Quand connecté, accéder à la page listant tous les jeux
 - Quand clic sur un jeu, accéder au jeu ---> ACTIVER PHASER
 - Réaliser le classement par jeu
