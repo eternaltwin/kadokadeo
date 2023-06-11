@@ -18,6 +18,6 @@
         </nav>
 		<h1><span>KadoKadeo</span></h1>
 	</header>
-	<?= $bodyContent ?>
+	<?= $mainContent ?>
 </body>
 </html>

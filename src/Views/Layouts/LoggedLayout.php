@@ -39,6 +39,6 @@
             </ul>
         </aside>
 	</header>
-	<?= $bodyContent ?>
+	<?= $mainContent ?>
 </body>
 </html>

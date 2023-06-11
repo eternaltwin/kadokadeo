@@ -12,6 +12,6 @@
         <p class="center btnHomepagePlay"><a href="/signin" title="S'identifier / s'inscrire">>> Jouer <<</a></p>
 	</section>
 </main>
-<?php $bodyContent = ob_get_clean(); ?>
+<?php $mainContent = ob_get_clean(); ?>
 
 <?php include('Layouts/UnloggedLayout.php'); ?>

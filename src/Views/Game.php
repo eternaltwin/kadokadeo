@@ -4,7 +4,7 @@
 ?>
 
 <?php ob_start(); ?>
-<main id="container">
+<main id="container" class="withSidePadding">
 	<section class="gameSection">
 		<h1 class="center fullWidth"><?= $gameName; ?></h1>
 		<div class="gameInterface">
@@ -38,7 +38,37 @@
 			</div>
 		</div>
 	</section>
+
+    <aside id="containerSide">
+        <nav class="sideBoxGreen">
+            <h2>Menu</h2>
+            <ul id="menuSide">
+                <li class="news"><a href="#" title="Nouveautés">Nouveautés</a></li>
+                <li class="scores"><a href="#" title="Mes scores">Mes scores</a></li>
+                <li class="account"><a href="#" title="Mon compte">Mon compte</a></li>
+                <li class="help"><a href="#" title="Aide">Aide</a></li>
+            </ul>
+        </nav>
+        <aside class="sideBoxBlue">
+            <h2>Top 3 clans</h2>
+            <ul>
+                <li>Clan n°1</li>
+                <li>Clan n°2</li>
+                <li>Clan n°3</li>
+            </ul>
+            <p class="center">Classement des clans...</p>
+        </aside>
+        <aside class="sideBoxPink">
+            <h2>Nos autres jeux</h2>
+            <ul>
+                <li>Jeu n°1</li>
+                <li>Jeu n°2</li>
+                <li>Jeu n°3</li>
+            </ul>
+            <p class="center">Classement des clans...</p>
+        </aside>
+    </aside>
 </main>
-<?php $bodyContent = ob_get_clean(); ?>
+<?php $mainContent = ob_get_clean(); ?>
 
 <?php require('Layouts/LoggedLayout.php'); ?>

@@ -2,17 +2,17 @@
 
 @font-face {
 	font-family: "Junegull-Regular";
-	src: url("/fonts/Junegull-Regular.eot");
-	src: url("/fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/Junegull-Regular.woff") format("otf"),
-		url("/fonts/Junegull-Regular.woff") format("woff"),
-		url("/fonts/Junegull-Regular.ttf") format("truetype"),
-		url("/fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
+	src: url("fonts/Junegull-Regular.eot");
+	src: url("fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
+		url("fonts/Junegull-Regular.woff") format("otf"),
+		url("fonts/Junegull-Regular.woff") format("woff"),
+		url("fonts/Junegull-Regular.ttf") format("truetype"),
+		url("fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
 }
 
 @font-face {
 	font-family: "Jost-Medium";
-	src: url("/fonts/Jost-Medium.ttf") format("truetype");
+	src: url("fonts/Jost-Medium.ttf") format("truetype");
 }
 
 #loadFonts p {
@@ -27,14 +27,14 @@
 /* GLOBAL */
 
 body {
-	width: 890px;
+	width: 1010px;
 	margin: 0 auto;
 	padding: 0;
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
-	background: url("/images/bgHeader.png") top repeat-x, url("/images/bgBodyPattern.jpg") repeat;
+	background: url("images/bgHeader.png") top repeat-x, url("images/bgBodyPattern.jpg") repeat;
 	background-color: #f1f9fb;
 	font-size: 1em;
 	font-family: Trebuchet MS, Arial, sans-serif;
@@ -128,7 +128,7 @@ header#topPage {
 	height: 100px;
 	margin: 0 auto 20px auto;
 	display: flex;
-	justify-content: space-between;
+	justify-content: flex-start;
     position: relative;
 }
 
@@ -162,7 +162,7 @@ header#topPage h1 {
 	height: 78px;
 	margin: 0;
 	padding: 0;
-	background: url("/images/logoBasic.png") no-repeat;
+	background: url("images/logoBasic.png") no-repeat;
 }
 
 header#topPage h1 span {
@@ -189,19 +189,19 @@ header#topPage nav#topNav ul li, header#topPage nav#topNav ul li a {
 }
 
 header#topPage nav#topNav ul li a#topNavGames {
-	background: url("/images/menuGames.png") no-repeat;
+	background: url("images/menuGames.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavSite {
-	background: url("/images/menuSite.png") no-repeat;
+	background: url("images/menuSite.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavShop {
-	background: url("/images/menuShop.png") no-repeat;
+	background: url("images/menuShop.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li:hover {
-	background: url("/images/menuHover.png") no-repeat;
+	background: url("images/menuHover.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a span {
@@ -275,15 +275,120 @@ header#topPage aside#topBarInfo ul span { /* Mozilla Firefox and IE doesn't supp
     }
 }
 
-/* MAIN CONTENT SECTION */
+
+/* CONTAINER AND RIGHT SIDE BOXES */
 
 #container {
 	width: 890px;
-	margin: 30px auto;
-	background: url("/images/bgContainerTop.jpg") top left no-repeat, url("/images/bgContainerTopRepeat.jpg") top repeat-x;
+    box-sizing: border-box;
+    margin: 30px auto;
+	background: url("images/bgContainerTopBlue.jpg") top left no-repeat, url("images/bgContainerTopRepeat.jpg") top repeat-x;
 	background-color: #eaf8fb;
 	border: 3px solid #5caab7;
 	box-shadow: 0 0 0 2px #ffffff, 0 0 30px 1px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+#container.withSidePadding {
+    padding: 0 150px 0 0;
+}
+
+#containerSide {
+    width: 191px;
+    position: absolute;
+    top: 0;
+    left: 750px;
+    font-size: 0.75em;
+}
+
+#containerSide h2 {
+    width: 100%;
+    height: 18px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 0 0 20px;
+    font-size: 1.15em;
+    text-transform: none;
+}
+
+#containerSide ul {
+    margin: 5px;
+    list-style-type: none;
+    padding: 0;
+}
+
+#containerSide .sideBoxGreen, #containerSide .sideBoxBlue, #containerSide .sideBoxPink {
+    margin: 25px 0 0 0;
+    box-shadow: 10px 10px 10px rgba(90, 170, 182, 0.25);
+}
+
+#containerSide .sideBoxGreen {
+    background: url("images/bgContainerTopGreen.jpg") -205px 13px no-repeat;
+    background-color: #f3ffd7;
+    border: 3px solid #89bc24;
+}
+
+#containerSide .sideBoxGreen h2 {
+    background: url("images/bgTitleGreen.jpg") -15px -5px no-repeat;
+    color: #6fa20a;
+    border-bottom: 3px solid #89bc24;
+}
+
+#containerSide ul#menuSide {
+    font-size: 1.5em;
+}
+
+#containerSide ul#menuSide li a {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+    margin: 1px 0;
+    padding: 0 0 0 25px;
+    text-decoration: none;
+}
+
+#containerSide ul#menuSide li a:hover {
+    padding: 0 0 0 27px;
+}
+
+#containerSide ul#menuSide li.news a {
+    background: url("images/menuIconNews.gif") 0px 2px no-repeat;
+}
+
+#containerSide ul#menuSide li.scores a {
+    background: url("images/menuIconScores.gif") -2px 3px no-repeat;
+}
+
+#containerSide ul#menuSide li.account a {
+    background: url("images/menuIconAccount.gif") 0px 3px no-repeat;
+}
+
+#containerSide ul#menuSide li.help a {
+    background: url("images/menuIconHelp.gif") -3px 0px no-repeat;
+}
+
+#containerSide .sideBoxBlue {
+    background: url("images/bgContainerTopBlue.jpg") -205px 13px no-repeat;
+    background-color: #f3ffd7;
+    border: 3px solid #5babbb;
+}
+
+#containerSide .sideBoxBlue h2 {
+    background: url("images/bgTitleBlue.jpg") -15px -5px no-repeat;
+    color: #0687b1;
+    border-bottom: 3px solid #5babbb;
+}
+
+#containerSide .sideBoxPink {
+    background: url("images/bgContainerTopPink.jpg") -205px 13px no-repeat;
+    background-color: #f3ffd7;
+    border: 3px solid #ff6b9c;
+}
+
+#containerSide .sideBoxPink h2 {
+    background: url("images/bgTitlePink.jpg") -15px -5px no-repeat;
+    color: #ff6b9c;
+    border-bottom: 3px solid #ff6b9c;
 }
 
 .inColumns {
@@ -313,7 +418,7 @@ header#topPage aside#topBarInfo ul span { /* Mozilla Firefox and IE doesn't supp
 .inColumns .homeLeftColumn {
 	width: 488px;
     height: 475px;
-    background: url("/images/bgIntroHomePage.png") no-repeat;
+    background: url("images/bgIntroHomePage.png") no-repeat;
 	margin: 0;
 }
 
@@ -325,7 +430,7 @@ header#topPage aside#topBarInfo ul span { /* Mozilla Firefox and IE doesn't supp
 p.btnHomepagePlay {
     width: 362px;
     height: 52px;
-    background: url("/images/btnHomepagePlay.png") no-repeat;
+    background: url("images/btnHomepagePlay.png") no-repeat;
     margin: 40px 0 0 0;
     padding: 5px 0 0 0;
     font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
@@ -335,7 +440,7 @@ p.btnHomepagePlay {
 }
 
 p.btnHomepagePlay:hover {
-    background: url("/images/btnHomepagePlayHover.png") no-repeat;
+    background: url("images/btnHomepagePlayHover.png") no-repeat;
     padding: 8px 0 0 0;
     text-decoration: none;
 }
@@ -373,7 +478,7 @@ p.btnHomepagePlay:hover {
 	height: 370px;
 	margin: 10px auto 50px auto;
 	padding: 0;
-	background: url("/images/gameInterface.png") no-repeat;
+	background: url("images/gameInterface.png") no-repeat;
 	position: relative;
 }
 
@@ -478,12 +583,12 @@ form div input, input[type=submit], input[type=button], input[type=reset] {
 	border: 2px solid #fff;
 	border-left: 7px solid #fff;
 	color: #20a8c3;
-	background: url("/images/bgInput.jpg") repeat-x;
+	background: url("images/bgInput.jpg") repeat-x;
 }
 
 form div input:focus {
 	color: #89bc24;
-	background: url("/images/bgInputFocus.jpg") repeat-x;
+	background: url("images/bgInputFocus.jpg") repeat-x;
 }
 
 input[type=submit], input[type=button], input[type=reset] {
@@ -494,11 +599,11 @@ input[type=submit], input[type=button], input[type=reset] {
 	font-weight: bold;
 	text-decoration: none;
 	border: 1px solid #6fa20a;
-	background: url("/images/bgFormButtonLeft.jpg") left no-repeat, url("/images/bgFormButtonFill.jpg") repeat-x;
+	background: url("images/bgFormButtonLeft.jpg") left no-repeat, url("images/bgFormButtonFill.jpg") repeat-x;
 	background-color: #e6ffbd;
 	cursor: pointer;
 }
 
 input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover {
-	background: url("/images/bgFormButtonLeftHover.jpg") left no-repeat, url("/images/bgFormButtonFillHover.jpg") repeat-x;
+	background: url("images/bgFormButtonLeftHover.jpg") left no-repeat, url("images/bgFormButtonFillHover.jpg") repeat-x;
 }
