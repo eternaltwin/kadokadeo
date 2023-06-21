@@ -1,7 +1,7 @@
 <?php $title = "Bienvenue sur KadoKadeo !"; ?>
 
 <?php ob_start(); ?>
-<main id="container" class="inColumns">
+<div class="inColumns">
 	<section class="homeLeftColumn"></section>
 	<section class="homeRightColumn">
         <h1 class="center">Bienvenue</h1>
@@ -11,7 +11,7 @@
         <p>... et d'adversaires dans une communauté de joueurs pleine de bonne humeur !</p>
         <p class="center btnHomepagePlay"><a href="/signin" title="S'identifier / s'inscrire">>> Jouer <<</a></p>
 	</section>
-</main>
+</div>
 <?php $mainContent = ob_get_clean(); ?>
 
 <?php include('Layouts/UnloggedLayout.php'); ?>

@@ -250,54 +250,87 @@ header#topPage aside#topBarInfo ul {
 }
 
 header#topPage aside#topBarInfo ul li#topBarKadoPoints {
-	padding: 0 0 0 28px;
-    background: url("images/pointsKado.png") left no-repeat;
+	padding: 4px 0 0 28px;
+    background: url("images/topBarPointsKado.png") left no-repeat;
 }
 
-header#topPage aside#topBarInfo ul span { /* Mozilla Firefox and IE doesn't support the background-clip:text; and -webkit-text-stroke properties */
+header#topPage aside#topBarInfo ul li#topBarGreenStar {
+	padding: 4px 0 0 30px;
+    background: url("images/topBarGreenStar.png") left no-repeat;
+}
+
+header#topPage aside#topBarInfo ul li#topBarOrangeStar {
+	padding: 4px 0 0 30px;
+    background: url("images/topBarOrangeStar.png") left no-repeat;
+}
+
+header#topPage aside#topBarInfo ul li#topBarRedStar {
+	padding: 4px 5px 0 30px;
+    background: url("images/topBarRedStar.png") left no-repeat;
+}
+
+
+header#topPage aside#topBarInfo ul li span {
     font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
-    font-size: 1.5em;
+    font-size: 1.1em;
     letter-spacing: 0.05em;
     color: #e3fc9b;
-    font-weight: bold;
-    text-shadow: -1px -1px 0 #61880f, 1px -1px 0 #61880f, -1px 1px 0 #61880f, 1px 1px 0 #61880f;
-}
-
-@supports ((background-clip: text) or (-webkit-background-clip: text)) { /* For compatible browsers */
-    header#topPage aside#topBarInfo ul span {
-        -webkit-text-stroke: 1px #61880f;
-        background: linear-gradient(to bottom, #fff 0%, #e3fc9b 45%, #94ca19 46%, #cdf564 100%);
-        background-color: #e3fc9b;
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        text-shadow: none;
-    }
+    -webkit-text-stroke: 1px #61880f;
+    background: linear-gradient(to bottom, #fff 0%, #e3fc9b 45%, #94ca19 46%, #cdf564 100%);
+    background-color: #e3fc9b;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: none;
 }
 
 
 /* CONTAINER AND RIGHT SIDE BOXES */
 
 #container {
-	width: 890px;
-    box-sizing: border-box;
+    width: 1010px;
     margin: 30px auto;
-	background: url("images/bgContainerTopBlue.jpg") top left no-repeat, url("images/bgContainerTopRepeat.jpg") top repeat-x;
-	background-color: #eaf8fb;
-	border: 3px solid #5caab7;
-	box-shadow: 0 0 0 2px #ffffff, 0 0 30px 1px rgba(0, 0, 0, 0.5);
-    position: relative;
+    display: flex;
+    justify-content: flex-start;
 }
 
-#container.withSidePadding {
+#bodySection {
+    width: 890px;
+    margin: 0 60px;
+    background: url("images/bgContainerTopBlue.jpg") top left no-repeat, url("images/bgContainerTopRepeat.jpg") top repeat-x;
+	background-color: #eaf8fb;
+	border: 3px solid #5caab7;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 30px 1px rgba(0, 0, 0, 0.5);
+}
+
+#bodySection .withRightAside {
     padding: 0 150px 0 0;
 }
 
+.inColumns {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.inColumns .twoCols {
+	width: 46%;
+	margin: 0 2% 0 2%;
+}
+
+.halfWidth {
+	width: 50%;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
 #containerSide {
-    width: 191px;
-    position: absolute;
-    top: 0;
-    left: 750px;
+    width: 200px;
+    margin: 0 0 30px -200px;
     font-size: 0.75em;
 }
 
@@ -318,7 +351,7 @@ header#topPage aside#topBarInfo ul span { /* Mozilla Firefox and IE doesn't supp
 }
 
 #containerSide .sideBoxGreen, #containerSide .sideBoxBlue, #containerSide .sideBoxPink {
-    margin: 25px 0 0 0;
+    margin: 30px 0 0 0;
     box-shadow: 10px 10px 10px rgba(90, 170, 182, 0.25);
 }
 
@@ -369,7 +402,7 @@ header#topPage aside#topBarInfo ul span { /* Mozilla Firefox and IE doesn't supp
 
 #containerSide .sideBoxBlue {
     background: url("images/bgContainerTopBlue.jpg") -205px 13px no-repeat;
-    background-color: #f3ffd7;
+    background-color: #eaf8fa;
     border: 3px solid #5babbb;
 }
 
@@ -381,7 +414,7 @@ header#topPage aside#topBarInfo ul span { /* Mozilla Firefox and IE doesn't supp
 
 #containerSide .sideBoxPink {
     background: url("images/bgContainerTopPink.jpg") -205px 13px no-repeat;
-    background-color: #f3ffd7;
+    background-color: #ffecf2;
     border: 3px solid #ff6b9c;
 }
 
@@ -389,27 +422,6 @@ header#topPage aside#topBarInfo ul span { /* Mozilla Firefox and IE doesn't supp
     background: url("images/bgTitlePink.jpg") -15px -5px no-repeat;
     color: #ff6b9c;
     border-bottom: 3px solid #ff6b9c;
-}
-
-.inColumns {
-	display: flex;
-	flex-wrap: wrap;
-	flex-direction: row;
-	justify-content: center;
-	align-items: flex-start;
-}
-
-.inColumns .twoCols {
-	width: 46%;
-	margin: 0 2% 0 2%;
-}
-
-.halfWidth {
-	width: 50%;
-}
-
-.fullWidth {
-	width: 100%;
 }
 
 
@@ -455,9 +467,6 @@ p.btnHomepagePlay:hover {
 
 @supports ((background-clip: text) or (-webkit-background-clip: text)) { /* For compatible browsers */
     .btnHomepagePlay a {
-        width: 290px;
-        margin: 0 10px 0 62px;
-        font-weight: bold;
         background: -webkit-linear-gradient(to bottom, #22bc00 0%, #0c8e06 40%, #014400 41%, #037601 100%);
         background: linear-gradient(to bottom, #22bc00 0%, #0c8e06 40%, #014400 41%, #037601 100%);
         background-color: #037601;

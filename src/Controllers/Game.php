@@ -6,6 +6,6 @@ final class Game {
     // et renvoyer vers la view dédiée
 
 	public static function view(): void {
-		include("../src/Views/Game.php");
+        include("../src/Views/Game.php");
 	}
 }
