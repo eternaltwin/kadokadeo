@@ -8,7 +8,7 @@ use \Eternaltwin\User\UserId;
 use \Eternaltwin\User\UserDisplayName;
 use \Kadokadeo\Config;
 use \Kadokadeo\Scripts\PdoSingleton;
-Use \Kadokadeo\Models\User;
+use \Kadokadeo\Models\User;
 
 /* Connection to KadoKadeo via Eternal-twin */
 final class SessionManager {
@@ -51,13 +51,13 @@ final class SessionManager {
 
 	// Send the user the the Eternal-twin connection form for sign in
 	public static function signin(): void {
-		$authObject = new SessionManager();
+        $authObject = new SessionManager();
 
-		$scope = 'base';
-		$state = 'kadokadeo';
+        $scope = 'base';
+        $state = 'kadokadeo';
 
-		$authorizationUri = $authObject->oauthClient->getAuthorizationUri($scope, $state);
-		header("Location: " . $authorizationUri, true, 302);
+        $authorizationUri = $authObject->oauthClient->getAuthorizationUri($scope, $state);
+        header("Location: " . $authorizationUri, true, 302);
 	}
 	
 	// Get the callback from Eternal-twin when connected successfully, then create the session
