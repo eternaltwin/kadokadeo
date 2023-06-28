@@ -60,9 +60,7 @@
             <aside class="sideBoxBlue">
                 <h2>Top 3 clans</h2>
                 <ul>
-                    <li>Clan n°1</li>
-                    <li>Clan n°2</li>
-                    <li>Clan n°3</li>
+                    <li class="center italic">Non disponible...</li>
                 </ul>
             </aside>
             <aside class="sideBoxPink">

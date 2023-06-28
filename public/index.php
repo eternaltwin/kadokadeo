@@ -19,6 +19,9 @@ session_start();
 // Redirect an error to an exception
 set_error_handler('\Kadokadeo\Controllers\ErrorManager::catchError');
 
+// Set time zone
+date_default_timezone_set('Europe/Brussels');
+
 try {
     if (!SessionManager::isConnected()) {
         $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {

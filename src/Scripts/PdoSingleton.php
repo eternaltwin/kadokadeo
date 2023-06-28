@@ -10,9 +10,13 @@ final class PdoSingleton {
 
     // Not allowing to create instances with keyword "new" outside this class
     private function __construct() {
-        $config = Config::load();
-		$pdoOptions = Config::dbUrlToPdo($config->databaseUrl);
-		$this->pdo = new \PDO($pdoOptions['dsn'], $pdoOptions['username'], $pdoOptions['password']);
+        try {
+            $config = Config::load();
+		    $pdoOptions = Config::dbUrlToPdo($config->databaseUrl);
+		    $this->pdo = new \PDO($pdoOptions['dsn'], $pdoOptions['username'], $pdoOptions['password']);
+        } catch(\PDOException $e) {
+            throw new \Exception("Erreur lors de la connexion à la base de données.");
+        }
     }
 
     // Not allowing to clone

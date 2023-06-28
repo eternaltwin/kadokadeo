@@ -4,7 +4,7 @@ Déclaration des constantes
 
 const CANVAS_WIDTH = 300;
 const CANVAS_HEIGHT = 320;
-const DIR_PATH = '../src/games/Xian-Xiang/';
+const DIR_PATH = 'games/5/';
 
 
 /* -----
@@ -157,7 +157,7 @@ var SceneGame = new Phaser.Class({
             ));
         }
 		move = new Move(pieces[0], pieces[0]);
-		score = new Score(16000);
+		score = new Score(0);
 		
 		// Gestion des clics
         this.input.on('pointerdown', function (pointerClick) {
@@ -733,7 +733,7 @@ class Move { // Classe d'un coup joué (sélection de 2 pièces)
 			
 			// Fin de partie si plus aucune pièce
 			nPiecesLeft -= 2;
-			if (nPiecesLeft == 40) {
+			if (nPiecesLeft == 0) {
 				gameEnded = true;
 				CF.EndGame();
 			}

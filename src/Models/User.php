@@ -19,18 +19,22 @@ final class User {
     }
 
     public function upsert(): void {
-        $query = $this->pdo->prepare("
-            INSERT INTO \"user\"(user_id, display_name)
-            VALUES(:uuid, :username)
-            ON CONFLICT (user_id)
-            DO UPDATE SET
-              display_name = :username;
-        ");
-    
-        $query->execute([
-            'uuid' => $this->uuid,
-            'username' => $this->username
-        ]);
+        try {
+            $query = $this->pdo->prepare("
+                INSERT INTO \"user\"(user_id, display_name)
+                VALUES(:uuid, :username)
+                ON CONFLICT (user_id)
+                DO UPDATE SET
+                display_name = :username;
+            ");
+        
+            $query->execute([
+                'uuid' => $this->uuid,
+                'username' => $this->username
+            ]);
+        } catch(\PDOException $e) {
+            throw new \Exception("Erreur lors de la modification de l'utilisateur dans la base de données.");
+        }
     }
 
     public function setUuid($uuid): void {

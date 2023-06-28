@@ -1,6 +1,6 @@
 <?php
-    $gameName = "Xian-Xiang";
-	$title = "KadoKadeo - Jouer - ".$gameName;
+    $gameName = 'Xian-Xiang';
+	$title = 'KadoKadeo - Jouer - '.$gameName;
 ?>
 
 <?php ob_start(); ?>
@@ -10,8 +10,8 @@
 		<canvas id="gameCanvas" width="300" height="320">
 			<p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.</p>
 		</canvas>
-		<script src="/games/phaser/dist/phaser.js"></script>
-		<script src="/games/Xian-Xiang/xian-xiang.js"></script>
+		<script src="//cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+		<script src="/games/5/game.js"></script>
 		<div class="gameSide">
 			<nav class="gameNav">
 				<ul>
