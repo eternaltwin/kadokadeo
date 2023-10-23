@@ -7,23 +7,29 @@ final class Config {
     public readonly string $adminDatabaseUrl;
     public readonly string $externalUrl;
     public readonly string $eternaltwinUrl;
+    public readonly string $identityServerUri;
     public readonly string $oauthId;
     public readonly string $oauthSecret;
+    public readonly string $oauthTokenUri;
 
     public function __construct(
         string $databaseUrl,
         string $adminDatabaseUrl,
         string $externalUrl,
         string $eternaltwinUrl,
+        string $identityServerUri,
         string $oauthId,
         string $oauthSecret,
+        string $oauthTokenUri,
     ) {
         $this->databaseUrl = $databaseUrl;
         $this->adminDatabaseUrl = $adminDatabaseUrl;
         $this->externalUrl = $externalUrl;
         $this->eternaltwinUrl = $eternaltwinUrl;
+        $this->identityServerUri = $identityServerUri;
         $this->oauthId = $oauthId;
         $this->oauthSecret = $oauthSecret;
+        $this->oauthTokenUri = $oauthTokenUri;
     }
 
     /**
@@ -69,8 +75,10 @@ final class Config {
             $env["ADMIN_DATABASE_URL"],
             $env["EXTERNAL_URL"],
             $env["ETERNALTWIN_URL"],
+            $env["IDENTITY_SERVER_URI"] ?? $env["ETERNALTWIN_URL"],
             $env["OAUTH_ID"],
             $env["OAUTH_SECRET"],
+            $env["OAUTH_TOKEN_URI"] ?? $env["ETERNALTWIN_URL"] . "/oauth/token",
         );
     }
 

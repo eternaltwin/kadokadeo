@@ -25,15 +25,15 @@ final class SessionManager {
 		$config = Config::load();
         $pdoSingleton = PdoSingleton::getInstance();
         $this->pdo = $pdoSingleton->getPdo();
-		$this->etwinClient = new HttpEtwinClient($config->eternaltwinUrl);
+		$this->etwinClient = new HttpEtwinClient($config->identityServerUri);
 
 		$this->oauthClient = new RfcOauthClient(
 			$config->eternaltwinUrl . 'oauth/authorize',
-			$config->eternaltwinUrl . 'oauth/token',
+			$config->oauthTokenUri,
 			$config->externalUrl . 'oauth/callback',
 			$config->oauthId,
 			$config->oauthSecret
-		);
+        );
 	}
 
     // Check if user is connected (return true or false)

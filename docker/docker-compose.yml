@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  kadokadeo_app:
+    build: app
+    container_name: kadokadeo_app
+    volumes:
+      - ../.:/www
+    networks:
+      - kadokadeo_network
+    links:
+      - kadokadeo_database
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  kadokadeo_database:
+    image: postgres:15.1
+    container_name: kadokadeo_database
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    networks:
+      - kadokadeo_network
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_USER: kadokadeo.dev
+      POSTGRES_MULTIPLE_DATABASES: kadokadeo,etwin.dev
+
+  kadokadeo_eternaltwin:
+    container_name: kadokadeo_eternaltwin
+    build:
+      context: ./eternaltwin
+      dockerfile: Dockerfile
+    volumes:
+      - ../eternaltwin:/www
+    networks:
+      - kadokadeo_network
+    stdin_open: true
+    tty: true
+
+networks:
+  kadokadeo_network:
+    driver: bridge
