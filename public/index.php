@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/* A FAIRE :
-- Dans le BDD table user, ajouter le timestamp inscription
-- Quand connecté, accéder à la page listant tous les jeux
-- Quand clic sur un jeu, accéder au jeu ---> ACTIVER PHASER
-- Réaliser le classement par jeu
-*/
-
 require_once '../vendor/autoload.php';
 
 use \Kadokadeo\Controllers\SessionManager;

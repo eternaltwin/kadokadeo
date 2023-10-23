@@ -504,7 +504,7 @@ canvas#gameCanvas {
 }
 
 .gameSide {
-	width: 300px;
+	width: 303px;
 	height: 320px;
 	position: absolute;
 	top: 23px;
@@ -527,47 +527,79 @@ canvas#gameCanvas {
 	border-top: 1px solid #0687b1;
 }
 
-.gameSide .gameNav ul {
-	list-style: none;
-	margin: 0;
+nav.gameNav ul {
+    list-style: none;
+	margin: 2px 0 0 0;
 	padding: 0;
 	display: flex;
 	justify-content: space-around;
-	font-size: 1.2em;
+	font-size: 1em;
 }
 
-.gameSide .gameNav ul li {
-	width: 23%;
+nav.gameNav ul li a {
+	width: 100px;
+    height: 25px;
+    box-sizing: border-box;
 	display: block;
-	text-align: center;
+    text-align: center;
 	margin: 0;
+    padding: 2px 0 0 0;
+    background-color: #d8e9eb;
+    color: #0687b1;
+    border-top: 2px solid #FFF;
+    border-right: 1px solid #56b7c1;
+    border-bottom: 1px solid #56b7c1;
+    border-left: 1px solid #FFF;
 }
 
-.gameSide .gameNav ul li a {
-	color: #0687b1;
+nav.gameNav ul li a#gameNavRules:hover,
+nav.gameNav ul li a#gameNavStars:hover,
+nav.gameNav ul li a#gameNavRanking:hover {
+    padding: 4px 0 0 0;
+    border-top: 2px solid #56b7c1;
+    border-right: 1px solid #FFF;
+    border-bottom: 1px solid #FFF;
+    border-left: 1px solid #56b7c1;
+    text-decoration: none;
+    color: #ffa400;
+    background-color: #e9f3f4;
 }
 
-.gameSide .gameNav ul li a:hover {
-	color: #ffa400;
+nav.gameNav ul li.showed a,
+nav.gameNav ul li.showed a#gameNavRules:hover,
+nav.gameNav ul li.showed a#gameNavStars:hover,
+nav.gameNav ul li.showed a#gameNavRanking:hover {
+    padding: 4px 0 0 0;
+    background-color: #eee6d8;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 1px solid #ffa400;
+    color: #ffa400;
+    font-weight: bold;
 }
 
-.gameInfo table.gameCommands {
+.gameSide .hidden {
+    display: none;
+}
+
+.gameRules table.gameCommands {
 	width: 284px;
 	margin: 8px auto;
 	border: 0;
 	text-align: left;
 }
 
-.gameInfo table.gameCommands th, .gameInfo table.gameCommands td {
+.gameRules table.gameCommands th, .gameRules table.gameCommands td {
 	vertical-align: middle;
 	text-align: center;
 }
 
-.gameInfo table.gameCommands th {
+.gameRules table.gameCommands th {
 	font-size: 0.9em;
 }
 
-.gameInfo table.gameCommands .col1 {
+.gameRules table.gameCommands .col1 {
 	width: 80px;
 }
 
