@@ -75,10 +75,10 @@ final class Config {
             $env["ADMIN_DATABASE_URL"],
             $env["EXTERNAL_URL"],
             $env["ETERNALTWIN_URL"],
-            $env["IDENTITY_SERVER_URI"] ?? $env["ETERNALTWIN_URL"],
+            $env["IDENTITY_SERVER_URI"],
             $env["OAUTH_ID"],
             $env["OAUTH_SECRET"],
-            $env["OAUTH_TOKEN_URI"] ?? $env["ETERNALTWIN_URL"] . "/oauth/token",
+            $env["OAUTH_TOKEN_URI"],
         );
     }
 

@@ -55,8 +55,12 @@ final class SessionManager {
 
         $scope = 'base';
         $state = 'kadokadeo';
-
-        $authorizationUri = $authObject->oauthClient->getAuthorizationUri($scope, $state);
+        
+        try {
+            $authorizationUri = $authObject->oauthClient->getAuthorizationUri($scope, $state);
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
         header("Location: " . $authorizationUri, true, 302);
 	}
 	
