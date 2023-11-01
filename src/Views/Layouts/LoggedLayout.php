@@ -13,7 +13,7 @@
 	<header id="topPage">
         <nav id="languageNav">
             <ul>
-                <li><a href="#" title="Français"><img src="images/langFrench.gif" alt="french" title="Français"></a></li>
+                <li><a href="#" title="Français"><img src="/images/langFrench.gif" alt="french" title="Français"></a></li>
             </ul>
         </nav>
 		<h1><span>KadoKadeo</span></h1>
@@ -53,7 +53,7 @@
                 <ul id="menuSide">
                     <li class="news"><a href="#" title="Nouveautés">Nouveautés</a></li>
                     <li class="scores"><a href="#" title="Mes scores">Mes scores</a></li>
-                    <li class="account"><a href="#" title="Mon compte">Mon compte</a></li>
+                    <li class="account"><a href="user/settings" title="Mon compte">Mon compte</a></li>
                     <li class="help"><a href="#" title="Aide">Aide</a></li>
                 </ul>
             </nav>

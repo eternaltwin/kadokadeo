@@ -48,9 +48,9 @@ class buttonSwitch {
 		<div class="gameSide">
 			<nav class="gameNav">
 				<ul>
-					<li class="showed"><a href="#" title="Présentation" id="gameNavRules"><img src="images/iconGameRules.png" alt="iconGameRules.png"> Règles</a></span></li>
-					<li><a href="#" title="Mon score / Mes paliers" id="gameNavStars"><img src="images/iconGameStars.png" alt="iconGameStars.png"> Paliers</a></li>
-					<li><a href="#" title="Classement général" id="gameNavRanking"><img src="images/iconGameRanking.png" alt="iconGameRanking.png"> Classement</a></li>
+					<li class="showed"><a href="#" title="Présentation" id="gameNavRules"><img src="/images/iconGameRules.png" alt="iconGameRules.png"> Règles</a></span></li>
+					<li><a href="#" title="Mon score / Mes paliers" id="gameNavStars"><img src="/images/iconGameStars.png" alt="iconGameStars.png"> Paliers</a></li>
+					<li><a href="#" title="Classement général" id="gameNavRanking"><img src="/images/iconGameRanking.png" alt="iconGameRanking.png"> Classement</a></li>
 				</ul>
 			</nav>
 
@@ -103,12 +103,12 @@ class buttonSwitch {
 </div>
 
 <!-- Definition of the sections to show or hide when clicking on the button. See javascript buttonSwitch class. -->
-<script>
+<!--<script>
 const check1 = new buttonSwitch(
     ['gameNavRules', 'gameNavStars', 'gameNavRanking'],
     ['gameRules', 'gameStars', 'gameRanking']
 );
-</script>
+</script>-->
 
 <?php $mainContent = ob_get_clean(); ?>
 

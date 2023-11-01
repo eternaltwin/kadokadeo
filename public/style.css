@@ -92,7 +92,7 @@ table {
 #container h2 {
     width: 90%;
     height: 35px;
-    margin: 40px 0 10px 0;
+    margin: 40px 0 10px 10px;
     padding: 4px 5px 0 40px;
     font-size: 1.5em;
     background: url("images/bgTitleBlue.jpg") no-repeat;

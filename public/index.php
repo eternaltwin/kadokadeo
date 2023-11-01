@@ -24,7 +24,9 @@ try {
         });
     } else {
         $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
-            $r->get('/', '\Kadokadeo\Controllers\Game::view');
+            $r->get('/', '\Kadokadeo\Controllers\UserSettings::view');
+            $r->get('/user/settings', '\Kadokadeo\Controllers\UserSettings::view');
+            $r->post('/user/settings/edit', '\Kadokadeo\Controllers\UserSettings::edit');
             $r->get('/game', '\Kadokadeo\Controllers\Game::view');
             $r->get('/signout', '\Kadokadeo\Controllers\SessionManager::signout');
         });

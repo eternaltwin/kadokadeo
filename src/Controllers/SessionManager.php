@@ -82,8 +82,8 @@ final class SessionManager {
         
         // $sessionDatas has to respect the $sessionVars property to create the $_SESSION variables
         $sessionDatas = array(
-            $userUuid,
-            $userDisplayName
+            $userUuid->toString(),
+            $userDisplayName->toString()
         );
         // Creation of $_SESSION vars according to $sessionVars as keys and $sessionDatas as values
         if (count(self::$sessionVars) == count($sessionDatas)) {
