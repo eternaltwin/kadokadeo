@@ -22,7 +22,7 @@ final class UserSettings {
                 self::$email = $_POST['email'];
             }
         }
-        $user = new User($_SESSION['uuid'], 0, $_SESSION['username']);
+        $user = new User($_SESSION['uuid'], $_SESSION['kkid'], $_SESSION['username']);
         self::view();
 	}
 }

@@ -18,6 +18,7 @@ final class SessionManager {
     // Define the $_SESSION variables. Changing this array needs also to adapt the calls to those $_SESSION variables in the website
     private static $sessionVars = array(
         "uuid",
+        "kkid",
         "username"
     );
 	
@@ -79,10 +80,12 @@ final class SessionManager {
         // Creating new user in DB
         $newUser = new User($userUuid->toString(), 0, $userDisplayName->toString());
         $newUser->upsert();
+        $userKkid = $newUser->getKkid();
         
         // $sessionDatas has to respect the $sessionVars property to create the $_SESSION variables
         $sessionDatas = array(
             $userUuid->toString(),
+            $userKkid,
             $userDisplayName->toString()
         );
         // Creation of $_SESSION vars according to $sessionVars as keys and $sessionDatas as values
