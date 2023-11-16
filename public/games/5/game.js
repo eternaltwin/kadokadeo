@@ -73,10 +73,10 @@ var sceneGame = new Phaser.Class({
 				if (colClick >= 0 && colClick < ncol && rowClick >=0 && rowClick < nrow) {
 					idPieceClick = CF.ColRowToId(colClick, rowClick);
 				}
-					
+				
 				if (pieceSelected == -1) { // Il s'agit du premier clic
 					if (idPieceClick >= 0 && !pieces[idPieceClick].removed) {
-						pieces[idPieceClick].Select();
+                        pieces[idPieceClick].Select();
 						this.input.on('pointermove', function (pointerMove) {
 							let colMove = CF.XToCol(pointerMove.x);
 							let rowMove = CF.YToRow(pointerMove.y);
@@ -135,18 +135,18 @@ class Piece {
             yoyo: true,
             alpha: 0.5
         });
-        this.selectEffect.stop();
+        this.selectEffect.pause(); // STOP <> PAUSE
         this.sprites.last.setAlpha(0);
     }
 
     Select() {
-		this.selectEffect.play();
+		this.selectEffect.restart();
 		this.selected = true;
 		pieceSelected = CF.ColRowToId(this.column, this.row);
     }
 	
 	Deselect() {
-		this.selectEffect.stop();
+		this.selectEffect.pause();
 		this.sprites.last.setAlpha(0);
 		this.selected = false;
 		pieceSelected = -1;
@@ -155,14 +155,14 @@ class Piece {
 	Remove(similarity) { // Fonction de suppression d'une pièce du plateau, avec animation et affichage du nombre de similitudes entre 2 pièces (0, 1, 2 ou 3)
 		this.removed = true;
 		this.sprites.visible = false;
-		
+		let keyAnimation = 'explode'+CF.ColRowToId(this.column, this.row).toString();
 		let animPieceExplosion = _this.anims.create({ // Animation "explosion" de la pièce
-            key: 'explode',
+            key: keyAnimation,
             frames: _this.anims.generateFrameNumbers('pieceExplosion.png'),
             frameRate: 30
         });
 		let spritePieceExplosion = _this.add.sprite(this.x+2, this.y-43, 'pieceExplosion.png');
-		spritePieceExplosion.play('explode');
+		spritePieceExplosion.play(keyAnimation);
 		spritePieceExplosion.on('animationcomplete', function() {
 			spritePieceExplosion.destroy();
 		});
