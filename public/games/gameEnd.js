@@ -13,22 +13,22 @@ var sceneEnd = new Phaser.Class({
 
     preload: function() {
         
-		this.load.image('endBackground.png', DIR_PATH + 'images/endBackground.png');
-		this.load.image('endPanelScore.png', DIR_PATH + 'images/endPanelScore.png');
-		this.load.image('endPanelContract.png', DIR_PATH + 'images/endPanelContract.png');
-		this.load.image('iconKadoPoints.png', DIR_PATH + 'images/iconKadoPoints.png');
-		this.load.image('endPanelContractOK.png', DIR_PATH + 'images/endPanelContractOK.png');
-		this.load.image('endPanelContractFail.png', DIR_PATH + 'images/endPanelContractFail.png');
-		this.load.image('endStarBarBackground.png', DIR_PATH + 'images/endStarBarBackground.png');
-		this.load.image('endStarBarFill.png', DIR_PATH + 'images/endStarBarFill.png');
-		this.load.image('endStarBarWhiteLight.png', DIR_PATH + 'images/endStarBarWhiteLight.png');
-		this.load.image('endStarBackground.png', DIR_PATH + 'images/endStarBackground.png');
-		this.load.image('endStarGreen.png', DIR_PATH + 'images/endStarGreen.png');
-		this.load.image('endStarOrange.png', DIR_PATH + 'images/endStarOrange.png');
-		this.load.image('endStarRed.png', DIR_PATH + 'images/endStarRed.png');
-		this.load.image('endStarViolet.png', DIR_PATH + 'images/endStarViolet.png');
-		this.load.image('endStarWhiteLightSmall.png', DIR_PATH + 'images/endStarWhiteLightSmall.png');
-		this.load.image('endStarWhiteLightWide.png', DIR_PATH + 'images/endStarWhiteLightWide.png');
+		this.load.image('endBackground.png', DIR_PATH_BASE + 'imagesShared/endBackground.png');
+		this.load.image('endPanelScore.png', DIR_PATH_BASE + 'imagesShared/endPanelScore.png');
+		this.load.image('endPanelContract.png', DIR_PATH_BASE + 'imagesShared/endPanelContract.png');
+		this.load.image('iconKadoPoints.png', DIR_PATH_BASE + 'imagesShared/iconKadoPoints.png');
+		this.load.image('endPanelContractOK.png', DIR_PATH_BASE + 'imagesShared/endPanelContractOK.png');
+		this.load.image('endPanelContractFail.png', DIR_PATH_BASE + 'imagesShared/endPanelContractFail.png');
+		this.load.image('endStarBarBackground.png', DIR_PATH_BASE + 'imagesShared/endStarBarBackground.png');
+		this.load.image('endStarBarFill.png', DIR_PATH_BASE + 'imagesShared/endStarBarFill.png');
+		this.load.image('endStarBarWhiteLight.png', DIR_PATH_BASE + 'imagesShared/endStarBarWhiteLight.png');
+		this.load.image('endStarBackground.png', DIR_PATH_BASE + 'imagesShared/endStarBackground.png');
+		this.load.image('endStarGreen.png', DIR_PATH_BASE + 'imagesShared/endStarGreen.png');
+		this.load.image('endStarOrange.png', DIR_PATH_BASE + 'imagesShared/endStarOrange.png');
+		this.load.image('endStarRed.png', DIR_PATH_BASE + 'imagesShared/endStarRed.png');
+		this.load.image('endStarViolet.png', DIR_PATH_BASE + 'imagesShared/endStarViolet.png');
+		this.load.image('endStarWhiteLightSmall.png', DIR_PATH_BASE + 'imagesShared/endStarWhiteLightSmall.png');
+		this.load.image('endStarWhiteLightWide.png', DIR_PATH_BASE + 'imagesShared/endStarWhiteLightWide.png');
     },
 
     create: function() {

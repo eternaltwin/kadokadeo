@@ -16,7 +16,7 @@ var sceneStart = new Phaser.Class({
         for (var img of imagesCarousel) {
             this.load.image(img, img);
         }
-        this.load.image('contractBackground.png', DIR_PATH + 'images/contractBackground.png');
+        this.load.image('contractBackground.png', DIR_PATH_BASE + 'imagesShared/contractBackground.png');
     },
 
     create: function() {

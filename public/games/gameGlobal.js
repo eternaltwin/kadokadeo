@@ -4,7 +4,7 @@ Déclaration des constantes
 
 const CANVAS_WIDTH = 300;
 const CANVAS_HEIGHT = 320;
-const DIR_PATH = 'games/5/';
+const DIR_PATH_BASE = 'games/';
 
 
 /* -----
@@ -12,12 +12,6 @@ const DIR_PATH = 'games/5/';
 ----- */
 
 var _this; // Remplace "this" dans les fonctions et classes personnalisées
-const imagesCarousel = [ //Images du carrousel (écran de démarrage)
-    DIR_PATH + 'images/splashScreen1.png',
-    DIR_PATH + 'images/splashScreen2.png'
-];
-
-const starsFloors = [0, 10240, 12288, 13312, 15600]; // Score à atteindre pour les différents paliers étoile verte, orange, rouge, violette
 
 var carousel = [];
 var carouselTimer;
@@ -25,20 +19,7 @@ var carouselActive = 0; // Contient l'image affichée actuellement dans le splas
 var textLaunch;
 var textLaunchTimer;
 var contract; // Contient l'objet Contract avec les informations concernant le contrat à remplir (score à atteindre, points à gagner,...)
-
-const grid_width = 43; // Largeur d'une cellule du plateau de jeu
-const grid_height = 34; // Hauteur d'une cellule du plateau de jeu
-const grid_wborder = 21; // Largeur du bord du plateau de jeu
-const grid_hborder = 24; // Hauteur du bord du plateau de jeu
-const nrow = 7; // Nombre de lignes dans le plateau de jeu
-const ncol = 6; // Nombre de colonnes dans le plateau de jeu
-var pieces = []; // Contient la liste des objets Piece
-var pieceSelected = -1; // Contient l'ID de la pièce sélectionnée (-1 si aucune sélection)
-var nPiecesLeft = nrow*ncol; // Contient le nombre de pièces restantes dans le jeu. Fin de la partie si nPiecesLeft = 0
-var move; // Contient l'objet Move permettant de tracer les chemins et réaliser les coups
 var score; // Contient l'objet Score permettant d'afficher et de compter les points
-var gameEnded = false;
-
 
 /* -----
 Classe contenant des fonctions personnalisées
@@ -164,7 +145,6 @@ class CF { // CF pour "CustomizedFunctions"
                 }
             });
         }
-        
     }
 
     static CarouselAlpha() { // Fonction appelée par la fonction Carousel pour afficher / masquer les images du carrousel.
@@ -175,6 +155,20 @@ class CF { // CF pour "CustomizedFunctions"
                 carousel[i].alpha = 0;
             }
         }
+    }
+
+    static GameLoadImages(gameScene) { // Fonction permettant de charger les images communes à chaque jeu.
+        gameScene.load.image('bottomBar.png', DIR_PATH_BASE + 'imagesShared/bottomBar.png');
+		gameScene.load.image('bottomBarGame.png', DIR_PATH_BASE + 'imagesShared/bottomBarGame.png');
+		gameScene.load.image('bottomBarContract.png', DIR_PATH_BASE + 'imagesShared/bottomBarContract.png');
+		gameScene.load.image('contractBarGreen.png', DIR_PATH_BASE + 'imagesShared/contractBarGreen.png');
+		gameScene.load.image('contractBarRed.png', DIR_PATH_BASE + 'imagesShared/contractBarRed.png');
+    }
+
+    static GameCreate(gameScene) { // Fonction permettant de démarrer la partie (affichage du contrat, création du score,...)
+        gameScene.add.image(0, 296, 'bottomBarGame.png').setOrigin(0, 0).setDepth(999999);
+        contract.ContractBar();
+        score = new Score(0);
     }
 	
 	static EndGame() { // Fonction appelée à la fin de la partie (écran blanc et changement de scène)
@@ -238,7 +232,7 @@ class Contract {
 		- Dans les situations intermédiaires, je génère arrProbaScoreToReach avec un facteur qui permet de se trouver entre arrProbaScoreToReachMin et arrProbaScoreToReachMax
 		Ce facteur est retrouvé dans arrFactorPointsToWin, et est égal à 1 quand on est au contrat Min et à 0 quand on est au contrat Max. On le sélectionne en fonction de pointsToWin et arrPointsToWin
 		*/
-		let arrScoreToReach = [5000, 9000, 11000, 12000, 13000, 14000, 15000];
+		
 		let arrProbaScoreToReachMin = [0, 0.5, 0.8, 0.9, 0.97, 0.99, 1];
 		let arrProbaScoreToReachMax = [0, 0.01, 0.03, 0.25, 0.75, 0.97, 1];
 		let arrFactorPointsToWin = [1, 0.99, 0.97, 0.75, 0.25, 0.03, 0.01, 0];
@@ -257,6 +251,7 @@ class Contract {
 			arrProbaScoreToReach.push(arrProbaScoreToReachMax[i] + (arrProbaScoreToReachMin[i] - arrProbaScoreToReachMax[i]) * factor);
 		}
 		
+        // arrScoreToReach défini dans gameParameters.js
 		this.scoreToReach = Randoms.withProba(arrProbaScoreToReach, arrScoreToReach);
 	}
 	
@@ -281,9 +276,9 @@ class Contract {
     }
 	
 	ContractBar() { // Fonction affichant le contrat et la jauge dans le bas de l'écran de jeu
-		let contractBarBackground = _this.add.image(3, 302, 'bottomBarContract.png').setOrigin(0, 0);
-		let contractText = _this.add.text(3, 304, this.pointsToWin, {color: '#095C6F', fontFamily: 'Jost-Medium, Arial, sans-serif', fixedWidth: '34', fontSize: '10px', align: 'center'});
-		this.contractBarFill = _this.add.image(59, 308, 'contractBarGreen.png').setOrigin(0, 0);
+		let contractBarBackground = _this.add.image(3, 302, 'bottomBarContract.png').setOrigin(0, 0).setDepth(999999);
+		let contractText = _this.add.text(3, 304, this.pointsToWin, {color: '#095C6F', fontFamily: 'Jost-Medium, Arial, sans-serif', fixedWidth: '34', fontSize: '10px', align: 'center'}).setDepth(999999);
+		this.contractBarFill = _this.add.image(59, 308, 'contractBarGreen.png').setOrigin(0, 0).setDepth(999999);
 		this.contractBarFill.setCrop(0, 0, 0, 7);
 	}
 	
@@ -293,7 +288,7 @@ class Contract {
 			if (this.ratioCompleted < 1) {
 				this.contractBarFill.setCrop(0, 0, this.ratioCompleted * this.contractBarFill.width, 7);
 			} else {
-				this.contractBarFill = _this.add.image(59, 308, 'contractBarRed.png').setOrigin(0, 0);
+				this.contractBarFill = _this.add.image(59, 308, 'contractBarRed.png').setOrigin(0, 0).setDepth(999999);
 			}
 		}
 	}	
@@ -311,6 +306,7 @@ class Score {
 		gradient.addColorStop(.62, '#7cddef');
 		gradient.addColorStop(.85, '#FFF');
 		this.textBox.setFill(gradient);
+        this.textBox.setDepth(999999);
 	}
 	
 	Update(points) {

@@ -1,5 +1,5 @@
 <?php
-    $gameName = 'Xian-Xiang';
+    $gameName = 'Kanji';
 	$title = 'KadoKadeo - Jouer - '.$gameName;
 ?>
 
@@ -11,9 +11,10 @@
 			<p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.</p>
 		</canvas>
 		<script src="//cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
-		<script src="/games/gameGlobal.js"></script>
+		<script src="/games/11/gameParameters.js"></script>
+        <script src="/games/gameGlobal.js"></script>
         <script src="/games/gameStart.js"></script>
-        <script src="/games/5/game.js"></script>
+        <script src="/games/11/game.js"></script>
         <script src="/games/gameEnd.js"></script>
         <script src="/games/gameLauncher.js"></script>
         <!--<script>

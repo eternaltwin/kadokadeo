@@ -13,12 +13,11 @@ var sceneGame = new Phaser.Class({
 
     preload: function() {
         // Chargement des images nécessaires pour le jeu
+        // Shared for all games
+        CF.GameLoadImages(this);
+
+        // This game
         this.load.image('gameBackground.png', DIR_PATH + 'images/gameBackground.png');
-        this.load.image('bottomBar.png', DIR_PATH + 'images/bottomBar.png');
-		this.load.image('bottomBarGame.png', DIR_PATH + 'images/bottomBarGame.png');
-		this.load.image('bottomBarContract.png', DIR_PATH + 'images/bottomBarContract.png');
-		this.load.image('contractBarGreen.png', DIR_PATH + 'images/contractBarGreen.png');
-		this.load.image('contractBarRed.png', DIR_PATH + 'images/contractBarRed.png');
 		this.load.image('wayTurnBottom.png', DIR_PATH + 'images/wayTurnBottom.png');
         this.load.image('wayTurnTop.png', DIR_PATH + 'images/wayTurnTop.png');
         this.load.image('wayLineH.png', DIR_PATH + 'images/wayLineH.png');
@@ -47,10 +46,12 @@ var sceneGame = new Phaser.Class({
     },
 
     create: function() {
+        // Shared for all games
         _this = this;
+        CF.GameCreate(this);
+
+        // This game
         this.add.image(0, 0, 'gameBackground.png').setOrigin(0, 0);
-        this.add.image(0, 296, 'bottomBarGame.png').setOrigin(0, 0);
-		contract.ContractBar();
         for (let i = 0; i < 42; i++) {
             pieces.push(new Piece(
                 Randoms.intMinMax(0, 2),
@@ -61,7 +62,6 @@ var sceneGame = new Phaser.Class({
             ));
         }
 		move = new Move(pieces[0], pieces[0]);
-		score = new Score(0);
 		
 		// Gestion des clics
         this.input.on('pointerdown', function (pointerClick) {
