@@ -55,7 +55,7 @@ class EndGame {
 			delay: 0,
 			y: 25+scoreBoard.height/2,
 			onComplete: function() {
-				_this.scoreTextTweenTranslation = CF.TweenTranslation(scoreBoardText, scoreBoardText.x, scoreBoardText.y+2, -1, 800, 0);
+				_this.scoreTextTweenTranslation = Animate.TweenTranslation(scoreBoardText, scoreBoardText.x, scoreBoardText.y+2, -1, 800, 0);
 				EndGame.ContractBoard();
 			}
 		});
@@ -190,8 +190,8 @@ class EndGame {
 				delay: 0,
 				scale: 1,
 				onComplete: function() {
-					CF.TweenAlpha(starReflectBig, 0.5, -1, 500, 300);
-					CF.TweenAlpha(starReflectSmall, 0.6, -1, 500, 0);
+					Animate.TweenAlpha(starReflectBig, 0.5, -1, 500, 300);
+					Animate.TweenAlpha(starReflectSmall, 0.6, -1, 500, 0);
 				}
 			});
 		}

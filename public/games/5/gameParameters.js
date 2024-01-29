@@ -20,4 +20,3 @@ var pieces = []; // Contient la liste des objets Piece
 var pieceSelected = -1; // Contient l'ID de la pièce sélectionnée (-1 si aucune sélection)
 var nPiecesLeft = nrow*ncol; // Contient le nombre de pièces restantes dans le jeu. Fin de la partie si nPiecesLeft = 0
 var move; // Contient l'objet Move permettant de tracer les chemins et réaliser les coups
-var gameEnded = false;

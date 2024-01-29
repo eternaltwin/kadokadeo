@@ -20,12 +20,13 @@ var textLaunch;
 var textLaunchTimer;
 var contract; // Contient l'objet Contract avec les informations concernant le contrat à remplir (score à atteindre, points à gagner,...)
 var score; // Contient l'objet Score permettant d'afficher et de compter les points
+var gameOver = false; // Devient true quand game over
 
 /* -----
 Classe contenant des fonctions personnalisées
 ----- */
 
-class CF { // CF pour "CustomizedFunctions"
+class Animate { // Functions regarding the tweens and animations of sprites
     static TweenTranslation(item, moveX, moveY, itemRepeat, itemDuration, itemDelay) {
 		_this.tweens.add({
 			targets: item,
@@ -60,26 +61,6 @@ class CF { // CF pour "CustomizedFunctions"
             item.delay = visibleDelay;
         }
     }
-	
-	static RowToY(val) { // Fonction transformant un numéro de ligne centré (plateau de jeu) en valeur Y
-		return grid_hborder + val*grid_height + grid_height/2;
-	}
-	
-	static ColToX(val) { // Fonction transformant un numéro de colonne centré (plateau de jeu) en valeur X
-		return grid_wborder + val*grid_width + grid_width/2;
-	}
-	
-	static YToRow(val) { // Fonction transformant une coordonnée Y en un numéro de ligne (plateau de jeu)
-		return Math.floor((val - grid_hborder) / grid_height);
-	}
-	
-	static XToCol(val) { // Fonction transformant une coordonnée X en un numéro de colonne (plateau de jeu)
-		return Math.floor((val - grid_wborder) / grid_width);
-	}
-	
-	static ColRowToId(c, r) { // Fonction transformant une coordonnée [col, row] vers un identifiant unique (pièce n° 0 en haut à gauche [0,0], 41 en bas à droite [5,6])
-		return r * ncol + c;
-	}
 
     static Carousel(arr, firstDelay, secondDelay) { // Fonction faisant remplacer des images successivements. Arr contient les objets, firstDelay la durée de la première image et secondDelay la durée des images suivantes
         let whiteScreen = this.add.graphics(); // Variable de dessin d'un rectangle blanc de transition
@@ -190,30 +171,23 @@ class CF { // CF pour "CustomizedFunctions"
 			}
 		});
 	}
+
+    static PlaySpriteThenDestroy(thisSprite, animKey) { // Fonction qui joue une animation sur un sprite et supprime ce sprite après l'animation
+        thisSprite.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
+            thisSprite.destroy();
+        }, _this);
+        thisSprite.play(animKey);
+    }
+
+    static DeleteObjectInArray(obj) { 
+        arrEntities = arrEntities.filter((obj) => !Object.is(obj, this));
+    }
 }
 
-class Randoms {
-	static intMinMax(min, max) { // Fonction qui retourne un nombre aléatoire entre la valeur min (incluse) et max (incluse)
-		min = Math.ceil(min);
-		max = Math.floor(max);
-		return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-	
-	static withProba(probaList, valueList) { // Fonction qui retourne un nombre aléatoire en tenant compte d'une distribution de probabilités définie par un array "probaList" entre 0 et 1, liée à une liste de valeurs "valueList"
-		let randomNumber = Math.random(); // L'idée est de générer un nombre random entre 0 et 1, et de le situer dans l'array probaList pour voir quelle valeur valueList correspond
-		let randomValueMin = 0;
-		let randomValueMax = 0;
-		for (let i = 1; i < probaList.length; i++) {
-			if (randomNumber > probaList[i-1]) {
-				randomValueMin = valueList[i-1];
-				randomValueMax = valueList[i];
-			}
-			else {
-				break;
-			}
-		}
-		return Randoms.intMinMax(randomValueMin, randomValueMax);	
-	}
+class CArray extends Array { // Fonctions personnalisées sur les array (C for Customized)
+    /*DeleteObject(objectToDelete) { // Fonction qui supprime l'objet "objectToDelete" de l'array
+        return this.filter((obj) => !Object.is(obj, objectToDelete));
+    }*/
 }
 
 class Contract {
@@ -310,9 +284,123 @@ class Score {
 	}
 	
 	Update(points) {
-		if (!gameEnded) {
+		if (!gameOver) {
 			this.points += points;
 			this.textBox.setText(this.points);
 		}
+	}
+}
+
+class Timer {
+    constructor(wantedFPS) {
+        this.wantedFPS = wantedFPS;
+        this.maxDeltaTime = 0.5; // In seconds
+        this.oldTime = Date.now();
+        this.tmodFactor = 0.95;
+        this.calcTmod = 1;
+        this.tmod = 1;
+        this.deltaT = 1;
+        this.frameCount = 0;
+        this.paused = false;
+    }
+
+    Update() {
+        if (!this.paused) {
+			this.frameCount++;
+			
+			let newTime = Date.now();
+			
+			this.deltaT = ((newTime - this.oldTime) / 1000).toFixed(4); // In seconds
+            
+			this.oldTime = newTime;
+
+			if (this.deltaT < this.maxDeltaTime) {
+				this.calcTmod = this.calcTmod * this.tmodFactor + (1 - this.tmodFactor) * this.deltaT * this.wantedFPS;
+            } else {
+				this.deltaT = 1 / this.wantedFPS; // In seconds
+            }
+
+			this.tmod = this.calcTmod;
+		}
+    }
+
+    Fps() {
+		return this.wantedFPS/this.tmod ;
+	}
+
+    Pause() {
+        this.paused = true;
+    }
+
+    Resume() {
+        this.paused = false;
+        this.oldTime = Date.now();
+    }
+}
+
+class Random {
+	static IntMinMax(min, max) { // Fonction qui retourne un nombre aléatoire entre la valeur min (incluse) et max (incluse)
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+	
+	static WithProba(probaList, valueList) { // Fonction qui retourne un nombre aléatoire en tenant compte d'une distribution de probabilités définie par un array "probaList" entre 0 et 1, liée à une liste de valeurs "valueList"
+		let randomNumber = Math.random().toFixed(8); // L'idée est de générer un nombre random entre 0 et 1, et de le situer dans l'array probaList pour voir quelle valeur valueList correspond
+		let randomValueMin = 0;
+		let randomValueMax = 0;
+		for (let i = 1; i < probaList.length; i++) {
+			if (randomNumber > probaList[i-1]) {
+				randomValueMin = valueList[i-1];
+				randomValueMax = valueList[i];
+			} else {
+				break;
+			}
+		}
+		return Random.IntMinMax(randomValueMin, randomValueMax);	
+	}
+
+    static FromQuantities(quantities) { // Choose a random number from an array with quantities and returns the index of the array
+        let cumulatedQuantities = [];
+        let accumulator = 0;
+        for (let i = 0; i < quantities.length; i++) {
+            accumulator += quantities[i];
+            cumulatedQuantities.push(accumulator);
+        }
+        let randomNumber = Random.IntMinMax(1, accumulator);
+        for (let i = 0;  i < cumulatedQuantities.length; i++) {
+            if (randomNumber <= cumulatedQuantities[i]) {
+                return i;
+            }
+        }
+    }
+}
+
+// TRAVAILLER SUR CET OBJET ET METTRE A JOUR : VERIFICATIONS SELON LES LIMITES NCOL, NROWS,..., ETC
+
+class Grid {
+    constructor(nrows, ncols, grid_height, grid_width, grid_hborder, grid_wborder) {
+        this.nrows = nrows;
+        this.ncols = ncols;
+    }
+
+    static RowToY(val) { // Centered row in pixels to Y value
+		return grid_hborder + val*grid_height + grid_height/2;
+	}
+	
+	static ColToX(val) { // Centered column in pixels to X value
+		return grid_wborder + val*grid_width + grid_width/2;
+	}
+	
+	static YToRow(val) { // Y value to centered row in pixels
+		return Math.floor((val - grid_hborder) / grid_height);
+	}
+	
+	static XToCol(val) { // X value to centered column in pixels
+		return Math.floor((val - grid_wborder) / grid_width);
+	}
+	
+	static ColRowToId(c, r) { // [col, row] to unique ID ([0,0] to ID 0 ; [5,6] to ID 41)
+		return r * ncol + c;
 	}
 }

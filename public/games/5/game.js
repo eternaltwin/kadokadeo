@@ -328,7 +328,7 @@ class Move { // Classe d'un coup joué (sélection de 2 pièces)
 			// Fin de partie si plus aucune pièce
 			nPiecesLeft -= 2;
 			if (nPiecesLeft == 0) {
-				gameEnded = true;
+				gameOver = true;
 				CF.EndGame();
 			}
 		}
