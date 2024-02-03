@@ -12,9 +12,8 @@ var sceneGame = new Phaser.Class({
     },
 
     preload: function() {
-        // Chargement des images nécessaires pour le jeu
         // Shared for all games
-        CF.GameLoadImages(this);
+        ThisGame.LoadImages(this);
 
         // This game
         this.load.image('gameBackground.png', DIR_PATH + 'images/gameBackground.png');
@@ -48,15 +47,15 @@ var sceneGame = new Phaser.Class({
     create: function() {
         // Shared for all games
         _this = this;
-        CF.GameCreate(this);
+        ThisGame.Start(this);
 
         // This game
         this.add.image(0, 0, 'gameBackground.png').setOrigin(0, 0);
         for (let i = 0; i < 42; i++) {
             pieces.push(new Piece(
-                Randoms.intMinMax(0, 2),
-                Randoms.intMinMax(0, 3),
-                Randoms.intMinMax(0, 4),
+                Random.IntMinMax(0, 2),
+                Random.IntMinMax(0, 3),
+                Random.IntMinMax(0, 4),
                 Math.floor(i/(nrow-1)),
                 i%(ncol)
             ));
@@ -66,23 +65,23 @@ var sceneGame = new Phaser.Class({
 		// Gestion des clics
         this.input.on('pointerdown', function (pointerClick) {
             if (pointerClick.leftButtonDown()) {
-				let colClick = CF.XToCol(pointerClick.x);
-				let rowClick = CF.YToRow(pointerClick.y);
+				let colClick = Grid.XToCol(pointerClick.x);
+				let rowClick = Grid.YToRow(pointerClick.y);
 				let idPieceClick = -1; // ID de la pièce cliquée. Si clic hors du plateau, alors vaut -1
 				
 				if (colClick >= 0 && colClick < ncol && rowClick >=0 && rowClick < nrow) {
-					idPieceClick = CF.ColRowToId(colClick, rowClick);
+					idPieceClick = Grid.ColRowToId(colClick, rowClick);
 				}
 				
 				if (pieceSelected == -1) { // Il s'agit du premier clic
 					if (idPieceClick >= 0 && !pieces[idPieceClick].removed) {
                         pieces[idPieceClick].Select();
 						this.input.on('pointermove', function (pointerMove) {
-							let colMove = CF.XToCol(pointerMove.x);
-							let rowMove = CF.YToRow(pointerMove.y);
+							let colMove = Grid.XToCol(pointerMove.x);
+							let rowMove = Grid.YToRow(pointerMove.y);
 							let idPieceMove = -1; // ID de la pièce survolée. Si hors du plateau, alors vaut -1
 							if (colMove >= 0 && colMove < ncol && rowMove >=0 && rowMove < nrow) {
-								idPieceMove = CF.ColRowToId(colMove, rowMove);
+								idPieceMove = Grid.ColRowToId(colMove, rowMove);
 								move.Update(pieces[pieceSelected], pieces[idPieceMove]);
 								move.DrawWay();
 							} else {
@@ -116,8 +115,8 @@ class Piece {
         this.symbol = symbol;
         this.row = row;
         this.column = column;
-        this.x = CF.ColToX(column);
-        this.y = CF.RowToY(row);
+        this.x = Grid.ColToX(column);
+        this.y = Grid.RowToY(row);
         this.selected = false;
         this.removed = false;
         this.sprites = _this.add.container(this.x, this.y);
@@ -142,7 +141,7 @@ class Piece {
     Select() {
 		this.selectEffect.restart();
 		this.selected = true;
-		pieceSelected = CF.ColRowToId(this.column, this.row);
+		pieceSelected = Grid.ColRowToId(this.column, this.row);
     }
 	
 	Deselect() {
@@ -155,7 +154,7 @@ class Piece {
 	Remove(similarity) { // Fonction de suppression d'une pièce du plateau, avec animation et affichage du nombre de similitudes entre 2 pièces (0, 1, 2 ou 3)
 		this.removed = true;
 		this.sprites.visible = false;
-		let keyAnimation = 'explode'+CF.ColRowToId(this.column, this.row).toString();
+		let keyAnimation = 'explode'+Grid.ColRowToId(this.column, this.row).toString();
 		let animPieceExplosion = _this.anims.create({ // Animation "explosion" de la pièce
             key: keyAnimation,
             frames: _this.anims.generateFrameNumbers('pieceExplosion.png'),
@@ -212,8 +211,8 @@ class Move { // Classe d'un coup joué (sélection de 2 pièces)
 		let row2 = this.piece2.row;
 		let rowSign = Math.sign(row2 - row1);
 		let row = row1;
-		let pieceId1 = CF.ColRowToId(col1, row1);
-		let pieceId2 = CF.ColRowToId(col2, row2);
+		let pieceId1 = Grid.ColRowToId(col1, row1);
+		let pieceId2 = Grid.ColRowToId(col2, row2);
 		let pieceId = pieceId1;
 		let arrayWay = [pieceId1];
 		while (pieceId != pieceId2) {
@@ -230,7 +229,7 @@ class Move { // Classe d'un coup joué (sélection de 2 pièces)
 					row += rowSign;
 				}
 			}
-			pieceId = CF.ColRowToId(col, row);
+			pieceId = Grid.ColRowToId(col, row);
 			arrayWay.push(pieceId);
 		}
 		
@@ -329,7 +328,7 @@ class Move { // Classe d'un coup joué (sélection de 2 pièces)
 			nPiecesLeft -= 2;
 			if (nPiecesLeft == 0) {
 				gameOver = true;
-				CF.EndGame();
+				ThisGame.Over();
 			}
 		}
 	}

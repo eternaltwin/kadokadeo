@@ -1,5 +1,5 @@
 /* -----
-Scène d'affichage du score quand la partie est terminée
+Final scene, with score and final information display
 ----- */
 
 var sceneEnd = new Phaser.Class({

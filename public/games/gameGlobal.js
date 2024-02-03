@@ -1,5 +1,5 @@
 /* -----
-Déclaration des constantes
+Declare const vars for all games
 ----- */
 
 const CANVAS_WIDTH = 300;
@@ -8,22 +8,22 @@ const DIR_PATH_BASE = 'games/';
 
 
 /* -----
-// Déclaration des variables utilisées de façon globale
+Declare global vars used for all games
 ----- */
 
-var _this; // Remplace "this" dans les fonctions et classes personnalisées
+var _this; // Means "this" when called from functions or classes/objects
 
 var carousel = [];
 var carouselTimer;
-var carouselActive = 0; // Contient l'image affichée actuellement dans le splash d'entrée
+var carouselActive = 0; // Image ID showed in the carousel
 var textLaunch;
 var textLaunchTimer;
-var contract; // Contient l'objet Contract avec les informations concernant le contrat à remplir (score à atteindre, points à gagner,...)
-var score; // Contient l'objet Score permettant d'afficher et de compter les points
-var gameOver = false; // Devient true quand game over
+var contract; // Contains the Contract object
+var score; // Contains the Score object
+var gameOver = false; // true when game over
 
 /* -----
-Classe contenant des fonctions personnalisées
+Customized classes that can be used for all games
 ----- */
 
 class Animate { // Functions regarding the tweens and animations of sprites
@@ -52,7 +52,7 @@ class Animate { // Functions regarding the tweens and animations of sprites
 		});
 	}
 	
-	static Blink(item, visibleDelay, invisibleDelay) { // Fonction faisant clignoter l'objet item. Un clignotement dure le temps défini par le délai (visible + invisible). La partie invisible dure pendant le invisibleDelay.
+	static Blink(item, visibleDelay, invisibleDelay) { // Blinking the item object. Blinking timer = (visible + invisible). Not visible during the invisibleDelay.
         if (item.alpha == 1) {
             item.alpha = 0;
             item.delay = invisibleDelay;
@@ -62,18 +62,27 @@ class Animate { // Functions regarding the tweens and animations of sprites
         }
     }
 
-    static Carousel(arr, firstDelay, secondDelay) { // Fonction faisant remplacer des images successivements. Arr contient les objets, firstDelay la durée de la première image et secondDelay la durée des images suivantes
-        let whiteScreen = this.add.graphics(); // Variable de dessin d'un rectangle blanc de transition
+    static PlaySpriteThenDestroy(thisSprite, animKey) { // Play the animation "animKey" on the sprite "thisSprite", then delete the sprite when animation is finished
+        thisSprite.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
+            thisSprite.destroy();
+        }, _this);
+        thisSprite.play(animKey);
+    }
+}
+
+class Carousel {
+    static Next(firstDelay, secondDelay) { // Switch to next image. arr contains the objects, firstDelay the timer for first image and secondDelay the timer for all the other images
+        let whiteScreen = this.add.graphics(); // Drawing var for white screen
         whiteScreen.setDepth(2);
         let whiteRectangle;
         var blurredImage = [];
         
-        if (carouselActive == 0) { // Transition vers un écran blanc après la 1ère image
-            carouselTimer.delay = secondDelay; // Délai du 1er écran est plus long
+        if (carouselActive == 0) { // After first image, transition to white screen
+            carouselTimer.delay = secondDelay; // Longer delay for the first image
             whiteScreen.fillStyle(0xffffff);
             whiteRectangle = whiteScreen.fillRect(0, 0, 300, 300);
             whiteRectangle.alpha = 0;
-            this.tweens.add({ // Affichage d'un écran blanc transitoire
+            this.tweens.add({ // Displaying the white screen progressively
                 targets: whiteRectangle,
                 ease: 'Linear',
                 duration: 200,
@@ -81,19 +90,19 @@ class Animate { // Functions regarding the tweens and animations of sprites
                 delay: 0,
                 alpha: 1,
                 yoyo: true,
-                onYoyo: function() { // Quand l'écran est blanc, j'incrémente l'image et affiche la nouvelle image
-                    carouselActive = (carouselActive+1) % carousel.length; // Incrémentation de l'image du carrousel
-                    CF.CarouselAlpha(); // Affichage de la nouvelle image
+                onYoyo: function() { // When the screen is totally white, switch image
+                    carouselActive = (carouselActive+1) % carousel.length; // Set next image
+                    Carousel.AlphaManager(); // Display new image
                 },
-                onComplete: function() { // Suppression du rectangle blanc lorsqu'il a disparu
+                onComplete: function() { // Delete white screen when complete
                     this.targets[0].destroy();
                 }
             });
         } else {
             if (carouselActive == carousel.length-1) {
-                carouselTimer.delay = firstDelay; // Délai du 1er écran est plus long
+                carouselTimer.delay = firstDelay; // Longer delay for the first image
             }
-            for (let i = 0; i <= 6; i++) { // Création d'un effet de flou dynamique
+            for (let i = 0; i <= 6; i++) { // Dynamic blur as transition
                 if (i == 0) {
                     blurredImage.push(this.add.image(0, 0, carousel[carouselActive].texture.key).setOrigin(0, 0));
                     blurredImage[i].alpha = 1;
@@ -108,9 +117,9 @@ class Animate { // Functions regarding the tweens and animations of sprites
                     }
                 }
             }
-            carouselActive = (carouselActive+1) % carousel.length; // Incrémentation de l'image du carrousel
-            CF.CarouselAlpha(); // Affichage de la nouvelle image
-            this.tweens.add({ // Défilement de l'image précédente (floutée)
+            carouselActive = (carouselActive+1) % carousel.length; // Set next image
+            Carousel.AlphaManager(); // Display the new image
+            this.tweens.add({ // Blur the previous image
                 targets: blurredImage,
                 ease: 'Linear',
                 duration: 100,
@@ -119,7 +128,7 @@ class Animate { // Functions regarding the tweens and animations of sprites
                 yoyo: false,
                 x: -320,
                 alpha: 0,
-                onComplete: function() { // Suppression des images dupliquées lorsqu'elles ont disparu
+                onComplete: function() { // When complete, delete the blurred effect
                     for (var item of this.targets) {
                         item.destroy();
                     }
@@ -128,7 +137,7 @@ class Animate { // Functions regarding the tweens and animations of sprites
         }
     }
 
-    static CarouselAlpha() { // Fonction appelée par la fonction Carousel pour afficher / masquer les images du carrousel.
+    static AlphaManager() { // Called to manage the visibility of the images
         for (let i = 0; i < carousel.length; i++) {
             if (i == carouselActive) {
                 carousel[i].alpha = 1;
@@ -137,8 +146,10 @@ class Animate { // Functions regarding the tweens and animations of sprites
             }
         }
     }
+}
 
-    static GameLoadImages(gameScene) { // Fonction permettant de charger les images communes à chaque jeu.
+class ThisGame { // All the functions regarding the main game scene and can be used in all games
+    static LoadImages(gameScene) { // Load images used in all games
         gameScene.load.image('bottomBar.png', DIR_PATH_BASE + 'imagesShared/bottomBar.png');
 		gameScene.load.image('bottomBarGame.png', DIR_PATH_BASE + 'imagesShared/bottomBarGame.png');
 		gameScene.load.image('bottomBarContract.png', DIR_PATH_BASE + 'imagesShared/bottomBarContract.png');
@@ -146,65 +157,48 @@ class Animate { // Functions regarding the tweens and animations of sprites
 		gameScene.load.image('contractBarRed.png', DIR_PATH_BASE + 'imagesShared/contractBarRed.png');
     }
 
-    static GameCreate(gameScene) { // Fonction permettant de démarrer la partie (affichage du contrat, création du score,...)
+    static Start(gameScene) { // Starting this game, creating contract and score bottom bar
         gameScene.add.image(0, 296, 'bottomBarGame.png').setOrigin(0, 0).setDepth(999999);
         contract.ContractBar();
         score = new Score(0);
     }
 	
-	static EndGame() { // Fonction appelée à la fin de la partie (écran blanc et changement de scène)
-		let whiteScreen = _this.add.graphics(); // Variable de dessin d'un rectangle blanc de transition
+	static Over() { // When game over, display a white screen and switch the scene
+		let whiteScreen = _this.add.graphics(); // Drawing var for the white screen
         let whiteRectangle;
 		whiteScreen.fillStyle(0xffffff);
 		whiteRectangle = whiteScreen.fillRect(0, 0, 300, 300);
 		whiteRectangle.alpha = 0;
-		_this.tweens.add({ // Affichage d'un écran blanc transitoire
+		_this.tweens.add({ // Transition to white screen
 			targets: whiteRectangle,
 			ease: 'Linear',
-			duration: 300,
+			duration: 1500,
 			repeat: 0,
 			delay: 0,
 			alpha: 1,
-			onComplete: function() { // Suppression du rectangle blanc lorsqu'il a disparu
+			onComplete: function() { // Delete white screen when complete
 				_this.scene.stop();
 				_this.scene.start('sceneEnd');
 			}
 		});
 	}
-
-    static PlaySpriteThenDestroy(thisSprite, animKey) { // Fonction qui joue une animation sur un sprite et supprime ce sprite après l'animation
-        thisSprite.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
-            thisSprite.destroy();
-        }, _this);
-        thisSprite.play(animKey);
-    }
-
-    static DeleteObjectInArray(obj) { 
-        arrEntities = arrEntities.filter((obj) => !Object.is(obj, this));
-    }
-}
-
-class CArray extends Array { // Fonctions personnalisées sur les array (C for Customized)
-    /*DeleteObject(objectToDelete) { // Fonction qui supprime l'objet "objectToDelete" de l'array
-        return this.filter((obj) => !Object.is(obj, objectToDelete));
-    }*/
 }
 
 class Contract {
 	constructor() {
 		this.contractBarFill = null;
-		this.ratioCompleted = 0; // Contient le ratio entre 0 et 1 du contrat déjà accompli
+		this.ratioCompleted = 0; // Between 0 and 1, when 1 is the contract fulfilled
 		
-		// Calcul du nombre de points Kado à gagner (selon une distribution de probabilité)
+		// Kadopoints to win (calculation based on distributed probability)
 		let arrProbaPointsToWin = [0, 0.5, 0.75, 0.88, 0.94, 0.97, 0.99, 1];
 		let arrPointsToWin = [1, 10, 25, 50, 100, 500, 1000, 10000];
-		this.pointsToWin = Randoms.withProba(arrProbaPointsToWin, arrPointsToWin);
+		this.pointsToWin = Random.WithProba(arrProbaPointsToWin, arrPointsToWin);
 		
-		/* Le calcul du score à atteindre dépend de nombre de points Kado à gagner :
-		- Si on a un contrat à 1 point Kado, on a beaucoup de chance d'avoir un petit score à atteindre => Voir arrProbaScoreToReachMin
-		- Si on a un gros contrat, on a peu de chance d'avoir un petit score à atteindre => Voir arrProbaScoreToReachMax
-		- Dans les situations intermédiaires, je génère arrProbaScoreToReach avec un facteur qui permet de se trouver entre arrProbaScoreToReachMin et arrProbaScoreToReachMax
-		Ce facteur est retrouvé dans arrFactorPointsToWin, et est égal à 1 quand on est au contrat Min et à 0 quand on est au contrat Max. On le sélectionne en fonction de pointsToWin et arrPointsToWin
+		/* The score to reach calculation depends on the Kadopoints to win :
+		- If only 1 Kadopoint, better probability to have a low score to reach => See arrProbaScoreToReachMin
+		- If a lot of Kadopoints, bad probability to have a low score to reach => See arrProbaScoreToReachMax
+		- In intermediate situations, generate an arrProbaScoreToReach with a factor between arrProbaScoreToReachMin and arrProbaScoreToReachMax
+		This factor is saved in arrFactorPointsToWin, and is equal to 1 when min contract and to 0 when max contract. Calculated according to pointsToWin and arrPointsToWin
 		*/
 		
 		let arrProbaScoreToReachMin = [0, 0.5, 0.8, 0.9, 0.97, 0.99, 1];
@@ -212,7 +206,7 @@ class Contract {
 		let arrFactorPointsToWin = [1, 0.99, 0.97, 0.75, 0.25, 0.03, 0.01, 0];
 		
 		let factor = 0;
-		for (let i = 0; i < arrPointsToWin.length; i++) { // Sélection du facteur en fonction de pointsToWin généré et de l'importance du contrat (ordre dans l'array arrPointsToWin)
+		for (let i = 0; i < arrPointsToWin.length; i++) { // Factor calculation according to pointsToWin and position in arrPointsToWin
 			if (this.pointsToWin >= arrPointsToWin[i]) {
 				factor = arrFactorPointsToWin[i];
 			}
@@ -221,15 +215,15 @@ class Contract {
 			}
 		}
 		let arrProbaScoreToReach = [];
-		for (let i = 0; i < arrProbaScoreToReachMin.length; i++) { // Je génère les probabilités du score à atteindre en fonction du facteur généré
+		for (let i = 0; i < arrProbaScoreToReachMin.length; i++) { // Distributed probability for the score to reach according to the generated factor
 			arrProbaScoreToReach.push(arrProbaScoreToReachMax[i] + (arrProbaScoreToReachMin[i] - arrProbaScoreToReachMax[i]) * factor);
 		}
 		
-        // arrScoreToReach défini dans gameParameters.js
-		this.scoreToReach = Randoms.withProba(arrProbaScoreToReach, arrScoreToReach);
+        // arrScoreToReach must be defined in gameParameters.js for each game
+		this.scoreToReach = Random.WithProba(arrProbaScoreToReach, arrScoreToReach);
 	}
 	
-	ContractDisplay() { // Fonction appelée lors du clic sur l'écran de démarrage pour afficher le contrat
+	ContractDisplay() { // Display the contract information when clic on the carousel
         let contractScreen = _this.add.graphics();
         contractScreen.setDepth(2);
         contractScreen.fillStyle(0xD3EBEE, 0.5);
@@ -241,7 +235,7 @@ class Contract {
 		let contractPointsWin = _this.add.text(194, 155, this.pointsToWin, {color: '#159BB6', fontFamily: 'Junegull-Regular, Arial, sans-serif', fixedWidth: '34', fontSize: '16px', align: 'center'});
 		contractPointsWin.setDepth(3);
 
-        _this.input.once('pointerdown', function (pointer) { // Lancement de la scène du jeu lors du clic gauche
+        _this.input.once('pointerdown', function (pointer) { // Starting the game (scene switch) when clic on the contract information
             if (pointer.leftButtonDown()) {
                 _this.scene.stop();
 				_this.scene.start('sceneGame');
@@ -249,14 +243,14 @@ class Contract {
         }, _this);
     }
 	
-	ContractBar() { // Fonction affichant le contrat et la jauge dans le bas de l'écran de jeu
+	ContractBar() { // Display the contract and the progression bar in the game scene bottom bar
 		let contractBarBackground = _this.add.image(3, 302, 'bottomBarContract.png').setOrigin(0, 0).setDepth(999999);
 		let contractText = _this.add.text(3, 304, this.pointsToWin, {color: '#095C6F', fontFamily: 'Jost-Medium, Arial, sans-serif', fixedWidth: '34', fontSize: '10px', align: 'center'}).setDepth(999999);
 		this.contractBarFill = _this.add.image(59, 308, 'contractBarGreen.png').setOrigin(0, 0).setDepth(999999);
 		this.contractBarFill.setCrop(0, 0, 0, 7);
 	}
 	
-	ContractBarUpdate() { // Fonction affichant le contrat et la jauge dans le bas de l'écran de jeu
+	ContractBarUpdate() {
 		if (this.ratioCompleted < 1) {
 			this.ratioCompleted = score.points / this.scoreToReach;
 			if (this.ratioCompleted < 1) {
@@ -339,14 +333,14 @@ class Timer {
 }
 
 class Random {
-	static IntMinMax(min, max) { // Fonction qui retourne un nombre aléatoire entre la valeur min (incluse) et max (incluse)
+	static IntMinMax(min, max) { // Random int between min and max values (included)
 		min = Math.ceil(min);
 		max = Math.floor(max);
 		return Math.floor(Math.random() * (max - min + 1) + min);
     }
 	
-	static WithProba(probaList, valueList) { // Fonction qui retourne un nombre aléatoire en tenant compte d'une distribution de probabilités définie par un array "probaList" entre 0 et 1, liée à une liste de valeurs "valueList"
-		let randomNumber = Math.random().toFixed(8); // L'idée est de générer un nombre random entre 0 et 1, et de le situer dans l'array probaList pour voir quelle valeur valueList correspond
+	static WithProba(probaList, valueList) { // Random number between 0 and 1, according to a distributed probability array "probaList", linked with a values array "valueList"
+		let randomNumber = Math.random().toFixed(8); // The idea is to locate the generated number between 0 and 1 in the array probaList to see which value in valueList is corresponding
 		let randomValueMin = 0;
 		let randomValueMax = 0;
 		for (let i = 1; i < probaList.length; i++) {
@@ -376,12 +370,19 @@ class Random {
     }
 }
 
-// TRAVAILLER SUR CET OBJET ET METTRE A JOUR : VERIFICATIONS SELON LES LIMITES NCOL, NROWS,..., ETC
+
+
+
+// /!\
+// THIS GRID OBJECT WILL BE IMPROVED WHEN CREATING OTHER GAMES WITH GRIDS (Kaskade, Aqua Splash,...)
+// WHEN MODIFIED, THE GAME N°5 Xian-Xiang HAS TO BE IMPROVED TOO
+// IDEA = Create new grid object in game scene. In this object, uses this.pieces as the array containing the Pieces objects.
 
 class Grid {
     constructor(nrows, ncols, grid_height, grid_width, grid_hborder, grid_wborder) {
         this.nrows = nrows;
         this.ncols = ncols;
+        this.pieces = [];
     }
 
     static RowToY(val) { // Centered row in pixels to Y value

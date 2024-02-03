@@ -1,11 +1,12 @@
 /* -----
-Configuration de Phaser
-Nécessite :
-1- {IDGAME}/gameParameters.js -> Variables globales propre au jeu {IDGAME}
-2- gameGlobal.js -> Variables globales et classes/fonctions personnalisées utiles pour tous les jeux
-3- gameStart.js -> Contient sceneStart : Splash d'entrée commun à tous les jeux, génération du contrat
-4- {IDGAME}/game.js -> Contient sceneGame : Selon le jeu joué, contient la scène du jeu
-5- gameEnd.js -> Contient sceneEnd : Ecran de fin de partie, affichage du score et des succès
+PHASER CONFIGURATION
+
+Need :
+1- {IDGAME}/gameParameters.js -> Global vars for the game {IDGAME}
+2- gameGlobal.js -> Global var and customized classes/functions used in all games
+3- gameStart.js -> Contain sceneStart : Carousel of pictures running and contract creation
+4- {IDGAME}/game.js -> Contain sceneGame : the specific game core
+5- gameEnd.js -> Contain sceneEnd : Display score and final information
 ----- */
 
 var config = {

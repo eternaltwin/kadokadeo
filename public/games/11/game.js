@@ -18,9 +18,8 @@ var sceneGame = new Phaser.Class({
     },
 
     preload: function() {
-        // Chargement des images nécessaires pour le jeu
         // Shared for all games
-        CF.GameLoadImages(this);
+        ThisGame.LoadImages(this);
 
         // This game
         this.load.image('gameBackground.png', DIR_PATH + 'images/gameBackground.png');
@@ -30,7 +29,7 @@ var sceneGame = new Phaser.Class({
     create: function() {
         // Shared for all games
         _this = this;
-        CF.GameCreate(this);
+        ThisGame.Start(this);
 
         // This game
         this.add.image(0, 0, 'gameBackground.png').setOrigin(0, 0).setDepth(0);
@@ -52,7 +51,7 @@ var sceneGame = new Phaser.Class({
         this.input.keyboard.on('keydown-LEFT', event => { keyLeft = true; });
         this.input.keyboard.on('keyup-LEFT', event => { keyLeft = false; });
 
-        if (Randoms.intMinMax(0, 1000) == 0) { // One game in 1000 have better chance to have red bonuses
+        if (Random.IntMinMax(0, 1000) == 0) { // One game in 1000 have better chance to have red bonuses
             BONUS_PROBAS_ARR[2] = 3;
         }
     },
@@ -210,7 +209,7 @@ class Hero {
 
     AddJumpSmoke() {
         let spriteJumpSmoke = _this.add.sprite(this.x, this.y, 'sprites', 'jumpSmoke/1.png').setDepth(DEPTH_HERO);
-        CF.PlaySpriteThenDestroy(spriteJumpSmoke, 'jumpSmoke');
+        Animate.PlaySpriteThenDestroy(spriteJumpSmoke, 'jumpSmoke');
     }
 }
 
@@ -219,8 +218,8 @@ class Bonus {
         let searchPosition = true;
         let searchRay = 5 + Math.trunc(Math.sqrt(BONUS_R2));
         while (searchPosition) { // Calculate random X and Y position avoiding existing entities
-            this.x = Randoms.intMinMax(0, 300 - searchRay * 2) + searchRay;
-            this.y = Randoms.intMinMax(0, MAX_Y - searchRay * 2) + searchRay;
+            this.x = Random.IntMinMax(0, 300 - searchRay * 2) + searchRay;
+            this.y = Random.IntMinMax(0, MAX_Y - searchRay * 2) + searchRay;
             searchPosition = false;
             for (let i = 0; i < arrEntities.length; i++) {
                 let dx = arrEntities[i].x - this.x;
@@ -232,7 +231,7 @@ class Bonus {
             }
         }
 
-        this.randomArrayIndex = Randoms.fromQuantities(BONUS_PROBAS_ARR);
+        this.randomArrayIndex = Random.FromQuantities(BONUS_PROBAS_ARR);
         this.points = BONUS_POINTS[this.randomArrayIndex];
         this.frameIndex = this.randomArrayIndex + 1;
         this.picked = false;
@@ -257,7 +256,7 @@ class Bonus {
     }
 
     static Update() {
-        if (arrBonuses.length < 3 && Randoms.intMinMax(0, BONUS_PROBAS * arrBonuses.length / timer.tmod) == 0) {
+        if (arrBonuses.length < 3 && Random.IntMinMax(0, BONUS_PROBAS * arrBonuses.length / timer.tmod) == 0) {
             arrBonuses.push(new Bonus());
             arrEntities.push(arrBonuses[arrBonuses.length-1]);
         }
@@ -268,31 +267,21 @@ class Bonus {
             if (dx**2 + dy**2 < BONUS_R2) {
                 arrBonuses[i].GetBonus();
             }
-            //arrBonuses[i].CheckCollision();
-            // Utiliser Object.is() pour gérer arrBonuses ET arrEntities.
         }
-
-        /*score.Update(scoreList[this.similarity]);
-		contract.ContractBarUpdate();*/
-
-        /*let spriteJumpSmoke = _this.add.sprite(this.x, this.y, 'sprites', 'jumpSmoke/1.png').setDepth(DEPTH_HERO);
-        CF.PlaySpriteThenDestroy(spriteJumpSmoke, 'jumpSmoke');*/
     }
 
     GetBonus() {
         if (!this.picked) {
             this.picked = true;
             let spriteBonusPicked = _this.add.sprite(this.x, this.y, 'sprites', 'bonusPicked/1.png').setDepth(DEPTH_HERO);
-            CF.PlaySpriteThenDestroy(spriteBonusPicked, 'bonusPicked');
+            Animate.PlaySpriteThenDestroy(spriteBonusPicked, 'bonusPicked');
             
             score.Update(this.points);
 		    contract.ContractBarUpdate();
             
             this.sprites.destroy();
-            /*console.log(arrBonuses);
-            arrBonuses.DeleteObject(this);
-            console.log(arrBonuses);
-            arrEntities.DeleteObject(this);*/
+            arrBonuses = arrBonuses.DeleteObject(this);
+            arrEntities = arrEntities.DeleteObject(this);
         }
     }
 }

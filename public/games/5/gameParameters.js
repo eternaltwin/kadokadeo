@@ -1,14 +1,14 @@
 /* -----
-Variables liées au jeu proprement dit
+Global vars specific to this game
 ----- */
 
 const DIR_PATH = 'games/5/';
-const imagesCarousel = [ //Images du carrousel (écran de démarrage)
+const imagesCarousel = [ // List of images for the carousel of this game
     DIR_PATH + 'images/splashScreen1.png',
     DIR_PATH + 'images/splashScreen2.png'
 ];
-const starsFloors = [0, 10240, 12288, 13312, 15600]; // Score à atteindre pour les différents paliers étoile verte, orange, rouge, violette
-const arrScoreToReach = [5000, 9000, 11000, 12000, 13000, 14000, 15000]; // Permet de générer des petits scores pour des petits contrats, et des gros scores pour des gros contrats
+const starsFloors = [0, 10240, 12288, 13312, 15600]; // Score to reach for green, orange, red or violet star
+const arrScoreToReach = [5000, 9000, 11000, 12000, 13000, 14000, 15000]; // Useful to generate low scores for low contracts, and high scores for big contracts
 
 const grid_width = 43; // Largeur d'une cellule du plateau de jeu
 const grid_height = 34; // Hauteur d'une cellule du plateau de jeu

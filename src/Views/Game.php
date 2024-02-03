@@ -11,6 +11,7 @@
 			<p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.</p>
 		</canvas>
 		<script src="//cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+        <script src="/games/extendedClasses.js"></script>
 		<script src="/games/11/gameParameters.js"></script>
         <script src="/games/gameGlobal.js"></script>
         <script src="/games/gameStart.js"></script>
