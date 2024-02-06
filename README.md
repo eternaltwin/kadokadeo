@@ -45,6 +45,7 @@ Then launch it : `wsl -d Ubuntu`
 
 After configuring your Ubuntu account, you can install the project following the instructions below.
 
+
 ### Install build tools
 ```bash
 sudo -s
@@ -57,9 +58,10 @@ apt-get install build-essential curl git -y
 apt-get install lsb-release -y
 mkdir -m 0755 -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.comlinux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt-get install docker docker-compose docker-compose-plugin -y
 exit
+cd ~
 ```
 
 ### Install the project
@@ -87,8 +89,22 @@ make
   -  KadoKadéo on http://kadokadeo.localhost/
   -  Eternaltwin on http://localhost:50320
 
+WSL2 users :
+
+Although it is possible to run Kadokadeo from a Windows folder mounted to WSL2, it will be very slow at best case and you may run to issues during installation at worst case (this is why we moved to home folder `~` in the previous steps).
+
+You can work with the repo cloned in Ubuntu home with VSCode's [WSL remote](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) or accessing files through SMB (e.g. `\\wsl$\Ubuntu\kadokadeo`).
+
 ### Troubleshooting
 Don't hesitate to mention @evian6930 on Discord if you have any issue.
+
+- `Ports are not available: listen tcp 0.0.0.0:50320: bind : An attempt was made to access a socket in a way forbidden by its access permissions.` :
+Open Powershell as an administrator and run the following commands :
+```powershell
+netsh int ipv4 set dynamic tcp start=60536 num=5000
+netsh int ipv6 set dynamic tcp start=60536 num=5000
+```
+Restart your computer, then try to run `make` again.
 
 - `cache lookup failed for type xxxx` : Re install everything with `make` . 
 Make sure you wait for the Eternaltwin server to be fully up before trying to access to KadoKadéo (you can check the logs with `make docker-watch`. The server is ready when you see `kadokadeo_eternaltwin  | Listening on internal port 50320, externally available at http://localhost:50320/`)
