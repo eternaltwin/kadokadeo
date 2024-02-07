@@ -280,6 +280,7 @@ class Bonus {
 		    contract.ContractBarUpdate();
             
             this.sprites.destroy();
+            
             arrBonuses = arrBonuses.DeleteObject(this);
             arrEntities = arrEntities.DeleteObject(this);
         }
