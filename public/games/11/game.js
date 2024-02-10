@@ -30,6 +30,8 @@ var sceneGame = new Phaser.Class({
         // Shared for all games
         _this = this;
         ThisGame.Start(this);
+        nbBonuses = 0;
+        level = 0;
 
         // This game
         this.add.image(0, 0, 'gameBackground.png').setOrigin(0, 0).setDepth(0);
@@ -60,6 +62,7 @@ var sceneGame = new Phaser.Class({
         timer.Update();
         hero.Update();
         Bonus.Update();
+        Ennemy.Update();
     }
 });
 
@@ -272,6 +275,11 @@ class Bonus {
 
     GetBonus() {
         if (!this.picked) {
+            nbBonuses++;
+            if (nbBonuses % LEVEL_DELTA == 0) {
+                level++;
+            }
+
             this.picked = true;
             let spriteBonusPicked = _this.add.sprite(this.x, this.y, 'sprites', 'bonusPicked/1.png').setDepth(DEPTH_HERO);
             Animate.PlaySpriteThenDestroy(spriteBonusPicked, 'bonusPicked');
@@ -284,6 +292,17 @@ class Bonus {
             arrBonuses = arrBonuses.DeleteObject(this);
             arrEntities = arrEntities.DeleteObject(this);
         }
+    }
+}
+
+class Ennemy {
+    constructor(type) {
+        this.type =  type;
+        //this.spriteEnnemy = _this.add.sprite(this.x, this.y, 'sprites', 'hero/breathing/1.png').setDepth(DEPTH_HERO);
+    }
+
+    static Update() {
+        
     }
 }
 

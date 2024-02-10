@@ -34,6 +34,12 @@ const BONUS_PROBAS_ARR = [50, 10, 1];
 const BONUS_POINTS = [200, 500, 3000];
 const BONUS_R2 = 600;
 
+const BIRD = 0;
+const BEE = 1;
+const BOARLET = 2;
+
+const LEVEL_DELTA = 15;
+
 // Keyboard watching : true if the key is down
 var keySpace = false;
 var keyUp = false;
@@ -42,7 +48,9 @@ var keyDown = false;
 var keyLeft = false;
 
 var timer;
+var level; // Level (speed of the game) calculated from nbBonuses with LEVEL_DELTA
+var nbBonuses; // Number of bonuses taken
 
-var idEntity = 0; // 
 var arrEntities = new CArray(); // Listing hero, bonuses and ennemies
 var arrBonuses = new CArray(); // Listing bonuses
+var arrEnnemies = new CArray(); // Listing ennemies
