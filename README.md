@@ -98,6 +98,15 @@ You can work with the repo cloned in Ubuntu home with VSCode's [WSL remote](http
 ### Troubleshooting
 Don't hesitate to mention @evian6930 on Discord if you have any issue.
 
+- `docker: permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post "http://%2Fvar%2Frun%2Fdocker.sock/v1.24/containers/create": dial unix /var/run/docker.sock: connect: permission denied.`
+You need to add your user to the `docker` group :
+```bash
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+```
+Run `docker run hello-world` to check if it works. If if does, you can run `make` again. If not, restart your computer before retrying.
+
 - `Ports are not available: listen tcp 0.0.0.0:50320: bind : An attempt was made to access a socket in a way forbidden by its access permissions.` :
 Open Powershell as an administrator and run the following commands :
 ```powershell
@@ -110,3 +119,13 @@ Restart your computer, then try to run `make` again.
 Make sure you wait for the Eternaltwin server to be fully up before trying to access to KadoKadéo (you can check the logs with `make docker-watch`. The server is ready when you see `kadokadeo_eternaltwin  | Listening on internal port 50320, externally available at http://localhost:50320/`)
 
 - `Database does not exist` : Try to remove all your Docker volumes with `docker volume prune` and re install everything with `make` .
+
+### Some useful commands
+
+- `make docker-start` : Start the project
+- `make docker-stop` : Stop the project
+- `make bash-app` : Enter the application container to run `composer` or `php` commands
+- `make reset-database` : Reset the database
+- `make sync-database` : Update the database with your migrations defined in `db` folder
+
+Please see more commands in the [`Makefile`](Makefile) or the [`composer.json`](composer.json) file.
