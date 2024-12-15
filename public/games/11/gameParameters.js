@@ -37,6 +37,8 @@ const BONUS_R2 = 600;
 const BIRD = 0;
 const BEE = 1;
 const BOARLET = 2;
+const ENNEMY_PROBAS = [50, 35, 20, 10, 5, 4, 4, 3, 3, 2, 1];
+const ENNEMY_PROBAS_ARR = [100, 40, 10];
 
 const LEVEL_DELTA = 15;
 
