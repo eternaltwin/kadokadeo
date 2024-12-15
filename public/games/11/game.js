@@ -218,21 +218,9 @@ class Hero {
 
 class Bonus {
     constructor() {
-        let searchPosition = true;
-        let searchRay = 5 + Math.trunc(Math.sqrt(BONUS_R2));
-        while (searchPosition) { // Calculate random X and Y position avoiding existing entities
-            this.x = Random.IntMinMax(0, 300 - searchRay * 2) + searchRay;
-            this.y = Random.IntMinMax(0, MAX_Y - searchRay * 2) + searchRay;
-            searchPosition = false;
-            for (let i = 0; i < arrEntities.length; i++) {
-                let dx = arrEntities[i].x - this.x;
-                let dy = arrEntities[i].y - this.y;
-                if (dx**2 + dy**2 < searchRay**2) {
-                    searchPosition = true;
-                    break;
-                }
-            }
-        }
+        let positionArray = generatePosition(5 + Math.trunc(Math.sqrt(BONUS_R2)));
+        this.x = positionArray.x;
+        this.y = positionArray.y;
 
         this.randomArrayIndex = Random.FromQuantities(BONUS_PROBAS_ARR);
         this.points = BONUS_POINTS[this.randomArrayIndex];
@@ -296,13 +284,139 @@ class Bonus {
 }
 
 class Ennemy {
-    constructor(type) {
-        this.type =  type;
-        //this.spriteEnnemy = _this.add.sprite(this.x, this.y, 'sprites', 'hero/breathing/1.png').setDepth(DEPTH_HERO);
+    constructor() {
+        this.startY = (Random.IntMinMax(0,1) == 0) ? 320 : -20;
+        this.way = Math.sign(this.startY) * -1;
+        
+        let positionArray = generatePosition(40, this.startY);
+        this.x = positionArray.x;
+        this.y = positionArray.y;
+        this.hitFromTop = false;
+
+        this.type =  Random.FromQuantities(ENNEMY_PROBAS_ARR.slice(0, level+1));
+
+        switch(this.type) {
+            case BIRD:
+                this.x += -20 * this.way;
+                this.speed = 1 + 0.3 * level;
+
+                this.hitboxDx = 10;
+                this.hitboxDy = 0;
+                this.hitboxWidth = 78;
+                this.hitboxHeight = 12;
+
+                this.spriteEnnemy = _this.add.sprite(0, 0, 'sprites', 'bird/1.png');
+                this.hitbox = _this.add.rectangle(this.hitboxDx, this.hitboxDy, this.hitboxWidth, this.hitboxHeight, 0xffffff);
+                this.containerEnnemy = _this.add.container(this.x, this.y).setDepth(DEPTH_ENNEMIES);
+                this.containerEnnemy.add(this.spriteEnnemy);
+                this.containerEnnemy.add(this.hitbox);
+                this.spriteEnnemy.play('bird');
+                this.hitbox.visible = false;
+            break;
+        }
+        if (this.way == -1) {
+            this.containerEnnemy.scaleX = -1;
+        }
     }
 
     static Update() {
-        
+        let indexEnnemyProba = (level >= ENNEMY_PROBAS.length) ? ENNEMY_PROBAS.length-1 : level;
+        if (arrEnnemies.length < 10 && Random.IntMinMax(0, ENNEMY_PROBAS[indexEnnemyProba] * arrEnnemies.length / timer.tmod) == 0) {
+            arrEnnemies.push(new Ennemy());
+            arrEntities.push(arrEnnemies[arrEnnemies.length-1]);
+        }
+
+        for (let i = 0; i < arrEnnemies.length; i++) {
+            let enn = arrEnnemies[i];
+            switch (enn.type) {
+                case BIRD:
+                    enn.x += enn.speed * timer.tmod * enn.way;
+                break;
+            }
+
+            enn.containerEnnemy.x = enn.x;
+            enn.containerEnnemy.y = enn.y;
+
+            switch (enn.type) {
+                case BIRD:
+                    if (enn.Hit(10)) {
+                        if (enn.hitFromTop) {
+                            let newJumpPow = Math.max(Math.abs(hero.jumpPow) * 0.7, 0.5);
+                            hero.jumpPow = newJumpPow;
+                            hero.jumpUp = true;
+                            hero.spriteHero.play('startJumping').chain('jumping');
+                            hero.AddJumpSmoke();
+                            enn.Remove();
+                        } else {
+                            console.log("T'es mort !");
+                        }
+                    }
+                    if (enn.x > 340 || enn.x < -40) {
+                        enn.Remove();
+                    }
+                break;
+
+                case BEE:
+                    if (enn.x > 320 || enn.x < -20) {
+                        enn.Remove();
+                    }
+                break;
+
+                case BOARLET:
+                    if (enn.x > 340 || enn.x < -40) {
+                        enn.Remove();
+                    }
+                break;
+            }
+
+            /*let dx =  hero.x - arrBonuses[i].x;
+            let dy =  (hero.y - 20) - arrBonuses[i].y;
+            if (dx**2 + dy**2 < BONUS_R2) {
+                arrBonuses[i].GetBonus();
+            }*/
+        }
+    }
+
+    Remove() {
+        this.containerEnnemy.destroy();
+            
+        arrEnnemies = arrEnnemies.DeleteObject(this);
+        arrEntities = arrEntities.DeleteObject(this);
+    }
+
+    Hit(hray) {
+        const p = this.containerEnnemy.localTransform.transformPoint(this.hitbox.x, this.hitbox.y);
+        let xMinEnnemy = Math.round(p.x - this.hitboxWidth/2 - hero.x);
+        let xMaxEnnemy = Math.round(p.x + this.hitboxWidth/2 - hero.x);
+        let yMinEnnemy = Math.round(p.y - this.hitboxHeight/2 - hero.y);
+        let yMaxEnnemy = Math.round(p.y + this.hitboxHeight/2 - hero.y);
+
+        yMinEnnemy += 20;
+        yMaxEnnemy += 20;
+
+        if (xMinEnnemy * xMaxEnnemy > 0) {
+			if (xMinEnnemy < 0) {
+				if (xMaxEnnemy < hray) {
+					return false;
+                }
+			} else if (xMinEnnemy > hray) {
+				return false;
+            }
+		}
+
+		if (yMinEnnemy * yMaxEnnemy > 0) {
+			if (yMinEnnemy < 0) {
+				if (yMaxEnnemy < hray) {
+					return false;
+                }
+			} else if (yMinEnnemy > hray) {
+				return false;
+            }
+		}
+
+        this.hitFromTop = ((yMinEnnemy + yMaxEnnemy) / 2 > 5);
+
+        return true;
     }
 }
 
@@ -463,5 +577,40 @@ class AnimatedSprites {
             repeat: 0,
             frameRate: WANTED_FPS
         });
+
+        _this.anims.create({ 
+            key: 'bird', 
+            frames: _this.anims.generateFrameNames('sprites', { 
+                prefix: 'bird/', 
+                suffix: '.png', 
+                start: 1, 
+                end: 18
+            }), 
+            repeat: -1,
+            frameRate: WANTED_FPS
+        });
     }
+}
+
+function generatePosition(searchRay, startX = null) {
+    let searchPosition = true;
+    let genX = startX;
+    let genY = 0;
+    while (searchPosition) { // Calculate random X and Y position avoiding existing entities
+        if (startX == null) {
+            genX = Random.IntMinMax(0, 300 - searchRay * 2) + searchRay;
+        }
+        genY = Random.IntMinMax(0, MAX_Y - searchRay * 2) + searchRay;
+        searchPosition = false;
+        for (let i = 0; i < arrEntities.length; i++) {
+            let dx = arrEntities[i].x - genX;
+            let dy = arrEntities[i].y - genY;
+            if (dx**2 + dy**2 < searchRay**2) {
+                searchPosition = true;
+                break;
+            }
+        }
+    }
+
+    return {x: genX, y: genY};
 }
