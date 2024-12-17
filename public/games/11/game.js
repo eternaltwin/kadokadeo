@@ -293,7 +293,7 @@ class Ennemy {
         this.y = positionArray.y;
         this.hitFromTop = false;
 
-        this.type =  Random.FromQuantities(ENNEMY_PROBAS_ARR.slice(0, level+1));
+        this.type = Random.FromQuantities(ENNEMY_PROBAS_ARR.slice(0, level+1));
 
         switch(this.type) {
             case BIRD:
@@ -315,6 +315,20 @@ class Ennemy {
             break;
         }
         if (this.way == -1) {
+            /*
+            BUG ICI parfois (je ne sais pas qu'est-ce qui génère le undefined)
+            Uncaught TypeError: Cannot set properties of undefined (setting 'scaleX')
+    at new Ennemy (game.js:318:41)
+    at Ennemy.Update (game.js:325:30)
+    at sceneGame.update (game.js:65:16)
+    at initialize.step (phaser.min.js:1:948791)
+    at initialize.update (phaser.min.js:1:935877)
+    at initialize.step (phaser.min.js:1:75942)
+    at initialize.step (phaser.min.js:1:80126)
+    at e (phaser.min.js:1:140700)
+
+    CAUSE : this.containerEnnemy est défini uniquement dans case BIRD. Mais pas dans case BEE ou BOARLET
+            */
             this.containerEnnemy.scaleX = -1;
         }
     }
@@ -346,7 +360,7 @@ class Ennemy {
                             hero.jumpUp = true;
                             hero.spriteHero.play('startJumping').chain('jumping');
                             hero.AddJumpSmoke();
-                            enn.Remove();
+                            enn.KillBird();
                         } else {
                             console.log("T'es mort !");
                         }
@@ -417,6 +431,70 @@ class Ennemy {
         this.hitFromTop = ((yMinEnnemy + yMaxEnnemy) / 2 > 5);
 
         return true;
+    }
+
+    KillBird() {
+        this.Remove();
+
+        /* FEATHERS GENERATION
+        - xFrame and yFrame based on the .fla file (movement interpolation)
+        - Animation with 41 frames, one frame is randomly selected for starting
+        */
+        const xFrame = [-30.25,-30.15,-29.85,-29.3,-28.3,-26.6,-23.85,-19.5,-13.6,-6.6,1,8.6,14.75,19.5,22.55,23.9,24.3,24.3,24.05,23.75,23.75,23.75,23.85,24.05,24.1,23.8,22.75,20.05,15.2,8.4,0.6,-6.7,-13.25,-18.85,-23.55,-26.6,-28.55,-29.55,-29.95,-30.25,-30.25];
+        const yFrame = [-16.15,-16.55,-17.65,-19.55,-22.2,-25.7,-29.85,-34.15,-38,-40.95,-43,-41.4,-38.5,-34.8,-30.45,-26.2,-22.5,-19.65,-17.6,-16.45,-16.05,-16.45,-17.65,-19.5,-22.25,-25.75,-30.1,-34.95,-39.3,-42.3,-42.9,-41.6,-38.9,-34.8,-30.2,-26,-22.5,-19.75,-17.65,-16.55,-16.15];
+        for (let i = 0; i < 10; i++) {
+            let randomFrame = Random.IntMinMax(1,41);
+            let xStart = this.x + xFrame[randomFrame-1];
+            let yStart = this.y + yFrame[randomFrame-1];
+            let featherSprite = _this.add.sprite(xStart, yStart, 'sprites', 'feather/animated/' + randomFrame + '.png').setDepth(DEPTH_ENNEMIES);
+            featherSprite.setScale(Random.IntMinMax(50,150)/100);
+            featherSprite.play({ key: 'feather', startFrame: randomFrame-1}, true);
+            featherSprite.on('animationupdate', function (anim, frame, sprite, frameKey) {
+                sprite.y += 0.5 + Math.abs((frame.index*2-41)/41);
+            }, _this);
+            _this.tweens.add({
+                targets: featherSprite,
+                ease: 'Linear',
+                alpha: 0,
+                delay: Random.IntMinMax(0, 40) * 1000 / WANTED_FPS,
+                duration: 10 * 1000 / WANTED_FPS,
+                repeat: 0,
+                onComplete: function() { // Sprite deletion when animation finished
+                    this.targets[0].destroy();
+                }
+            });
+        }
+
+        /*SOURCE ACTIONSCRIPT :
+    -> FRAME 1
+        for(var i=0; i<10; i++){
+            
+            duplicateMovieClip(f,"f"+i,i)
+            var mc = this["f"+i]
+            mc.gotoAndPlay(1+random(mc._totalframes))
+            mc._xscale = mc._yscale = 50+random(100)
+            var b = mc.getBounds(this)
+            mc._x = -b.xMin
+            mc._y = -b.yMin
+            mc.t = 10+random(40)
+        }
+        f._visible = false;
+        timer = 50
+
+    -> FRAME 2
+        for(var i=0; i<10; i++){
+            var mc = this["f"+i]
+            mc.t--
+            if(mc.t<10){
+                mc._alpha = 10*mc.t
+            }
+            var c = (mc._currentframe*2-mc._totalframes)/mc._totalframes
+            mc._y += 0.5+Math.abs(c)*1
+            if( mc.t == 0 ) mc.removeMovieClip();
+        }
+
+        if(timer--<0)removeMovieClip("");
+*/
     }
 }
 
@@ -585,6 +663,18 @@ class AnimatedSprites {
                 suffix: '.png', 
                 start: 1, 
                 end: 18
+            }), 
+            repeat: -1,
+            frameRate: WANTED_FPS
+        });
+
+        _this.anims.create({ 
+            key: 'feather', 
+            frames: _this.anims.generateFrameNames('sprites', { 
+                prefix: 'feather/animated/', 
+                suffix: '.png', 
+                start: 1, 
+                end: 41
             }), 
             repeat: -1,
             frameRate: WANTED_FPS

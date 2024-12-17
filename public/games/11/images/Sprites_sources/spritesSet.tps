@@ -124,7 +124,7 @@
             <key>json</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename></filename>
+                <filename>../spritesSet.json</filename>
             </struct>
         </map>
         <key>multiPackMode</key>
@@ -493,7 +493,7 @@
             <key type="filename">sprites/feather/animated/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0.465517,-0.483871</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
