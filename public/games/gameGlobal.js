@@ -164,7 +164,7 @@ class ThisGame { // All the functions regarding the main game scene and can be u
     }
 	
 	static Over() { // When game over, display a white screen and switch the scene
-		let whiteScreen = _this.add.graphics(); // Drawing var for the white screen
+		let whiteScreen = _this.add.graphics().setDepth(9999); // Drawing var for the white screen
         let whiteRectangle;
 		whiteScreen.fillStyle(0xffffff);
 		whiteRectangle = whiteScreen.fillRect(0, 0, 300, 300);

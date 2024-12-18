@@ -89,111 +89,123 @@ class Hero {
         this.arrow = _this.add.sprite(this.x, 0, 'sprites', 'arrow/1.png').setDepth(DEPTH_ENNEMIES);
         this.arrow.play('arrow');
         this.arrow.visible = false;
+        this.spriteHeroDead = _this.add.image(this.x, this.y, 'sprites', 'heroDead/1.png').setDepth(DEPTH_HERO);
+        this.spriteHeroDead.visible = false;
+        this.deathY = -5;
     }
 
     Update() {
-        this.jumpDx *= 0.9 ** timer.tmod;
-        
-        switch (this.state) {
-            case S_WAIT:
-            case S_MOVE:
-                if (keyLeft) {
-                    this.Running();
-                    this.way = -1;
-                    this.x -= timer.tmod * this.speed;
-                } else if (keyRight) {
-                    this.Running();
-                    this.way = 1;
-                    this.x += timer.tmod * this.speed;
-                } else {
-                    this.Braking();
-                    this.state = S_WAIT;
-                }
-    
-                if (keyUp || keySpace) {
-                    this.jumpUp = true;
-                    this.jumpPow = 4;
-                    if (this.state == S_MOVE) {
-                        this.jumpDx = this.way * this.speed;
-                    } else {
-                        this.jumpDx = 0;
-                    }
-                    this.state = S_JUMP;
-                    this.spriteHero.play('startJumping').chain('jumping');
-                    this.AddJumpSmoke();
-                }
-
-                if (keyDown) {
-                    if (this.state == S_WAIT) {
-                        if (this.frame >= 46 || this.frame <= 28) {
-                            this.spriteHero.setFrame('hero/jumping/59.png');
-                        }
-                    }
-                }
-            break;
-
-            case S_JUMP:
-                if (keyLeft) {
-                    this.way = -1;
-                    this.jumpDx -= timer.tmod;
-                } else if (keyRight) {
-                    this.way = 1;
-                    this.jumpDx += timer.tmod;
-                }
-
-                if (keyUp || keySpace) {
-                    if (this.jumpUp && this.jumpPow < this.maxPow) {
-                        this.jumpPow *= 1.4 ** timer.tmod;
-                        if (this.jumpPow >= this.maxPow) {
-                            this.jumpPow = this.maxPow;
-                            this.jumpUp = false;
-                        }
-                    }
-                } else {
-                    this.jumpUp = false;
-                }
-
-                this.x += this.jumpDx * timer.tmod / 1.5;
-                if (!this.jumpUp) {
-                    this.jumpPow -= 1.2 * timer.tmod;
-                }
-
-                if (this.jumpPow <= 0 && this.frame < 73) {
-                    this.spriteHero.play('endJumping').chain('falling');
-                }
-			break;
-		}
-
-		this.y -= timer.tmod * this.jspeed * this.jumpPow;
-
-        if (this.y > MAX_Y) {
-			this.jumpPow = 0;
-			this.state = S_WAIT;
-			this.spriteHero.play('landing').chain('breathing');
-			this.y = MAX_Y;
-		}
-		if (this.x < MIN_X) {
-			this.x = MIN_X;
-			this.jumpDx *= -2;
-		}
-		if (this.x > MAX_X) {
-			this.x = MAX_X;
-			this.jumpDx *= -2;
-		}
-        
-        this.spriteHero.x = this.x;
-        this.spriteHero.y = this.y;
-        if (this.way == 1) {
-            this.spriteHero.setFlipX(false);
+        if (gameOver) {
+            this.spriteHeroDead.x += this.jumpDx * timer.tmod;
+            this.spriteHeroDead.y += this.deathY * timer.tmod;
+            this.deathY += timer.tmod;
+            if (this.spriteHeroDead.y > 330) {
+                ThisGame.Over();
+            }
         } else {
-            this.spriteHero.setFlipX(true);
-        }
-
-        this.arrow.x = this.x;
-        this.arrow.visible = (this.y < 0) ? true : false;
+            this.jumpDx *= 0.9 ** timer.tmod;
+            
+            switch (this.state) {
+                case S_WAIT:
+                case S_MOVE:
+                    if (keyLeft) {
+                        this.Running();
+                        this.way = -1;
+                        this.x -= timer.tmod * this.speed;
+                    } else if (keyRight) {
+                        this.Running();
+                        this.way = 1;
+                        this.x += timer.tmod * this.speed;
+                    } else {
+                        this.Braking();
+                        this.state = S_WAIT;
+                    }
         
-        this.frame = this.spriteHero.frame.name.split('/');
-        this.frame = this.frame[this.frame.length-1].replace('.png','');
+                    if (keyUp || keySpace) {
+                        this.jumpUp = true;
+                        this.jumpPow = 4;
+                        if (this.state == S_MOVE) {
+                            this.jumpDx = this.way * this.speed;
+                        } else {
+                            this.jumpDx = 0;
+                        }
+                        this.state = S_JUMP;
+                        this.spriteHero.play('startJumping').chain('jumping');
+                        this.AddJumpSmoke();
+                    }
+
+                    if (keyDown) {
+                        if (this.state == S_WAIT) {
+                            if (this.frame >= 46 || this.frame <= 28) {
+                                this.spriteHero.setFrame('hero/jumping/59.png');
+                            }
+                        }
+                    }
+                break;
+
+                case S_JUMP:
+                    if (keyLeft) {
+                        this.way = -1;
+                        this.jumpDx -= timer.tmod;
+                    } else if (keyRight) {
+                        this.way = 1;
+                        this.jumpDx += timer.tmod;
+                    }
+
+                    if (keyUp || keySpace) {
+                        if (this.jumpUp && this.jumpPow < this.maxPow) {
+                            this.jumpPow *= 1.4 ** timer.tmod;
+                            if (this.jumpPow >= this.maxPow) {
+                                this.jumpPow = this.maxPow;
+                                this.jumpUp = false;
+                            }
+                        }
+                    } else {
+                        this.jumpUp = false;
+                    }
+
+                    this.x += this.jumpDx * timer.tmod / 1.5;
+                    if (!this.jumpUp) {
+                        this.jumpPow -= 1.2 * timer.tmod;
+                    }
+
+                    if (this.jumpPow <= 0 && this.frame < 73) {
+                        this.spriteHero.play('endJumping').chain('falling');
+                    }
+                break;
+            }
+
+            this.y -= timer.tmod * this.jspeed * this.jumpPow;
+
+            if (this.y > MAX_Y) {
+                this.jumpPow = 0;
+                this.state = S_WAIT;
+                this.spriteHero.play('landing').chain('breathing');
+                this.y = MAX_Y;
+            }
+            if (this.x < MIN_X) {
+                this.x = MIN_X;
+                this.jumpDx *= -2;
+            }
+            if (this.x > MAX_X) {
+                this.x = MAX_X;
+                this.jumpDx *= -2;
+            }
+            
+            this.spriteHero.x = this.x;
+            this.spriteHero.y = this.y;
+            if (this.way == 1) {
+                this.spriteHero.setFlipX(false);
+            } else {
+                this.spriteHero.setFlipX(true);
+            }
+
+            this.arrow.x = this.x;
+            this.arrow.visible = (this.y < 0) ? true : false;
+            
+            this.frame = this.spriteHero.frame.name.split('/');
+            this.frame = this.frame[this.frame.length-1].replace('.png','');
+        }
     }
 
     Running() {
@@ -213,6 +225,29 @@ class Hero {
     AddJumpSmoke() {
         let spriteJumpSmoke = _this.add.sprite(this.x, this.y, 'sprites', 'jumpSmoke/1.png').setDepth(DEPTH_HERO);
         Animate.PlaySpriteThenDestroy(spriteJumpSmoke, 'jumpSmoke');
+    }
+
+    Kill() {
+        if (!gameOver) {
+            gameOver = true;
+            this.spriteHero.destroy();
+
+            let spriteDeathSmoke = _this.add.sprite(this.x, this.y-15, 'sprites', 'deathSmoke/1.png').setDepth(DEPTH_HERO);
+            Animate.PlaySpriteThenDestroy(spriteDeathSmoke, 'deathSmoke');
+            
+            this.spriteHeroDead.x = this.x;
+            this.spriteHeroDead.y = this.y;
+            this.spriteHeroDead.visible = true;
+            _this.tweens.add({
+                targets: this.spriteHeroDead,
+                ease: 'Linear',
+                angle: 360,
+                duration: 1000 * (24/WANTED_FPS),
+                repeat: -1
+            });
+
+            this.jumpDx = (this.x < 150) ? 1 : -1;
+        }
     }
 }
 
@@ -362,7 +397,7 @@ class Ennemy {
                             hero.AddJumpSmoke();
                             enn.KillBird();
                         } else {
-                            console.log("T'es mort !");
+                            hero.Kill();
                         }
                     }
                     if (enn.x > 340 || enn.x < -40) {
@@ -382,12 +417,6 @@ class Ennemy {
                     }
                 break;
             }
-
-            /*let dx =  hero.x - arrBonuses[i].x;
-            let dy =  (hero.y - 20) - arrBonuses[i].y;
-            if (dx**2 + dy**2 < BONUS_R2) {
-                arrBonuses[i].GetBonus();
-            }*/
         }
     }
 
@@ -464,37 +493,6 @@ class Ennemy {
                 }
             });
         }
-
-        /*SOURCE ACTIONSCRIPT :
-    -> FRAME 1
-        for(var i=0; i<10; i++){
-            
-            duplicateMovieClip(f,"f"+i,i)
-            var mc = this["f"+i]
-            mc.gotoAndPlay(1+random(mc._totalframes))
-            mc._xscale = mc._yscale = 50+random(100)
-            var b = mc.getBounds(this)
-            mc._x = -b.xMin
-            mc._y = -b.yMin
-            mc.t = 10+random(40)
-        }
-        f._visible = false;
-        timer = 50
-
-    -> FRAME 2
-        for(var i=0; i<10; i++){
-            var mc = this["f"+i]
-            mc.t--
-            if(mc.t<10){
-                mc._alpha = 10*mc.t
-            }
-            var c = (mc._currentframe*2-mc._totalframes)/mc._totalframes
-            mc._y += 0.5+Math.abs(c)*1
-            if( mc.t == 0 ) mc.removeMovieClip();
-        }
-
-        if(timer--<0)removeMovieClip("");
-*/
     }
 }
 
@@ -639,6 +637,18 @@ class AnimatedSprites {
                 suffix: '.png', 
                 start: 1, 
                 end: 9
+            }), 
+            repeat: 0,
+            frameRate: WANTED_FPS
+        });
+
+        _this.anims.create({ 
+            key: 'deathSmoke', 
+            frames: _this.anims.generateFrameNames('sprites', { 
+                prefix: 'deathSmoke/', 
+                suffix: '.png', 
+                start: 1, 
+                end: 15
             }), 
             repeat: 0,
             frameRate: WANTED_FPS

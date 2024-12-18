@@ -379,7 +379,7 @@
             <key type="filename">sprites/deathSmoke/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.561404,0.694915</point_f>
+                <point_f>0.526316,0.644068</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -642,7 +642,7 @@
             <key type="filename">sprites/heroDead/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.679245,0.566038</point_f>
+                <point_f>0.566038,0.54717</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
