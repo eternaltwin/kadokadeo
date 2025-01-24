@@ -240,7 +240,7 @@
             <key type="filename">sprites/bee/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.571429,0.69697</point_f>
+                <point_f>0.607143,0.727273</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -295,7 +295,7 @@
             <key type="filename">sprites/boarlet/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.534483,0.882353</point_f>
+                <point_f>0.5,0.852941</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>

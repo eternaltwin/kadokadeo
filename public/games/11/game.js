@@ -2,6 +2,7 @@
 Bugs à corriger :
 - Logo Kado sur la tête qui subit le flipX
 - Echarpe ne bouge pas quand on s'abaisse
+- ATTENTION : TEXTUREPACKER A MIS DES SPRITES EN ROUGE
 */
 
 /* -----
@@ -202,7 +203,7 @@ class Hero {
 
             this.arrow.x = this.x;
             this.arrow.visible = (this.y < 0) ? true : false;
-            
+
             this.frame = this.spriteHero.frame.name.split('/');
             this.frame = this.frame[this.frame.length-1].replace('.png','');
         }
@@ -326,6 +327,9 @@ class Ennemy {
         let positionArray = generatePosition(40, this.startY);
         this.x = positionArray.x;
         this.y = positionArray.y;
+        this.lifetime = 0;
+        this.movedX = this.x;
+        this.movedY = this.y;
         this.hitFromTop = false;
 
         this.type = Random.FromQuantities(ENNEMY_PROBAS_ARR.slice(0, level+1));
@@ -342,28 +346,61 @@ class Ennemy {
 
                 this.spriteEnnemy = _this.add.sprite(0, 0, 'sprites', 'bird/1.png');
                 this.hitbox = _this.add.rectangle(this.hitboxDx, this.hitboxDy, this.hitboxWidth, this.hitboxHeight, 0xffffff);
-                this.containerEnnemy = _this.add.container(this.x, this.y).setDepth(DEPTH_ENNEMIES);
-                this.containerEnnemy.add(this.spriteEnnemy);
-                this.containerEnnemy.add(this.hitbox);
                 this.spriteEnnemy.play('bird');
-                this.hitbox.visible = false;
+            break;
+
+            case BEE:
+                this.movedX = 50 + Math.min(level, 5) * 10;
+                if (this.movedY + this.movedX > MAX_X) {
+                    this.movedY = MAX_X - this.movedX;
+                }
+                if (this.movedY - this.movedX < 0) {
+                    this.movedY = this.movedX;
+                }
+                this.speed = 0.4 + 0.2 * level;
+
+                this.hitboxDx = -3;
+                this.hitboxDy = -8;
+                this.hitboxWidth = 28;
+                this.hitboxHeight = 28;
+
+                this.spriteEnnemy = _this.add.sprite(0, 0, 'sprites', 'bee/1.png');
+                this.hitbox = _this.add.rectangle(this.hitboxDx, this.hitboxDy, this.hitboxWidth, this.hitboxHeight, 0xffffff);
+                this.spriteEnnemy.play('bee');
+            break;
+
+            case BOARLET:
+                this.y = MAX_Y;
+                this.movedX = 0;
+                this.speed = 8;
+                this.lifetime = -2.7 + level * 0.15;
+
+                this.hitboxDx = -1;
+                this.hitboxDy = -12;
+                this.hitboxWidth = 51;
+                this.hitboxHeight = 33;
+
+                this.spriteEnnemy = _this.add.sprite(0, 0, 'sprites', 'boarlet/1.png');
+                this.hitbox = _this.add.rectangle(this.hitboxDx, this.hitboxDy, this.hitboxWidth, this.hitboxHeight, 0xffffff);
+                this.spriteEnnemy.play('boarlet');
+                
+                let alertX = this.x + (this.way == -1 ? -20 : 20);
+                let alertY = this.y - 10;
+                
+                let spriteAlert = _this.add.sprite(alertX, alertY, 'sprites', 'ennemyAlert/1.png').setDepth(DEPTH_ENNEMIES);
+                if (this.way == 1) {
+                    spriteAlert.scaleX = -1;
+                }
+                Animate.PlaySpriteThenDestroy(spriteAlert, 'ennemyAlert');
             break;
         }
-        if (this.way == -1) {
-            /*
-            BUG ICI parfois (je ne sais pas qu'est-ce qui génère le undefined)
-            Uncaught TypeError: Cannot set properties of undefined (setting 'scaleX')
-    at new Ennemy (game.js:318:41)
-    at Ennemy.Update (game.js:325:30)
-    at sceneGame.update (game.js:65:16)
-    at initialize.step (phaser.min.js:1:948791)
-    at initialize.update (phaser.min.js:1:935877)
-    at initialize.step (phaser.min.js:1:75942)
-    at initialize.step (phaser.min.js:1:80126)
-    at e (phaser.min.js:1:140700)
+        this.containerEnnemy = _this.add.container(this.x, this.y).setDepth(DEPTH_ENNEMIES);
+        this.containerEnnemy.add(this.spriteEnnemy);
+        this.containerEnnemy.add(this.hitbox);
+        this.hitbox.visible = false;
+        this.hitbox.alpha = 0.5;
 
-    CAUSE : this.containerEnnemy est défini uniquement dans case BIRD. Mais pas dans case BEE ou BOARLET
-            */
+        if (this.way == -1) {
             this.containerEnnemy.scaleX = -1;
         }
     }
@@ -377,9 +414,24 @@ class Ennemy {
 
         for (let i = 0; i < arrEnnemies.length; i++) {
             let enn = arrEnnemies[i];
+            enn.lifetime += timer.deltaT;
             switch (enn.type) {
                 case BIRD:
                     enn.x += enn.speed * timer.tmod * enn.way;
+                break;
+
+                case BEE:
+                    enn.x += enn.speed * timer.tmod * enn.way;
+                    enn.y = Math.sin(enn.lifetime) * enn.movedX + enn.movedY;
+                break;
+
+                case BOARLET:
+                    if (enn.lifetime < 0) {
+                        break;
+                    } else {
+                        enn.movedX += timer.tmod;
+                        enn.x += enn.speed * timer.tmod * (enn.way == -1 ? -1 : 1);
+                    }
                 break;
             }
 
@@ -406,12 +458,18 @@ class Ennemy {
                 break;
 
                 case BEE:
+                    if (enn.Hit(5)) {
+                        hero.Kill();
+                    }
                     if (enn.x > 320 || enn.x < -20) {
                         enn.Remove();
                     }
                 break;
 
                 case BOARLET:
+                    if (enn.Hit(10)) {
+                        hero.Kill();
+                    }    
                     if (enn.x > 340 || enn.x < -40) {
                         enn.Remove();
                     }
@@ -687,6 +745,42 @@ class AnimatedSprites {
                 end: 41
             }), 
             repeat: -1,
+            frameRate: WANTED_FPS
+        });
+
+        _this.anims.create({ 
+            key: 'bee', 
+            frames: _this.anims.generateFrameNames('sprites', { 
+                prefix: 'bee/', 
+                suffix: '.png', 
+                start: 1, 
+                end: 26
+            }), 
+            repeat: -1,
+            frameRate: WANTED_FPS
+        });
+
+        _this.anims.create({ 
+            key: 'boarlet', 
+            frames: _this.anims.generateFrameNames('sprites', { 
+                prefix: 'boarlet/', 
+                suffix: '.png', 
+                start: 1, 
+                end: 9
+            }), 
+            repeat: -1,
+            frameRate: WANTED_FPS
+        });
+
+        _this.anims.create({ 
+            key: 'ennemyAlert', 
+            frames: _this.anims.generateFrameNames('sprites', { 
+                prefix: 'ennemyAlert/', 
+                suffix: '.png', 
+                start: 1, 
+                end: 45
+            }), 
+            repeat: 0,
             frameRate: WANTED_FPS
         });
     }

@@ -21,6 +21,7 @@ var textLaunchTimer;
 var contract; // Contains the Contract object
 var score; // Contains the Score object
 var gameOver = false; // true when game over
+var gameOverCalled = false; // true when game over, used to call ThisGame.Over only once
 
 /* -----
 Customized classes that can be used for all games
@@ -164,23 +165,26 @@ class ThisGame { // All the functions regarding the main game scene and can be u
     }
 	
 	static Over() { // When game over, display a white screen and switch the scene
-		let whiteScreen = _this.add.graphics().setDepth(9999); // Drawing var for the white screen
-        let whiteRectangle;
-		whiteScreen.fillStyle(0xffffff);
-		whiteRectangle = whiteScreen.fillRect(0, 0, 300, 300);
-		whiteRectangle.alpha = 0;
-		_this.tweens.add({ // Transition to white screen
-			targets: whiteRectangle,
-			ease: 'Linear',
-			duration: 1500,
-			repeat: 0,
-			delay: 0,
-			alpha: 1,
-			onComplete: function() { // Delete white screen when complete
-				_this.scene.stop();
-				_this.scene.start('sceneEnd');
-			}
-		});
+		if (!gameOverCalled) {
+            gameOverCalled = true;
+            let whiteScreen = _this.add.graphics().setDepth(9999); // Drawing var for the white screen
+            let whiteRectangle;
+            whiteScreen.fillStyle(0xffffff);
+            whiteRectangle = whiteScreen.fillRect(0, 0, 300, 300);
+            whiteRectangle.alpha = 0;
+            _this.tweens.add({ // Transition to white screen
+                targets: whiteRectangle,
+                ease: 'Linear',
+                duration: 1500,
+                repeat: 0,
+                delay: 0,
+                alpha: 1,
+                onComplete: function() { // Delete white screen when complete
+                    _this.scene.stop();
+                    _this.scene.start('sceneEnd');
+                }
+            });
+        }
 	}
 }
 
@@ -304,7 +308,7 @@ class Timer {
 			
 			let newTime = Date.now();
 			
-			this.deltaT = ((newTime - this.oldTime) / 1000).toFixed(4); // In seconds
+			this.deltaT = Number(((newTime - this.oldTime) / 1000).toFixed(4)); // In seconds
             
 			this.oldTime = newTime;
 
