@@ -2,7 +2,6 @@
 Bugs à corriger :
 - Logo Kado sur la tête qui subit le flipX
 - Echarpe ne bouge pas quand on s'abaisse
-- ATTENTION : TEXTUREPACKER A MIS DES SPRITES EN ROUGE
 */
 
 /* -----
