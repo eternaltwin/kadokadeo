@@ -31,45 +31,64 @@ composer run-script db:sync
 composer run-script db:reset
 ```
 
-## Install with Docker
+## Installing with Docker
 
 ### Windows Users
 
-Windows users first need to install [WSL2](https://learn.microsoft.com/fr-fr/windows/wsl/install) and [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/).
+Windows users first need to install WSL2 and Docker Desktop.
 
-WSL2 should be installed by default on recent Windows 10+ versions. Try running `wsl --help` in a Powershell terminal. If it doesn't work, follow the link above to install it.
+Docker Desktop for Windows can be downloaded [here](https://docs.docker.com/desktop/install/windows-install/).
 
-Install [Ubuntu](https://apps.microsoft.com/store/detail/ubuntu/9PDXGNCFSCZV?hl=fr-fr&gl=fr&rtc=1) with WSL2 : `wsl --install -d Ubuntu`
+WSL2 should be installed by default on recent Windows 10+ versions. Try running `wsl --set-default-version 2` in a Powershell terminal. If it doesn't work, follow the instructions [here](https://learn.microsoft.com/fr-fr/windows/wsl/install-manual).
 
-Then launch it : `wsl -d Ubuntu`
+Install [Debian](https://apps.microsoft.com/detail/9msvkqc78pk6) with WSL2 : `wsl --install -d Debian`
 
-After configuring your Ubuntu account, you can install the project following the instructions below.
+Then launch it : `wsl -d Debian`
 
+After configuring your Debian account, you can install the project following the instructions below.
 
-### Install build tools
+### Install build tools and Docker
+
+- Install build tools and Git :
+
 ```bash
 sudo -s
-apt-get update -y
-apt-get install build-essential curl git -y
+apt update -y
+apt install build-essential curl git -y
+```
+- Install Docker and Docker Compose in command line :
+
+```bash
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt update -y
+apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+exit # Quit root mode
+cd ~ # Go back to your home directory
+```
+Then, add your user to the Docker group :
+
+```bash
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
 ```
 
-- Install Docker and Docker Compose in command line (alternative to Docker Desktop for WSL2 users) :
-```bash
-apt-get install lsb-release -y
-mkdir -m 0755 -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-apt-get install docker docker-compose docker-compose-plugin -y
-exit
-cd ~
-```
+Run `docker run hello-world` to check if Docker is correctly installed. If not :
+- try to run it in a new terminal ;
+- log off and log in again ;
+- restart your computer and try again.
 
 ### Install the project
 
 - If not done yet, generate a SSH key and add it to your GitLab profile :
   - Generate the key : `ssh-keygen -t rsa -b 2048 -C "SSH Key for Kadokadéo repository (https://gitlab.com/eternaltwin/kadokadeo/kadokadeo)"`
   - Display the key : `cat ~/.ssh/id_rsa.pub`
-  - Copy the key and add it to your GitLab profile here : https://gitlab.com/-/profile/keys
+  - Copy the key and add it to your GitLab profile here : https://gitlab.com/-/user_settings/ssh_keys/
 
 - Clone the repository and move to it : `git clone git@gitlab.com:eternaltwin/kadokadeo/kadokadeo.git && cd kadokadeo`
 
@@ -89,25 +108,12 @@ make
   -  KadoKadéo on http://kadokadeo.localhost/
   -  Eternaltwin on http://localhost:50320
 
-WSL2 users :
-
-Although it is possible to run Kadokadeo from a Windows folder mounted to WSL2, it will be very slow at best case and you may run to issues during installation at worst case (this is why we moved to home folder `~` in the previous steps).
-
-You can work with the repo cloned in Ubuntu home with VSCode's [WSL remote](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) or accessing files through SMB (e.g. `\\wsl$\Ubuntu\kadokadeo`).
 
 ### Troubleshooting
-Don't hesitate to mention @evian6930 on Discord if you have any issue.
 
-- `docker: permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post "http://%2Fvar%2Frun%2Fdocker.sock/v1.24/containers/create": dial unix /var/run/docker.sock: connect: permission denied.`
-You need to add your user to the `docker` group :
-```bash
-sudo groupadd docker
-sudo usermod -aG docker $USER
-newgrp docker
-```
-Run `docker run hello-world` to check if it works. If if does, you can run `make` again. If not, restart your computer before retrying.
+Please contact @evian6930 on Discord if you have any issue.
 
-- `Ports are not available: listen tcp 0.0.0.0:50320: bind : An attempt was made to access a socket in a way forbidden by its access permissions.` :
+- `Ports are not available: listen tcp 0.0.0.0:50320: bind : An attempt was made to access a socket in a way forbidden by its access permissions.`
 Open Powershell as an administrator and run the following commands :
 ```powershell
 netsh int ipv4 set dynamic tcp start=60536 num=5000
@@ -115,17 +121,12 @@ netsh int ipv6 set dynamic tcp start=60536 num=5000
 ```
 Restart your computer, then try to run `make` again.
 
-- `cache lookup failed for type xxxx` : Re install everything with `make` . 
-Make sure you wait for the Eternaltwin server to be fully up before trying to access to KadoKadéo (you can check the logs with `make docker-watch`. The server is ready when you see `kadokadeo_eternaltwin  | Listening on internal port 50320, externally available at http://localhost:50320/`)
+## Some useful commands
 
-- `Database does not exist` : Try to remove all your Docker volumes with `docker volume prune` and re install everything with `make` .
-
-### Some useful commands
-
-- `make docker-start` : Start the project
-- `make docker-stop` : Stop the project
+- `make docker-watch` : Start the project with logs
+- `make docker-start` : Start the project in the background
 - `make bash-app` : Enter the application container to run `composer` or `php` commands
 - `make reset-database` : Reset the database
 - `make sync-database` : Update the database with your migrations defined in `db` folder
 
-Please see more commands in the [`Makefile`](Makefile) or the [`composer.json`](composer.json) file.
+Please see more commands in the [`Makefile`](Makefile) or the [`composer.json`](composer.json#L16-L19) file.
