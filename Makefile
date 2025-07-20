@@ -39,23 +39,24 @@ install: setup-env-variables build start-kadokadeo-database install-app
 
 install-app:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app composer install
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app composer run-script db:reset -- --no-confirm
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan key:generate --ansi
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan migrate:fresh --force
 
 install-eternaltwin:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u node kadokadeo_eternaltwin yarn install
 
 reset-database:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app composer run-script db:reset -- --no-confirm
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan migrate:fresh --force
 
-reset-eternaltwin-database: 
+reset-eternaltwin-database:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u node kadokadeo_eternaltwin yarn etwin db create
 
 start-kadokadeo-database:
 	docker start kadokadeo_database
 
 setup-env-variables:
-	cp .env.docker .env
+	cp .env.example .env
 	cp eternaltwin/etwin.toml.example eternaltwin/etwin.toml
 
 sync-database:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app composer run-script db:sync -- --no-confirm
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan migrate --force

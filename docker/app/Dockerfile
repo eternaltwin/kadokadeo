@@ -1,5 +1,5 @@
 # Dockerfile
-FROM php:8.1-apache
+FROM php:8.4-apache
 
 #For mac and windows
 ARG HOST_IP=host.docker.internal
