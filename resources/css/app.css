@@ -1,82 +1,83 @@
-/*
+
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../** /*.blade.php';
 @source '../** /*.js';
-*/
+
+@layer base {
+    html, :host {
+        line-height: unset;
+    }
+}
+
 
 /* CUSTOMIZED FONT */
 
 @font-face {
-	font-family: "Junegull-Regular";
-	src: url("/fonts/Junegull-Regular.eot");
-	src: url("/fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/Junegull-Regular.woff") format("otf"),
-		url("/fonts/Junegull-Regular.woff") format("woff"),
-		url("/fonts/Junegull-Regular.ttf") format("truetype"),
-		url("/fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
+    font-family: "Junegull-Regular";
+    src: url("$fonts/Junegull-Regular.eot");
+    src: url("$fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
+        url("$fonts/Junegull-Regular.woff") format("otf"),
+        url("$fonts/Junegull-Regular.woff") format("woff"),
+        url("$fonts/Junegull-Regular.ttf") format("truetype"),
+        url("$fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
 }
 
 @font-face {
-	font-family: "Jost-Medium";
-	src: url("/fonts/Jost-Medium.ttf") format("truetype");
+    font-family: "Jost-Medium";
+    src: url("$fonts/Jost-Medium.ttf") format("truetype");
 }
 
-#loadFonts p {
-	width: 0;
-	margin: 0;
-	position: absolute;
-	left: -1000px;
-	visibility: hidden;
+[data-lang="fr"] {
+    background: url('$images/langFrench.gif') no-repeat;
 }
-
 
 /* GLOBAL */
 
 body {
-	width: 1010px;
-	margin: 0 auto;
-	padding: 0;
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
-	background: url("/images/bgHeader.png") top repeat-x, url("/images/bgBodyPattern.jpg") repeat;
-	background-color: #f1f9fb;
-	font-size: 1em;
-	font-family: Trebuchet MS, Arial, sans-serif;
-	color: #0687b1;
+    width: 1010px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background: url("$images/bgHeader.png") top repeat-x, url("$images/bgBodyPattern.jpg") repeat;
+    background-color: #f1f9fb;
+    font-size: 1em;
+    font-family: Trebuchet MS, Arial, sans-serif;
+    color: #0687b1;
 }
 
 p {
-	margin: 16px 10px;
-	padding: 0;
+    margin: 16px 10px;
+    padding: 0;
 }
 
 a {
-	color: #ffa400;
-	text-decoration: none;
+    color: #ffa400;
+    text-decoration: none;
 }
 
 a:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 img {
-	border: 0;
-	margin: 0;
-	padding: 0;
-	vertical-align: middle;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
 }
 
 table {
-	border-collapse: collapse;
+    border-collapse: collapse;
 }
 
 #container h1 { /* Mozilla Firefox and IE doesn't support the background-clip:text; and -webkit-text-stroke properties */
-	margin: 25px 10px 20px 10px;
+    margin: 25px 10px 20px 10px;
     padding: 0;
     font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
     font-size: 2.5em;
@@ -104,40 +105,40 @@ table {
     margin: 40px 0 10px 10px;
     padding: 4px 5px 0 40px;
     font-size: 1.5em;
-    background: url("/images/bgTitleBlue.jpg") no-repeat;
+    background: url("$images/bgTitleBlue.jpg") no-repeat;
     text-transform: uppercase;
 }
 
 .bold {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .italic {
-	font-style: italic;
+    font-style: italic;
 }
 
 .center {
-	text-align: center;
+    text-align: center;
 }
 
 .centerMargin {
-	margin: auto;
+    margin: auto;
 }
 
 .nomargin {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 
 /* HEADER, TOP NAV, TOP BANNER */
 
 header#topPage {
-	width: 1010px;
-	height: 100px;
-	margin: 0 auto 20px auto;
-	display: flex;
-	justify-content: flex-start;
+    width: 1010px;
+    height: 100px;
+    margin: 0 auto 20px auto;
+    display: flex;
+    justify-content: flex-start;
     position: relative;
 }
 
@@ -148,89 +149,89 @@ header#topPage nav#languageNav {
 }
 
 header#topPage nav#languageNav ul {
-	width: 32px;
+    width: 32px;
     list-style: none;
-	margin: 0;
-	padding: 0;
-	display: flex;
+    margin: 0;
+    padding: 0;
+    display: flex;
     flex-direction: column;
-	justify-content: flex-start;
+    justify-content: flex-start;
     align-items: flex-start;
 }
 
 header#topPage nav#languageNav ul li a {
-	width: 29px;
-	height: 22px;
+    width: 29px;
+    height: 22px;
     margin: 0 0 1px 0;
-	display: block;
-	text-decoration: none;
+    display: block;
+    text-decoration: none;
 }
 
 header#topPage h1 {
-	width: 424px;
-	height: 78px;
-	margin: 0;
-	padding: 0;
-	background: url("/images/logoBasic.png") no-repeat;
+    width: 424px;
+    height: 78px;
+    margin: 0;
+    padding: 0;
+    background: url("$images/logoBasic.png") no-repeat;
 }
 
 header#topPage h1 span {
-	display: none;
+    display: none;
 }
 
 header#topPage nav#topNav {
-	margin: 5px 0 0 0;
+    margin: 5px 0 0 0;
 }
 
 header#topPage nav#topNav ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: flex;
-	justify-content: space-around
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around
 }
 
 header#topPage nav#topNav ul li, header#topPage nav#topNav ul li a {
-	width: 117px;
-	height: 95px;
-	display: block;
-	text-decoration: none;
+    width: 117px;
+    height: 95px;
+    display: block;
+    text-decoration: none;
 }
 
 header#topPage nav#topNav ul li a#topNavGames {
-	background: url("/images/menuGames.png") no-repeat;
+    background: url("$images/menuGames.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavSite {
-	background: url("/images/menuSite.png") no-repeat;
+    background: url("$images/menuSite.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavShop {
-	background: url("/images/menuShop.png") no-repeat;
+    background: url("$images/menuShop.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li:hover {
-	background: url("/images/menuHover.png") no-repeat;
+    background: url("$images/menuHover.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a span {
-	display: none;
+    display: none;
 }
 
 header#topPage nav#kalendrier {
     width: 201px;
     height: 141px;
     margin: 2px 0 0 0;
-	padding: 0;
-    background: url("/images/bgKalendrier.png") no-repeat;
+    padding: 0;
+    background: url("$images/bgKalendrier.png") no-repeat;
     font-size: 0.75em;
     position: relative;
 }
 
 header#topPage nav#kalendrier ul {
     list-style: none;
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 header#topPage nav#kalendrier ul li#kalUser {
@@ -242,40 +243,40 @@ header#topPage nav#kalendrier ul li#kalUser {
 header#topPage aside#topBarInfo {
     width: 389px;
     height: 40px;
-    background: url("/images/bgTopBarInfo.png") no-repeat;
+    background: url("$images/bgTopBarInfo.png") no-repeat;
     position: absolute;
     top: 73px;
     left: 49px;
 }
 
 header#topPage aside#topBarInfo ul {
-	width: 349px;
+    width: 349px;
     height: 27px;
     list-style: none;
-	margin: 4px 18px 9px 22px;
-	padding: 0;
-	display: flex;
-	justify-content: space-between;
+    margin: 4px 18px 9px 22px;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
 }
 
 header#topPage aside#topBarInfo ul li#topBarKadoPoints {
-	padding: 4px 0 0 28px;
-    background: url("/images/topBarPointsKado.png") left no-repeat;
+    padding: 4px 0 0 28px;
+    background: url("$images/topBarPointsKado.png") left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarGreenStar {
-	padding: 4px 0 0 30px;
-    background: url("/images/topBarGreenStar.png") left no-repeat;
+    padding: 4px 0 0 30px;
+    background: url("$images/topBarGreenStar.png") left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarOrangeStar {
-	padding: 4px 0 0 30px;
-    background: url("/images/topBarOrangeStar.png") left no-repeat;
+    padding: 4px 0 0 30px;
+    background: url("$images/topBarOrangeStar.png") left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarRedStar {
-	padding: 4px 5px 0 30px;
-    background: url("/images/topBarRedStar.png") left no-repeat;
+    padding: 4px 5px 0 30px;
+    background: url("$images/topBarRedStar.png") left no-repeat;
 }
 
 
@@ -306,9 +307,9 @@ header#topPage aside#topBarInfo ul li span {
 #bodySection {
     width: 890px;
     margin: 0 60px;
-    background: url("/images/bgContainerTopBlue.jpg") top left no-repeat, url("/images/bgContainerTopRepeat.jpg") top repeat-x;
-	background-color: #eaf8fb;
-	border: 3px solid #5caab7;
+    background: url("$images/bgContainerTopBlue.jpg") top left no-repeat, url("$images/bgContainerTopRepeat.jpg") top repeat-x;
+    background-color: #eaf8fb;
+    border: 3px solid #5caab7;
     box-shadow: 0 0 0 2px #ffffff, 0 0 30px 1px rgba(0, 0, 0, 0.5);
 }
 
@@ -317,24 +318,24 @@ header#topPage aside#topBarInfo ul li span {
 }
 
 .inColumns {
-	display: flex;
-	flex-wrap: wrap;
-	flex-direction: row;
-	justify-content: center;
-	align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
 }
 
 .inColumns .twoCols {
-	width: 46%;
-	margin: 0 2% 0 2%;
+    width: 46%;
+    margin: 0 2% 0 2%;
 }
 
 .halfWidth {
-	width: 50%;
+    width: 50%;
 }
 
 .fullWidth {
-	width: 100%;
+    width: 100%;
 }
 
 #containerSide {
@@ -365,13 +366,13 @@ header#topPage aside#topBarInfo ul li span {
 }
 
 #containerSide .sideBoxGreen {
-    background: url("/images/bgContainerTopGreen.jpg") -205px 13px no-repeat;
+    background: url("$images/bgContainerTopGreen.jpg") -205px 13px no-repeat;
     background-color: #f3ffd7;
     border: 3px solid #89bc24;
 }
 
 #containerSide .sideBoxGreen h2 {
-    background: url("/images/bgTitleGreen.jpg") -15px -5px no-repeat;
+    background: url("$images/bgTitleGreen.jpg") -15px -5px no-repeat;
     color: #6fa20a;
     border-bottom: 3px solid #89bc24;
 }
@@ -394,41 +395,41 @@ header#topPage aside#topBarInfo ul li span {
 }
 
 #containerSide ul#menuSide li.news a {
-    background: url("/images/menuIconNews.gif") 0px 2px no-repeat;
+    background: url("$images/menuIconNews.gif") 0px 2px no-repeat;
 }
 
 #containerSide ul#menuSide li.scores a {
-    background: url("/images/menuIconScores.gif") -2px 3px no-repeat;
+    background: url("$images/menuIconScores.gif") -2px 3px no-repeat;
 }
 
 #containerSide ul#menuSide li.account a {
-    background: url("/images/menuIconAccount.gif") 0px 3px no-repeat;
+    background: url("$images/menuIconAccount.gif") 0px 3px no-repeat;
 }
 
 #containerSide ul#menuSide li.help a {
-    background: url("/images/menuIconHelp.gif") -3px 0px no-repeat;
+    background: url("$images/menuIconHelp.gif") -3px 0px no-repeat;
 }
 
 #containerSide .sideBoxBlue {
-    background: url("/images/bgContainerTopBlue.jpg") -205px 13px no-repeat;
+    background: url("$images/bgContainerTopBlue.jpg") -205px 13px no-repeat;
     background-color: #eaf8fa;
     border: 3px solid #5babbb;
 }
 
 #containerSide .sideBoxBlue h2 {
-    background: url("/images/bgTitleBlue.jpg") -15px -5px no-repeat;
+    background: url("$images/bgTitleBlue.jpg") -15px -5px no-repeat;
     color: #0687b1;
     border-bottom: 3px solid #5babbb;
 }
 
 #containerSide .sideBoxPink {
-    background: url("/images/bgContainerTopPink.jpg") -205px 13px no-repeat;
+    background: url("$images/bgContainerTopPink.jpg") -205px 13px no-repeat;
     background-color: #ffecf2;
     border: 3px solid #ff6b9c;
 }
 
 #containerSide .sideBoxPink h2 {
-    background: url("/images/bgTitlePink.jpg") -15px -5px no-repeat;
+    background: url("$images/bgTitlePink.jpg") -15px -5px no-repeat;
     color: #ff6b9c;
     border-bottom: 3px solid #ff6b9c;
 }
@@ -437,37 +438,37 @@ header#topPage aside#topBarInfo ul li span {
 /* HOME PAGE */
 
 .inColumns .homeLeftColumn {
-	width: 488px;
+    width: 488px;
     height: 475px;
-    background: url("/images/bgIntroHomePage.png") no-repeat;
-	margin: 0;
+    background: url("$images/bgIntroHomePage.png") no-repeat;
+    margin: 0;
 }
 
 .inColumns .homeRightColumn {
-	width: 360px;
+    width: 360px;
     margin: 0 16px;
 }
 
 p.btnHomepagePlay {
     width: 362px;
     height: 52px;
-    background: url("/images/btnHomepagePlay.png") no-repeat;
+    background: url("$images/btnHomepagePlay.png") no-repeat;
     margin: 40px 0 0 0;
     padding: 5px 0 0 0;
     font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
-	font-size: 2em;
-	letter-spacing: 0.1em;
+    font-size: 2em;
+    letter-spacing: 0.1em;
     text-align: center;
 }
 
 p.btnHomepagePlay:hover {
-    background: url("/images/btnHomepagePlayHover.png") no-repeat;
+    background: url("$images/btnHomepagePlayHover.png") no-repeat;
     padding: 8px 0 0 0;
     text-decoration: none;
 }
 
 .btnHomepagePlay a { /* Mozilla Firefox and IE doesn't support the background-clip:text; property */
-	width: 290px;
+    width: 290px;
     margin: 0 10px 0 62px;
     font-weight: bold;
     color: #037601;
@@ -492,66 +493,66 @@ p.btnHomepagePlay:hover {
 /* GAME PAGE */
 
 .gameInterface {
-	width: 724px;
-	height: 370px;
-	margin: 10px auto 50px auto;
-	padding: 0;
-	background: url("/images/gameInterface.png") no-repeat;
-	position: relative;
+    width: 724px;
+    height: 370px;
+    margin: 10px auto 50px auto;
+    padding: 0;
+    background: url("$images/gameInterface.png") no-repeat;
+    position: relative;
 }
 
 canvas#gameCanvas {
-	width: 300px;
-	height: 320px;
-	position: absolute;
-	top: 23px;
-	left: 22px;
-	display: block;
-	margin: 0;
-	padding: 0;
-	border: 1px solid #56b7c1;
+    width: 300px;
+    height: 320px;
+    position: absolute;
+    top: 23px;
+    left: 22px;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #56b7c1;
 }
 
 .gameSide {
-	width: 303px;
-	height: 320px;
-	position: absolute;
-	top: 23px;
-	left: 396px;
-	margin: 0;
-	padding: 0;
-	overflow-y: auto;
-	overflow-x: hidden;
-	font-size: 0.75em;
+    width: 303px;
+    height: 320px;
+    position: absolute;
+    top: 23px;
+    left: 396px;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 0.75em;
 }
 
 .gameSide p {
-	margin: 8px;
+    margin: 8px;
 }
 
 .gameSide hr {
-	width: 200px;
-	margin: 8px auto;
-	border: 0;
-	border-top: 1px solid #0687b1;
+    width: 200px;
+    margin: 8px auto;
+    border: 0;
+    border-top: 1px solid #0687b1;
 }
 
 nav.gameNav ul {
     list-style: none;
-	margin: 2px 0 0 0;
-	padding: 0;
-	display: flex;
-	justify-content: space-around;
-	font-size: 1em;
+    margin: 2px 0 0 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+    font-size: 1em;
 }
 
 nav.gameNav ul li a {
-	width: 100px;
+    width: 100px;
     height: 25px;
     box-sizing: border-box;
-	display: block;
+    display: block;
     text-align: center;
-	margin: 0;
+    margin: 0;
     padding: 2px 0 0 0;
     background-color: #d8e9eb;
     color: #0687b1;
@@ -593,69 +594,69 @@ nav.gameNav ul li.showed a#gameNavRanking:hover {
 }
 
 .gameRules table.gameCommands {
-	width: 284px;
-	margin: 8px auto;
-	border: 0;
-	text-align: left;
+    width: 284px;
+    margin: 8px auto;
+    border: 0;
+    text-align: left;
 }
 
 .gameRules table.gameCommands th, .gameRules table.gameCommands td {
-	vertical-align: middle;
-	text-align: center;
+    vertical-align: middle;
+    text-align: center;
 }
 
 .gameRules table.gameCommands th {
-	font-size: 0.9em;
+    font-size: 0.9em;
 }
 
 .gameRules table.gameCommands .col1 {
-	width: 80px;
+    width: 80px;
 }
 
 
 /* FORMS */
 
 form div {
-	margin-top: 16px;
-	margin-bottom: 16px;
+    margin-top: 16px;
+    margin-bottom: 16px;
 }
 
 form div label {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 form div input, input[type=submit], input[type=button], input[type=reset] {
-	width: 100%;
-	min-width: 80px;
-	margin: 5px 0 5px 0;
-	padding: 5px;
-	box-sizing: border-box;
-	border: 2px solid #fff;
-	border-left: 7px solid #fff;
-	color: #20a8c3;
-	background: url("/images/bgInput.jpg") repeat-x;
+    width: 100%;
+    min-width: 80px;
+    margin: 5px 0 5px 0;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 2px solid #fff;
+    border-left: 7px solid #fff;
+    color: #20a8c3;
+    background: url("$images/bgInput.jpg") repeat-x;
 }
 
 form div input:focus {
-	color: #89bc24;
-	background: url("/images/bgInputFocus.jpg") repeat-x;
+    color: #89bc24;
+    background: url("$images/bgInputFocus.jpg") repeat-x;
 }
 
 input[type=submit], input[type=button], input[type=reset] {
-	height: 32px;
-	padding-left: 15px;
-	color: #6fa20a;
-	font-size: 1em;
-	font-weight: bold;
-	text-decoration: none;
-	border: 1px solid #6fa20a;
-	background: url("/images/bgFormButtonLeft.jpg") left no-repeat, url("/images/bgFormButtonFill.jpg") repeat-x;
-	background-color: #e6ffbd;
-	cursor: pointer;
+    height: 32px;
+    padding-left: 15px;
+    color: #6fa20a;
+    font-size: 1em;
+    font-weight: bold;
+    text-decoration: none;
+    border: 1px solid #6fa20a;
+    background: url("$images/bgFormButtonLeft.jpg") left no-repeat, url("$images/bgFormButtonFill.jpg") repeat-x;
+    background-color: #e6ffbd;
+    cursor: pointer;
 }
 
 input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover {
-	background: url("/images/bgFormButtonLeftHover.jpg") left no-repeat, url("/images/bgFormButtonFillHover.jpg") repeat-x;
+    background: url("$images/bgFormButtonLeftHover.jpg") left no-repeat, url("$images/bgFormButtonFillHover.jpg") repeat-x;
 }
 
 
@@ -665,51 +666,51 @@ input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover {
 
 
 div.confirm {
-	border: 2px solid #89bc24;
-	border-left: 10px solid #89bc24;
-	background-color: #6fa20a;
-	padding: 1px;
-	margin: 5px;
-	margin-bottom: 10px;
-	color: #89bc24;
-	font-weight: bold;
+    border: 2px solid #89bc24;
+    border-left: 10px solid #89bc24;
+    background-color: #6fa20a;
+    padding: 1px;
+    margin: 5px;
+    margin-bottom: 10px;
+    color: #89bc24;
+    font-weight: bold;
 }
 
 div.confirm div {
-	border: 3px solid white;
-	background-color: #f3ffd7;
-	background-image: url("/images/bgGreen.png");
-	background-repeat: no-repeat;
-	padding: 5px;
+    border: 3px solid white;
+    background-color: #f3ffd7;
+    background-image: url("$images/bgGreen.png");
+    background-repeat: no-repeat;
+    padding: 5px;
 }
 
 div.confirm p,
 div.confirm ul {
-	color: #89bc24;
-	font-weight: normal;
-	font-size: 14px;
-	line-height: 14px;
+    color: #89bc24;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 14px;
 }
 
 div.error {
-	border: 2px solid #ff6b9c;
-	border-left: 10px solid #ff6b9c;
-	background-color: #f40b58;
-	padding: 1px;
-	margin: 5px;
-	margin-bottom: 10px;
+    border: 2px solid #ff6b9c;
+    border-left: 10px solid #ff6b9c;
+    background-color: #f40b58;
+    padding: 1px;
+    margin: 5px;
+    margin-bottom: 10px;
 }
 
 div.error div {
-	border: 3px solid white;
-	background-color: #ffecf2;
-	background-image: url("/images/bgPink.png");
-	background-repeat: no-repeat;
-	padding: 5px;
+    border: 3px solid white;
+    background-color: #ffecf2;
+    background-image: url("$images/bgPink.png");
+    background-repeat: no-repeat;
+    padding: 5px;
 }
 
 div.error p,
 div.error ul {
-	color: #ff6b9c;
-	font-weight: bold;
+    color: #ff6b9c;
+    font-weight: bold;
 }

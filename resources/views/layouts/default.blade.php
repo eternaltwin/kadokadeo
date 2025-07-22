@@ -15,16 +15,12 @@
 </head>
 
 <body>
-    <div id="loadFonts">
-        <p style="font-family:Junegull-Regular;">.</p>
-        <p style="font-family:Jost-Medium;">.</p>
-    </div>
     <header id="topPage">
         <nav id="languageNav">
             <ul>
                 <li>
                     <a href="#" title="Français">
-                        <img src="images/langFrench.gif" alt="french" title="Français">
+                        <div data-lang="fr" alt="french" title="Français">
                     </a>
                 </li>
             </ul>

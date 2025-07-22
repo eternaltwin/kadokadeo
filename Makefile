@@ -2,7 +2,7 @@ all: install docker-start
 	@echo "Project installed successfully! You can access Kadokadéo at http://kadokadeo.localhost/."
 
 docker-start: docker-stop
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d --no-recreate --remove-orphans
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d --no-recreate --remove-orphans --build
 
 docker-watch:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --no-recreate --remove-orphans

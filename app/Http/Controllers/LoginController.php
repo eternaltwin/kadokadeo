@@ -7,12 +7,22 @@ use Eternaltwin\OauthClient\RfcOauthClient;
 use Eternaltwin\Client\Auth as EtwinAuth;
 use Eternaltwin\Client\HttpEtwinClient;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 
-class LoginController extends Controller
+class LoginController extends Controller implements HasMiddleware
 {
     private readonly RfcOauthClient $oauthClient;
     private readonly HttpEtwinClient $etwinClient;
+
+    public static function middleware()
+    {
+        return [
+            new Middleware('guest', only: ['login', 'loginCallback']),
+            new Middleware('auth', only: ['logout']),
+        ];
+    }
 
     public function __construct()
     {

@@ -1,3 +1,4 @@
+version: '3'
 services:
   kadokadeo_app:
     build: app
@@ -10,6 +11,14 @@ services:
       - kadokadeo_database
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  kadokadeo_front:
+    image: node:20
+    container_name: kadokadeo_front
+    volumes:
+      - ../.:/www
+    working_dir: /www
+    command: 'sh -c "npm i && npm run dev"'
 
   kadokadeo_database:
     image: postgres:15.1

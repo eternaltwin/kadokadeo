@@ -4,13 +4,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [App\Http\Controllers\LoginController::class, 'login'])->name('login');
-    Route::get('/oauth/callback', [App\Http\Controllers\LoginController::class, 'loginCallback']);
-});
+Route::get('/login', [App\Http\Controllers\LoginController::class, 'login'])->name('login');
+Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
+Route::get('/oauth/callback', [App\Http\Controllers\LoginController::class, 'loginCallback']);
 
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
-    Route::get('/user/settings', [App\Http\Controllers\AccountController::class, 'edit'])->name('account.edit');
-    Route::post('/user/settings', [App\Http\Controllers\AccountController::class, 'update'])->name('account.update');
+Route::get('/user/settings', [App\Http\Controllers\AccountController::class, 'edit'])->name('account.edit');
+Route::post('/user/settings', [App\Http\Controllers\AccountController::class, 'update'])->name('account.update');
+
+Route::prefix('/games')->group(function () {
+    Route::get('/', [App\Http\Controllers\GameController::class, 'index'])->name('games.index');
+    Route::get('/{game}', [App\Http\Controllers\GameController::class, 'show'])->name('games.show');
 });
