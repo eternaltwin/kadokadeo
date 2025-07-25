@@ -665,23 +665,29 @@ input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover {
 
 
 
+div.confirm, div.error {
+    padding: 1px;
+    margin: 5px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
 div.confirm {
     border: 2px solid #89bc24;
     border-left: 10px solid #89bc24;
     background-color: #6fa20a;
-    padding: 1px;
-    margin: 5px;
-    margin-bottom: 10px;
     color: #89bc24;
-    font-weight: bold;
+}
+
+div.confirm div, div.error div {
+    border: 3px solid white;
+    background-repeat: no-repeat;
+    padding: 5px;
 }
 
 div.confirm div {
-    border: 3px solid white;
     background-color: #f3ffd7;
     background-image: url("$images/bgGreen.png");
-    background-repeat: no-repeat;
-    padding: 5px;
 }
 
 div.confirm p,
@@ -696,17 +702,11 @@ div.error {
     border: 2px solid #ff6b9c;
     border-left: 10px solid #ff6b9c;
     background-color: #f40b58;
-    padding: 1px;
-    margin: 5px;
-    margin-bottom: 10px;
 }
 
 div.error div {
-    border: 3px solid white;
     background-color: #ffecf2;
     background-image: url("$images/bgPink.png");
-    background-repeat: no-repeat;
-    padding: 5px;
 }
 
 div.error p,

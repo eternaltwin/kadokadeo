@@ -14,6 +14,8 @@ return new class () extends Migration {
             $table->id();
             $table->string('ewtin_id');
             $table->string('display_name', 64);
+            $table->integer('kado_points')->default(0);
+            $table->integer('kado_games');
             $table->string('email')->nullable();
             $table->rememberToken();
             $table->timestamps();

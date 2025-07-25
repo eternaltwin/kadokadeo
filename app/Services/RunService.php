@@ -1,0 +1,139 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Run;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
+
+/**
+ * le client génère une clé AES
+ * il chiffre le message (= score, timestamp, replay) avec cette clé
+ * il envoie au serveur :
+ * le message chiffré avec AES
+ * la clé AES chiffrée avec la public key du serveur
+ * la signature du message avec la clé AES
+ *
+ * le back :
+ * déchiffre la clé AES grace à sa clé privée
+ * déchiffre le message chiffré AES
+ * vérifie la signature
+ */
+
+class RunService
+{
+    private string $publicKey;
+    private string $privateKey;
+
+    public function __construct()
+    {
+        $this->publicKey = config('kado.security.public_key');
+        $this->privateKey = config('kado.security.private_key');
+    }
+
+    public function decodeRun(string $payload, string $key, string $sign): array
+    {
+        $aesKey = $this->getAesKeyFromEncrypted($key);
+        $decryptedPayload = $this->getDecryptedPayload($payload, $aesKey);
+
+        // Check signature
+        $expectedSign = base64_encode(hash_hmac('sha256', $decryptedPayload, $aesKey, true));
+
+        if (!hash_equals($expectedSign, $sign)) {
+            throw new \Exception("Signature invalide.");
+        }
+
+        $json = json_decode($decryptedPayload, true);
+
+        // Validate json from Laravel Validator
+        $validator = Validator::make($json, [
+            'run_id' => 'required|exists:runs,id',
+            'score' => 'required|integer|min:0',
+            'timestamp' => 'required|integer',
+            'replay' => 'nullable|string', // TODO: make a function to decode a replay. We should think of what is should be made of.
+        ]);
+
+        if ($validator->fails()) {
+            throw new \Illuminate\Validation\ValidationException($validator);
+        }
+
+        return $validator->validated();
+    }
+
+    public function confirmRun($decoded)
+    {
+        $run = Run::findOrFail(data_get($decoded, 'run_id'));
+        $score = data_get($decoded, 'score');
+        $timestamp = data_get($decoded, 'timestamp');
+        // $replay = data_get($decoded, 'replay');
+
+        $end = Carbon::createFromTimestamp($timestamp);
+
+        if ($end->clone()->subMinute()->isFuture()) {
+            // invalid timestamp, more than 1 min in the future
+        }
+        $run->play_time_seconds = $end->diffInSeconds($run->created_at, true);
+        $run->completed_at = $end;
+        $run->score = $score;
+        $run->save();
+
+        return $run;
+    }
+
+    private function getAesKeyFromEncrypted(string $key): string
+    {
+        // Decrypt AES key with server's private key
+        $privateKey = openssl_pkey_get_private($this->privateKey);
+        if (!$privateKey) {
+            throw new \Exception("Impossible de charger la clé privée du serveur.");
+        }
+
+        $decryptedAesKey = null;
+        $decodeResult = openssl_private_decrypt(base64_decode($key), $decryptedAesKey, $privateKey, OPENSSL_PKCS1_OAEP_PADDING);
+
+        if (!$decodeResult || !$decryptedAesKey) {
+            throw new \Exception("Échec du déchiffrement de la clé AES.");
+        }
+
+        // Check that the decrypted AES key is a binary chain of 16, 24 or 32 bytes (AES-128, 192, 256)
+        $aesKeyLength = strlen($decryptedAesKey);
+        if (!in_array($aesKeyLength, [16, 24, 32])) {
+            throw new \Exception("Clé AES invalide : longueur incorrecte ($aesKeyLength octets).");
+        }
+
+        return $decryptedAesKey;
+    }
+
+    private function getDecryptedPayload(string $payload, string $aesKey): string
+    {
+        $aesKeyLength = strlen($aesKey);
+
+        $algo = match ($aesKeyLength) {
+            16 => 'aes-128-cbc',
+            24 => 'aes-192-cbc',
+            32 => 'aes-256-cbc',
+        };
+
+        // Decrypt payload
+        $ivLength = openssl_cipher_iv_length($algo);
+        $payloadRaw = base64_decode($payload, true);
+
+        if ($payloadRaw === false) {
+            throw new \Exception("Le payload n'est pas un base64 valide.");
+        }
+        if (strlen($payloadRaw) < $ivLength) {
+            throw new \Exception("Payload trop court pour contenir un IV.");
+        }
+
+        $iv = substr($payloadRaw, 0, $ivLength);
+        $cipherText = substr($payloadRaw, $ivLength);
+
+        $decryptedPayload = openssl_decrypt($cipherText, $algo, $aesKey, OPENSSL_RAW_DATA, $iv);
+
+        if ($decryptedPayload === false) {
+            throw new \Exception("Échec du déchiffrement du payload.");
+        }
+
+        return $decryptedPayload;
+    }
+}

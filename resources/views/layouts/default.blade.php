@@ -32,6 +32,12 @@
             @include('components.starbar')
         @endauth
     </header>
+    @if (!config('kado.security.private_key') || !config('kado.security.public_key'))
+        <div class="my-4 flex h-12 bg-red-500 text-white font-bold w-full items-center justify-center">
+            La clé publique/privée est manquante dans la
+            configuration du serveur. Le site ne peut pas fonctionner sans.
+        </div>
+    @endif
     <main id="container">
         <section id="bodySection">
             @yield('page')

@@ -1,0 +1,56 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+
+class PrepareNewPeriod extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'kado:prepare-new-period';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Terminates the current period and prepares a new one.';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        $period = \App\Models\Period::query()
+            ->where('start_at', '<=', now())
+            ->whereBetween('end_at', [now()->subDays(\App\Models\Period::DAYS_PER_PERIOD), now()])
+            ->first();
+
+        if ($period?->start_at->diffInDays(now()) < \App\Models\Period::DAYS_PER_PERIOD) {
+            $this->info('Current period is still active, no new period created.');
+            return 0;
+        }
+
+        if (!$period) {
+            $this->error('No period found to close.');
+        } else {
+            $this->info('Closing old period...');
+            // TODO
+        }
+
+        $newPeriodStartDate = now()->isMonday() ? now()->startOfDay() : now()->previous(Carbon::MONDAY);
+
+        $newPeriod = \App\Models\Period::create([
+            'start_at' => $newPeriodStartDate,
+            'end_at' => $newPeriodStartDate->addDays(\App\Models\Period::DAYS_PER_PERIOD),
+        ]);
+        $this->info('Period ' . $newPeriod->id . ' created: ' . $newPeriod->start_at->toDateString() . ' to ' . $newPeriod->end_at->toDateString());
+
+        return 0;
+    }
+}

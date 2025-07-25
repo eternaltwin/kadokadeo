@@ -87,6 +87,7 @@ class LoginController extends Controller implements HasMiddleware
             $dbUser->fill($attrs);
         } else {
             $dbUser = new User($attrs);
+            $dbUser->kado_games = config('kado.games_per_day');
         }
         $dbUser->save();
 
