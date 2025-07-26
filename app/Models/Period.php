@@ -8,6 +8,7 @@ class Period extends Model
 {
     public const DAYS_PER_PERIOD = 13;
 
+    public $timestamps = false;
     protected $fillable = ['start_at', 'end_at'];
 
     protected $casts = [

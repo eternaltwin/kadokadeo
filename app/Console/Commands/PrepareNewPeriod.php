@@ -31,13 +31,13 @@ class PrepareNewPeriod extends Command
             ->whereBetween('end_at', [now()->subDays(\App\Models\Period::DAYS_PER_PERIOD), now()])
             ->first();
 
-        if ($period?->start_at->diffInDays(now()) < \App\Models\Period::DAYS_PER_PERIOD) {
+        if ($period && $period->start_at->diffInDays(now()) < \App\Models\Period::DAYS_PER_PERIOD) {
             $this->info('Current period is still active, no new period created.');
             return 0;
         }
 
         if (!$period) {
-            $this->error('No period found to close.');
+            $this->info('No period found to close.');
         } else {
             $this->info('Closing old period...');
             // TODO
@@ -47,7 +47,7 @@ class PrepareNewPeriod extends Command
 
         $newPeriod = \App\Models\Period::create([
             'start_at' => $newPeriodStartDate,
-            'end_at' => $newPeriodStartDate->addDays(\App\Models\Period::DAYS_PER_PERIOD),
+            'end_at' => $newPeriodStartDate->clone()->addDays(\App\Models\Period::DAYS_PER_PERIOD)->endOfDay(),
         ]);
         $this->info('Period ' . $newPeriod->id . ' created: ' . $newPeriod->start_at->toDateString() . ' to ' . $newPeriod->end_at->toDateString());
 

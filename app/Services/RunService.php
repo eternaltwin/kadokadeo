@@ -31,6 +31,11 @@ class RunService
         $this->privateKey = data_get($config, 'private_key');
     }
 
+    public function getPublicKey()
+    {
+        return $this->publicKey;
+    }
+
     public function decodeRun(string $payload, string $key, string $sign): array
     {
         $aesKey = $this->getAesKeyFromEncrypted($key);
