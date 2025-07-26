@@ -25,10 +25,10 @@ class RunService
     private string $publicKey;
     private string $privateKey;
 
-    public function __construct()
+    public function __construct($config)
     {
-        $this->publicKey = config('kado.security.public_key');
-        $this->privateKey = config('kado.security.private_key');
+        $this->publicKey = data_get($config, 'public_key');
+        $this->privateKey = data_get($config, 'private_key');
     }
 
     public function decodeRun(string $payload, string $key, string $sign): array
@@ -68,12 +68,13 @@ class RunService
         // $replay = data_get($decoded, 'replay');
 
         $end = Carbon::createFromTimestamp($timestamp);
+        $realEnd = now();
 
-        if ($end->clone()->subMinute()->isFuture()) {
-            // invalid timestamp, more than 1 min in the future
+        if ($end->clone()->subMinute()->isFuture() || $end->clone()->addMinute()->isPast()) {
+            throw new \Error('Invalid timestamp');
         }
-        $run->play_time_seconds = $end->diffInSeconds($run->created_at, true);
-        $run->completed_at = $end;
+        $run->play_time_seconds = $realEnd->diffInSeconds($run->created_at, true);
+        $run->completed_at = $realEnd;
         $run->score = $score;
         $run->save();
 

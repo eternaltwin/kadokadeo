@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RunEndRequest;
 use App\Http\Requests\RunStartRequest;
+use App\Http\Resources\RunBeginResource;
 use App\Models\Game;
 use App\Models\Period;
 use App\Services\RunService;
@@ -30,7 +31,7 @@ class RunController extends Controller implements HasMiddleware
             'period_id' => Period::current()->first(),
         ]);
 
-        return $run->id;
+        return new RunBeginResource($run);
     }
 
     public function end(RunEndRequest $request, RunService $runService)
