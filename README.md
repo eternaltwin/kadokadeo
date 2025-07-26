@@ -43,7 +43,6 @@ Command | Description | Ran in CRON
 `migrate` | Synchronises the database | ❌
 `kado:prepare-new-period` | Close current period and begin a new one. | ✅ Every week on monday, but it still makes periods of 2 weeks
 `kado:reset-daily-games` | Resets the daily games for every user to the configured value | ✅ Everyday at 00:00
-```
 
 ## Installing with Docker
 
