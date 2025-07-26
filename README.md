@@ -1,34 +1,48 @@
+# Summary
+
+- Kadokadeo
+    - [Configuration](#configuration)
+    - [Project commands](#project-commands)
+    - [Installing with Docker](#installing-with-docker)
+        - [Windows Users](#windows-users)
+        - [Install build tools and Docker](#install-build-tools-and-docker)
+        - [Install the project](#install-the-project)
+        - [Troubleshooting](#troubleshooting)
+    - [Some useful commands](#some-useful-commands)
+
 # Kadokadeo
 
 ## Configuration
 
 Start by copying `.env.example` into `.env`.
 
-This is an example of Apache config
-```
-<VirtualHost *:80>
-    DocumentRoot "C:\Julien\Sites Web\eternaltwin\kadokadeo\kadokadeo\public"
-    ServerName kadokadeo.localhost
-    <Directory "C:\Julien\Sites Web\eternaltwin\kadokadeo\kadokadeo\public">
-        AllowOverride All
-        Require all granted
-		FallbackResource /index.php
-    </Directory>
-</VirtualHost>
-```
+> [!CAUTION]
+> There are some environment variables that really need to be set for the website to run properly.
+> They will have the "⚠️" emoji
+
+Here are the configuration variables:
+
+Variable | Description | Default
+---------|-------------|---------
+`KADO_GAMES_PER_DAY` | Games allowed to play per user per day | 100
+`KADO_RUNS_MAX_CONCURRENCY` | Maximum amount of games a user can play in parallel before being throttled | 5
+⚠️ `KADO_RSA_PRIVATE_KEY` | Private RSA key of the server. Should be kept **private**. Generate a key with `ssh-keygen -t rsa` |
+⚠️ `KADO_RSA_PUBLIC_KEY` | Public key associated with the private key |
 
 ## Project commands
 
-### Ensure the database is up-to-date
+> [!NOTE]
+> All the below commands are meant to be ran on docker, with :
+>
+> `docker exec -u dev -it kadokadeo_app php artisan`
+>
+> Example: `docker exec -u dev -it kadokadeo_app php artisan migrate`
 
-```
-composer run-script db:sync
-```
-
-### Reset the DB
-
-```
-composer run-script db:reset
+Command | Description | Ran in CRON
+--------|-------------|------
+`migrate` | Synchronises the database | ❌
+`kado:prepare-new-period` | Close current period and begin a new one. | ✅ Every week on monday, but it still makes periods of 2 weeks
+`kado:reset-daily-games` | Resets the daily games for every user to the configured value | ✅ Everyday at 00:00
 ```
 
 ## Installing with Docker
@@ -127,6 +141,6 @@ Restart your computer, then try to run `make` again.
 - `make docker-start` : Start the project in the background
 - `make bash-app` : Enter the application container to run `composer` or `php` commands
 - `make reset-database` : Reset the database
-- `make sync-database` : Update the database with your migrations defined in `db` folder
+- `make sync-database` : Update the database with the migrations
 
 Please see more commands in the [`Makefile`](Makefile) or the [`composer.json`](composer.json#L16-L19) file.

@@ -46,7 +46,7 @@ install-eternaltwin:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u node kadokadeo_eternaltwin yarn install
 
 reset-database:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan migrate:fresh --force
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan migrate:fresh --force --seed
 
 reset-eternaltwin-database:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u node kadokadeo_eternaltwin yarn etwin db create
