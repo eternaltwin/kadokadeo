@@ -11,7 +11,7 @@ class Run extends Model
     use SoftDeletes;
     use HasUlids;
 
-    protected $fillable = ['period_id', 'game_id', 'user_id', 'score', 'play_time_seconds', 'replay', 'completed_at'];
+    protected $fillable = ['period_id', 'game_id', 'user_id', 'score', 'play_time_seconds', 'replay', 'completed_at', 'contract_score', 'contract_points'];
 
     protected $casts = [
         'replay' => 'json',

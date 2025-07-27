@@ -14,6 +14,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(\App\Services\RunService::class, function ($app) {
             return new \App\Services\RunService(config('kado.security'));
         });
+        $this->app->bind(\App\Services\GameService::class, function ($app) {
+            return new \App\Services\GameService();
+        });
     }
 
     /**
