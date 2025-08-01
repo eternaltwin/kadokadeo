@@ -20,7 +20,7 @@ class LoginController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('guest', only: ['login', 'loginCallback']),
-            new Middleware('auth', only: ['logout']),
+            new Middleware('auth', only: ['logout', 'generateToken']),
         ];
     }
 
@@ -94,5 +94,15 @@ class LoginController extends Controller implements HasMiddleware
         Auth::login($dbUser, true);
 
         return redirect()->intended('/');
+    }
+
+    public function generateToken(Request $request)
+    {
+        $user = $request->user();
+
+        $user->tokens()->delete(); // Delete existing tokens
+        $token = $user->createToken('kadokadeo')->plainTextToken;
+
+        return response()->json(['token' => $token]);
     }
 }

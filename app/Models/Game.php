@@ -17,6 +17,11 @@ class Game extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function runs()
+    {
+        return $this->hasMany(Run::class);
+    }
+
     public function controls()
     {
         return $this->belongsToMany(Control::class, 'control_games')

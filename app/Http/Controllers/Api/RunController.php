@@ -8,6 +8,7 @@ use App\Http\Requests\RunStartRequest;
 use App\Http\Resources\RunBeginResource;
 use App\Models\Game;
 use App\Models\Period;
+use App\Services\GameService;
 use App\Services\RunService;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -19,16 +20,20 @@ class RunController extends Controller implements HasMiddleware
     public static function middleware()
     {
         return [
-            new Middleware('auth'),
+            new Middleware('auth:sanctum'),
             new Middleware('throttle:10,1', only: ['begin']), // 10 requests per minute
         ];
     }
 
-    public function begin(RunStartRequest $request, Game $game)
+    public function begin(RunStartRequest $request, GameService $gameService, Game $game)
     {
+        [$score, $points] = $gameService->getContract($game);
+
         $run = $game->runs()->create([
             'user_id' => Auth::id(),
             'period_id' => Period::current()->first(),
+            'contract_score' => $score,
+            'contract_points' => $points,
         ]);
 
         return new RunBeginResource($run);
