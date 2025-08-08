@@ -16,5 +16,9 @@ export default defineConfig({
             $fonts: resolve('./resources/fonts'),
             $images: resolve('./resources/images'),
         }
-    }
+    },
+    server: {
+        origin: 'http://[::1]:5173',
+        cors: true,
+    },
 });
