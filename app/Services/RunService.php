@@ -65,9 +65,11 @@ class RunService
         return $validator->validated();
     }
 
-    public function confirmRun($decoded)
+    public function confirmRun(Run $run, $decoded)
     {
-        $run = Run::findOrFail(data_get($decoded, 'run_id'));
+        if ($run->id !== data_get($decoded, 'run_id')) {
+            throw new \Error('Run ID mismatch');
+        }
         $score = data_get($decoded, 'score');
         $timestamp = data_get($decoded, 'timestamp');
         // $replay = data_get($decoded, 'replay');
@@ -75,10 +77,10 @@ class RunService
         $end = Carbon::createFromTimestamp($timestamp);
         $realEnd = now();
 
-        if ($end->clone()->subMinute()->isFuture() || $end->clone()->addMinute()->isPast()) {
+        if ($end->clone()->diffInSeconds($realEnd, true) > 30) {
             throw new \Error('Invalid timestamp');
         }
-        $run->play_time_seconds = $realEnd->diffInSeconds($run->created_at, true);
+        $run->play_time_seconds = (int) $realEnd->diffInSeconds($run->created_at, true);
         $run->completed_at = $realEnd;
         $run->score = $score;
         $run->save();
@@ -95,7 +97,7 @@ class RunService
         }
 
         $decryptedAesKey = null;
-        $decodeResult = openssl_private_decrypt(base64_decode($key), $decryptedAesKey, $privateKey, OPENSSL_PKCS1_OAEP_PADDING);
+        $decodeResult = openssl_private_decrypt(base64_decode($key), $decryptedAesKey, $privateKey);
 
         if (!$decodeResult || !$decryptedAesKey) {
             throw new \Exception("Échec du déchiffrement de la clé AES.");

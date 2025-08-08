@@ -17,7 +17,9 @@ return new class () extends Migration {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('contract_score');
             $table->integer('contract_points');
+            $table->string('seed')->nullable();
             $table->integer('score')->nullable();
+            $table->jsonb('score_details')->nullable();
             $table->integer('play_time_seconds')->nullable();
             $table->jsonb('replay')->nullable();
             $table->timestamps();

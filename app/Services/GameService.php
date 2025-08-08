@@ -19,6 +19,11 @@ class GameService
         return [$score, $points];
     }
 
+    public function generateSeed(): string
+    {
+        return bin2hex(random_bytes(16)); // 32 characters long
+    }
+
     public function generateScore(array $thresholds): int
     {
         $peaks = [0.7, 0.2, 0.05];

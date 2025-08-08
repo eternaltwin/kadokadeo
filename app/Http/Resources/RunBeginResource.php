@@ -19,6 +19,7 @@ class RunBeginResource extends JsonResource
             'server_time' => $this->created_at->timestamp,
             'contract_score' => $this->contract_score,
             'contract_points' => $this->contract_points,
+            'seed' => $this->seed,
         ];
     }
 }

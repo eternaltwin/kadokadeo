@@ -8,8 +8,10 @@ use App\Http\Requests\RunStartRequest;
 use App\Http\Resources\RunBeginResource;
 use App\Models\Game;
 use App\Models\Period;
+use App\Models\Run;
 use App\Services\GameService;
 use App\Services\RunService;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +34,7 @@ class RunController extends Controller implements HasMiddleware
         $run = $game->runs()->create([
             'user_id' => Auth::id(),
             'period_id' => Period::current()->first(),
+            'seed' => $gameService->generateSeed(),
             'contract_score' => $score,
             'contract_points' => $points,
         ]);
@@ -39,7 +42,7 @@ class RunController extends Controller implements HasMiddleware
         return new RunBeginResource($run);
     }
 
-    public function end(RunEndRequest $request, RunService $runService)
+    public function end(RunEndRequest $request, Run $run, RunService $runService)
     {
         $payload = $request->validated('payload');
         $key = $request->validated('key');
@@ -47,12 +50,12 @@ class RunController extends Controller implements HasMiddleware
 
         try {
             $decoded = $runService->decodeRun($payload, $key, $sign);
-            dd($decoded);
-            $run = $runService->confirmRun($decoded);
-        } catch (\Exception $e) {
+            $run = $runService->confirmRun($run, $decoded);
+        } catch (\Throwable $e) {
+            info(sprintf('RunController@end: user %d run end failed: %s', Auth::id(), $e->getMessage()));
             throw new BadRequestException($e->getMessage());
         }
 
-
+        return new JsonResource($run);
     }
 }
