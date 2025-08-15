@@ -154,7 +154,6 @@ RUN composer install --no-dev --no-progress --no-interaction
 COPY --from=frontend ["/kadokadeo/public/build", "/www/public/build"]
 COPY --from=godot ["/app/gamesdata/*", "/www/public/gamesdata/"]
 
-# RUN chown -R dev:dev /www
 
 COPY ["docker/app/conf/php.ini", "$PHP_INI_DIR/app.ini"]
 COPY ["docker/app/conf/crontab", "/etc/crontabs/root"]
