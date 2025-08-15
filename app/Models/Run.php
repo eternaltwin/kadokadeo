@@ -18,4 +18,14 @@ class Run extends Model
         'completed_at' => 'datetime',
     ];
 
+    public function game()
+    {
+        return $this->belongsTo(Game::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

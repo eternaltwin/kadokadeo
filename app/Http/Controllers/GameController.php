@@ -6,6 +6,8 @@ use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GameController extends Controller implements HasMiddleware
 {
@@ -26,7 +28,7 @@ class GameController extends Controller implements HasMiddleware
         ]);
         $categoryName = data_get($data, 'category');
 
-        $gamesQ = \App\Models\Game::query();
+        $gamesQ = \App\Models\Game::where('is_active', true);
         if ($categoryName) {
             $gamesQ->whereHas('category', function ($query) use ($categoryName) {
                 $query->where('name', $categoryName);
@@ -41,6 +43,15 @@ class GameController extends Controller implements HasMiddleware
 
     public function show(Game $game)
     {
-        return view('pages.games.show', ['game' => $game]);
+        $scores = $game->runs()
+            ->with('user')
+            ->groupBy('user_id')
+            ->orderBy('score', 'desc')
+            ->select(['user_id', DB::raw('MAX(score) as score')])
+            ->take(10)
+            ->get();
+        $personalBest = $game->runs()->whereNotNull('score')->where('user_id', Auth::id())->orderBy('score', 'desc')->first();
+
+        return view('pages.games.show', compact('game', 'scores', 'personalBest'));
     }
 }

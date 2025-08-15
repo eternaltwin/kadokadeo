@@ -37,4 +37,13 @@ window.resetToken = function () {
 
     ; (async () => {
         window.Kado.token = await getToken();
+        const userRes = await fetch('/api/user', {
+            headers: {
+                'Authorization': `Bearer ${window.Kado.token}`,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        if (userRes.status === 401) {
+            window.resetToken();
+        }
     })();

@@ -1,0 +1,3 @@
+[submodule "resources/games/interwheel"]
+	path = resources/games/interwheel
+	url = git@gitlab.com:eternaltwin/kadokadeo/interwheel.git

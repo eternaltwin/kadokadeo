@@ -1,5 +1,5 @@
 # Dockerfile
-FROM php:8.4-apache
+FROM php:8.3-apache
 
 #For mac and windows
 ARG HOST_IP=host.docker.internal
@@ -23,9 +23,10 @@ RUN apt-get update -qq && \
 
 # Install Postgre PDO && PHP intl
 RUN apt-get -y update \
-    && apt-get install -y libpq-dev libicu-dev \
+    && apt-get install -y libpq-dev libicu-dev libzip-dev \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl \
+    && docker-php-ext-install zip \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -41,3 +42,5 @@ RUN useradd dev -u $UID -g dev -d /home/dev -m
 
 RUN a2enmod rewrite remoteip && \
     a2enconf z-app
+
+USER dev
