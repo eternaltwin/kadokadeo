@@ -1,6 +1,6 @@
 FROM debian:trixie-slim
 
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     git \
     build-essential \
     scons \
@@ -22,18 +22,20 @@ RUN apt-get install -y \
     libpq-dev \
     libicu-dev \
     libzip-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && docker-php-ext-configure intl \
-    && docker-php-ext-install intl \
-    && docker-php-ext-install zip \
-    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    emscripten \
+    libfontconfig1 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# && docker-php-ext-configure intl \
+# && docker-php-ext-install intl \
+# && docker-php-ext-install zip \
+# && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+# && docker-php-ext-install pdo pdo_pgsql pgsql \
+# && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /app
 
 RUN git clone -b 4.4-stable --single-branch https://github.com/godotengine/godot.git \
-    && git clone --single-branch https://gitlab.com/eternaltwin/kadokadeo/kadokadeo.git
+    && git clone --recurse-submodules --single-branch https://gitlab.com/eternaltwin/kadokadeo/kadokadeo.git
 
 WORKDIR /app/godot
 
@@ -85,3 +87,18 @@ RUN scons \
     module_webxr_enabled=no \
     module_zip_enabled=no \
     production=yes
+
+
+RUN cp bin/.web_zip/* /app/kadokadeo/public/gamesdata \
+    && mkdir -p /app/kadokadeo/resources/games/godot/output
+
+WORKDIR /app/kadokadeo/resources/games/godot
+
+RUN find * -type d -prune | while read -r d; do \
+    echo "Processing game $d" \
+    python3 /app/kadokadeo/docker/build/set_template.py /app/godot/bin/godot.web.template_release.wasm32.nothreads.zip --file "$d/export_presets.cfg" --debug /app/godot/bin/godot.web.template_release.wasm32.nothreads.zip \
+    /app/godot/bin/godot.linuxbsd.editor.arm64 --headless --path $d --export-release "Web" /app/kadokadeo/resources/games/godot/output/$d \
+    mv output\$d.pck /app/kadokadeo/public/gamesdata \
+    done
+
+CMD ["tail", "-f", "/dev/null"]
