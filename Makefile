@@ -60,3 +60,8 @@ setup-env-variables:
 
 sync-database:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan migrate --force
+
+build-games:
+	docker exec -it kadokadeo_app git submodule update --init --recursive || git submodule update --init --recursive
+	docker exec -it kadokadeo_app git submodule update --recursive --remote || git submodule update --recursive --remote
+	docker exec -it kadokadeo_app sh -c 'cd /www/resources/games/godot && chmod +x build.sh && ./build.sh'

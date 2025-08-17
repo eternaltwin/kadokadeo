@@ -49,17 +49,20 @@
         </table>
     </div>
 
-    <script src="/gamesdata/Interwheel.js"></script>
+    <script src="/gamesdata/godot.js"></script>
+    @php
+        $gameName = \Illuminate\Support\Str::slug($game->name, '_');
+    @endphp
     <script>
         const GODOT_CONFIG = {
             "args": [],
             "canvasResizePolicy": 1,
             "ensureCrossOriginIsolationHeaders": true,
             "executable": "/gamesdata/godot",
-            "mainPack": "/gamesdata/Interwheel.pck",
+            "mainPack": "/gamesdata/{{ $gameName }}.pck",
             "experimentalVK": false,
             "fileSizes": {
-                "/gamesdata/Interwheel.pck": 1798592,
+                "/gamesdata/{{ $gameName }}.pck": 1798592,
                 "/gamesdata/godot.wasm": 31000000
             },
             "focusCanvas": true,
