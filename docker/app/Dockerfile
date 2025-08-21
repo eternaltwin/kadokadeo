@@ -4,54 +4,37 @@
 #
 ###
 
-FROM docker.io/library/node:20.19.3-alpine3.22 AS frontend
+FROM docker.io/library/debian:trixie-slim AS godot
 
-WORKDIR "/kadokadeo"
-
-COPY ["./package.json", "./"]
-COPY ["./package-lock.json", "./"]
-RUN npm install
-
-COPY ["./vite.config.js", "./"]
-COPY ["./resources", "./resources"]
-RUN npm run build
-
-FROM docker.io/library/php:8.3-fpm AS backend
-
-#For mac and windows
-ARG HOST_IP=host.docker.internal
-ARG UID=1000
-ARG GID=1000
 #ARG ARCH=x86_64 # for intel cpus
 ARG ARCH=arm64
-#For linux
-#ARG HOST_IP=172.17.0.1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
-    gnupg \
+    ca-certificates \
+    # gnupg \
     unzip \
-    zip \
-    libpq-dev \
-    libicu-dev \
-    libzip-dev \
+    curl \
+    # zip \
+    # libpq-dev \
+    # libicu-dev \
+    # libzip-dev \
+    python3 \
     scons \
     emscripten \
     libfontconfig1 \
-    supervisor \
-    cron \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && docker-php-ext-configure intl \
-    && docker-php-ext-install intl \
-    && docker-php-ext-install zip \
-    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql \
+    # supervisor \
+    # cron \
+    # && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    # && docker-php-ext-configure intl \
+    # && docker-php-ext-install intl \
+    # && docker-php-ext-install zip \
+    # && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    # && docker-php-ext-install pdo pdo_pgsql pgsql \
+    && update-ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp /var/cache/apt/archives/*.deb
 
-RUN groupadd dev -g $GID \
-    && useradd dev -u $UID -g dev -d /home/dev -m \
-    && mkdir /home/dev/.composer
 
 WORKDIR /app
 
@@ -110,9 +93,68 @@ RUN scons \
     module_zip_enabled=no \
     production=yes
 
-RUN mv /app/godot/bin/.web_zip /app/web_zip \
+RUN mv /app/godot/bin/.web_zip /app/gamesdata \
     && mv /app/godot/bin/godot.web.template_release.wasm32.nothreads.zip /app \
     && rm -rf /app/godot
+
+WORKDIR /app
+RUN git clone --single-branch https://gitlab.com/eternaltwin/kadokadeo/kadokadeo.git
+WORKDIR /app/kadokadeo/resources/games/godot
+
+RUN git submodule update --init --recursive \
+    && git submodule update --recursive --remote
+
+RUN find * -type d -prune | while read -r d; do \
+    if [ "$d" = "output" ]; then continue; fi; \
+    echo "Processing game $d"; \
+    python3 set_template.py /app/godot.web.template_release.wasm32.nothreads.zip --file "$d/export_presets.cfg" --debug /app/godot.web.template_release.wasm32.nothreads.zip; \
+    /app/godot_editor/godot --headless --path $d --export-release "Web" /www/resources/games/godot/output/$d; \
+    mv output/$d.pck /app/gamesdata; \
+    rm output/*; \
+    done
+
+FROM docker.io/library/node:20.19.3-alpine3.22 AS frontend
+
+WORKDIR "/kadokadeo"
+
+COPY ["./package.json", "./"]
+COPY ["./package-lock.json", "./"]
+RUN npm install
+
+COPY ["./vite.config.js", "./"]
+COPY ["./resources", "./resources"]
+RUN npm run build
+
+FROM docker.io/library/php:8.3-fpm-alpine AS backend
+
+#For mac and windows
+ARG HOST_IP=host.docker.internal
+ARG UID=1000
+ARG GID=1000
+#For linux
+#ARG HOST_IP=172.17.0.1
+
+
+RUN apk add --no-cache \
+    git \
+    gnupg \
+    zip \
+    libpq-dev \
+    icu-dev \
+    libzip-dev \
+    supervisor \
+    dcron \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl \
+    && docker-php-ext-install zip \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install pdo pdo_pgsql pgsql
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# RUN groupadd dev -g $GID \
+#     && useradd dev -u $UID -g dev -d /home/dev -m \
+#     && mkdir /home/dev/.composer
 
 WORKDIR /www
 
@@ -129,11 +171,12 @@ COPY ["storage", "/www/storage"]
 RUN composer install --no-dev --no-progress --no-interaction
 
 COPY --from=frontend ["/kadokadeo/public/build", "/www/public/build"]
+COPY --from=godot ["/app/gamesdata/*", "/www/public/gamesdata"]
 
-RUN chown -R dev:dev /www
+# RUN chown -R dev:dev /www
 
 COPY ["docker/app/conf/php.ini", "$PHP_INI_DIR/app.ini"]
-COPY ["docker/app/conf/crontab", "/etc/crontab"]
+COPY ["docker/app/conf/crontab", "/etc/crontabs/root"]
 COPY ["docker/app/conf/supervisord.conf", "/etc/supervisor/conf.d/supervisord.conf"]
 
 EXPOSE 9000
