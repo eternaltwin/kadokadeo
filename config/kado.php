@@ -5,7 +5,7 @@ return [
 
     'runs' => [
         // A single user can run this amount of games in parallel.
-        'max_concurrency' => env('KADO_RUNS_MAX_CONCURRENCY', 5),
+        'max_concurrency' => env('KADO_RUNS_MAX_CONCURRENCY', 50),
     ],
 
     'security' => [

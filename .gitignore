@@ -51,3 +51,4 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /.vite
+docker-compose.override.yml

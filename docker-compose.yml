@@ -1,22 +1,22 @@
 version: '3'
 services:
   kadokadeo_app:
-    build: app
+    build:
+        context: .
+        dockerfile: docker/app/Dockerfile
     container_name: kadokadeo_app
     volumes:
-      - ../.:/www
+      - .:/www
     networks:
       - kadokadeo_network
     links:
       - kadokadeo_database
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   kadokadeo_front:
     image: node:20
     container_name: kadokadeo_front
     volumes:
-      - ../.:/www
+      - .:/www
     working_dir: /www
     command: 'sh -c "npm i && npm run dev"'
 
@@ -24,7 +24,7 @@ services:
     image: postgres:15.1
     container_name: kadokadeo_database
     volumes:
-      - ./database:/docker-entrypoint-initdb.d
+      - ./docker/database:/docker-entrypoint-initdb.d
     networks:
       - kadokadeo_network
     environment:
@@ -35,14 +35,25 @@ services:
   kadokadeo_eternaltwin:
     container_name: kadokadeo_eternaltwin
     build:
-      context: ./eternaltwin
+      context: ./docker/eternaltwin
       dockerfile: Dockerfile
     volumes:
-      - ../eternaltwin:/www
+      - ./eternaltwin:/www
     networks:
       - kadokadeo_network
     stdin_open: true
     tty: true
+
+  kadokadeo_nginx:
+    depends_on:
+      - kadokadeo_app
+    networks:
+      - kadokadeo_network
+    container_name: kadokadeo_nginx
+    image: nginx:1.21
+    volumes:
+      - ./docker/app/conf/kadokadeo.conf:/etc/nginx/conf.d/kadokadeo.conf:ro
+      - ./:/www
 
 networks:
   kadokadeo_network:

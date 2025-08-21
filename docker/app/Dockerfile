@@ -1,18 +1,33 @@
-# Dockerfile
-FROM php:8.3-apache
+###
+#
+# docker build --pull --tag kadokadeo:dev --file docker/app/Dockerfile ./
+#
+###
+
+FROM docker.io/library/node:20.19.3-alpine3.22 AS frontend
+
+WORKDIR "/kadokadeo"
+
+COPY ["./package.json", "./"]
+COPY ["./package-lock.json", "./"]
+RUN npm install
+
+COPY ["./vite.config.js", "./"]
+COPY ["./resources", "./resources"]
+RUN npm run build
+
+FROM docker.io/library/php:8.3-fpm AS backend
 
 #For mac and windows
 ARG HOST_IP=host.docker.internal
 ARG UID=1000
 ARG GID=1000
+#ARG ARCH=x86_64 # for intel cpus
+ARG ARCH=arm64
 #For linux
 #ARG HOST_IP=172.17.0.1
 
-EXPOSE 80
-
-# Install Composer
-RUN apt-get update -qq && \
-    apt-get install -qy \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     gnupg \
     unzip \
@@ -20,49 +35,34 @@ RUN apt-get update -qq && \
     libpq-dev \
     libicu-dev \
     libzip-dev \
-    build-essential \
     scons \
-    pkg-config \
-    libx11-dev \
-    libxcursor-dev \
-    libxinerama-dev \
-    libgl1-mesa-dev \
-    libglu1-mesa-dev \
-    libasound2-dev \
-    libpulse-dev \
-    libudev-dev \
-    libxi-dev \
-    libxrandr-dev \
-    libwayland-dev \
     emscripten \
     libfontconfig1 \
+    supervisor \
+    cron \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl \
     && docker-php-ext-install zip \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp /var/cache/apt/archives/*.deb
 
-COPY conf/php.ini /usr/local/etc/php/conf.d/app.ini
-
-# Apache
-COPY conf/vhost.conf /etc/apache2/sites-available/000-default.conf
-COPY conf/apache.conf /etc/apache2/conf-available/z-app.conf
-
-RUN groupadd dev -g $GID && useradd dev -u $UID -g dev -d /home/dev -m
-
-RUN a2enmod rewrite remoteip && \
-    a2enconf z-app
+RUN groupadd dev -g $GID \
+    && useradd dev -u $UID -g dev -d /home/dev -m \
+    && mkdir /home/dev/.composer
 
 WORKDIR /app
 
-RUN git clone -b 4.4-stable --single-branch https://github.com/godotengine/godot.git
+RUN git clone -b 4.4-stable --single-branch https://github.com/godotengine/godot.git \
+    && curl -L -o godot.zip "https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.${ARCH}.zip" \
+    && unzip godot.zip -d godot_editor \
+    && rm godot.zip \
+    && mv godot_editor/Godot_v4.4.1-stable_linux.${ARCH} godot_editor/godot \
+    && chmod +x godot_editor/godot
 
 WORKDIR /app/godot
-
-# Build Godot for headless/server
-RUN scons platform=linuxbsd target=editor
 
 # Build Godot for web
 RUN scons \
@@ -110,6 +110,32 @@ RUN scons \
     module_zip_enabled=no \
     production=yes
 
+RUN mv /app/godot/bin/.web_zip /app/web_zip \
+    && mv /app/godot/bin/godot.web.template_release.wasm32.nothreads.zip /app \
+    && rm -rf /app/godot
+
 WORKDIR /www
 
-USER dev
+COPY ["composer.json", "/www/composer.json"]
+COPY ["composer.lock", "/www/composer.lock"]
+COPY ["artisan", "/www/artisan"]
+COPY ["app", "/www/app"]
+COPY ["bootstrap", "/www/bootstrap"]
+COPY ["config", "/www/config"]
+COPY ["database", "/www/database"]
+COPY ["public", "/www/public"]
+COPY ["routes", "/www/routes"]
+COPY ["storage", "/www/storage"]
+RUN composer install --no-dev --no-progress --no-interaction
+
+COPY --from=frontend ["/kadokadeo/public/build", "/www/public/build"]
+
+RUN chown -R dev:dev /www
+
+COPY ["docker/app/conf/php.ini", "$PHP_INI_DIR/app.ini"]
+COPY ["docker/app/conf/crontab", "/etc/crontab"]
+COPY ["docker/app/conf/supervisord.conf", "/etc/supervisor/conf.d/supervisord.conf"]
+
+EXPOSE 9000
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

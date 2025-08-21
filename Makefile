@@ -2,13 +2,13 @@ all: install docker-start
 	@echo "Project installed successfully! You can access Kadokadéo at http://kadokadeo.localhost/."
 
 docker-start: docker-stop
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d --no-recreate --remove-orphans --build
+	docker compose up -d --no-recreate --remove-orphans --build
 
 docker-watch:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --no-recreate --remove-orphans
+	docker compose up --no-recreate --remove-orphans
 
 docker-stop:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml stop
+	docker compose stop
 
 docker-remove: docker-stop
 	docker rm kadokadeo_app kadokadeo_database kadokadeo_eternaltwin
@@ -28,38 +28,38 @@ bash-eternaltwin:
 reset-dependencies: install-app install-eternaltwin
 
 build:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml build
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app chown -R dev:dev /www
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u node kadokadeo_eternaltwin chown -R node:node /www
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --no-start --remove-orphans
+	docker compose build
+	docker compose run -u node kadokadeo_eternaltwin chown -R node:node /www
+	docker compose up --no-start --remove-orphans
 
 install: setup-env-variables build start-kadokadeo-database install-app
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u node kadokadeo_eternaltwin yarn install
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u node kadokadeo_eternaltwin yarn etwin db create
+	docker compose run -u node kadokadeo_eternaltwin yarn install
+	docker compose run -u node kadokadeo_eternaltwin yarn etwin db create
 
 install-app:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app composer install
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan key:generate --ansi
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan migrate:fresh --force
+	docker compose run -u dev kadokadeo_app composer install
+	docker compose run -u dev kadokadeo_app php artisan key:generate --ansi
+	docker compose run -u dev kadokadeo_app php artisan migrate:fresh --force
 
 install-eternaltwin:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u node kadokadeo_eternaltwin yarn install
+	docker compose run -u node kadokadeo_eternaltwin yarn install
 
 reset-database:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan migrate:fresh --force --seed
+	docker compose run -u dev kadokadeo_app php artisan migrate:fresh --force --seed
 
 reset-eternaltwin-database:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u node kadokadeo_eternaltwin yarn etwin db create
+	docker compose run -u node kadokadeo_eternaltwin yarn etwin db create
 
 start-kadokadeo-database:
 	docker start kadokadeo_database
 
 setup-env-variables:
+	cp docker-compose.override.yml.example docker-compose.override.yml
 	cp .env.example .env
 	cp eternaltwin/etwin.toml.example eternaltwin/etwin.toml
 
 sync-database:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run -u dev kadokadeo_app php artisan migrate --force
+	docker compose run -u dev kadokadeo_app php artisan migrate --force
 
 build-games:
 	docker exec -it kadokadeo_app git submodule update --init --recursive || git submodule update --init --recursive
