@@ -6,32 +6,18 @@
 
 FROM docker.io/library/debian:trixie-slim AS godot
 
-#ARG ARCH=x86_64 # for intel cpus
-ARG ARCH=arm64
+ARG ARCH
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
-    # gnupg \
     unzip \
     curl \
     pkg-config \
-    # zip \
-    # libpq-dev \
-    # libicu-dev \
-    # libzip-dev \
     python3 \
     scons \
     emscripten \
     libfontconfig1 \
-    # supervisor \
-    # cron \
-    # && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    # && docker-php-ext-configure intl \
-    # && docker-php-ext-install intl \
-    # && docker-php-ext-install zip \
-    # && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    # && docker-php-ext-install pdo pdo_pgsql pgsql \
     && update-ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp /var/cache/apt/archives/*.deb
@@ -128,13 +114,8 @@ RUN npm run build
 
 FROM docker.io/library/php:8.3-fpm-alpine AS backend
 
-#For mac and windows
-ARG HOST_IP=host.docker.internal
-ARG UID=1000
-ARG GID=1000
-#For linux
-#ARG HOST_IP=172.17.0.1
-
+ARG UID
+ARG GID
 
 RUN apk add --no-cache \
     git \
@@ -153,9 +134,8 @@ RUN apk add --no-cache \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# RUN groupadd dev -g $GID \
-#     && useradd dev -u $UID -g dev -d /home/dev -m \
-#     && mkdir /home/dev/.composer
+RUN groupadd dev -g $GID \
+    && useradd dev -u $UID -g dev -d /home/dev -m
 
 WORKDIR /www
 
@@ -174,7 +154,7 @@ RUN composer install --no-dev --no-progress --no-interaction
 COPY --from=frontend ["/kadokadeo/public/build", "/www/public/build"]
 COPY --from=godot ["/app/gamesdata/*", "/www/public/gamesdata"]
 
-# RUN chown -R dev:dev /www
+RUN chown -R dev:dev /www
 
 COPY ["docker/app/conf/php.ini", "$PHP_INI_DIR/app.ini"]
 COPY ["docker/app/conf/crontab", "/etc/crontabs/root"]
