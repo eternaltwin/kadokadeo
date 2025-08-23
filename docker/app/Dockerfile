@@ -134,8 +134,8 @@ RUN apk add --no-cache \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN groupadd dev -g $GID \
-    && useradd dev -u $UID -g dev -d /home/dev -m
+# RUN groupadd dev -g $GID \
+#     && useradd dev -u $UID -g dev -d /home/dev -m
 
 WORKDIR /www
 
@@ -154,7 +154,7 @@ RUN composer install --no-dev --no-progress --no-interaction
 COPY --from=frontend ["/kadokadeo/public/build", "/www/public/build"]
 COPY --from=godot ["/app/gamesdata/*", "/www/public/gamesdata"]
 
-RUN chown -R dev:dev /www
+# RUN chown -R dev:dev /www
 
 COPY ["docker/app/conf/php.ini", "$PHP_INI_DIR/app.ini"]
 COPY ["docker/app/conf/crontab", "/etc/crontabs/root"]
