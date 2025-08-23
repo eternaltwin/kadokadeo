@@ -152,7 +152,7 @@ COPY ["storage", "/www/storage"]
 RUN composer install --no-dev --no-progress --no-interaction
 
 COPY --from=frontend ["/kadokadeo/public/build", "/www/public/build"]
-COPY --from=godot ["/app/gamesdata/*", "/www/public/gamesdata"]
+COPY --from=godot ["/app/gamesdata/*", "/www/public/gamesdata/"]
 
 # RUN chown -R dev:dev /www
 
