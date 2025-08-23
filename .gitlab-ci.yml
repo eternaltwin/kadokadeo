@@ -8,6 +8,8 @@ build-docker:
   stage: build
   services:
     - docker:20.10.16-dind
+  tags:
+    - saas-linux-large-amd64
   variables:
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   script:
