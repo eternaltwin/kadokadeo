@@ -14,10 +14,7 @@ docker-remove: docker-stop
 	docker rm kadokadeo_app kadokadeo_database kadokadeo_eternaltwin
 
 bash-app:
-	docker exec -u dev -it kadokadeo_app bash
-
-bash-app-root:
-	docker exec -it kadokadeo_app bash
+	docker exec -it kadokadeo_app /bin/sh
 
 bash-db:
 	docker exec -it kadokadeo_database bash
@@ -37,15 +34,15 @@ install: setup-env-variables build start-kadokadeo-database install-app
 	docker compose run -u node kadokadeo_eternaltwin yarn etwin db create
 
 install-app:
-	docker compose run -u dev kadokadeo_app composer install
-	docker compose run -u dev kadokadeo_app php artisan key:generate --ansi
-	docker compose run -u dev kadokadeo_app php artisan migrate:fresh --force
+	docker compose run kadokadeo_app composer install
+	docker compose run kadokadeo_app php artisan key:generate --ansi
+	docker compose run kadokadeo_app php artisan migrate:fresh --force
 
 install-eternaltwin:
 	docker compose run -u node kadokadeo_eternaltwin yarn install
 
 reset-database:
-	docker compose run -u dev kadokadeo_app php artisan migrate:fresh --force --seed
+	docker compose run kadokadeo_app php artisan migrate:fresh --force --seed
 
 reset-eternaltwin-database:
 	docker compose run -u node kadokadeo_eternaltwin yarn etwin db create
@@ -59,7 +56,7 @@ setup-env-variables:
 	cp eternaltwin/etwin.toml.example eternaltwin/etwin.toml
 
 sync-database:
-	docker compose run -u dev kadokadeo_app php artisan migrate --force
+	docker compose run kadokadeo_app php artisan migrate --force
 
 update-games:
 	git submodule update --init --recursive

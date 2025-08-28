@@ -3,6 +3,9 @@
 @section('title', 'KadoKadeo - Jeux')
 
 @section('page')
+    @if (config('kado.games_per_day') > 0)
+        <div>Il vous reste {{ Auth::user()->kado_games }} parties à jouer aujourd'hui</div>
+    @endif
     <h1 style="text-align:center">{{ $game->name }}</h1>
 
 

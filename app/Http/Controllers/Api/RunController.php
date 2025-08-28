@@ -15,6 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class RunController extends Controller implements HasMiddleware
@@ -29,6 +30,8 @@ class RunController extends Controller implements HasMiddleware
 
     public function begin(RunStartRequest $request, GameService $gameService, Game $game)
     {
+        Gate::authorize('create', Run::class);
+
         [$score, $points] = $gameService->getContract($game);
 
         $run = $game->runs()->create([
@@ -38,6 +41,9 @@ class RunController extends Controller implements HasMiddleware
             'contract_score' => $score,
             'contract_points' => $points,
         ]);
+        $user = $request->user();
+        $user->kado_games -= 1;
+        $user->save();
 
         return new RunBeginResource($run);
     }

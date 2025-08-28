@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Run;
+use App\Models\UserPoint;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
@@ -84,6 +85,17 @@ class RunService
         $run->completed_at = $realEnd;
         $run->score = $score;
         $run->save();
+        if ($run->score >= $run->contract_score) {
+            $user = $run->user;
+            $user->kado_points += $run->contract_points;
+            $user->save();
+            $user->userPoints()->create([
+                'delta' => $run->contract_points,
+                'reason' => 'contract completed',
+                'source_type' => Run::class,
+                'source_id' => $run->id,
+            ]);
+        }
 
         return $run;
     }

@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class UserPoint extends Model
+{
+    protected $casts = [
+        'delta' => 'integer',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function source()
+    {
+        return $this->morphTo();
+    }
+}
