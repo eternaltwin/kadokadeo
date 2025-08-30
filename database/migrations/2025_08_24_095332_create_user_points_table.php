@@ -16,7 +16,7 @@ return new class () extends Migration {
             $table->integer('delta');
             $table->string('reason')->nullable();
             $table->string('source_type')->nullable();
-            $table->unsignedBigInteger('source_id')->nullable();
+            $table->string('source_id')->nullable();
             $table->timestamps();
         });
     }

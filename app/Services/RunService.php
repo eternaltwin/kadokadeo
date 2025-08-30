@@ -73,7 +73,7 @@ class RunService
         }
         $score = data_get($decoded, 'score');
         $timestamp = data_get($decoded, 'timestamp');
-        // $replay = data_get($decoded, 'replay');
+        $replay = data_get($decoded, 'replay');
 
         $end = Carbon::createFromTimestamp($timestamp);
         $realEnd = now();
@@ -84,6 +84,7 @@ class RunService
         $run->play_time_seconds = (int) $realEnd->diffInSeconds($run->created_at, true);
         $run->completed_at = $realEnd;
         $run->score = $score;
+        $run->replay = $replay;
         $run->save();
         if ($run->score >= $run->contract_score) {
             $user = $run->user;

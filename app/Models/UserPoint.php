@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserPoint extends Model
 {
+    protected $guarded = [];
+
     protected $casts = [
         'delta' => 'integer',
     ];
