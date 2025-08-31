@@ -20,4 +20,13 @@ class RunPolicy
 
         return $this->allow();
     }
+
+    public function view(User $user, $run)
+    {
+        if (!$run->replay) {
+            return $this->deny('No replay for this run');
+        }
+
+        return $this->allow();
+    }
 }

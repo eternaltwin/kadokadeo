@@ -16,3 +16,5 @@ Route::prefix('/games')->group(function () {
     Route::get('/', [App\Http\Controllers\GameController::class, 'index'])->name('games.index');
     Route::get('/{game}', [App\Http\Controllers\GameController::class, 'show'])->name('games.show');
 });
+
+Route::get('/runs/{run}', [App\Http\Controllers\RunController::class, 'show'])->name('runs.show');

@@ -3,11 +3,11 @@
 @section('title', 'KadoKadeo - Jeux')
 
 @section('page')
-    @if (config('kado.games_per_day') > 0)
-        <div>Il vous reste {{ Auth::user()->kado_games }} parties à jouer aujourd'hui</div>
-    @endif
-    <h1 style="text-align:center">{{ $game->name }}</h1>
+    <h1 style="text-align:center">Replay</h1>
 
+    <h2 style="margin: 0">Vous regardez {{ $run->user->display_name }}</h2>
+    <h2 style="margin: 0">Score: {{ $run->score }}</h2>
+    <h2 style="margin: 0">Jeu: {{ $run->game->name }}</h2>
 
     <div id="status">
         <progress id="status-progress"></progress>
@@ -18,60 +18,22 @@
         Your browser does not support the canvas tag.
     </canvas>
 
-    <style>
-        table tbody tr td {
-            padding: 0.5rem;
-        }
-    </style>
-
-    <div>
-        <h2>Scores</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Position</th>
-                    <th>Joueur</th>
-                    <th>Score</th>
-                    <th>Replay</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($scores as $k => $score)
-                    <tr>
-                        <td>{{ $k + 1 }}</td>
-                        <td>{{ $score->user->display_name ?? 'Inconnu' }}</td>
-                        <td>{{ $score->score }}</td>
-                        <td>
-                            @if ($score->has_replay)
-                                <a href="{{ route('runs.show', $score->id) }}">Replay</a>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-                @if ($personalBest)
-                    <tr>
-                        <td>Votre meilleur score</td>
-                        <td>{{ $personalBest->user->display_name ?? 'Inconnu' }}</td>
-                        <td>{{ $personalBest->score }}</td>
-                    </tr>
-                @endif
-        </table>
-    </div>
-
     <script src="/gamesdata/godot.js"></script>
-    @php
-        $gameName = \Illuminate\Support\Str::slug($game->name, '_');
-    @endphp
     <script>
         const GODOT_CONFIG = {
-            "args": [],
+            "args": [
+                '--replay={{ $run->replay }}',
+                '--seed={{ $run->seed }}',
+                '--contract_score={{ $run->contract_score }}',
+                '--contract_points={{ $run->contract_points }}',
+            ],
             "canvasResizePolicy": 1,
             "ensureCrossOriginIsolationHeaders": true,
             "executable": "/gamesdata/godot",
-            "mainPack": "/gamesdata/{{ $gameName }}.pck",
+            "mainPack": "{{ $run->game->gamedata['file'] }}",
             "experimentalVK": false,
             "fileSizes": {
-                "/gamesdata/{{ $gameName }}.pck": 1798592,
+                "{{ $run->game->gamedata['file'] }}": {{ $run->game->gamedata['size'] }},
                 "/gamesdata/godot.wasm": 31000000
             },
             "focusCanvas": true,
