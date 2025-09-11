@@ -13,8 +13,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            $fonts: resolve('./resources/fonts'),
-            $images: resolve('./resources/images'),
+            $fonts: resolve('./public/fonts'),
+            $images: resolve('./public/gfx'),
         }
     },
     server: {

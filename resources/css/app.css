@@ -309,7 +309,7 @@ header#topPage aside#topBarInfo ul li span {
     margin: 0 60px;
     background: url("$images/bgContainerTopBlue.jpg") top left no-repeat, url("$images/bgContainerTopRepeat.jpg") top repeat-x;
     background-color: #eaf8fb;
-    border: 3px solid #5caab7;
+    border: 2px solid #5babbb;
     box-shadow: 0 0 0 2px #ffffff, 0 0 30px 1px rgba(0, 0, 0, 0.5);
 }
 
@@ -336,6 +336,63 @@ header#topPage aside#topBarInfo ul li span {
 
 .fullWidth {
     width: 100%;
+}
+
+nav#tabNav {
+    width: 745px;
+	height: 34px;
+	position: relative;
+	top: -34px;
+	left: -4px;
+	margin: 0px;
+	padding: 0px;
+	margin-bottom : 1px;
+}
+
+nav#tabNav ul {
+	position: relative;
+	display: block;
+	list-style: none;
+	height: 32px;
+    display: flex;
+    flex-direction: row;
+}
+
+nav#tabNav ul li {
+    height: 32px;
+    background-color: #5babbb;
+	border: 2px solid #fff;
+    border-bottom: 0;
+	padding: 2px;
+	margin: 0 5px 0 0;
+	font-size: 1.2em;
+	font-variant: small-caps;
+	letter-spacing: 0px;
+}
+
+nav#tabNav ul li a {
+    display: block;
+    width: 151px;
+    height: 28px;
+    border: 1px solid #eaf8fa ;
+	line-height: 28px;
+	text-align: center;
+	color: #0687b1;
+	text-decoration: none;
+	font-weight: bold;
+	background: url("$images/bgTabmenu.jpg") repeat-x;
+}
+
+nav#tabNav ul li a:hover {
+	color: #5babbb;
+	background: url("$images/bgTabmenuHover.jpg") repeat-x;
+}
+
+nav#tabNav ul li#tabNavActive a {
+	color: #5babbb;
+    height: 32px;
+	border: 2px solid #f4feff ;
+	background: url("$images/bgTabmenuActive.jpg") repeat-x;
 }
 
 #containerSide {
@@ -490,7 +547,63 @@ p.btnHomepagePlay:hover {
 }
 
 
-/* GAME PAGE */
+/* GAME LIST */
+
+div#gamesBoxes {
+    width: 748px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 0 10px;
+}
+
+a.gameBox {
+    position: relative;
+    width: 226px;
+    height: 142px;
+    margin: 0 0 15px 0;
+    z-index: 2;
+    display: block;
+}
+
+div.gameBoxBackground {
+    width: 226px;
+    height: 142px;
+    background: url("$images/gameBox.png") no-repeat;
+    z-index: 1;
+}
+
+.gameBox .gameBoxImg {
+    width: 176px;
+    height: 106px;
+    position: absolute;
+    top: 8px;
+    left: 37px;
+    z-index: -1;
+}
+
+.gameBox .gameBoxStar {
+    width: 31px;
+    height: 29px;
+    position: absolute;
+    top: 101px;
+    left: 7px;
+    z-index: 2;
+}
+
+.gameBox h3.gameBoxTitle {
+    width: 170px;
+    position: absolute;
+    top: 114px;
+    left: 45px;
+    line-height: 19px;
+    font-size: 1.2em;
+    text-align: center;
+    color: #3d5e65;
+}
+
+
+/* GAME SHOW */
 
 .gameInterface {
     width: 724px;
