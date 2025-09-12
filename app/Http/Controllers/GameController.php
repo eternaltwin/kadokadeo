@@ -61,7 +61,7 @@ class GameController extends Controller implements HasMiddleware
                 'runs.user_id',
                 'runs.score',
                 'runs.id',
-                DB::raw('CASE WHEN runs.replay IS NULL THEN 0 ELSE 1 END as has_replay')
+                DB::raw('CASE WHEN runs.replay IS NULL THEN 0 ELSE 1 END as replay')
             )
             ->orderByDesc('runs.score')
             ->take(10)
