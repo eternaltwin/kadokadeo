@@ -39,6 +39,11 @@ class Game extends Model
         return $this->hasMany(Run::class);
     }
 
+    public function dailyGames()
+    {
+        return $this->hasMany(DailyGame::class);
+    }
+
     public function controls()
     {
         return $this->belongsToMany(Control::class, 'control_games')

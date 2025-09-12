@@ -29,4 +29,9 @@ class Run extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getHasReplayAttribute()
+    {
+        return !is_null($this->replay);
+    }
+
 }

@@ -7,12 +7,15 @@
         <ul>
             <li{{ !request()->category ? ' id=tabNavActive' : '' }}>
                 <a href="{{ route('games.index') }}">Tous les jeux</a>
-            </li>
-            @foreach ($categories as $category)
-                <li{{ request()->category == $category->name ? ' id=tabNavActive' : '' }}>
-                    <a href="{{ route('games.index', ['category' => $category->name]) }}">{{ $category->name }}</a>
                 </li>
-            @endforeach
+                @foreach ($categories as $category)
+                    <li{{ request()->category == $category->name ? ' id=tabNavActive' : '' }}>
+                        <a href="{{ route('games.index', ['category' => $category->name]) }}">{{ $category->name }}</a>
+                        </li>
+                @endforeach
+                <li @if (Route::is('games.daily')) id=tabNavActive @endif>
+                    <a href="{{ route('games.daily') }}">Jeu du jour</a>
+                </li>
         </ul>
     </nav>
 

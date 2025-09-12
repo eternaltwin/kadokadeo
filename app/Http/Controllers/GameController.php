@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DailyGame;
 use App\Models\Game;
+use App\Services\GameService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -15,7 +17,7 @@ class GameController extends Controller implements HasMiddleware
     public static function middleware()
     {
         return [
-            new Middleware('auth', only: ['show']),
+            new Middleware('auth', only: ['show', 'daily']),
         ];
     }
 
@@ -25,11 +27,11 @@ class GameController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         $data = $request->validate([
-            'category' => 'nullable|exists:categories,name',
+            'category' => 'sometimes|required|string|max:255|exists:categories,name',
         ]);
         $categoryName = data_get($data, 'category');
 
-        $gamesQ = \App\Models\Game::where('is_active', true);
+        $gamesQ = Game::where('is_active', true);
         if ($categoryName) {
             $gamesQ->whereHas('category', function ($query) use ($categoryName) {
                 $query->where('name', $categoryName);
@@ -67,5 +69,15 @@ class GameController extends Controller implements HasMiddleware
         $personalBest = $game->runs()->whereNotNull('score')->where('user_id', Auth::id())->orderBy('score', 'desc')->first();
 
         return view('pages.games.show', compact('game', 'scores', 'personalBest'));
+    }
+
+    public function daily(GameService $gameService)
+    {
+        $dailyGame = $gameService->getDailyGame();
+        Gate::authorize('view', $dailyGame?->game);
+
+        $dailyGameRuns = $dailyGame?->runs()->orderByDesc('score')->with('user')->limit(10)->get() ?? collect();
+
+        return view('pages.games.daily', compact('dailyGame', 'dailyGameRuns'));
     }
 }

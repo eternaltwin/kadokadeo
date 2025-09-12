@@ -32,23 +32,39 @@ class RunController extends Controller implements HasMiddleware
     {
         Gate::authorize('create', Run::class);
 
-        [$score, $points] = $gameService->getContract($game);
+        $isDaily = $request->validated('daily', false);
+        $realContract = false;
 
+        if ($isDaily) {
+            // If it's a daily run, check if the game is a daily game and if the user already played it today
+            $dailyGate = Gate::inspect('playDaily', $game);
+            $realContract = $dailyGate->allowed();
+        }
+
+        if ($realContract) {
+            [$score, $points] = $gameService->getContract($game);
+            $seed = $gameService->getDailySeed($game);
+        } else {
+            $score = 0;
+            $points = 0;
+            $seed = $gameService->generateSeed();
+        }
+
+        $user = $request->user();
         $run = $game->runs()->create([
-            'user_id' => Auth::id(),
+            'user_id' => $user->id,
             'period_id' => Period::current()->first(),
-            'seed' => $gameService->generateSeed(),
+            'seed' => $seed,
             'contract_score' => $score,
             'contract_points' => $points,
         ]);
-        $user = $request->user();
         $user->kado_games -= 1;
         $user->save();
 
         return new RunBeginResource($run);
     }
 
-    public function end(RunEndRequest $request, Run $run, RunService $runService)
+    public function end(RunEndRequest $request, Run $run, RunService $runService, GameService $gameService)
     {
         $payload = $request->validated('payload');
         $key = $request->validated('key');
@@ -57,6 +73,12 @@ class RunController extends Controller implements HasMiddleware
         try {
             $decoded = $runService->decodeRun($payload, $key, $sign);
             $run = $runService->confirmRun($run, $decoded);
+
+            // Daily game check : if the run corresponds to today's daily game, link the run
+            $dailyGame = $gameService->getDailyGame();
+            if ($dailyGame && $dailyGame->game_id === $run->game_id && $dailyGame->seed === $run->seed) {
+                $dailyGame->runs()->attach($run->id);
+            }
         } catch (\Throwable $e) {
             info(sprintf('RunController@end: user %d run end failed: %s', Auth::id(), $e->getMessage()));
             throw new BadRequestException($e->getMessage());

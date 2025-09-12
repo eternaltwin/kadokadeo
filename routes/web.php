@@ -12,6 +12,7 @@ Route::post('/token', [App\Http\Controllers\LoginController::class, 'generateTok
 Route::get('/user/settings', [App\Http\Controllers\AccountController::class, 'edit'])->name('account.edit');
 Route::post('/user/settings', [App\Http\Controllers\AccountController::class, 'update'])->name('account.update');
 
+Route::get('/daily', [App\Http\Controllers\GameController::class, 'daily'])->name('games.daily');
 Route::prefix('/games')->group(function () {
     Route::get('/', [App\Http\Controllers\GameController::class, 'index'])->name('games.index');
     Route::get('/{game}', [App\Http\Controllers\GameController::class, 'show'])->name('games.show');

@@ -86,7 +86,7 @@ class RunService
         $run->score = $score;
         $run->replay = $replay;
         $run->save();
-        if ($run->score >= $run->contract_score) {
+        if ($run->contract_score > 0 && $run->score >= $run->contract_score) {
             $user = $run->user;
             $user->kado_points += $run->contract_points;
             $user->save();

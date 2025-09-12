@@ -26,7 +26,7 @@ class RunStartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'daily' => 'sometimes|required|accepted',
         ];
     }
 }
