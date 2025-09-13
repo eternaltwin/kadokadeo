@@ -110,6 +110,7 @@ RUN npm install
 
 COPY ["./vite.config.js", "./"]
 COPY ["./resources", "./resources"]
+COPY ["./public", "./public"]
 RUN npm run build
 
 FROM docker.io/library/php:8.3-fpm-alpine AS backend
@@ -134,25 +135,30 @@ RUN apk add --no-cache \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# RUN groupadd dev -g $GID \
-#     && useradd dev -u $UID -g dev -d /home/dev -m
-
 WORKDIR /www
 
-COPY ["composer.json", "/www/composer.json"]
-COPY ["composer.lock", "/www/composer.lock"]
-COPY ["artisan", "/www/artisan"]
-COPY ["app", "/www/app"]
-COPY ["bootstrap", "/www/bootstrap"]
-COPY ["config", "/www/config"]
-COPY ["database", "/www/database"]
-COPY ["public", "/www/public"]
-COPY ["routes", "/www/routes"]
-COPY ["storage", "/www/storage"]
+RUN addgroup -g $GID dev \
+    && adduser -D -u $UID -G dev -h /home/dev dev \
+    && mkdir -p /home/dev \
+    && chown -R dev:dev /home/dev \
+    && chown dev:dev /www
+
+USER dev
+
+COPY --chown=dev:dev ["composer.json", "/www/composer.json"]
+COPY --chown=dev:dev ["composer.lock", "/www/composer.lock"]
+COPY --chown=dev:dev ["artisan", "/www/artisan"]
+COPY --chown=dev:dev ["app", "/www/app"]
+COPY --chown=dev:dev ["bootstrap", "/www/bootstrap"]
+COPY --chown=dev:dev ["config", "/www/config"]
+COPY --chown=dev:dev ["database", "/www/database"]
+COPY --chown=dev:dev ["public", "/www/public"]
+COPY --chown=dev:dev ["routes", "/www/routes"]
+COPY --chown=dev:dev ["storage", "/www/storage"]
 RUN composer install --no-dev --no-progress --no-interaction
 
-COPY --from=frontend ["/kadokadeo/public/build", "/www/public/build"]
-COPY --from=godot ["/app/gamesdata/*", "/www/public/gamesdata/"]
+COPY --from=frontend --chown=dev:dev ["/kadokadeo/public/build", "/www/public/build"]
+COPY --from=godot --chown=dev:dev ["/app/gamesdata/*", "/www/public/gamesdata/"]
 
 
 COPY ["docker/app/conf/php.ini", "$PHP_INI_DIR/app.ini"]
