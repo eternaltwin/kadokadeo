@@ -34,16 +34,19 @@ class RunController extends Controller implements HasMiddleware
 
         $isDaily = $request->validated('daily', false);
         $realContract = false;
+        $dailyGame = null;
 
         if ($isDaily) {
             // If it's a daily run, check if the game is a daily game and if the user already played it today
             $dailyGate = Gate::inspect('playDaily', $game);
             $realContract = $dailyGate->allowed();
+            $dailyGame = $gameService->getDailyGame();
         }
 
-        if ($realContract) {
-            [$score, $points] = $gameService->getContract($game);
-            $seed = $gameService->getDailySeed($game);
+        if ($realContract && $dailyGame) {
+            $score = $dailyGame->contract_score;
+            $points = $dailyGame->contract_points;
+            $seed = $dailyGame->seed;
         } else {
             $score = 0;
             $points = 0;

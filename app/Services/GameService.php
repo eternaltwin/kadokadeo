@@ -25,17 +25,6 @@ class GameService
         return bin2hex(random_bytes(16)); // 32 characters long
     }
 
-    public function getDailySeed(Game $game): string
-    {
-        $dailyGame = $game->dailyGames()->where('day', now()->today())->first();
-
-        if (!$dailyGame) {
-            throw new \Exception('No daily game for this game today');
-        }
-
-        return $dailyGame->seed;
-    }
-
     public function getDailyGame(): ?DailyGame
     {
         return DailyGame::where('day', today())->first();

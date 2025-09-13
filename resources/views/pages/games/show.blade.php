@@ -65,7 +65,7 @@
     <script>
         const GODOT_CONFIG = {
             "args": [],
-            "canvasResizePolicy": 1,
+            "canvasResizePolicy": 0,
             "ensureCrossOriginIsolationHeaders": true,
             "executable": "/gamesdata/godot",
             "mainPack": "/gamesdata/{{ $gameName }}.pck",
