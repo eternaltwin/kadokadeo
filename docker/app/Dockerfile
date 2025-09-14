@@ -83,7 +83,7 @@ RUN scons \
 RUN mv /app/godot/bin/.web_zip /app/gamesdata \
     && mv /app/godot/bin/godot.web.template_release.wasm32.nothreads.zip /app \
     && rm -rf /app/godot \
-    && unzip /app/gamesdata/web_release_wasm32_nothreads.zip -d /app/gamesdata
+    && unzip /app/web_release_wasm32_nothreads.zip -d /app/gamesdata
 
 WORKDIR /app
 RUN git clone --single-branch https://gitlab.com/eternaltwin/kadokadeo/kadokadeo.git
