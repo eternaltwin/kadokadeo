@@ -17,6 +17,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(\App\Services\GameService::class, function ($app) {
             return new \App\Services\GameService();
         });
+        $this->app->bind(\App\Services\ScoreService::class, function ($app) {
+            return new \App\Services\ScoreService();
+        });
     }
 
     /**

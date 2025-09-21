@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DailyGame;
 use App\Models\Game;
 use App\Services\GameService;
+use App\Services\ScoreService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class GameController extends Controller implements HasMiddleware
@@ -44,29 +43,11 @@ class GameController extends Controller implements HasMiddleware
         return view('pages.games.index', compact('games', 'categories'));
     }
 
-    public function show(Game $game)
+    public function show(Game $game, ScoreService $scoreService)
     {
         Gate::authorize('view', $game);
-        $sub = $game->runs()
-            ->select('user_id', DB::raw('MAX(score) as max_score'))
-            ->groupBy('user_id');
-
-        $scores = $game->runs()
-            ->joinSub($sub, 'best', function ($join) {
-                $join->on('runs.user_id', '=', 'best.user_id')
-                     ->on('runs.score', '=', 'best.max_score');
-            })
-            ->with('user')
-            ->select(
-                'runs.user_id',
-                'runs.score',
-                'runs.id',
-                DB::raw('CASE WHEN runs.replay IS NULL THEN 0 ELSE 1 END as replay')
-            )
-            ->orderByDesc('runs.score')
-            ->take(10)
-            ->get();
-        $personalBest = $game->runs()->whereNotNull('score')->where('user_id', Auth::id())->orderBy('score', 'desc')->first();
+        $scores = $scoreService->getLeaderBoard($game, 10);
+        $personalBest = $scoreService->getUserBestScore($game, Auth::id());
 
         return view('pages.games.show', compact('game', 'scores', 'personalBest'));
     }
