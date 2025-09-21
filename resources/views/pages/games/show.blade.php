@@ -2,6 +2,10 @@
 
 @section('title', 'KadoKadeo - Jeux')
 
+@php
+// dd($game->controls->first()->pivot->description);
+@endphp
+
 @section('page')
     <div class="withRightAside">
 	    <h1 class="center">{{ $game->name }}</h1>

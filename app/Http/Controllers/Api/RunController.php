@@ -56,7 +56,7 @@ class RunController extends Controller implements HasMiddleware
         $user = $request->user();
         $run = $game->runs()->create([
             'user_id' => $user->id,
-            'period_id' => Period::current()->first(),
+            'period_id' => Period::current()->first()?->id,
             'seed' => $seed,
             'contract_score' => $score,
             'contract_points' => $points,
