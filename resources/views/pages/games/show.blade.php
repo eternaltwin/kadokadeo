@@ -3,59 +3,62 @@
 @section('title', 'KadoKadeo - Jeux')
 
 @section('page')
-    @if (config('kado.games_per_day') > 0)
-        <div>Il vous reste {{ Auth::user()->kado_games }} parties à jouer aujourd'hui</div>
-    @endif
-    <h1 style="text-align:center">{{ $game->name }}</h1>
+    <div class="withRightAside">
+	    <h1 class="center">{{ $game->name }}</h1>
+        @if (config('kado.games_per_day') > 0)
+            <p>Il vous reste {{ Auth::user()->kado_games }} parties à jouer aujourd'hui</p>
+        @endif 
 
+        <div id="gameInterface">
+            <!-- TO DO : Personnaliser la barre de chargement -->
+            <div id="status" style="position:absolute;top:180px; left: 90px;">
+                <progress id="status-progress"></progress>
+                <div id="status-notice"></div>
+            </div>
+            <canvas id="gameCanvas" width="300" height="320">
+                <p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.</p>
+            </canvas>
 
-    <div id="status">
-        <progress id="status-progress"></progress>
-        <div id="status-notice"></div>
-    </div>
+            <nav id="gameUpperButtons">
+                <ul>
+                    <li><a href="#" title="titre"><img src="/gfx/iconGameZoom.gif" alt="iconGameZoom.gif" width="15" height="15"> Zoom</a></li>
+                    <li><a href="#" title="titre"><img src="/gfx/iconGameDisliked.gif" alt="iconGameDisliked.gif"> Favori</a></a></li>
+                </ul>
+            </nav>
 
-    <canvas id="canvas" style="width: 600px; height: 640px; margin: 2rem auto">
-        Your browser does not support the canvas tag.
-    </canvas>
+            <div class="gameSide">
+                <nav class="gameNav">
+                    <ul>
+                        <li class="showed"><a href="#" title="Présentation" id="gameNavRules"><img src="/gfx/iconGameRules.png" alt="iconGameRules.png"> Règles</a></li>
+                        <li><a href="#" title="Mon score / Mes paliers" id="gameNavStars"><img src="/gfx/iconGameStars.png" alt="iconGameStars.png"> Paliers</a></li>
+                        <li><a href="#" title="Classement général" id="gameNavRanking"><img src="/gfx/iconGameRanking.png" alt="iconGameRanking.png"> Classement</a></li>
+                    </ul>
+                </nav>
 
-    <style>
-        table tbody tr td {
-            padding: 0.5rem;
-        }
-    </style>
+                <article id="gameRules">
+                    <p>Au secours, c'est l'inondation ! Aidez Krakra, la petite tâche de crasse, à s'évader de la salle de bain du temple aztèque Tenochtitlan. Attention aux mines ancestrales du grand Quetzal !</p>
+                    <hr>
+                    <table class="gameCommands">
+                        <tr>
+                            <th style="width: 70px;">Commande</th>
+                            <th>Fonction</th>
+                        </tr>
+                        <tr>
+                            <td><img src="/gfx/gameCommandLeftClic.png" title="Clic gauche" alt="Clic gauche"></td>
+                            <td>Sauter</td>
+                        </tr>
+                    </table>
+                </article>
 
-    <div>
-        <h2>Scores</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Position</th>
-                    <th>Joueur</th>
-                    <th>Score</th>
-                    <th>Replay</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($scores as $k => $score)
-                    <tr>
-                        <td>{{ $k + 1 }}</td>
-                        <td>{{ $score->user->display_name ?? 'Inconnu' }}</td>
-                        <td>{{ $score->score }}</td>
-                        <td>
-                            @if ($score->has_replay)
-                                <a href="{{ route('runs.show', $score->id) }}">Replay</a>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-                @if ($personalBest)
-                    <tr>
-                        <td>Votre meilleur score</td>
-                        <td>{{ $personalBest->user->display_name ?? 'Inconnu' }}</td>
-                        <td>{{ $personalBest->score }}</td>
-                    </tr>
-                @endif
-        </table>
+                <article id="gameStars" class="hidden">
+                    <p>Scores</p>
+                </article>
+
+                <article id="gameRanking" class="hidden">
+                    <p>Classement</p>
+                </article>
+            </div>
+        </div>
     </div>
 
     <script src="/gamesdata/godot.js"></script>
@@ -74,7 +77,7 @@
                 "/gamesdata/{{ $gameName }}.pck": 1798592,
                 "/gamesdata/godot.wasm": 31000000
             },
-            "focusCanvas": true,
+            "focusCanvas": false,
             "gdextensionLibs": []
         };
         const GODOT_THREADS_ENABLED = false;

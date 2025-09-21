@@ -70,6 +70,7 @@ img {
     margin: 0;
     padding: 0;
     vertical-align: middle;
+    display: inline;
 }
 
 table {
@@ -314,7 +315,7 @@ header#topPage aside#topBarInfo ul li span {
 }
 
 #bodySection .withRightAside {
-    padding: 0 150px 0 0;
+    margin: 0 140px 0 0;
 }
 
 .inColumns {
@@ -605,10 +606,10 @@ div.gameBoxBackground {
 
 /* GAME SHOW */
 
-.gameInterface {
+#gameInterface {
     width: 724px;
     height: 370px;
-    margin: 10px auto 50px auto;
+    margin: 30px auto 50px auto;
     padding: 0;
     background: url("$images/gameInterface.png") no-repeat;
     position: relative;
@@ -626,6 +627,53 @@ canvas#gameCanvas {
     border: 1px solid #56b7c1;
 }
 
+#gameInterface #gameUpperButtons {
+    width: 332px;
+    height: 25px;
+    position: absolute;
+    top: -20px;
+    left: 376px;
+    font-size: 0.75em;
+}
+
+#gameInterface #gameUpperButtons ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#gameInterface #gameUpperButtons ul li {
+    width: 101px;
+    height: 20px;
+    margin-left: 8px;
+    background: url("$images/gameInterfaceButton.gif") no-repeat;
+}
+
+#gameInterface #gameUpperButtons ul li a {
+    width: 101px;
+    height: 20px;
+    display: block;
+    text-align: center;
+    margin: 0;
+    padding: 4px 0 0 0;
+    font-weight: bold;
+    color: #0687b1;
+}
+
+#gameInterface #gameUpperButtons ul li:hover {
+    height: 18px;
+    margin: 2px 0 0 8px;
+}
+
+#gameInterface #gameUpperButtons ul li a:hover {
+    height: 18px;
+    padding: 4px 0 0 0;
+    text-decoration: none;
+    color: #ffa400;
+}
+
 .gameSide {
     width: 303px;
     height: 320px;
@@ -640,7 +688,7 @@ canvas#gameCanvas {
 }
 
 .gameSide p {
-    margin: 8px;
+    margin: 8px 0;
 }
 
 .gameSide hr {
@@ -650,9 +698,14 @@ canvas#gameCanvas {
     border-top: 1px solid #0687b1;
 }
 
+.gameSide article {
+    width: 287px;
+    margin: 8px;
+}
+
 nav.gameNav ul {
     list-style: none;
-    margin: 2px 0 0 0;
+    margin: 2px auto 0 0;
     padding: 0;
     display: flex;
     justify-content: space-around;
@@ -706,24 +759,21 @@ nav.gameNav ul li.showed a#gameNavRanking:hover {
     display: none;
 }
 
-.gameRules table.gameCommands {
+#gameRules table.gameCommands {
     width: 284px;
     margin: 8px auto;
     border: 0;
-    text-align: left;
-}
-
-.gameRules table.gameCommands th, .gameRules table.gameCommands td {
-    vertical-align: middle;
     text-align: center;
 }
 
-.gameRules table.gameCommands th {
-    font-size: 0.9em;
+#gameRules table.gameCommands th, #gameRules table.gameCommands td {
+    vertical-align: middle;
+    text-align: center;
+    padding: 5px;
 }
 
-.gameRules table.gameCommands .col1 {
-    width: 80px;
+#gameRules table.gameCommands th {
+    font-size: 0.9em;
 }
 
 
