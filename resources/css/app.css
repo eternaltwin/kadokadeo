@@ -730,9 +730,7 @@ nav.gameNav ul li a {
     border-left: 1px solid #FFF;
 }
 
-nav.gameNav ul li a#gameNavRules:hover,
-nav.gameNav ul li a#gameNavStars:hover,
-nav.gameNav ul li a#gameNavRanking:hover {
+nav.gameNav ul li a:hover {
     padding: 4px 0 0 0;
     border-top: 2px solid #56b7c1;
     border-right: 1px solid #FFF;
@@ -744,9 +742,7 @@ nav.gameNav ul li a#gameNavRanking:hover {
 }
 
 nav.gameNav ul li.showed a,
-nav.gameNav ul li.showed a#gameNavRules:hover,
-nav.gameNav ul li.showed a#gameNavStars:hover,
-nav.gameNav ul li.showed a#gameNavRanking:hover {
+nav.gameNav ul li.showed a:hover {
     padding: 4px 0 0 0;
     background-color: #eee6d8;
     border-top: 0;

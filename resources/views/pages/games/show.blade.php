@@ -7,6 +7,45 @@
 @endphp
 
 @section('page')
+    <script>
+        class SwitchTab {
+            /* arrayTab is an array with the ID of each tab that can be clicked ; arrayPages are the pages ID, in the same order that can be hidden or showed when clicking on the tab */
+            constructor(arrayTab, arrayPages) {
+                try {
+                    if (arrayTab.length == arrayPages.length) {
+                        this.arrayTab = arrayTab;
+                        this.arrayPages = arrayPages;
+                        for (let i = 0; i < arrayTab.length; i++) {
+                            let elemTab = document.getElementById(arrayTab[i]);
+                            let elemPage = document.getElementById(arrayPages[i]);
+                            if (elemTab === null || elemPage === null) {
+                                throw 'err';
+                            } else {
+                                elemTab.addEventListener("click", () => {
+                                    this.MakingSwitches(i);
+                                });
+                            }
+                        }
+                    } else {
+                        throw 'err';
+                    }
+                } catch(err) {
+                    this.arrayTab = [];
+                    this.arrayPages = [];
+                }
+            }
+
+            /* Making visible the page associated to the clicked tab ; making hidden the other pages ; iClicked is the clicked ID in arrayTab and arrayPages */
+            MakingSwitches(iClicked) {
+                for (let i = 0; i < this.arrayTab.length; i++) {
+                    document.getElementById(this.arrayTab[i]).classList.remove("showed");
+                    document.getElementById(this.arrayPages[i]).classList.add("hidden");
+                }
+                document.getElementById(this.arrayTab[iClicked]).classList.add("showed");
+                document.getElementById(this.arrayPages[iClicked]).classList.remove("hidden");
+            }
+        }
+    </script>
     <div class="withRightAside">
 	    <h1 class="center">{{ $game->name }}</h1>
         @if (config('kado.games_per_day') > 0)
@@ -33,9 +72,9 @@
             <div class="gameSide">
                 <nav class="gameNav">
                     <ul>
-                        <li class="showed"><a href="#" title="Présentation" id="gameNavRules"><img src="/gfx/iconGameRules.png" alt="iconGameRules.png"> Règles</a></li>
-                        <li><a href="#" title="Mon score / Mes paliers" id="gameNavStars"><img src="/gfx/iconGameStars.png" alt="iconGameStars.png"> Paliers</a></li>
-                        <li><a href="#" title="Classement général" id="gameNavRanking"><img src="/gfx/iconGameRanking.png" alt="iconGameRanking.png"> Classement</a></li>
+                        <li class="showed" id="gameNavRules"><a href="#" title="Présentation"><img src="/gfx/iconGameRules.png" alt="iconGameRules.png"> Règles</a></li>
+                        <li id="gameNavStars"><a href="#" title="Mon score / Mes paliers"><img src="/gfx/iconGameStars.png" alt="iconGameStars.png"> Paliers</a></li>
+                        <li id="gameNavRanking"><a href="#" title="Classement général"><img src="/gfx/iconGameRanking.png" alt="iconGameRanking.png"> Classement</a></li>
                     </ul>
                 </nav>
 
@@ -64,6 +103,14 @@
             </div>
         </div>
     </div>
+
+    <!-- Definition of the sections to show or hide when clicking on the button. See javascript buttonSwitch class. -->
+    <script>
+    const check1 = new SwitchTab(
+        ['gameNavRules', 'gameNavStars', 'gameNavRanking'],
+        ['gameRules', 'gameStars', 'gameRanking']
+    );
+    </script>
 
     <script src="/gamesdata/godot.js"></script>
     @php
