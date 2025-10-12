@@ -46,60 +46,79 @@
             }
         }
     </script>
+    <script>
+        function ZoomManager() {
+            let divZoom = document.querySelector("div[id^='gameZoom']");
+            if (divZoom !== null) {
+                let gameCanvas = document.getElementById("gameCanvas");
+                let divZoomAttribute = divZoom.getAttribute("id");
+                if (divZoomAttribute == "gameZoomOut") {
+                    divZoom.id = "gameZoomIn";
+                    gameCanvas.setAttribute("width", "600");
+                    gameCanvas.setAttribute("height", "640");
+                } else {
+                    divZoom.id = "gameZoomOut";
+                    gameCanvas.setAttribute("width", "300");
+                    gameCanvas.setAttribute("height", "320");
+                }
+            }
+        }
+    </script>
     <div class="withRightAside">
 	    <h1 class="center">{{ $game->name }}</h1>
         @if (config('kado.games_per_day') > 0)
             <p>Il vous reste {{ Auth::user()->kado_games }} parties à jouer aujourd'hui</p>
-        @endif
+        @endif 
+        <div id="gameZoomOut"> <!-- TO DO : AJOUTER UNE CROIX POUR FERMER LA FENÊTRE -->
+            <div id="gameInterface">
+                <!-- TO DO : Personnaliser la barre de chargement -->
+                <div id="status" style="position:absolute;top:180px; left: 90px;">
+                    <progress id="status-progress"></progress>
+                    <div id="status-notice"></div>
+                </div>
+                <canvas id="gameCanvas" width="300" height="320">
+                    <p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.</p>
+                </canvas>
 
-        <div id="gameInterface">
-            <!-- TO DO : Personnaliser la barre de chargement -->
-            <div id="status" style="position:absolute;top:180px; left: 90px;">
-                <progress id="status-progress"></progress>
-                <div id="status-notice"></div>
-            </div>
-            <canvas id="gameCanvas" width="300" height="320">
-                <p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.</p>
-            </canvas>
-
-            <nav id="gameUpperButtons">
-                <ul>
-                    <li><a href="#" title="titre"><img src="/gfx/iconGameZoom.gif" alt="iconGameZoom.gif" width="15" height="15"> Zoom</a></li>
-                    <li><a href="#" title="titre"><img src="/gfx/iconGameDisliked.gif" alt="iconGameDisliked.gif"> Favori</a></a></li>
-                </ul>
-            </nav>
-
-            <div class="gameSide">
-                <nav class="gameNav">
+                <nav id="gameUpperButtons">
                     <ul>
-                        <li class="showed" id="gameNavRules"><a href="#" title="Présentation"><img src="/gfx/iconGameRules.png" alt="iconGameRules.png"> Règles</a></li>
-                        <li id="gameNavStars"><a href="#" title="Mon score / Mes paliers"><img src="/gfx/iconGameStars.png" alt="iconGameStars.png"> Paliers</a></li>
-                        <li id="gameNavRanking"><a href="#" title="Classement général"><img src="/gfx/iconGameRanking.png" alt="iconGameRanking.png"> Classement</a></li>
+                        <li><a href="#" title="titre" onclick="ZoomManager()"><img src="/gfx/iconGameZoom.gif" alt="iconGameZoom.gif" width="15" height="15"> Zoom</a></li>
+                        <li><a href="#" title="titre"><img src="/gfx/iconGameDisliked.gif" alt="iconGameDisliked.gif"> Favori</a></a></li>
                     </ul>
                 </nav>
 
-                <article id="gameRules">
-                    <p>{{ $game->description ?? '[WIP description]' }}</p>
-                    <hr>
-                    <table class="gameCommands">
-                        <tr>
-                            <th style="width: 70px;">Commande</th>
-                            <th>Fonction</th>
-                        </tr>
-                        <tr>
-                            <td><img src="/gfx/gameCommandLeftClic.png" title="Clic gauche" alt="Clic gauche"></td>
-                            <td>Sauter</td>
-                        </tr>
-                    </table>
-                </article>
+                <div class="gameSide">
+                    <nav class="gameNav">
+                        <ul>
+                            <li class="showed" id="gameNavRules"><a href="#" title="Présentation"><img src="/gfx/iconGameRules.png" alt="iconGameRules.png"> Règles</a></li>
+                            <li id="gameNavStars"><a href="#" title="Mon score / Mes paliers"><img src="/gfx/iconGameStars.png" alt="iconGameStars.png"> Paliers</a></li>
+                            <li id="gameNavRanking"><a href="#" title="Classement général"><img src="/gfx/iconGameRanking.png" alt="iconGameRanking.png"> Classement</a></li>
+                        </ul>
+                    </nav>
 
-                <article id="gameStars" class="hidden">
-                    <p>Scores</p>
-                </article>
+                    <article id="gameRules">
+                        <p>{{ $game->description ?? '[WIP description]' }}</p>
+                        <hr>
+                        <table class="gameCommands">
+                            <tr>
+                                <th style="width: 70px;">Commande</th>
+                                <th>Fonction</th>
+                            </tr>
+                            <tr>
+                                <td><img src="/gfx/gameCommandLeftClic.png" title="Clic gauche" alt="Clic gauche"></td>
+                                <td>Sauter</td>
+                            </tr>
+                        </table>
+                    </article>
 
-                <article id="gameRanking" class="hidden">
-                    <p>Classement</p>
-                </article>
+                    <article id="gameStars" class="hidden">
+                        <p>Scores</p>
+                    </article>
+
+                    <article id="gameRanking" class="hidden">
+                        <p>Classement</p>
+                    </article>
+                </div>
             </div>
         </div>
     </div>
