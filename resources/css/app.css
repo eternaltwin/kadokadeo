@@ -827,6 +827,37 @@ nav.gameNav ul li.showed a:hover {
     font-size: 0.9em;
 }
 
+#gameZoomOut #gameZoomClose {
+    display: none;
+}
+
+#gameZoomIn #gameZoomClose {
+    position: fixed;
+    right: 7px;
+    top: 0;
+}
+
+#gameZoomIn #gameZoomClose a {
+    color: #FFF;
+    text-decoration: none;
+    padding: 5px;
+    background-color: rgba(0,0,0,0.75);
+    border: 1px solid #000;
+}
+
+#gameZoomIn #gameZoomClose a:hover {
+    text-decoration: none;
+    border: 1px solid #fff;
+    background-color: #000;
+}
+
+#gameZoomIn #gameZoomClose a span {
+    font-weight: bold;
+    color: #ff0000;
+    font-size: 1.3em;
+    padding-left: 5px;
+}
+
 
 /* FORMS */
 

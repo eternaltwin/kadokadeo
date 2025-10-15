@@ -69,7 +69,7 @@
         @if (config('kado.games_per_day') > 0)
             <p>Il vous reste {{ Auth::user()->kado_games }} parties à jouer aujourd'hui</p>
         @endif 
-        <div id="gameZoomOut"> <!-- TO DO : AJOUTER UNE CROIX POUR FERMER LA FENÊTRE -->
+        <div id="gameZoomOut">
             <div id="gameInterface">
                 <!-- TO DO : Personnaliser la barre de chargement -->
                 <div id="status" style="position:absolute;top:180px; left: 90px;">
@@ -82,8 +82,8 @@
 
                 <nav id="gameUpperButtons">
                     <ul>
-                        <li><a href="#" title="titre" onclick="ZoomManager()"><img src="/gfx/iconGameZoom.gif" alt="iconGameZoom.gif" width="15" height="15"> Zoom</a></li>
-                        <li><a href="#" title="titre"><img src="/gfx/iconGameDisliked.gif" alt="iconGameDisliked.gif"> Favori</a></a></li>
+                        <li><a href="#" title="Zoom / dézoom" onclick="ZoomManager()"><img src="/gfx/iconGameZoom.gif" alt="iconGameZoom.gif" width="15" height="15"> Zoom</a></li>
+                        <li><a href="#" title="Ajouter/retirer des jeux favoris"><img src="/gfx/iconGameDisliked.gif" alt="iconGameDisliked.gif"> Favori</a></a></li>
                     </ul>
                 </nav>
 
@@ -120,6 +120,7 @@
                     </article>
                 </div>
             </div>
+            <p id="gameZoomClose"><a href="#" title="Désactiver le zoom" onclick="ZoomManager()">Désactiver le zoom <span>❌</span></p>
         </div>
     </div>
 
