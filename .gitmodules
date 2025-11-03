@@ -1,3 +1,6 @@
 [submodule "resources/games/interwheel"]
 	path = resources/games/godot/interwheel
 	url = https://gitlab.com/eternaltwin/kadokadeo/interwheel.git
+[submodule "resources/games/godot/opalus"]
+	path = resources/games/godot/opalus
+	url = https://gitlab.com/eternaltwin/kadokadeo/opalus.git

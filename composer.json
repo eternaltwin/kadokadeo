@@ -62,7 +62,7 @@
             "@php artisan test"
         ],
         "db:sync": [
-            "@php artisan migrate"
+            "@php artisan migrate --force"
         ]
     },
     "extra": {

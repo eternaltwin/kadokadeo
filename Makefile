@@ -61,3 +61,4 @@ sync-database:
 update-games:
 	git submodule update --init --recursive
 	git submodule update --recursive --remote
+	docker cp kadokadeo_app:/www/public/gamesdata public
