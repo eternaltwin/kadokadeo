@@ -86,6 +86,7 @@ RUN mv /app/godot/bin/godot.web.template_release.wasm32.nothreads.zip /app \
     && unzip /app/godot.web.template_release.wasm32.nothreads.zip -d /app/gamesdata
 
 WORKDIR /app
+RUN echo 2
 RUN git clone --single-branch https://gitlab.com/eternaltwin/kadokadeo/kadokadeo.git
 WORKDIR /app/kadokadeo/resources/games/godot
 
@@ -97,7 +98,7 @@ RUN find * -type d -prune | while read -r d; do \
     echo "Processing game $d"; \
     python3 set_template.py /app/godot.web.template_release.wasm32.nothreads.zip --file "$d/export_presets.cfg" --debug /app/godot.web.template_release.wasm32.nothreads.zip; \
     /app/godot_editor/godot --headless --path $d --export-release "Web" /app/kadokadeo/resources/games/godot/output/$d; \
-    mv output/$d.pck /app/gamesdata/$d.pck \
+    mv output/$d.pck /app/gamesdata/$d.pck; \
     rm output/*; \
     done
 

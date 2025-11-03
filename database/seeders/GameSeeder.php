@@ -3,14 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\Game;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 /**
-* Celestin
-* Aidez Celestin le Nuage à pousser sa petite bulle en évitant les méchants pics et les vilains ventilateurs, tout en ramassant les gentils bonus.
-*/
-
+ * Celestin
+ * Aidez Celestin le Nuage à pousser sa petite bulle en évitant les méchants pics et les vilains ventilateurs, tout en ramassant les gentils bonus.
+ */
 class GameSeeder extends Seeder
 {
     /**
@@ -30,7 +28,7 @@ class GameSeeder extends Seeder
             ['name' => 'K-Slash !', 'image_path' => '/assets/img/games/K-Slash_!.png', 'is_active' => false, 'stars' => [6957, 18552, 24350]],
             ['name' => 'Kanji', 'image_path' => '/assets/img/games/Kanji.png', 'is_active' => false, 'stars' => [12150, 24300, 30375], 'description' => "Kanji le Ninja saura-t'il se défaire des pièges que renferme ce Zoo infernal ? Dans l'antique Japon, les animaux n'étaient pas toujours l'ami de l'homme : évitez-les en sautant et ramassez les symboles Zen."],
             ['name' => 'Ellon In The Dark', 'image_path' => '/assets/img/games/Ellon_In_The_Dark.png', 'is_active' => false, 'stars' => [15996, 38848, 50273]],
-            ['name' => 'Interwheel', 'image_path' => '/assets/img/games/Interwheel.png', 'is_active' => true, 'stars' => [16847, 28881, 34898]],
+            ['name' => 'Interwheel', 'image_path' => '/assets/img/games/Interwheel.png', 'is_active' => true, 'stars' => [16847, 28881, 34898], 'description' => 'Au secours, c\'est l\'inondation ! Aidez Krakra, la petite tâche de crasse, à s\'évader de la salle de bain du temple aztèque Tenochtitlan. Attention aux mines ancestrales du grand Quetzal !'],
             ['name' => 'Piou-Piou', 'image_path' => '/assets/img/games/Piou-Piou.png', 'is_active' => false, 'stars' => [14801, 31247, 39470]],
             ['name' => 'Manda', 'image_path' => '/assets/img/games/Manda.png', 'is_active' => false, 'stars' => [23987, 263877, 383822], 'description' => "Tortillez-vous pour ramasser les fruits et les bonus, tentez d'obtenir le Jackpot et surtout evitez les murs ! Un grand classique."],
             ['name' => 'Schizo Fuzz', 'image_path' => '/assets/img/games/Schizo_Fuzz.png', 'is_active' => false, 'stars' => [76482, 172084, 219885]],
@@ -40,7 +38,7 @@ class GameSeeder extends Seeder
             ['name' => 'Judo Commando', 'image_path' => '/assets/img/games/Judo_Commando.png', 'is_active' => false, 'stars' => [24212, 72636, 96848]],
             ['name' => 'Tianan Man', 'image_path' => '/assets/img/games/Tianan_Man.png', 'is_active' => false, 'stars' => [40809, 142834, 193847]],
             ['name' => 'ZipZap', 'image_path' => '/assets/img/games/ZipZap.png', 'is_active' => false, 'stars' => [15258, 24795, 29563]],
-            ['name' => 'Kill Bulle', 'image_path' => '/assets/img/games/Kill_Bulle.png', 'is_active' => false, 'stars' => [12609, 37827, 50436], 'description' => "Retrouvrez Kanji le Ninja dans une nouvelle aventure ! Utilisez le grapin de façon à détruire les bulles bondissantes et gagnez ainsi un max de points."],
+            ['name' => 'Kill Bulle', 'image_path' => '/assets/img/games/Kill_Bulle.png', 'is_active' => false, 'stars' => [12609, 37827, 50436], 'description' => 'Retrouvrez Kanji le Ninja dans une nouvelle aventure ! Utilisez le grapin de façon à détruire les bulles bondissantes et gagnez ainsi un max de points.'],
             ['name' => 'Starfang', 'image_path' => '/assets/img/games/Starfang.png', 'is_active' => false, 'stars' => [5228, 15684, 20912]],
             ['name' => 'Oursouinvader', 'image_path' => '/assets/img/games/Oursouinvader.png', 'is_active' => false, 'stars' => [22932, 45864, 57330]],
             ['name' => 'Cyclopean', 'image_path' => '/assets/img/games/Cyclopean.png', 'is_active' => false, 'stars' => [34145, 91053, 119507]],
@@ -76,9 +74,9 @@ class GameSeeder extends Seeder
 
         $catPuzzle->games()->createMany([
             ['name' => 'Opalus Factory', 'image_path' => '/assets/img/games/Opalus_Factory.png', 'is_active' => false, 'stars' => [53167, 106334, 132917]],
-            ['name' => 'Flushee', 'image_path' => '/assets/img/games/Flushee.png', 'is_active' => false, 'stars' => [10007, 17705, 21554], 'description' => "Ces petits animaux sont très fragiles : à peine on les effleure et ils explosent en grappes ! Gagnez le maximum de points en un nombre limité de coups."],
-            ['name' => 'Opalus', 'image_path' => '/assets/img/games/Opalus.png', 'is_active' => false, 'stars' => [77855, 105661, 119563]],
-            ['name' => 'Kaskade 2', 'image_path' => '/assets/img/games/Kaskade_2.png', 'is_active' => false, 'stars' => [158229, 230151, 266112]],
+            ['name' => 'Flushee', 'image_path' => '/assets/img/games/Flushee.png', 'is_active' => false, 'stars' => [10007, 17705, 21554], 'description' => 'Ces petits animaux sont très fragiles : à peine on les effleure et ils explosent en grappes ! Gagnez le maximum de points en un nombre limité de coups.'],
+            ['name' => 'Opalus', 'image_path' => '/assets/img/games/Opalus.png', 'is_active' => true, 'stars' => [77855, 105661, 119563]],
+            ['name' => 'Kaskade', 'image_path' => '/assets/img/games/Kaskade_2.png', 'is_active' => true, 'stars' => [158229, 230151, 266112]],
             ['name' => 'Cooking Lili', 'image_path' => '/assets/img/games/Cooking_Lili.png', 'is_active' => false, 'stars' => [26230, 41660, 49374]],
             ['name' => 'Xian-Xiang', 'image_path' => '/assets/img/games/Xian-Xiang.png', 'is_active' => false, 'stars' => [10240, 12288, 13312]],
             ['name' => 'Aqua Splash', 'image_path' => '/assets/img/games/Aqua_Splash.png', 'is_active' => false, 'stars' => [60722, 107431, 130786]],

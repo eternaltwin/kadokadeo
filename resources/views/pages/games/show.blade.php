@@ -50,7 +50,7 @@
 	    <h1 class="center">{{ $game->name }}</h1>
         @if (config('kado.games_per_day') > 0)
             <p>Il vous reste {{ Auth::user()->kado_games }} parties à jouer aujourd'hui</p>
-        @endif 
+        @endif
 
         <div id="gameInterface">
             <!-- TO DO : Personnaliser la barre de chargement -->
@@ -79,7 +79,7 @@
                 </nav>
 
                 <article id="gameRules">
-                    <p>Au secours, c'est l'inondation ! Aidez Krakra, la petite tâche de crasse, à s'évader de la salle de bain du temple aztèque Tenochtitlan. Attention aux mines ancestrales du grand Quetzal !</p>
+                    <p>{{ $game->description ?? '[WIP description]' }}</p>
                     <hr>
                     <table class="gameCommands">
                         <tr>
@@ -113,19 +113,16 @@
     </script>
 
     <script src="/gamesdata/godot.js"></script>
-    @php
-        $gameName = \Illuminate\Support\Str::slug($game->name, '_');
-    @endphp
     <script>
         const GODOT_CONFIG = {
             "args": [],
             "canvasResizePolicy": 0,
             "ensureCrossOriginIsolationHeaders": true,
             "executable": "/gamesdata/godot",
-            "mainPack": "/gamesdata/{{ $gameName }}.pck",
+            "mainPack": "{{ $game->gamedata['file'] }}",
             "experimentalVK": false,
             "fileSizes": {
-                "/gamesdata/{{ $gameName }}.pck": 1798592,
+                "{{ $game->gamedata['file'] }}": {{ $game->gamedata['size'] }},
                 "/gamesdata/godot.wasm": 31000000
             },
             "focusCanvas": false,

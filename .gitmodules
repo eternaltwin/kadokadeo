@@ -4,3 +4,6 @@
 [submodule "resources/games/godot/opalus"]
 	path = resources/games/godot/opalus
 	url = https://gitlab.com/eternaltwin/kadokadeo/opalus.git
+[submodule "resources/games/godot/kaskade"]
+	path = resources/games/godot/kaskade
+	url = https://gitlab.com/eternaltwin/kadokadeo/kaskade.git
