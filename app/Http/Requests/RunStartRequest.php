@@ -13,9 +13,14 @@ class RunStartRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        $configConcurrency = config('kado.runs.max_concurrency');
+        if ($configConcurrency == -1) {
+            return true;
+        }
+
         $currentRunCount = Run::where('user_id', Auth::id())->whereNull('completed_at')->count();
 
-        return $currentRunCount < config('kado.runs.max_concurrency');
+        return $currentRunCount < $configConcurrency;
     }
 
     /**
