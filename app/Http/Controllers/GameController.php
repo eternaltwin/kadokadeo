@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\Period;
 use App\Services\GameService;
 use App\Services\ScoreService;
 use Illuminate\Http\Request;
@@ -46,10 +47,12 @@ class GameController extends Controller implements HasMiddleware
     public function show(Game $game, ScoreService $scoreService)
     {
         Gate::authorize('view', $game);
+        $currentPeriod = Period::current()->first();
         $scores = $scoreService->getLeaderBoard($game, 10);
         $personalBest = $scoreService->getUserBestScore($game, Auth::id());
+        $personalBestForPeriod = $scoreService->getUserBestScore($game, Auth::id(), $currentPeriod?->id);
 
-        return view('pages.games.show', compact('game', 'scores', 'personalBest'));
+        return view('pages.games.show', compact('game', 'scores', 'personalBest', 'personalBestForPeriod'));
     }
 
     public function daily(GameService $gameService)
