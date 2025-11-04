@@ -36,10 +36,10 @@ return [
     ],
 
     'etwin' => [
-        'identityServerUri' => env('ETWIN_IDENTITY_SERVER_URI', 'https://identity.eternaltwin.com/'),
-        'eternaltwinUrl' => env('ETWIN_URL', 'https://eternaltwin.com/'),
-        'oauthId' => env('ETWIN_OAUTH_ID', ''),
-        'oauthSecret' => env('ETWIN_OAUTH_SECRET', ''),
+        'identityServerUri' => env('ETERNALTWIN_URL', 'https://identity.eternaltwin.com/'),
+        'eternaltwinUrl' => env('ETERNALTWIN_URL', 'https://eternaltwin.com/'),
+        'oauthId' => env('ETERNALTWIN_CLIENT_ID', ''),
+        'oauthSecret' => env('ETERNALTWIN_CLIENT_SECRET', ''),
     ],
 
 ];
