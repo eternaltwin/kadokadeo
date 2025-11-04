@@ -68,7 +68,7 @@
 	    <h1 class="center">{{ $game->name }}</h1>
         @if (config('kado.games_per_day') > 0)
             <p>Il vous reste {{ Auth::user()->kado_games }} parties à jouer aujourd'hui</p>
-        @endif 
+        @endif
         <div id="gameZoomOut">
             <div id="gameInterface">
                 <!-- TO DO : Personnaliser la barre de chargement -->
@@ -116,7 +116,30 @@
                     </article>
 
                     <article id="gameRanking" class="hidden">
-                        <p>Classement</p>
+                        <table style="width: 100%;">
+                            <tr>
+                                <th>Position</th>
+                                <th>Joueur</th>
+                                <th>Score</th>
+                                <th>Temps</th>
+                            </tr>
+                            @foreach ($scores as $index => $score)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $score->user->display_name }}</td>
+                                <td>{{ formatScore($score->score) }}</td>
+                                <td>
+                                    @if ($score->has_replay)
+                                    <a href="{{ route('runs.show', $score->id) }}">
+                                        {{ formatTime($score->play_time_seconds) }}
+                                    </a>
+                                    @else
+                                    {{ formatTime($score->play_time_seconds) }}
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </table>
                     </article>
                 </div>
             </div>

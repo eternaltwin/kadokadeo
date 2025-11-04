@@ -28,7 +28,7 @@
                     <th>Position</th>
                     <th>Joueur</th>
                     <th>Score</th>
-                    <th>Replay</th>
+                    <th>Temps</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,10 +36,14 @@
                     <tr>
                         <td>{{ $k + 1 }}</td>
                         <td>{{ $score->user->display_name ?? 'Inconnu' }}</td>
-                        <td>{{ $score->score }}</td>
+                        <td>{{ formatScore($score->score) }}</td>
                         <td>
                             @if ($score->has_replay)
-                                <a href="{{ route('runs.show', $score->id) }}">Replay</a>
+                                <a href="{{ route('runs.show', $score->id) }}">
+                                    {{ formatTime($score->play_time_seconds) }}
+                                </a>
+                            @else
+                                {{ formatTime($score->play_time_seconds) }}
                             @endif
                         </td>
                     </tr>
@@ -48,9 +52,6 @@
     </div>
 
     <script src="/gamesdata/godot.js"></script>
-    @php
-        $gameName = \Illuminate\Support\Str::slug($dailyGame->game->name, '_');
-    @endphp
     <script>
         const GODOT_CONFIG = {
             "args": [

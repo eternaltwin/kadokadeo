@@ -65,7 +65,7 @@ class RunsRelationManager extends RelationManager
                 TextColumn::make('period_id')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('user_id')
+                TextColumn::make('user.display_name')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('contract_score')

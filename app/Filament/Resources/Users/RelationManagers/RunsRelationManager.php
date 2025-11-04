@@ -65,7 +65,10 @@ class RunsRelationManager extends RelationManager
                 TextColumn::make('period_id')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('game_id')
+                TextColumn::make('game.name')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('score')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('contract_score')
@@ -76,9 +79,6 @@ class RunsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('seed')
                     ->searchable(),
-                TextColumn::make('score')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('play_time_seconds')
                     ->numeric()
                     ->sortable(),

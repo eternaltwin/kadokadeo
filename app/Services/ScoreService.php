@@ -30,6 +30,7 @@ class ScoreService
             ->select(
                 'runs.user_id',
                 'runs.score',
+                'runs.play_time_seconds',
                 'runs.id',
                 DB::raw('CASE WHEN runs.replay IS NULL THEN 0 ELSE 1 END as replay')
             )

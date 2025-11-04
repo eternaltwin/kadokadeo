@@ -42,7 +42,16 @@
         </div>
     @endif
     <main id="container">
+
         <section id="bodySection">
+            <div class="error w-3/4 !mb-12">
+                <div>
+                    <p>
+                        Kadokadéo est actuellement en alpha. Les scores que vous réaliserez finiront sans doute par être
+                        supprimés.
+                    </p>
+                </div>
+            </div>
             @yield('page')
         </section>
 
