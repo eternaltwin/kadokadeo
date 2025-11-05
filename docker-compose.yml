@@ -18,7 +18,7 @@ services:
     volumes:
       - .:/www
     working_dir: /www
-    command: 'sh -c "npm i && npm run dev"'
+    command: 'sh -c "yarn && yarn dev"'
 
   kadokadeo_database:
     image: postgres:15.1

@@ -158,7 +158,9 @@
     <script src="/gamesdata/godot.js"></script>
     <script>
         const GODOT_CONFIG = {
-            "args": [],
+            "args": [
+                '--server_url={{ config('app.url') }}',
+            ],
             "canvasResizePolicy": 0,
             "ensureCrossOriginIsolationHeaders": true,
             "executable": "/gamesdata/godot",

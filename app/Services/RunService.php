@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Run;
-use App\Models\UserPoint;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,8 +27,8 @@ class RunService
 
     public function __construct($config)
     {
-        $this->publicKey = data_get($config, 'public_key');
-        $this->privateKey = data_get($config, 'private_key');
+        $this->publicKey = file_get_contents(data_get($config, 'public_key_path'));
+        $this->privateKey = file_get_contents(data_get($config, 'private_key_path'));
     }
 
     public function getPublicKey()
@@ -56,7 +55,7 @@ class RunService
             'run_id' => 'required|exists:runs,id',
             'score' => 'required|integer|min:0',
             'timestamp' => 'required|integer',
-            'replay' => 'nullable|string', // TODO: make a function to decode a replay. We should think of what is should be made of.
+            'replay' => 'nullable|string', // TODO: make a function to decode a replay.
         ]);
 
         if ($validator->fails()) {

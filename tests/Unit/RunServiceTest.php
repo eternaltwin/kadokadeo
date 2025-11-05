@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Services\RunService;
+use Illuminate\Support\Facades\File;
 use PHPUnit\Framework\TestCase;
 
 class RunServiceTest extends TestCase
@@ -21,10 +22,26 @@ class RunServiceTest extends TestCase
         openssl_pkey_export($keyResource, $privateKey);
         $this->publicKey = openssl_pkey_get_details($keyResource)['key'];
         $this->privateKey = $privateKey;
+
+        if (!file_exists('storage/app/tests')) {
+            mkdir('storage/app/tests', 0755, true);
+        }
+
+        file_put_contents('storage/app/tests/privkey.pem', $this->privateKey);
+        file_put_contents('storage/app/tests/pubkey.pem', $this->publicKey);
+
         $this->runService = new RunService([
-            'public_key' => $this->publicKey,
-            'private_key' => $this->privateKey,
+            'public_key_path' => 'storage/app/tests/pubkey.pem',
+            'private_key_path' => 'storage/app/tests/privkey.pem',
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        // Clean up temporary key files
+        unlink('storage/app/tests/privkey.pem');
+        unlink('storage/app/tests/pubkey.pem');
+        rmdir('storage/app/tests');
     }
 
     public function testGetAesKeyFromEncrypted()

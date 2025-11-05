@@ -26,23 +26,13 @@ Variable | Description | Default
 ---------|-------------|---------
 `KADO_GAMES_PER_DAY` | Games allowed to play per user per day | 100
 `KADO_RUNS_MAX_CONCURRENCY` | Maximum amount of games a user can play in parallel before being throttled | 5
-⚠️ `KADO_RSA_PRIVATE_KEY` | Private RSA key of the server. Should be kept **private**. |
-⚠️ `KADO_RSA_PUBLIC_KEY` | Public key associated with the private key |
+⚠️ `KADO_RSA_PRIVATE_KEY_PATH` | Private RSA key path of the server. Should be kept **private**. | `storage/app/private/privkey.pem`
+⚠️ `KADO_RSA_PUBLIC_KEY_PATH` | Public key path associated with the private key | `storage/app/private/pubkey.pem`
 
 You can generate keys with :
 ```bash
 openssl genrsa -out keypair.pem
 openssl rsa -in keypair.pem -pubout -out public.pem
-```
-
-then put them in .env, surrounded by quotes :
-```sh
-KADO_RSA_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
-etc etc etc...
------END PRIVATE KEY-----"
-KADO_RSA_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----
-etc etc etc...
------END PUBLIC KEY-----"
 ```
 
 ## Project commands

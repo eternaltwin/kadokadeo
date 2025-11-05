@@ -9,7 +9,7 @@ return [
     ],
 
     'security' => [
-        'private_key' => env('KADO_RSA_PRIVATE_KEY'),
-        'public_key' => env('KADO_RSA_PUBLIC_KEY'),
+        'private_key_path' => env('KADO_RSA_PRIVATE_KEY_PATH', storage_path('app/private/privkey.pem')),
+        'public_key_path' => env('KADO_RSA_PUBLIC_KEY_PATH', storage_path('app/private/pubkey.pem')),
     ]
 ];
