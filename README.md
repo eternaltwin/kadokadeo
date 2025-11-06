@@ -3,6 +3,7 @@
 - Kadokadeo
     - [Configuration](#configuration)
     - [Project commands](#project-commands)
+    - [Updating games](#installing--updating-games)
     - [Installing with Docker](#installing-with-docker)
         - [Windows Users](#windows-users)
         - [Install build tools and Docker](#install-build-tools-and-docker)
@@ -14,11 +15,7 @@
 
 ## Configuration
 
-Start by copying `.env.example` into `.env`.
-
-> [!CAUTION]
-> There are some environment variables that really need to be set for the website to run properly.
-> They will have the "⚠️" emoji
+Go to [Install the project](#install-the-project) if you need to install the project first.
 
 Here are the configuration variables:
 
@@ -26,8 +23,8 @@ Variable | Description | Default
 ---------|-------------|---------
 `KADO_GAMES_PER_DAY` | Games allowed to play per user per day | 100
 `KADO_RUNS_MAX_CONCURRENCY` | Maximum amount of games a user can play in parallel before being throttled | 5
-⚠️ `KADO_RSA_PRIVATE_KEY_PATH` | Private RSA key path of the server. Should be kept **private**. | `storage/app/private/privkey.pem`
-⚠️ `KADO_RSA_PUBLIC_KEY_PATH` | Public key path associated with the private key | `storage/app/private/pubkey.pem`
+`KADO_RSA_PRIVATE_KEY_PATH` | Private RSA key path of the server. Should be kept **private**. | `storage/app/private/privkey.pem`
+`KADO_RSA_PUBLIC_KEY_PATH` | Public key path associated with the private key | `storage/app/private/pubkey.pem`
 
 You can generate keys with :
 ```bash
@@ -49,6 +46,21 @@ Command | Description | Ran in CRON
 `migrate` | Synchronises the database | ❌
 `kado:prepare-new-period` | Close current period and begin a new one. | ✅ Every week on monday, but it still makes periods of 2 weeks
 `kado:reset-daily-games` | Resets the daily games for every user to the configured value | ✅ Everyday at 00:00
+
+## Installing / Updating games
+
+For now, each game is remade with Godot. You don't need Godot to be installed.
+
+You just need to run:
+
+```
+make update-games
+```
+
+Or :
+```
+docker compose run --rm kadokadeo_app sh /www/update_games.sh
+```
 
 ## Installing with Docker
 
@@ -148,4 +160,4 @@ Restart your computer, then try to run `make` again.
 - `make reset-database` : Reset the database
 - `make sync-database` : Update the database with the migrations
 
-Please see more commands in the [`Makefile`](Makefile) or the [`composer.json`](composer.json#L16-L19) file.
+Please see more commands in the [`Makefile`](Makefile) or the [`composer.json`](composer.json#L56-L66) file.
