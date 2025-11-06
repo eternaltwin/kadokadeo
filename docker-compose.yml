@@ -13,7 +13,7 @@ services:
       - kadokadeo_database
 
   kadokadeo_front:
-    image: node:20
+    image: node:22
     container_name: kadokadeo_front
     volumes:
       - .:/www

@@ -86,7 +86,6 @@ RUN mv /app/godot/bin/godot.web.template_release.wasm32.nothreads.zip /app \
     && unzip /app/godot.web.template_release.wasm32.nothreads.zip -d /app/gamesdata
 
 WORKDIR /app
-RUN echo 2
 RUN git clone --single-branch https://gitlab.com/eternaltwin/kadokadeo/kadokadeo.git
 WORKDIR /app/kadokadeo/resources/games/godot
 
@@ -107,43 +106,41 @@ FROM docker.io/library/node:20.19.3-alpine3.22 AS frontend
 WORKDIR "/kadokadeo"
 
 COPY ["./package.json", "./"]
-COPY ["./package-lock.json", "./"]
-RUN npm install
+COPY ["./yarn.lock", "./"]
+COPY ["./.yarn", "./.yarn"]
+RUN yarn
 
 COPY ["./vite.config.js", "./"]
 COPY ["./resources", "./resources"]
 COPY ["./public", "./public"]
-RUN npm run build
+RUN yarn build
 
-FROM docker.io/library/php:8.3-fpm-alpine AS backend
+FROM docker.io/library/php:8.3-fpm AS backend
 
 ARG UID
 ARG GID
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     git \
     gnupg \
     zip \
     libpq-dev \
-    icu-dev \
+    libicu-dev \
     libzip-dev \
     supervisor \
-    dcron \
+    cron \
     && docker-php-ext-configure intl \
-    && docker-php-ext-install intl \
-    && docker-php-ext-install zip \
-    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql
+    && docker-php-ext-install intl zip pdo pdo_pgsql pgsql \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /www
 
-RUN addgroup -g $GID dev \
-    && adduser -D -u $UID -G dev -h /home/dev dev \
-    && mkdir -p /home/dev \
-    && chown -R dev:dev /home/dev \
-    && chown dev:dev /www
+RUN groupadd -g $GID dev \
+    && useradd -m -u $UID -g dev dev \
+    && chown -R dev:dev /www
 
 USER dev
 
@@ -161,10 +158,12 @@ RUN composer install --no-dev --no-progress --no-interaction
 
 COPY --from=frontend --chown=dev:dev ["/kadokadeo/public/build", "/www/public/build"]
 COPY --from=godot --chown=dev:dev ["/app/gamesdata/*", "/www/public/gamesdata/"]
-
+COPY --from=godot --chown=dev:dev ["/app/godot.web.template_release.wasm32.nothreads.zip", "/godot/godot.web.template_release.wasm32.nothreads.zip"]
+COPY --from=godot --chown=dev:dev ["/app/godot_editor/godot", "/godot/godot"]
+USER root
 
 COPY ["docker/app/conf/php.ini", "$PHP_INI_DIR/app.ini"]
-COPY ["docker/app/conf/crontab", "/etc/crontabs/root"]
+COPY ["docker/app/conf/crontab", "/etc/cron.d/kadokadeo"]
 COPY ["docker/app/conf/supervisord.conf", "/etc/supervisor/conf.d/supervisord.conf"]
 
 EXPOSE 9000
