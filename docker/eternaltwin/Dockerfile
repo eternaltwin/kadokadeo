@@ -1,10 +1,10 @@
-FROM --platform=linux/amd64 node:lts-slim
+FROM node:lts-slim
 
 ARG UID=1000
 ARG GID=1000
 
 RUN apt-get -y update \
-	&& apt-get install -y git
+    && apt-get install -y git
 
 WORKDIR /www
 

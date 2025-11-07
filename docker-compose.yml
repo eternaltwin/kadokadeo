@@ -25,6 +25,7 @@ services:
     container_name: kadokadeo_database
     volumes:
       - ./docker/database:/docker-entrypoint-initdb.d
+      - ./docker/database-data:/var/lib/postgresql/data
     networks:
       - kadokadeo_network
     environment:
