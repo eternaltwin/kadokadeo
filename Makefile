@@ -26,26 +26,25 @@ reset-dependencies: install-app install-eternaltwin
 
 build:
 	docker compose build
-	docker compose run --rm -u node kadokadeo_eternaltwin chown -R node:node /www
+	docker compose run -u node kadokadeo_eternaltwin chown -R node:node /www
 	docker compose up --no-start --remove-orphans
 
-install: setup-env-variables build start-kadokadeo-database install-app
-	docker compose run --rm -u node kadokadeo_eternaltwin yarn install
-	docker compose run --rm -u node kadokadeo_eternaltwin yarn etwin db create
+install: setup-env-variables build start-kadokadeo-database install-app install-eternaltwin
 
 install-app:
-	docker compose run --rm kadokadeo_app composer install
-	docker compose run --rm kadokadeo_app php artisan key:generate --ansi
-	docker compose run --rm kadokadeo_app php artisan migrate:fresh --force --seed
+	docker compose run kadokadeo_app composer install
+	docker compose run kadokadeo_app php artisan key:generate --ansi
+	docker compose run kadokadeo_app php artisan migrate:fresh --force --seed
 
 install-eternaltwin:
-	docker compose run --rm -u node kadokadeo_eternaltwin yarn install
+	docker compose run -u node kadokadeo_eternaltwin yarn install
+	docker compose run -u node kadokadeo_eternaltwin yarn etwin db create
 
 reset-database:
-	docker compose run --rm kadokadeo_app php artisan migrate:fresh --force --seed
+	docker compose run kadokadeo_app php artisan migrate:fresh --force --seed
 
 reset-eternaltwin-database:
-	docker compose run --rm -u node kadokadeo_eternaltwin yarn etwin db create
+	docker compose run -u node kadokadeo_eternaltwin yarn etwin db create
 
 start-kadokadeo-database:
 	docker start kadokadeo_database
@@ -61,4 +60,4 @@ sync-database:
 	docker compose run --rm kadokadeo_app php artisan migrate --force
 
 update-games:
-	docker compose run --rm kadokadeo_app sh /www/update_games.sh
+	docker exec kadokadeo_app sh /www/update_games.sh

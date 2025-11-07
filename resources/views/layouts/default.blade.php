@@ -8,7 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script type="text/javascript">
         window.Kado = {
-            public_key: '{{ str_replace("\n", "\\n", config('kado.security.public_key')) }}',
+            public_key: '{{ str_replace("\n", "\\n", app(App\Services\RunService::class)->getPublicKey()) }}',
         }
     </script>
 
