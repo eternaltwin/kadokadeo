@@ -99,20 +99,63 @@
                     <article id="gameRules">
                         <p>{{ $game->description ?? '[WIP description]' }}</p>
                         <hr>
-                        <table class="gameCommands">
-                            <tr>
-                                <th style="width: 70px;">Commande</th>
-                                <th>Fonction</th>
-                            </tr>
-                            <tr>
-                                <td><img src="/gfx/gameCommandLeftClic.png" title="Clic gauche" alt="Clic gauche"></td>
-                                <td>Sauter</td>
-                            </tr>
+                        <table class="gameCommands noBorder noBackground">
+                            <thead>
+                                <tr>
+                                    <th style="width: 70px;" scope="col">Commande</th>
+                                    <th scope="col">Fonction</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td scope="row"><img src="/gfx/gameCommandLeftClic.png" title="Clic gauche" alt="Clic gauche"></td>
+                                    <td>Sauter</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </article>
 
                     <article id="gameStars" class="hidden">
-                        <p>Scores</p>
+                        <table class="noBorder whiteFirst">
+                            <thead>
+                                <tr class="noBackground">
+                                    <th scope="col">Record période</th>
+                                    <th scope="col">Mon record</th>
+                                    <th scope="col">Record du monde</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td scope="row">{!! typoFromImg($personalBestForPeriod,2) !!}</th>
+                                    <td>123456</th>
+                                    <td>123456</th>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h3>Objectifs</h3>
+                        <table class="gameGoals noBorder">
+                            <thead>
+                                <tr class="noBackground">
+                                    <th scope="col">Paliers</th>
+                                    <th scope="col">Valeur</th>
+                                </tr>
+                            </thead>
+                            <tbody class="twoColoured">
+                                <tr>
+                                    <td scope="row">Img</th>
+                                    <td>123456</th>
+                                </tr>
+                                <tr>
+                                    <td scope="row">Img</th>
+                                    <td>123456</th>
+                                </tr>
+                                <tr>
+                                    <td scope="row">Img</th>
+                                    <td>123456</th>
+                                </tr>
+                            </tbody>
+                        </table>
                     </article>
 
                     <article id="gameRanking" class="hidden">
