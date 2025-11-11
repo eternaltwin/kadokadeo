@@ -249,12 +249,12 @@ header#topPage nav#topNav ul li a#topNavGames {
     background: url("$images/menuGames.png") no-repeat;
 }
 
-header#topPage nav#topNav ul li a#topNavSite {
-    background: url("$images/menuSite.png") no-repeat;
+header#topPage nav#topNav ul li a#topNavCompetition {
+    background: url("$images/menuCompetition.png") no-repeat;
 }
 
-header#topPage nav#topNav ul li a#topNavShop {
-    background: url("$images/menuShop.png") no-repeat;
+header#topPage nav#topNav ul li a#topNavProfile {
+    background: url("$images/menuProfile.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li:hover {
