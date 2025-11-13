@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Eternaltwin\OauthClient\RfcOauthClient;
 use Eternaltwin\Client\Auth as EtwinAuth;
 use Eternaltwin\Client\HttpEtwinClient;
+use Eternaltwin\OauthClient\RfcOauthClient;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller implements HasMiddleware
 {
     private readonly RfcOauthClient $oauthClient;
+
     private readonly HttpEtwinClient $etwinClient;
 
     public static function middleware()
@@ -28,9 +29,9 @@ class LoginController extends Controller implements HasMiddleware
     {
         $this->etwinClient = new HttpEtwinClient(config('services.etwin.identityServerUri'));
         $this->oauthClient = new RfcOauthClient(
-            config('services.etwin.eternaltwinUrl') . 'oauth/authorize',
-            config('services.etwin.eternaltwinUrl') . 'oauth/token',
-            config('app.url') . '/oauth/callback',
+            config('services.etwin.eternaltwinUrl').'oauth/authorize',
+            config('services.etwin.eternaltwinUrl').'oauth/token',
+            url('/oauth/callback'),
             config('services.etwin.oauthId'),
             config('services.etwin.oauthSecret')
         );
@@ -66,7 +67,7 @@ class LoginController extends Controller implements HasMiddleware
     {
         $data = $request->validate([
             'code' => 'required|string',
-            //'state' => 'required|string',
+            // 'state' => 'required|string',
         ]);
 
         $accessToken = $this->oauthClient->getAccessTokenSync($data['code']);
