@@ -56,6 +56,7 @@
         const GODOT_CONFIG = {
             "args": [
                 '--daily=true',
+                '--server_url={{ config('app.url') }}',
             ],
             "canvasResizePolicy": 1,
             "ensureCrossOriginIsolationHeaders": true,
