@@ -15,6 +15,7 @@ class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens;
+
     use HasFactory;
     use Notifiable;
 
@@ -44,6 +45,23 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(UserPoint::class);
     }
 
+    public function runs()
+    {
+        return $this->hasMany(Run::class);
+    }
+
+    public function gamePeriodStars()
+    {
+        return $this->hasMany(GamePeriodStar::class);
+    }
+
+    public function stars()
+    {
+        return $this->hasMany(UserStar::class);
+    }
+
+    //
+
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->is_admin;
@@ -52,10 +70,5 @@ class User extends Authenticatable implements FilamentUser
     public function getNameAttribute(): string
     {
         return $this->display_name;
-    }
-
-    public function runs()
-    {
-        return $this->hasMany(Run::class);
     }
 }

@@ -61,7 +61,9 @@ class RunController extends Controller implements HasMiddleware
             'contract_score' => $score,
             'contract_points' => $points,
         ]);
-        $user->kado_games -= 1;
+        if ($user->kado_games > 0) {
+            $user->kado_games -= 1;
+        }
         $user->save();
 
         return new RunBeginResource($run);
@@ -76,6 +78,7 @@ class RunController extends Controller implements HasMiddleware
         try {
             $decoded = $runService->decodeRun($payload, $key, $sign);
             $run = $runService->confirmRun($run, $decoded);
+            $runService->rewardStars($run);
 
             // Daily game check : if the run corresponds to today's daily game, link the run
             $dailyGame = $gameService->getDailyGame();

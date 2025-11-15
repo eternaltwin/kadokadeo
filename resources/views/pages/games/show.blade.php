@@ -2,10 +2,6 @@
 
 @section('title', 'KadoKadeo - Jeux')
 
-@php
-// dd($game->controls->first()->pivot->description);
-@endphp
-
 @section('page')
     <script>
         class SwitchTab {
@@ -29,7 +25,7 @@
                     } else {
                         throw 'err';
                     }
-                } catch(err) {
+                } catch (err) {
                     this.arrayTab = [];
                     this.arrayPages = [];
                 }
@@ -65,7 +61,7 @@
         }
     </script>
     <div class="withRightAside">
-	    <h1 class="center">{{ $game->name }}</h1>
+        <h1 class="center">{{ $game->name }}</h1>
         @if (config('kado.games_per_day') > 0)
             <p>Il vous reste {{ Auth::user()->kado_games }} parties à jouer aujourd'hui</p>
         @endif
@@ -77,22 +73,28 @@
                     <div id="status-notice"></div>
                 </div>
                 <canvas id="gameCanvas" width="300" height="320">
-                    <p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.</p>
+                    <p>Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin de jouer.
+                    </p>
                 </canvas>
 
                 <nav id="gameUpperButtons">
                     <ul>
-                        <li><a href="#" title="Zoom / dézoom" onclick="ZoomManager()"><img src="/gfx/iconGameZoom.gif" alt="iconGameZoom.gif" width="15" height="15"> Zoom</a></li>
-                        <li><a href="#" title="Ajouter/retirer des jeux favoris"><img src="/gfx/iconGameDisliked.gif" alt="iconGameDisliked.gif"> Favori</a></a></li>
+                        <li><a href="#" title="Zoom / dézoom" onclick="ZoomManager()"><img src="/gfx/iconGameZoom.gif"
+                                    alt="iconGameZoom.gif" width="15" height="15"> Zoom</a></li>
+                        <li><a href="#" title="Ajouter/retirer des jeux favoris"><img src="/gfx/iconGameDisliked.gif"
+                                    alt="iconGameDisliked.gif"> Favori</a></a></li>
                     </ul>
                 </nav>
 
                 <div class="gameSide">
                     <nav class="gameNav">
                         <ul>
-                            <li class="showed" id="gameNavRules"><a href="#" title="Présentation"><img src="/gfx/iconGameRules.png" alt="iconGameRules.png"> Règles</a></li>
-                            <li id="gameNavStars"><a href="#" title="Mon score / Mes paliers"><img src="/gfx/iconGameStars.png" alt="iconGameStars.png"> Paliers</a></li>
-                            <li id="gameNavRanking"><a href="#" title="Classement général"><img src="/gfx/iconGameRanking.png" alt="iconGameRanking.png"> Classement</a></li>
+                            <li class="showed" id="gameNavRules"><a href="#" title="Présentation"><img
+                                        src="/gfx/iconGameRules.png" alt="iconGameRules.png"> Règles</a></li>
+                            <li id="gameNavStars"><a href="#" title="Mon score / Mes paliers"><img
+                                        src="/gfx/iconGameStars.png" alt="iconGameStars.png"> Paliers</a></li>
+                            <li id="gameNavRanking"><a href="#" title="Classement général"><img
+                                        src="/gfx/iconGameRanking.png" alt="iconGameRanking.png"> Classement</a></li>
                         </ul>
                     </nav>
 
@@ -108,7 +110,8 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td scope="row"><img src="/gfx/gameCommandLeftClic.png" title="Clic gauche" alt="Clic gauche"></td>
+                                    <td scope="row"><img src="/gfx/gameCommandLeftClic.png" title="Clic gauche"
+                                            alt="Clic gauche"></td>
                                     <td>Sauter</td>
                                 </tr>
                             </tbody>
@@ -126,7 +129,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td scope="row">{!! typoFromImg($personalBestForPeriod,2) !!}</th>
+                                    <td scope="row">{!! typoFromImg($personalBestForPeriod?->score ?? 0, 2) !!}</th>
                                     <td>123456</th>
                                     <td>123456</th>
                                 </tr>
@@ -167,35 +170,36 @@
                                 <th>Temps</th>
                             </tr>
                             @foreach ($scores as $index => $score)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $score->user->display_name }}</td>
-                                <td>{{ formatScore($score->score) }}</td>
-                                <td>
-                                    @if ($score->has_replay)
-                                    <a href="{{ route('runs.show', $score->id) }}">
-                                        {{ formatTime($score->play_time_seconds) }}
-                                    </a>
-                                    @else
-                                    {{ formatTime($score->play_time_seconds) }}
-                                    @endif
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $score->user->display_name }}</td>
+                                    <td>{{ formatScore($score->score) }}</td>
+                                    <td>
+                                        @if ($score->has_replay)
+                                            <a href="{{ route('runs.show', $score->id) }}">
+                                                {{ formatTime($score->play_time_seconds) }}
+                                            </a>
+                                        @else
+                                            {{ formatTime($score->play_time_seconds) }}
+                                        @endif
+                                    </td>
+                                </tr>
                             @endforeach
                         </table>
                     </article>
                 </div>
             </div>
-            <p id="gameZoomClose"><a href="#" title="Désactiver le zoom" onclick="ZoomManager()">Désactiver le zoom <span>❌</span></p>
+            <p id="gameZoomClose"><a href="#" title="Désactiver le zoom" onclick="ZoomManager()">Désactiver le zoom
+                    <span>❌</span></p>
         </div>
     </div>
 
     <!-- Definition of the sections to show or hide when clicking on the button. See javascript buttonSwitch class. -->
     <script>
-    const check1 = new SwitchTab(
-        ['gameNavRules', 'gameNavStars', 'gameNavRanking'],
-        ['gameRules', 'gameStars', 'gameRanking']
-    );
+        const check1 = new SwitchTab(
+            ['gameNavRules', 'gameNavStars', 'gameNavRanking'],
+            ['gameRules', 'gameStars', 'gameRanking']
+        );
     </script>
 
     <script src="/gamesdata/godot.js"></script>

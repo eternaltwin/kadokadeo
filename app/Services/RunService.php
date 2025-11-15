@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\GamePeriodStar;
 use App\Models\Run;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
@@ -68,7 +69,7 @@ class RunService
     public function confirmRun(Run $run, $decoded)
     {
         if ($run->id !== data_get($decoded, 'run_id')) {
-            throw new \Error('Run ID mismatch');
+            throw new \Error(sprintf('Run ID mismatch. Expected %s, got %s', $run->id, data_get($decoded, 'run_id')));
         }
         $score = data_get($decoded, 'score');
         $timestamp = data_get($decoded, 'timestamp');
@@ -98,6 +99,54 @@ class RunService
         }
 
         return $run;
+    }
+
+    public function rewardStars(Run $run)
+    {
+        if (!$run->period_id) {
+            return;
+        }
+        $game = $run->game;
+        $user = $run->user;
+        $gainedStar = -1;
+        foreach ($game->stars as $index => $threshold) {
+            if ($run->score >= $threshold) {
+                $gainedStar = $index;
+            }
+        }
+        // no star gained
+        if ($gainedStar === -1) {
+            return;
+        }
+        $gamePeriodStars = $user->gamePeriodStars()
+            ->where('game_id', $game->id)
+            ->where('period_id', $run->period_id)
+            ->get();
+        $userPeriodStars = $user->stars()->where('period_id', $run->period_id)->first();
+        if (!$userPeriodStars) {
+            $userPeriodStars = $user->stars()->create([
+                'period_id' => $run->period_id,
+            ]);
+        }
+
+        // Reward each star up to the gained star
+        for ($i = 0; $i <= $gainedStar; $i++) {
+            if (!$gamePeriodStars->where('star', $i)->first()) {
+                GamePeriodStar::create([
+                    'game_id' => $game->id,
+                    'period_id' => $run->period_id,
+                    'user_id' => $user->id,
+                    'star' => $i,
+                ]);
+                match ($i) {
+                    0 => $userPeriodStars->green_stars += 1,
+                    1 => $userPeriodStars->orange_stars += 1,
+                    2 => $userPeriodStars->red_stars += 1,
+                    3 => $userPeriodStars->purple_stars += 1,
+                };
+            }
+        }
+        $userPeriodStars->save();
     }
 
     private function getAesKeyFromEncrypted(string $key): string

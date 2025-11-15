@@ -11,15 +11,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(\App\Services\RunService::class, function ($app) {
-            return new \App\Services\RunService(config('kado.security'));
-        });
-        $this->app->bind(\App\Services\GameService::class, function ($app) {
-            return new \App\Services\GameService();
-        });
-        $this->app->bind(\App\Services\ScoreService::class, function ($app) {
-            return new \App\Services\ScoreService();
-        });
+        $this->app->bind(\App\Services\RunService::class, fn () => new \App\Services\RunService(config('kado.security')));
+        $this->app->bind(\App\Services\GameService::class, fn () => new \App\Services\GameService());
+        $this->app->bind(\App\Services\ScoreService::class, fn () => new \App\Services\ScoreService());
+        $this->app->bind(\App\Services\PeriodService::class, fn () => new \App\Services\PeriodService());
     }
 
     /**
