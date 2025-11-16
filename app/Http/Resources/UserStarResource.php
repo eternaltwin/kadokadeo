@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class UserStarResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,10 +15,11 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'display_name' => $this->display_name,
-            'kado_points' => $this->kado_points,
-            'kado_games' => $this->kado_games,
-            'stars' => $this->whenLoaded('stars', fn () => UserStarResource::make($this->stars->first())),
+            'period_id' => $this->period_id,
+            'green_stars' => $this->green_stars,
+            'orange_stars' => $this->orange_stars,
+            'red_stars' => $this->red_stars,
+            'purple_stars' => $this->purple_stars,
         ];
     }
 }

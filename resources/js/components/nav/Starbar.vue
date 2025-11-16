@@ -11,13 +11,13 @@ const authStore = useAuthStore()
         <span>{{ authStore.user.kado_points ?? 0 }}</span>
       </li>
       <li id="topBarGreenStar">
-        <span>0</span>
+        <span>{{ authStore.greenStars }}</span>
       </li>
       <li id="topBarOrangeStar">
-        <span>0</span>
+        <span>{{ authStore.orangeStars }}</span>
       </li>
       <li id="topBarRedStar">
-        <span>0</span>
+        <span>{{ authStore.redStars }}</span>
       </li>
     </ul>
   </aside>

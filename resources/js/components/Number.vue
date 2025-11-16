@@ -9,7 +9,7 @@ const props = defineProps({
     type: String,
     default: 'green',
     validator: (value) =>
-      ['green', 'orange', 'pink', 'blue', 'bigGreen', 'bigOrange', 'bigRed'].includes(value),
+      ['green', 'orange', 'pink', 'blue', 'bigGreen', 'bigOrange', 'bigPink'].includes(value),
   },
 })
 

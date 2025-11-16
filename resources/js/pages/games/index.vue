@@ -3,6 +3,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+import Loader from '@/components/Loader.vue'
 import { useGames } from '@/composables/useGames'
 
 const { isLoading, fetchGames } = useGames()
@@ -29,7 +30,7 @@ const gamesFiltered = computed(() => {
 <template>
   <nav id="tabNav">
     <ul>
-      <li :id="route.query.category === 'all' ? 'tabNavActive' : ''">
+      <li :id="!route.query.category ? 'tabNavActive' : ''">
         <RouterLink :to="{ name: 'games.index' }">Tous les jeux</RouterLink>
       </li>
       <li v-for="cat in categories" :id="route.query.category === cat.name ? 'tabNavActive' : ''" :key="cat.id">
@@ -43,8 +44,8 @@ const gamesFiltered = computed(() => {
     </ul>
   </nav>
 
-  <div id="gamesBoxes">
-    <div v-if="isLoading">Chargement des jeux...</div>
+  <div id="gamesBoxes" class="relative min-h-48">
+    <Loader v-if="isLoading">Chargement des jeux...</Loader>
     <template v-else>
       <RouterLink
         v-for="game in gamesFiltered"

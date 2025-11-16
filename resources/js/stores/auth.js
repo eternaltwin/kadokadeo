@@ -1,11 +1,21 @@
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 import { client } from '@/composables/useApi'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
+  const stars = reactive({
+    green: 0,
+    orange: 0,
+    red: 0,
+    purple: 0,
+  })
   const token = ref(localStorage.getItem('kado:token') || null)
+  const greenStars = computed(() => stars.green - stars.orange)
+  const orangeStars = computed(() => stars.orange - stars.red)
+  const redStars = computed(() => stars.red - stars.purple)
+  const purpleStars = computed(() => stars.purple)
 
   const isAuthenticated = computed(() => !!user.value)
 
@@ -16,6 +26,17 @@ export const useAuthStore = defineStore('auth', () => {
 
   const setUser = (u) => {
     user.value = u
+    if (u && u.stars) {
+      stars.green = u.stars.green_stars
+      stars.orange = u.stars.orange_stars
+      stars.red = u.stars.red_stars
+      stars.purple = u.stars.purple_stars
+    } else {
+      stars.green = 0
+      stars.orange = 0
+      stars.red = 0
+      stars.purple = 0
+    }
   }
 
   const fetchUser = async() => {
@@ -55,5 +76,10 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     setUser,
     resetToken,
+    stars,
+    greenStars,
+    orangeStars,
+    redStars,
+    purpleStars,
   }
 })

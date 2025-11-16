@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 
 import GameScript from '@/components/games/GameScript.vue'
+import Loader from '@/components/Loader.vue'
 import Number from '@/components/Number.vue'
 import { formatTime } from '@/composables/helpers'
 import { useGames } from '@/composables/useGames'
@@ -22,7 +23,9 @@ fetchDailyGame().then((data) => {
 <template>
   <h1 class="text-center">Jeu du jour</h1>
 
-  <template v-if="isLoading || !game">Chargement ...</template>
+  <div v-if="isLoading || !game" class="relative min-h-48">
+    <Loader>Chargement ...</Loader>
+  </div>
   <div v-else class="relative">
     <h2>{{ game.name }}</h2>
     <GameScript :game="game"

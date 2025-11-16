@@ -11,6 +11,7 @@ Route::get('/period/current', [App\Http\Controllers\Api\PeriodController::class,
 
 Route::get('/daily', [App\Http\Controllers\Api\GameController::class, 'daily']);
 Route::resource('/games', App\Http\Controllers\Api\GameController::class)->only(['index', 'show']);
+Route::get('/games/{game}/scores', [App\Http\Controllers\Api\GameScoreController::class, 'index']);
 
 Route::prefix('/runs')->group(function () {
     Route::get('/{run}', [App\Http\Controllers\Api\RunController::class, 'show']);

@@ -12,7 +12,6 @@ use App\Services\ScoreService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class GameController extends Controller implements HasMiddleware
@@ -52,17 +51,8 @@ class GameController extends Controller implements HasMiddleware
     public function show(Game $game, ScoreService $scoreService)
     {
         Gate::authorize('view', $game);
-        $currentPeriod = Period::current()->first();
-        $scores = $scoreService->getLeaderBoard($game, 10);
-        $personalBest = $scoreService->getUserBestScore($game, Auth::id());
-        $personalBestForPeriod = $scoreService->getUserBestScore($game, Auth::id(), $currentPeriod?->id);
 
-        return GameResource::make($game)->additional([
-            'leaderboard' => RunResource::collection($scores),
-            'personalBest' => RunResource::make($personalBest),
-            'personalBestForPeriod' => RunResource::make($personalBestForPeriod),
-            'currentPeriod' => $currentPeriod,
-        ]);
+        return GameResource::make($game);
     }
 
     public function daily(GameService $gameService)

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\Period;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller implements \Illuminate\Routing\Controllers\HasMiddleware
@@ -18,8 +20,14 @@ class UserController extends Controller implements \Illuminate\Routing\Controlle
     /**
      * Display the authenticated user.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new UserResource(Auth::user());
+        $user = $request->user();
+
+        $user->load(['stars' => function ($query) {
+            $query->where('period_id', Period::current()->first()?->id);
+        }]);
+
+        return UserResource::make($user);
     }
 }
