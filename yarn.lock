@@ -548,7 +548,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint-community/eslint-utils@npm:^4.4.0, @eslint-community/eslint-utils@npm:^4.8.0":
+"@eslint-community/eslint-utils@npm:^4.4.0, @eslint-community/eslint-utils@npm:^4.8.0, @eslint-community/eslint-utils@npm:^4.9.0":
   version: 4.9.0
   resolution: "@eslint-community/eslint-utils@npm:4.9.0"
   dependencies:
@@ -949,6 +949,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stylistic/eslint-plugin@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "@stylistic/eslint-plugin@npm:5.5.0"
+  dependencies:
+    "@eslint-community/eslint-utils": "npm:^4.9.0"
+    "@typescript-eslint/types": "npm:^8.46.1"
+    eslint-visitor-keys: "npm:^4.2.1"
+    espree: "npm:^10.4.0"
+    estraverse: "npm:^5.3.0"
+    picomatch: "npm:^4.0.3"
+  peerDependencies:
+    eslint: ">=9.0.0"
+  checksum: 10/fdb894a30ad832acf0a2e53967d352c5254b5963755c3971453215c74eaed978cd5d2cd9e6625e5070966902cddb1e6946468aeb8e91e52532426230be9fe1d8
+  languageName: node
+  linkType: hard
+
 "@tailwindcss/node@npm:4.1.17":
   version: 4.1.17
   resolution: "@tailwindcss/node@npm:4.1.17"
@@ -1133,6 +1149,13 @@ __metadata:
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
   checksum: 10/1a3c3e06236e4c4aab89499c428d585527ce50c24fe8259e8b3926d3df4cfbbbcf306cfc73ddfb66cbafc973116efd15967020b0f738f63e09e64c7d260519e7
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/types@npm:^8.46.1":
+  version: 8.46.4
+  resolution: "@typescript-eslint/types@npm:8.46.4"
+  checksum: 10/dd71692722254308f7954ade97800c141ec4a2bbdeef334df4ef9a5ee00db4597db4c3d0783607fc61c22238c9c534803a5421fe0856033a635e13fbe99b3cf0
   languageName: node
   linkType: hard
 
@@ -1731,7 +1754,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.4.1":
+"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.4.0, debug@npm:^4.4.1":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -2043,6 +2066,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-simple-import-sort@npm:^12.1.1":
+  version: 12.1.1
+  resolution: "eslint-plugin-simple-import-sort@npm:12.1.1"
+  peerDependencies:
+    eslint: ">=5.0.0"
+  checksum: 10/2a690cea9243fbefa70345687bca8952f5e185fa459b7a8db687a908cc31082435cfee236c619d5245548fa5f89a2f2c4f8499f80512e048d2bedc60e3662d5a
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-unused-imports@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "eslint-plugin-unused-imports@npm:4.3.0"
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^8.0.0-0 || ^7.0.0 || ^6.0.0 || ^5.0.0
+    eslint: ^9.0.0 || ^8.0.0
+  peerDependenciesMeta:
+    "@typescript-eslint/eslint-plugin":
+      optional: true
+  checksum: 10/64ec1f686d90f18a27c27273a0338bad6964a611f497b81c5e7eace9d9a4f38d96070d7c389c2626095a9e5e7dbcafccc6444fa2933c9a7649996a7ca875738f
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-vue@npm:~10.5.0":
   version: 10.5.1
   resolution: "eslint-plugin-vue@npm:10.5.1"
@@ -2067,7 +2112,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-scope@npm:^8.4.0":
+"eslint-scope@npm:^8.2.0, eslint-scope@npm:^8.4.0":
   version: 8.4.0
   resolution: "eslint-scope@npm:8.4.0"
   dependencies:
@@ -2084,7 +2129,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-visitor-keys@npm:^4.2.1":
+"eslint-visitor-keys@npm:^4.2.0, eslint-visitor-keys@npm:^4.2.1":
   version: 4.2.1
   resolution: "eslint-visitor-keys@npm:4.2.1"
   checksum: 10/3ee00fc6a7002d4b0ffd9dc99e13a6a7882c557329e6c25ab254220d71e5c9c4f89dca4695352949ea678eb1f3ba912a18ef8aac0a7fe094196fd92f441bfce2
@@ -2140,7 +2185,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"espree@npm:^10.0.1, espree@npm:^10.4.0":
+"espree@npm:^10.0.1, espree@npm:^10.3.0, espree@npm:^10.4.0":
   version: 10.4.0
   resolution: "espree@npm:10.4.0"
   dependencies:
@@ -2151,7 +2196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esquery@npm:^1.5.0":
+"esquery@npm:^1.5.0, esquery@npm:^1.6.0":
   version: 1.6.0
   resolution: "esquery@npm:1.6.0"
   dependencies:
@@ -2169,7 +2214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"estraverse@npm:^5.1.0, estraverse@npm:^5.2.0":
+"estraverse@npm:^5.1.0, estraverse@npm:^5.2.0, estraverse@npm:^5.3.0":
   version: 5.3.0
   resolution: "estraverse@npm:5.3.0"
   checksum: 10/37cbe6e9a68014d34dbdc039f90d0baf72436809d02edffcc06ba3c2a12eb298048f877511353b130153e532aac8d68ba78430c0dd2f44806ebc7c014b01585e
@@ -2713,17 +2758,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"laravel-vite-plugin@npm:^1.2.0":
-  version: 1.3.0
-  resolution: "laravel-vite-plugin@npm:1.3.0"
+"laravel-vite-plugin@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "laravel-vite-plugin@npm:2.0.1"
   dependencies:
     picocolors: "npm:^1.0.0"
     vite-plugin-full-reload: "npm:^1.1.0"
   peerDependencies:
-    vite: ^5.0.0 || ^6.0.0
+    vite: ^7.0.0
   bin:
     clean-orphaned-assets: bin/clean.js
-  checksum: 10/caa1adaa5d146f73a235f4eada676cc68160e338cf9793fb49ce2be412d8bffdc33969025a22cc7d78656536337f56dd4302d5a3c42bfc622c539806239962f8
+  checksum: 10/367ed6c60dfe0737e014ee9aa80a39625c83320e44413cb09cd779e5e008a769628e1af4c3e8089f6ceb758cadcb30c214991780d82e23531336e0ef1742ff38
   languageName: node
   linkType: hard
 
@@ -3473,6 +3518,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.37.0"
+    "@stylistic/eslint-plugin": "npm:^5.5.0"
     "@tailwindcss/vite": "npm:^4.0.0"
     "@vitejs/plugin-vue": "npm:^6.0.1"
     "@vue/eslint-config-prettier": "npm:^10.2.0"
@@ -3480,15 +3526,18 @@ __metadata:
     axios: "npm:^1.13.2"
     dayjs: "npm:^1.11.19"
     eslint: "npm:^9.37.0"
+    eslint-plugin-simple-import-sort: "npm:^12.1.1"
+    eslint-plugin-unused-imports: "npm:^4.3.0"
     eslint-plugin-vue: "npm:~10.5.0"
     globals: "npm:^16.4.0"
-    laravel-vite-plugin: "npm:^1.2.0"
+    laravel-vite-plugin: "npm:^2.0.0"
     pinia: "npm:^3.0.3"
     prettier: "npm:3.6.2"
     tailwindcss: "npm:^4.0.0"
     vite: "npm:^7.1.11"
     vite-plugin-vue-devtools: "npm:^8.0.3"
     vue: "npm:^3.5.22"
+    vue-eslint-parser: "npm:^10.2.0"
     vue-router: "npm:^4.6.3"
   languageName: unknown
   linkType: soft
@@ -3942,6 +3991,22 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 10/aee08b420646d5bcd92d5f4130b13b90303cab1cf48ee4772030f5fa7b464cc602ba578e9b1800a71f9b1c9b8daf1336e8c069a4cf1bb90b7b05ae5b13f62b06
+  languageName: node
+  linkType: hard
+
+"vue-eslint-parser@npm:^10.2.0":
+  version: 10.2.0
+  resolution: "vue-eslint-parser@npm:10.2.0"
+  dependencies:
+    debug: "npm:^4.4.0"
+    eslint-scope: "npm:^8.2.0"
+    eslint-visitor-keys: "npm:^4.2.0"
+    espree: "npm:^10.3.0"
+    esquery: "npm:^1.6.0"
+    semver: "npm:^7.6.3"
+  peerDependencies:
+    eslint: ^8.57.0 || ^9.0.0
+  checksum: 10/53673fd5df42e79e834809ce552f53972f2e03bae08ef7cc66e679e88e9ad3b939ac12f9332ed33e14c953649616ca17698169719670b6a752d219685015aa87
   languageName: node
   linkType: hard
 
