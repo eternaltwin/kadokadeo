@@ -7,8 +7,9 @@ import { formatScore, formatTime } from '@/composables/helpers'
 import Number from '@/components/Number.vue'
 import { computed } from 'vue'
 import GameScript from '@/components/games/GameScript.vue'
+import Error from '@/components/message/Error.vue'
 
-const { isLoading, fetchGame } = useGames()
+const { isLoading, error, fetchGame } = useGames()
 const authStore = useAuthStore()
 const route = useRoute()
 
@@ -33,7 +34,10 @@ const gameHeight = computed(() => (isZoomed.value ? 640 : 320))
 
 <template>
   <div class="withRightAside">
-    <template v-if="isLoading || !game">Chargement ...</template>
+    <template v-if="isLoading">Chargement ...</template>
+    <template v-else-if="!game">
+      <Error> Jeu introuvable. ({{ error }}) </Error>
+    </template>
     <template v-else>
       <h1 class="center">{{ game.name }}</h1>
       <p v-if="authStore.user?.kado_games >= 0">

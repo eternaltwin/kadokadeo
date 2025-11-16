@@ -4,6 +4,7 @@ import Navbar from '@/components/nav/Navbar.vue'
 import Kalendrier from '@/components/nav/Kalendrier.vue'
 import Starbar from '@/components/nav/Starbar.vue'
 import Sidebar from '@/components/side/Sidebar.vue'
+import Error from '@/components/message/Error.vue'
 
 const authStore = useAuthStore()
 </script>
@@ -29,14 +30,10 @@ const authStore = useAuthStore()
 
   <main id="container">
     <section id="bodySection">
-      <div class="error w-3/4 mb-12!">
-        <div>
-          <p>
-            Kadokadéo est actuellement en alpha. Les scores que vous réaliserez finiront sans doute
-            par être supprimés.
-          </p>
-        </div>
-      </div>
+      <Error class="w-3/4 mb-12!">
+        Kadokadéo est actuellement en alpha. Les scores que vous réaliserez finiront sans doute par
+        être supprimés.
+      </Error>
       <slot />
     </section>
 
