@@ -1,13 +1,15 @@
+import './middlewares'
+
+import { createVueRouterMiddleware } from '@yazida/vue-router-middleware'
 import { nextTick } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { createVueRouterMiddleware } from '@yazida/vue-router-middleware'
-import './middlewares'
+
+import GamesDaily from '@/pages/games/daily.vue'
 import GamesIndex from '@/pages/games/index.vue'
 import GamesShow from '@/pages/games/show.vue'
-import GamesDaily from '@/pages/games/daily.vue'
-import RunsShow from '@/pages/runs/show.vue'
 import Login from '@/pages/login.vue'
 import LoginCallback from '@/pages/loginCallback.vue'
+import RunsShow from '@/pages/runs/show.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -27,7 +29,7 @@ const router = createRouter({
   ],
 })
 
-router.afterEach((to, from) => {
+router.afterEach((to) => {
   nextTick(() => {
     document.title = to.meta.title || 'KadoKadéo'
   })

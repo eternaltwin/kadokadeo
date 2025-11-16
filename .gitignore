@@ -53,3 +53,4 @@ Thumbs.db
 /.vite
 docker-compose.override.yml
 docker/database-data
+.eslintcache

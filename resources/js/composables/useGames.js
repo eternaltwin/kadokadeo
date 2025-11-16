@@ -12,7 +12,7 @@ export function useGames() {
   }
 
   function fetchDailyGame() {
-    return get(`/daily`).then((response) => response.data)
+    return get('/daily').then((response) => response.data)
   }
 
   return {

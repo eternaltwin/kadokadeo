@@ -1,9 +1,10 @@
 <script setup>
-import Number from '@/components/Number.vue'
+import { ref } from 'vue'
+
 import GameScript from '@/components/games/GameScript.vue'
+import Number from '@/components/Number.vue'
 import { formatTime } from '@/composables/helpers'
 import { useGames } from '@/composables/useGames'
-import { ref } from 'vue'
 
 const { isLoading, fetchDailyGame } = useGames()
 
@@ -24,7 +25,10 @@ fetchDailyGame().then((data) => {
   <template v-if="isLoading || !game">Chargement ...</template>
   <div v-else class="relative">
     <h2>{{ game.name }}</h2>
-    <GameScript :game="game" :args="['--daily=true']" :game-width="600" :game-height="640" />
+    <GameScript :game="game"
+                :args="['--daily=true']"
+                :game-width="600"
+                :game-height="640" />
     <div>
       <h2>Scores</h2>
       <table>

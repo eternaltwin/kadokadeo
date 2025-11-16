@@ -1,7 +1,8 @@
 import { registerMiddleware } from '@yazida/vue-router-middleware'
+
 import { useAuthStore } from '@/stores/auth'
 
-registerMiddleware('auth', ({ to, next }) => {
+registerMiddleware('auth', ({ next }) => {
   const authStore = useAuthStore()
 
   if (!authStore.token) {

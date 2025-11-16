@@ -1,10 +1,10 @@
 <script setup>
-import { useAuthStore } from '@/stores/auth'
-import Navbar from '@/components/nav/Navbar.vue'
+import Error from '@/components/message/Error.vue'
 import Kalendrier from '@/components/nav/Kalendrier.vue'
+import Navbar from '@/components/nav/Navbar.vue'
 import Starbar from '@/components/nav/Starbar.vue'
 import Sidebar from '@/components/side/Sidebar.vue'
-import Error from '@/components/message/Error.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
 </script>

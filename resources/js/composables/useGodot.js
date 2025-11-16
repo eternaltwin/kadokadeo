@@ -1,4 +1,6 @@
+/* eslint-disable no-undef */
 import 'public/gamesdata/godot.js'
+
 import { ref, shallowRef } from 'vue'
 
 function onProgress(value, total) {
@@ -27,7 +29,7 @@ engineInstance.value.init('/gamesdata/godot').then(() => {
 })
 
 export function useGodot() {
-  const loadPck = async (pckPath, canvasElement, args = []) => {
+  const loadPck = async(pckPath, canvasElement, args = []) => {
     if (!engineInstance.value || !isEngineLoaded.value) {
       throw new Error('Engine not initialized')
     }

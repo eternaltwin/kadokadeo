@@ -1,6 +1,8 @@
+<!-- eslint-disable no-undef -->
 <script setup>
 import 'public/gamesdata/godot.js'
-import { ref, onBeforeUnmount } from 'vue'
+
+import { onBeforeUnmount,ref } from 'vue'
 
 const props = defineProps({
   game: { type: Object, required: true },
@@ -30,7 +32,7 @@ const GODOT_CONFIG = {
 const GODOT_THREADS_ENABLED = false
 const engine = new Engine(GODOT_CONFIG)
 
-onBeforeUnmount(async () => {
+onBeforeUnmount(async() => {
   engine.requestQuit()
 })
 
@@ -78,9 +80,9 @@ if (missing.length !== 0) {
     let serviceWorkerRegistrationPromise
     try {
       serviceWorkerRegistrationPromise = navigator.serviceWorker.getRegistration()
-    } catch (err) {
+    } catch(err) {
       serviceWorkerRegistrationPromise = Promise.reject(
-        new Error('Service worker registration failed.'),
+        new Error('Service worker registration failed.', err),
       )
     }
     // There's a chance that installing the service worker would fix the issue
@@ -115,7 +117,7 @@ if (missing.length !== 0) {
   setStatusMode('progress')
   engine
     .startGame({
-      onProgress: function (current, total) {
+      onProgress: function(current, total) {
         if (current > 0 && total > 0) {
           statusProgress.value = { value: current, max: total }
         } else {

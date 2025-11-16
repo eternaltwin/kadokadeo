@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
-import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import { computed,ref } from 'vue'
+
 import { useApi } from '@/composables/useApi'
 
 export const usePeriodStore = defineStore('period', () => {

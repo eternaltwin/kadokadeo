@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+
 import { formatScore } from '@/composables/helpers'
 
 const props = defineProps({

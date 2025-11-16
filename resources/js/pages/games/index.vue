@@ -1,8 +1,9 @@
 <script setup>
-import { useGames } from '@/composables/useGames'
 // import { useGodot } from '@/composables/useGodot'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
+import { useGames } from '@/composables/useGames'
 
 const { isLoading, fetchGames } = useGames()
 const route = useRoute()
@@ -31,7 +32,7 @@ const gamesFiltered = computed(() => {
       <li :id="route.query.category === 'all' ? 'tabNavActive' : ''">
         <RouterLink :to="{ name: 'games.index' }">Tous les jeux</RouterLink>
       </li>
-      <li v-for="cat in categories" :id="route.query.category === cat.name ? 'tabNavActive' : ''">
+      <li v-for="cat in categories" :id="route.query.category === cat.name ? 'tabNavActive' : ''" :key="cat.id">
         <RouterLink :to="{ name: 'games.index', query: { category: cat.name } }">
           {{ cat.name }}
         </RouterLink>
@@ -47,6 +48,7 @@ const gamesFiltered = computed(() => {
     <template v-else>
       <RouterLink
         v-for="game in gamesFiltered"
+        :key="`game-${game.id}`"
         class="gameBox"
         :to="{ name: 'games.show', params: { id: game.id } }"
         :title="`Jouer à ${game.name}`"

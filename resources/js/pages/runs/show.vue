@@ -1,7 +1,9 @@
 <script setup>
-import { useRuns } from '@/composables/useRuns'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+
+import { useRuns } from '@/composables/useRuns'
+
 import GameScript from '../../components/games/GameScript.vue'
 
 const route = useRoute()

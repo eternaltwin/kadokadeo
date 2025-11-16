@@ -1,13 +1,14 @@
 <script setup>
-import { useGames } from '@/composables/useGames'
-import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { formatScore, formatTime } from '@/composables/helpers'
-import Number from '@/components/Number.vue'
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
 import GameScript from '@/components/games/GameScript.vue'
 import Error from '@/components/message/Error.vue'
+import Number from '@/components/Number.vue'
+import { formatScore, formatTime } from '@/composables/helpers'
+import { useGames } from '@/composables/useGames'
+import { useAuthStore } from '@/stores/auth'
 
 const { isLoading, error, fetchGame } = useGames()
 const authStore = useAuthStore()
@@ -51,7 +52,10 @@ const gameHeight = computed(() => (isZoomed.value ? 640 : 320))
             <ul>
               <li>
                 <a href="#" title="Zoom / dézoom" @click.prevent="isZoomed = !isZoomed">
-                  <img src="/gfx/iconGameZoom.gif" alt="iconGameZoom.gif" width="15" height="15" />
+                  <img src="/gfx/iconGameZoom.gif"
+                       alt="iconGameZoom.gif"
+                       width="15"
+                       height="15" />
                   Zoom
                 </a>
               </li>
