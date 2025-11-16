@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\GameResource;
+use App\Http\Resources\RunResource;
 use App\Models\Game;
 use App\Models\Period;
 use App\Services\GameService;
@@ -17,7 +20,7 @@ class GameController extends Controller implements HasMiddleware
     public static function middleware()
     {
         return [
-            new Middleware('auth', only: ['show', 'daily']),
+            new Middleware('auth:sanctum', only: ['index', 'show', 'daily']),
         ];
     }
 
@@ -41,7 +44,9 @@ class GameController extends Controller implements HasMiddleware
 
         $categories = \App\Models\Category::all();
 
-        return view('pages.games.index', compact('games', 'categories'));
+        return GameResource::collection($games)->additional([
+            'categories' => $categories,
+        ]);
     }
 
     public function show(Game $game, ScoreService $scoreService)
@@ -52,7 +57,12 @@ class GameController extends Controller implements HasMiddleware
         $personalBest = $scoreService->getUserBestScore($game, Auth::id());
         $personalBestForPeriod = $scoreService->getUserBestScore($game, Auth::id(), $currentPeriod?->id);
 
-        return view('pages.games.show', compact('game', 'scores', 'personalBest', 'personalBestForPeriod'));
+        return GameResource::make($game)->additional([
+            'leaderboard' => RunResource::collection($scores),
+            'personalBest' => RunResource::make($personalBest),
+            'personalBestForPeriod' => RunResource::make($personalBestForPeriod),
+            'currentPeriod' => $currentPeriod,
+        ]);
     }
 
     public function daily(GameService $gameService)
@@ -62,6 +72,9 @@ class GameController extends Controller implements HasMiddleware
 
         $dailyGameRuns = $dailyGame?->runs()->orderByDesc('score')->with('user')->limit(10)->get() ?? collect();
 
-        return view('pages.games.daily', compact('dailyGame', 'dailyGameRuns'));
+        return GameResource::make($dailyGame->game)->additional([
+            'dailyGame' => $dailyGame,
+            'leaderboard' => RunResource::collection($dailyGameRuns),
+        ]);
     }
 }

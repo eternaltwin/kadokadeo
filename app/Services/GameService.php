@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\DailyGame;
 use App\Models\Game;
+use Illuminate\Support\Facades\Artisan;
 
 class GameService
 {
@@ -27,7 +28,12 @@ class GameService
 
     public function getDailyGame(): ?DailyGame
     {
-        return DailyGame::where('day', today())->first();
+        $dg = DailyGame::where('day', today())->first();
+        if (!$dg) {
+            Artisan::call('kado:prepare-daily-game');
+            $dg = DailyGame::where('day', today())->first();
+        }
+        return $dg;
     }
 
     public function generateScore(array $thresholds): int

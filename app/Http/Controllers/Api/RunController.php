@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RunEndRequest;
 use App\Http\Requests\RunStartRequest;
 use App\Http\Resources\RunBeginResource;
+use App\Http\Resources\RunResource;
 use App\Models\Game;
 use App\Models\Period;
 use App\Models\Run;
@@ -91,5 +92,14 @@ class RunController extends Controller implements HasMiddleware
         }
 
         return new JsonResource($run);
+    }
+
+    public function show(Run $run)
+    {
+        Gate::authorize('view', $run);
+        $run->load('game', 'user');
+        Gate::authorize('view', $run->game);
+
+        return RunResource::make($run);
     }
 }

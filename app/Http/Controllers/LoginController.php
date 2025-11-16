@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Eternaltwin\Client\Auth as EtwinAuth;
 use Eternaltwin\Client\HttpEtwinClient;
@@ -21,7 +22,7 @@ class LoginController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('guest', only: ['login', 'loginCallback']),
-            new Middleware('auth', only: ['logout', 'generateToken']),
+            new Middleware('auth:sanctum', only: ['logout']),
         ];
     }
 
@@ -55,11 +56,9 @@ class LoginController extends Controller implements HasMiddleware
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+        // $request->session()->invalidate();
+        // $request->session()->regenerateToken();
+        $request->user()->currentAccessToken()->delete();
     }
 
     // Get the callback from Eternal-twin when connected successfully, then create the session
@@ -92,18 +91,11 @@ class LoginController extends Controller implements HasMiddleware
         }
         $dbUser->save();
 
-        Auth::login($dbUser, true);
+        $token = $dbUser->createToken('kadokadeo')->plainTextToken;
 
-        return redirect()->intended('/');
-    }
-
-    public function generateToken(Request $request)
-    {
-        $user = $request->user();
-
-        $user->tokens()->delete(); // Delete existing tokens
-        $token = $user->createToken('kadokadeo')->plainTextToken;
-
-        return response()->json(['token' => $token]);
+        return response()->json([
+            'token' => $token,
+            'user' => UserResource::make($dbUser),
+        ]);
     }
 }

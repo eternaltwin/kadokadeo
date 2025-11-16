@@ -1,0 +1,38 @@
+import { nextTick } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import { createVueRouterMiddleware } from '@yazida/vue-router-middleware'
+import './middlewares'
+import GamesIndex from '@/pages/games/index.vue'
+import GamesShow from '@/pages/games/show.vue'
+import GamesDaily from '@/pages/games/daily.vue'
+import RunsShow from '@/pages/runs/show.vue'
+import Login from '@/pages/login.vue'
+import LoginCallback from '@/pages/loginCallback.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/', redirect: '/games', meta: {} },
+    { path: '/login', name: 'login', component: Login, meta: {} },
+    { path: '/oauth/callback', component: LoginCallback, meta: {} },
+    { path: '/daily', name: 'games.daily', component: GamesDaily, meta: { middleware: ['auth'] } },
+    { path: '/games', name: 'games.index', component: GamesIndex, meta: { middleware: ['auth'] } },
+    {
+      path: '/games/:id',
+      name: 'games.show',
+      component: GamesShow,
+      meta: { middleware: ['auth'] },
+    },
+    { path: '/runs/:id', name: 'runs.show', component: RunsShow, meta: { middleware: ['auth'] } },
+  ],
+})
+
+router.afterEach((to, from) => {
+  nextTick(() => {
+    document.title = to.meta.title || 'KadoKadéo'
+  })
+})
+
+createVueRouterMiddleware(router)
+
+export default router

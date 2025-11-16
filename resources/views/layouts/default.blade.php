@@ -13,45 +13,13 @@
     </script>
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/js/main.js'])
     @endif
 </head>
 
 <body>
-    <header id="topPage">
-        <nav id="languageNav">
-            <ul>
-                <li>
-                    <a href="#" title="Français">
-                        <div data-lang="fr" alt="french" title="Français">
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        <h1><span>KadoKadeo</span></h1>
-        @auth
-            @include('components.navbar')
-            @include('components.kalendrier')
-            @include('components.starbar')
-        @endauth
-    </header>01 (Unify controls and control_games tables)
-
-    <div class="error">
-        <div>
-            <p>Kadokadéo est actuellement en alpha. Les scores que vous réaliserez finiront sans doute par être
-                supprimés.</p>
-        </div>
-    </div>
-
-    <main id="container">
-        <section id="bodySection">
-            @yield('page')
-        </section>
-
-        @auth
-            @include('components.sidebar')
-        @endauth
-    </main>
+    @include('components.validation-errors')
+    <div id="app"></div>
 </body>
 
 </html>
