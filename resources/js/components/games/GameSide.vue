@@ -132,28 +132,32 @@ const selectedTab = ref('gameRules')
     <article id="gameRanking" :class="selectedTab === 'gameRanking' ? '' : 'hidden'">
       <Loader v-if="isLoading">Chargement des scores...</Loader>
       <table class="w-full">
-        <tr>
-          <th>Position</th>
-          <th>Joueur</th>
-          <th>Score</th>
-          <th>Temps</th>
-        </tr>
-        <tr v-for="(score, index) in scores" :key="score.id">
-          <td>{{ index + 1 }}</td>
-          <td>{{ score.user.display_name }}</td>
-          <td>{{ formatScore(score.score) }}</td>
-          <td>
-            <RouterLink
-              v-if="score.has_replay"
-              :to="{ name: 'runs.show', params: { id: score.id } }"
-            >
-              {{ formatTime(score.play_time_seconds) }}
-            </RouterLink>
-            <span v-else>
-              {{ formatTime(score.play_time_seconds) }}
-            </span>
-          </td>
-        </tr>
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Joueur</th>
+            <th>Score</th>
+            <th>Temps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(score, index) in scores" :key="score.id">
+            <td>{{ index + 1 }}</td>
+            <td>{{ score.user.display_name }}</td>
+            <td>{{ formatScore(score.score) }}</td>
+            <td>
+              <RouterLink
+                v-if="score.has_replay"
+                :to="{ name: 'runs.show', params: { id: score.id } }"
+              >
+                {{ formatTime(score.play_time_seconds) }}
+              </RouterLink>
+              <span v-else>
+                {{ formatTime(score.play_time_seconds) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </article>
   </div>

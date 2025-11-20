@@ -19,8 +19,6 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
-            $fonts: resolve('./public/fonts'),
-            $images: resolve('./public/gfx'),
             'public': resolve('./public'),
         },
     },
