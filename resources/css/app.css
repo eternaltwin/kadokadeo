@@ -275,16 +275,74 @@ header#topPage nav#kalendrier {
     position: relative;
 }
 
-header#topPage nav#kalendrier ul {
-    list-style: none;
+header#topPage nav#kalendrier .kalendrierDays {
+    width: 140px;
+    height: 36px;
+    position: absolute;
+    top: 47px;
+    left: 18px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+header#topPage nav#kalendrier .kalendrierPreviousDay, header#topPage nav#kalendrier .kalendrierPresentDay {
+    width: 15px;
+    height: 15px;
+    margin: 0 5px 6px 0;
+}
+
+header#topPage nav#kalendrier .kalendrierPreviousDay {
+    background: url("$images/kalendarPreviousDay.gif") no-repeat;
+}
+
+header#topPage nav#kalendrier .kalendrierPresentDay {
+    background: url("$images/kalendarPresentDay.gif") no-repeat;
+}
+
+header#topPage nav#kalendrier p.kalUser {
+    position: absolute;
+    top: 8px;
+    left: 15px;
     margin: 0;
     padding: 0;
 }
 
-header#topPage nav#kalendrier ul li#kalUser {
+header#topPage nav#kalendrier p.kalendrierText {
+    width: 103px;
+    height: 12px;
     position: absolute;
-    top: 8px;
-    left: 15px;
+    top: 87px;
+    left: 54px;
+    margin: 0;
+    padding: 0;
+    color: #7a9ca4;
+    text-align: center;
+    font-size: 0.8em;
+}
+
+header#topPage nav#kalendrier ul.navKalendrierButtons {
+    list-style: none;
+    position: absolute;
+    top: 6px;
+    left: 166px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+header#topPage nav#kalendrier ul.navKalendrierButtons li a {
+    display: block;
+    width: 25px;
+    height: 21px;
+    margin: 0 0 5px 0;
+    background: url("$images/kalendarButton.gif") no-repeat;
+    text-align: center;
+    line-height: 17px;
+}
+
+header#topPage nav#kalendrier ul.navKalendrierButtons li a:hover {
+    background: url("$images/kalendarButtonHover.gif") no-repeat;
 }
 
 header#topPage aside#topBarInfo {

@@ -29,8 +29,8 @@ class GameScoreController extends Controller implements HasMiddleware
 
         return response()->json([
             'scores' => RunResource::collection($scores),
-            'personalBest' => RunResource::make($personalBest),
-            'personalBestForPeriod' => RunResource::make($personalBestForPeriod),
+            'personalBest' => $personalBest ? RunResource::make($personalBest) : null,
+            'personalBestForPeriod' => $personalBestForPeriod ? RunResource::make($personalBestForPeriod) : null,
         ]);
     }
 }
