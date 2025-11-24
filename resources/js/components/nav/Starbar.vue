@@ -1,4 +1,5 @@
 <script setup>
+import Number from '@/components/Number.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
@@ -8,16 +9,16 @@ const authStore = useAuthStore()
   <aside id="topBarInfo">
     <ul>
       <li id="topBarKadoPoints">
-        <span>{{ authStore.user.kado_points ?? 0 }}</span>
+        <Number :value="authStore.user.kado_points ?? 0" color="bigGreen" />
       </li>
       <li id="topBarGreenStar">
-        <span>{{ authStore.greenStars }}</span>
+        <Number :value="authStore.greenStars" color="bigGreen" />
       </li>
       <li id="topBarOrangeStar">
-        <span>{{ authStore.orangeStars }}</span>
+        <Number :value="authStore.orangeStars" color="bigGreen" />
       </li>
       <li id="topBarRedStar">
-        <span>{{ authStore.redStars }}</span>
+        <Number :value="authStore.redStars" color="bigGreen" />
       </li>
     </ul>
   </aside>

@@ -320,28 +320,47 @@ header#topPage nav#kalendrier p.kalendrierText {
     font-size: 0.8em;
 }
 
-header#topPage nav#kalendrier ul.navKalendrierButtons {
+header#topPage nav#kalendrier ul.navKalendrierButtonsRight,
+header#topPage nav#kalendrier ul.navKalendrierButtonsBottom {
     list-style: none;
     position: absolute;
-    top: 6px;
-    left: 166px;
     margin: 0;
     padding: 0;
     display: flex;
+}
+
+header#topPage nav#kalendrier ul.navKalendrierButtonsRight {
+    top: 6px;
+    left: 166px;
     flex-direction: column;
 }
 
-header#topPage nav#kalendrier ul.navKalendrierButtons li a {
+header#topPage nav#kalendrier ul.navKalendrierButtonsBottom {
+    top: 110px;
+    left: 7px;
+    flex-direction: row;
+}
+
+header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a,
+header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a {
     display: block;
     width: 25px;
     height: 21px;
-    margin: 0 0 5px 0;
     background: url("$images/kalendarButton.gif") no-repeat;
     text-align: center;
     line-height: 17px;
 }
 
-header#topPage nav#kalendrier ul.navKalendrierButtons li a:hover {
+header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a {
+    margin: 0 0 5px 0;
+}
+
+header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a {
+    margin: 0 5px 0 0;
+}
+
+header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a:hover,
+header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a:hover {
     background: url("$images/kalendarButtonHover.gif") no-repeat;
 }
 
@@ -365,27 +384,26 @@ header#topPage aside#topBarInfo ul {
 }
 
 header#topPage aside#topBarInfo ul li#topBarKadoPoints {
-    padding: 4px 0 0 28px;
+    padding: 2px 0 0 28px;
     background: url("$images/topBarPointsKado.png") left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarGreenStar {
-    padding: 4px 0 0 30px;
+    padding: 2px 0 0 30px;
     background: url("$images/topBarGreenStar.png") left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarOrangeStar {
-    padding: 4px 0 0 30px;
+    padding: 2px 0 0 30px;
     background: url("$images/topBarOrangeStar.png") left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarRedStar {
-    padding: 4px 5px 0 30px;
+    padding: 2px 5px 0 30px;
     background: url("$images/topBarRedStar.png") left no-repeat;
 }
 
-
-header#topPage aside#topBarInfo ul li span {
+/*header#topPage aside#topBarInfo ul li span {
     font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
     font-size: 1.1em;
     letter-spacing: 0.05em;
@@ -397,7 +415,7 @@ header#topPage aside#topBarInfo ul li span {
     -webkit-background-clip: text;
     color: transparent;
     text-shadow: none;
-}
+}*/
 
 
 /* CONTAINER AND RIGHT SIDE BOXES */
