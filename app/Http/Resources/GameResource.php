@@ -22,6 +22,7 @@ class GameResource extends JsonResource
             'image_path' => $this->image_path,
             'stars' => $this->stars,
             'gamedata' => $this->gamedata,
+            'controls' => GameControlResource::collection($this->whenLoaded('controls')),
         ];
     }
 }

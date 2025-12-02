@@ -17,21 +17,21 @@
 
 @font-face {
     font-family: "Junegull-Regular";
-    src: url("$fonts/Junegull-Regular.eot");
-    src: url("$fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
-        url("$fonts/Junegull-Regular.woff") format("otf"),
-        url("$fonts/Junegull-Regular.woff") format("woff"),
-        url("$fonts/Junegull-Regular.ttf") format("truetype"),
-        url("$fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
+    src: url("/fonts/Junegull-Regular.eot");
+    src: url("/fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
+        url("/fonts/Junegull-Regular.woff") format("otf"),
+        url("/fonts/Junegull-Regular.woff") format("woff"),
+        url("/fonts/Junegull-Regular.ttf") format("truetype"),
+        url("/fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
 }
 
 @font-face {
     font-family: "Jost-Medium";
-    src: url("$fonts/Jost-Medium.ttf") format("truetype");
+    src: url("/fonts/Jost-Medium.ttf") format("truetype");
 }
 
 [data-lang="fr"] {
-    background: url('$images/langFrench.gif') no-repeat;
+    background: url('/gfx/langFrench.gif') no-repeat;
 }
 
 /* GLOBAL */
@@ -44,7 +44,7 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    background: url("$images/bgHeader.png") top repeat-x, url("$images/bgBodyPattern.jpg") repeat;
+    background: url("/gfx/bgHeader.png") top repeat-x, url("/gfx/bgBodyPattern.jpg") repeat;
     background-color: #f1f9fb;
     font-size: 1em;
     font-family: Trebuchet MS, Arial, sans-serif;
@@ -144,7 +144,7 @@ table.whiteFirst tbody tr:nth-child(odd) {
     margin: 40px 0 10px 10px;
     padding: 4px 5px 0 40px;
     font-size: 1.5em;
-    background: url("$images/bgTitleBlue.jpg") no-repeat;
+    background: url("/gfx/bgTitleBlue.jpg") no-repeat;
     text-transform: uppercase;
 }
 
@@ -219,7 +219,7 @@ header#topPage h1 {
     height: 78px;
     margin: 0;
     padding: 0;
-    background: url("$images/logoBasic.png") no-repeat;
+    background: url("/gfx/logoBasic.png") no-repeat;
 }
 
 header#topPage h1 span {
@@ -246,19 +246,19 @@ header#topPage nav#topNav ul li, header#topPage nav#topNav ul li a {
 }
 
 header#topPage nav#topNav ul li a#topNavGames {
-    background: url("$images/menuGames.png") no-repeat;
+    background: url("/gfx/menuGames.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavCompetition {
-    background: url("$images/menuCompetition.png") no-repeat;
+    background: url("/gfx/menuCompetition.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavProfile {
-    background: url("$images/menuProfile.png") no-repeat;
+    background: url("/gfx/menuProfile.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li:hover {
-    background: url("$images/menuHover.png") no-repeat;
+    background: url("/gfx/menuHover.png") no-repeat;
 }
 
 header#topPage nav#topNav ul li a span {
@@ -270,7 +270,7 @@ header#topPage nav#kalendrier {
     height: 141px;
     margin: 2px 0 0 0;
     padding: 0;
-    background: url("$images/bgKalendrier.png") no-repeat;
+    background: url("/gfx/bgKalendrier.png") no-repeat;
     font-size: 0.75em;
     position: relative;
 }
@@ -292,11 +292,11 @@ header#topPage nav#kalendrier .kalendrierPreviousDay, header#topPage nav#kalendr
 }
 
 header#topPage nav#kalendrier .kalendrierPreviousDay {
-    background: url("$images/kalendarPreviousDay.gif") no-repeat;
+    background: url("/gfx/kalendarPreviousDay.gif") no-repeat;
 }
 
 header#topPage nav#kalendrier .kalendrierPresentDay {
-    background: url("$images/kalendarPresentDay.gif") no-repeat;
+    background: url("/gfx/kalendarPresentDay.gif") no-repeat;
 }
 
 header#topPage nav#kalendrier p.kalUser {
@@ -346,7 +346,7 @@ header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a {
     display: block;
     width: 25px;
     height: 21px;
-    background: url("$images/kalendarButton.gif") no-repeat;
+    background: url("/gfx/kalendarButton.gif") no-repeat;
     text-align: center;
     line-height: 17px;
 }
@@ -361,13 +361,13 @@ header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a {
 
 header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a:hover,
 header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a:hover {
-    background: url("$images/kalendarButtonHover.gif") no-repeat;
+    background: url("/gfx/kalendarButtonHover.gif") no-repeat;
 }
 
 header#topPage aside#topBarInfo {
     width: 389px;
     height: 40px;
-    background: url("$images/bgTopBarInfo.png") no-repeat;
+    background: url("/gfx/bgTopBarInfo.png") no-repeat;
     position: absolute;
     top: 73px;
     left: 49px;
@@ -385,22 +385,22 @@ header#topPage aside#topBarInfo ul {
 
 header#topPage aside#topBarInfo ul li#topBarKadoPoints {
     padding: 2px 0 0 28px;
-    background: url("$images/topBarPointsKado.png") left no-repeat;
+    background: url("/gfx/topBarPointsKado.png") left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarGreenStar {
     padding: 2px 0 0 30px;
-    background: url("$images/topBarGreenStar.png") left no-repeat;
+    background: url("/gfx/topBarGreenStar.png") left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarOrangeStar {
     padding: 2px 0 0 30px;
-    background: url("$images/topBarOrangeStar.png") left no-repeat;
+    background: url("/gfx/topBarOrangeStar.png") left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarRedStar {
     padding: 2px 5px 0 30px;
-    background: url("$images/topBarRedStar.png") left no-repeat;
+    background: url("/gfx/topBarRedStar.png") left no-repeat;
 }
 
 /*header#topPage aside#topBarInfo ul li span {
@@ -430,7 +430,7 @@ header#topPage aside#topBarInfo ul li#topBarRedStar {
 #bodySection {
     width: 890px;
     margin: 0 60px;
-    background: url("$images/bgContainerTopBlue.jpg") top left no-repeat, url("$images/bgContainerTopRepeat.jpg") top repeat-x;
+    background: url("/gfx/bgContainerTopBlue.jpg") top left no-repeat, url("/gfx/bgContainerTopRepeat.jpg") top repeat-x;
     background-color: #eaf8fb;
     border: 2px solid #5babbb;
     box-shadow: 0 0 0 2px #ffffff, 0 0 30px 1px rgba(0, 0, 0, 0.5);
@@ -503,19 +503,19 @@ nav#tabNav ul li a {
 	color: #0687b1;
 	text-decoration: none;
 	font-weight: bold;
-	background: url("$images/bgTabmenu.jpg") repeat-x;
+	background: url("/gfx/bgTabmenu.jpg") repeat-x;
 }
 
 nav#tabNav ul li a:hover {
 	color: #5babbb;
-	background: url("$images/bgTabmenuHover.jpg") repeat-x;
+	background: url("/gfx/bgTabmenuHover.jpg") repeat-x;
 }
 
 nav#tabNav ul li#tabNavActive a {
 	color: #5babbb;
     height: 32px;
 	border: 2px solid #f4feff ;
-	background: url("$images/bgTabmenuActive.jpg") repeat-x;
+	background: url("/gfx/bgTabmenuActive.jpg") repeat-x;
 }
 
 #containerSide {
@@ -546,13 +546,13 @@ nav#tabNav ul li#tabNavActive a {
 }
 
 #containerSide .sideBoxGreen {
-    background: url("$images/bgContainerTopGreen.jpg") -205px 13px no-repeat;
+    background: url("/gfx/bgContainerTopGreen.jpg") -205px 13px no-repeat;
     background-color: #f3ffd7;
     border: 3px solid #89bc24;
 }
 
 #containerSide .sideBoxGreen h2 {
-    background: url("$images/bgTitleGreen.jpg") -15px -5px no-repeat;
+    background: url("/gfx/bgTitleGreen.jpg") -15px -5px no-repeat;
     color: #6fa20a;
     border-bottom: 3px solid #89bc24;
 }
@@ -575,41 +575,41 @@ nav#tabNav ul li#tabNavActive a {
 }
 
 #containerSide ul#menuSide li.news a {
-    background: url("$images/menuIconNews.gif") 0px 2px no-repeat;
+    background: url("/gfx/menuIconNews.gif") 0px 2px no-repeat;
 }
 
 #containerSide ul#menuSide li.scores a {
-    background: url("$images/menuIconScores.gif") -2px 3px no-repeat;
+    background: url("/gfx/menuIconScores.gif") -2px 3px no-repeat;
 }
 
 #containerSide ul#menuSide li.account a {
-    background: url("$images/menuIconAccount.gif") 0px 3px no-repeat;
+    background: url("/gfx/menuIconAccount.gif") 0px 3px no-repeat;
 }
 
 #containerSide ul#menuSide li.help a {
-    background: url("$images/menuIconHelp.gif") -3px 0px no-repeat;
+    background: url("/gfx/menuIconHelp.gif") -3px 0px no-repeat;
 }
 
 #containerSide .sideBoxBlue {
-    background: url("$images/bgContainerTopBlue.jpg") -205px 13px no-repeat;
+    background: url("/gfx/bgContainerTopBlue.jpg") -205px 13px no-repeat;
     background-color: #eaf8fa;
     border: 3px solid #5babbb;
 }
 
 #containerSide .sideBoxBlue h2 {
-    background: url("$images/bgTitleBlue.jpg") -15px -5px no-repeat;
+    background: url("/gfx/bgTitleBlue.jpg") -15px -5px no-repeat;
     color: #0687b1;
     border-bottom: 3px solid #5babbb;
 }
 
 #containerSide .sideBoxPink {
-    background: url("$images/bgContainerTopPink.jpg") -205px 13px no-repeat;
+    background: url("/gfx/bgContainerTopPink.jpg") -205px 13px no-repeat;
     background-color: #ffecf2;
     border: 3px solid #ff6b9c;
 }
 
 #containerSide .sideBoxPink h2 {
-    background: url("$images/bgTitlePink.jpg") -15px -5px no-repeat;
+    background: url("/gfx/bgTitlePink.jpg") -15px -5px no-repeat;
     color: #ff6b9c;
     border-bottom: 3px solid #ff6b9c;
 }
@@ -620,7 +620,7 @@ nav#tabNav ul li#tabNavActive a {
 .inColumns .homeLeftColumn {
     width: 488px;
     height: 475px;
-    background: url("$images/bgIntroHomePage.png") no-repeat;
+    background: url("/gfx/bgIntroHomePage.png") no-repeat;
     margin: 0;
 }
 
@@ -632,7 +632,7 @@ nav#tabNav ul li#tabNavActive a {
 p.btnHomepagePlay {
     width: 362px;
     height: 52px;
-    background: url("$images/btnHomepagePlay.png") no-repeat;
+    background: url("/gfx/btnHomepagePlay.png") no-repeat;
     margin: 40px 0 0 0;
     padding: 5px 0 0 0;
     font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
@@ -642,7 +642,7 @@ p.btnHomepagePlay {
 }
 
 p.btnHomepagePlay:hover {
-    background: url("$images/btnHomepagePlayHover.png") no-repeat;
+    background: url("/gfx/btnHomepagePlayHover.png") no-repeat;
     padding: 8px 0 0 0;
     text-decoration: none;
 }
@@ -692,7 +692,7 @@ a.gameBox {
 div.gameBoxBackground {
     width: 226px;
     height: 142px;
-    background: url("$images/gameBox.png") no-repeat;
+    background: url("/gfx/gameBox.png") no-repeat;
     z-index: 1;
 }
 
@@ -747,7 +747,7 @@ div.gameBoxBackground {
     width: 724px;
     height: 370px;
     margin: 30px auto 50px auto;
-    background: url("$images/gameInterface.png") no-repeat;
+    background: url("/gfx/gameInterface.png") no-repeat;
     position: relative;
 }
 
@@ -755,7 +755,7 @@ div.gameBoxBackground {
     width: 1024px;
     height: 690px;
     margin: auto;
-    background: url("$images/gameInterfaceZoom.png") no-repeat;
+    background: url("/gfx/gameInterfaceZoom.png") no-repeat;
     position: absolute;
     left: 50%;
     top: 50%;
@@ -791,7 +791,7 @@ div.gameBoxBackground {
     width: 101px;
     height: 20px;
     margin-left: 8px;
-    background: url("$images/gameInterfaceButton.gif") no-repeat;
+    background: url("/gfx/gameInterfaceButton.gif") no-repeat;
 }
 
 #gameInterface #gameUpperButtons ul li a {
@@ -983,12 +983,12 @@ form div input, input[type=submit], input[type=button], input[type=reset] {
     border: 2px solid #fff;
     border-left: 7px solid #fff;
     color: #20a8c3;
-    background: url("$images/bgInput.jpg") repeat-x;
+    background: url("/gfx/bgInput.jpg") repeat-x;
 }
 
 form div input:focus {
     color: #89bc24;
-    background: url("$images/bgInputFocus.jpg") repeat-x;
+    background: url("/gfx/bgInputFocus.jpg") repeat-x;
 }
 
 input[type=submit], input[type=button], input[type=reset] {
@@ -999,13 +999,13 @@ input[type=submit], input[type=button], input[type=reset] {
     font-weight: bold;
     text-decoration: none;
     border: 1px solid #6fa20a;
-    background: url("$images/bgFormButtonLeft.jpg") left no-repeat, url("$images/bgFormButtonFill.jpg") repeat-x;
+    background: url("/gfx/bgFormButtonLeft.jpg") left no-repeat, url("/gfx/bgFormButtonFill.jpg") repeat-x;
     background-color: #e6ffbd;
     cursor: pointer;
 }
 
 input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover {
-    background: url("$images/bgFormButtonLeftHover.jpg") left no-repeat, url("$images/bgFormButtonFillHover.jpg") repeat-x;
+    background: url("/gfx/bgFormButtonLeftHover.jpg") left no-repeat, url("/gfx/bgFormButtonFillHover.jpg") repeat-x;
 }
 
 
@@ -1036,7 +1036,7 @@ div.confirm div, div.error div {
 
 div.confirm div {
     background-color: #f3ffd7;
-    background-image: url("$images/bgGreen.png");
+    background-image: url("/gfx/bgGreen.png");
 }
 
 div.confirm p,
@@ -1055,7 +1055,7 @@ div.error {
 
 div.error div {
     background-color: #ffecf2;
-    background-image: url("$images/bgPink.png");
+    background-image: url("/gfx/bgPink.png");
 }
 
 div.error p,

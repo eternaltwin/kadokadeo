@@ -21,7 +21,6 @@ class LoginController extends Controller implements HasMiddleware
     public static function middleware()
     {
         return [
-            new Middleware('guest', only: ['login', 'loginCallback']),
             new Middleware('auth:sanctum', only: ['logout']),
         ];
     }
@@ -90,6 +89,7 @@ class LoginController extends Controller implements HasMiddleware
             $dbUser->kado_games = config('kado.games_per_day');
         }
         $dbUser->save();
+        Auth::login($dbUser, true);
 
         $token = $dbUser->createToken('kadokadeo')->plainTextToken;
 

@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 
+import GameControls from '@/components/games/GameControls.vue'
 import Loader from '@/components/Loader.vue'
 import Number from '@/components/Number.vue'
 import { formatScore, formatTime } from '@/composables/helpers'
@@ -60,26 +61,7 @@ const selectedTab = ref('gameRules')
     <article id="gameRules" :class="selectedTab === 'gameRules' ? '' : 'hidden'">
       <p>{{ game.description ?? '[WIP description]' }}</p>
       <hr />
-      <table class="gameCommands noBorder noBackground">
-        <thead>
-          <tr>
-            <th style="width: 70px" scope="col">Commande</th>
-            <th scope="col">Fonction</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td scope="row">
-              <img
-                src="/gfx/gameCommandLeftClic.png"
-                title="Clic gauche"
-                alt="Clic gauche"
-              />
-            </td>
-            <td>Sauter</td>
-          </tr>
-        </tbody>
-      </table>
+      <GameControls :game="game" />
     </article>
 
     <article id="gameStars" :class="selectedTab === 'gameStars' ? '' : 'hidden'">
@@ -132,28 +114,32 @@ const selectedTab = ref('gameRules')
     <article id="gameRanking" :class="selectedTab === 'gameRanking' ? '' : 'hidden'">
       <Loader v-if="isLoading">Chargement des scores...</Loader>
       <table class="w-full">
-        <tr>
-          <th>Position</th>
-          <th>Joueur</th>
-          <th>Score</th>
-          <th>Temps</th>
-        </tr>
-        <tr v-for="(score, index) in scores" :key="score.id">
-          <td>{{ index + 1 }}</td>
-          <td>{{ score.user.display_name }}</td>
-          <td>{{ formatScore(score.score) }}</td>
-          <td>
-            <RouterLink
-              v-if="score.has_replay"
-              :to="{ name: 'runs.show', params: { id: score.id } }"
-            >
-              {{ formatTime(score.play_time_seconds) }}
-            </RouterLink>
-            <span v-else>
-              {{ formatTime(score.play_time_seconds) }}
-            </span>
-          </td>
-        </tr>
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Joueur</th>
+            <th>Score</th>
+            <th>Temps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(score, index) in scores" :key="score.id">
+            <td>{{ index + 1 }}</td>
+            <td>{{ score.user.display_name }}</td>
+            <td>{{ formatScore(score.score) }}</td>
+            <td>
+              <RouterLink
+                v-if="score.has_replay"
+                :to="{ name: 'runs.show', params: { id: score.id } }"
+              >
+                {{ formatTime(score.play_time_seconds) }}
+              </RouterLink>
+              <span v-else>
+                {{ formatTime(score.play_time_seconds) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </article>
   </div>

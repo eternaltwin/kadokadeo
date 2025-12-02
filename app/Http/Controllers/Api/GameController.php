@@ -48,9 +48,11 @@ class GameController extends Controller implements HasMiddleware
         ]);
     }
 
-    public function show(Game $game, ScoreService $scoreService)
+    public function show(Game $game)
     {
         Gate::authorize('view', $game);
+
+        $game->load('controls');
 
         return GameResource::make($game);
     }

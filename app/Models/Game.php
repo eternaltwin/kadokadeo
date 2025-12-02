@@ -46,8 +46,7 @@ class Game extends Model
 
     public function controls()
     {
-        return $this->belongsToMany(Control::class, 'control_games')
-            ->withPivot('description', 'order')
-            ->orderByPivot('order');
+        return $this->hasMany(GameControl::class)
+            ->orderBy('order');
     }
 }

@@ -29,7 +29,7 @@ const GODOT_CONFIG = {
   focusCanvas: false,
   gdextensionLibs: [],
 }
-const GODOT_THREADS_ENABLED = false
+const GODOT_THREADS_ENABLED = import.meta.env.PROD
 const engine = new Engine(GODOT_CONFIG)
 
 onBeforeUnmount(async() => {
@@ -39,7 +39,6 @@ onBeforeUnmount(async() => {
 let initializing = true
 
 function setStatusMode(mode) {
-  console.log('Setting status mode to', mode, 'initializing=', initializing)
   if (statusMode.value === mode || !initializing) {
     return
   }
