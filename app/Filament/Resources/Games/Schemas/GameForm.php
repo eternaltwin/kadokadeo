@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Games\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -18,9 +19,9 @@ class GameForm
                     ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),
-                TextInput::make('category_id')
-                    ->required()
-                    ->numeric(),
+                Select::make('category_id')
+                    ->options(fn () => \App\Models\Category::all()->pluck('name', 'id'))
+                    ->required(),
                 FileUpload::make('image_path')
                     ->image(),
                 TextInput::make('stars'),

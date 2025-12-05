@@ -3,16 +3,15 @@
 namespace App\Filament\Resources\Games\RelationManagers;
 
 use App\Enums\ControlKey;
-use App\Filament\Resources\Games\GameResource;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 
 class ControlsRelationManager extends RelationManager
@@ -39,7 +38,8 @@ class ControlsRelationManager extends RelationManager
                 TextColumn::make('order'),
                 TextColumn::make('keys')
                     ->label('Keys')
-                    ->bulleted(ControlKey::class),
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => ControlKey::from($state)->getLabel()),
             ])
             ->headerActions([
                 CreateAction::make(),
