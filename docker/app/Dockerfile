@@ -42,7 +42,7 @@ RUN scons \
     module_text_server_adv_enabled=no \
     module_text_server_fb_enabled=yes \
     lto=full \
-    threads=no \
+    threads=yes\
     disable_advanced_gui=yes \
     module_basis_universal_enabled=no \
     module_bmp_enabled=no \
@@ -80,10 +80,10 @@ RUN scons \
     module_zip_enabled=no \
     production=yes
 
-RUN mv /app/godot/bin/godot.web.template_release.wasm32.nothreads.zip /app \
+RUN mv /app/godot/bin/godot.web.template_release.wasm32.zip /app \
     && rm -rf /app/godot \
     && mkdir /app/gamesdata \
-    && unzip /app/godot.web.template_release.wasm32.nothreads.zip -d /app/gamesdata
+    && unzip /app/godot.web.template_release.wasm32.zip -d /app/gamesdata
 
 WORKDIR /app
 RUN git clone --single-branch https://gitlab.com/eternaltwin/kadokadeo/kadokadeo.git
@@ -95,7 +95,7 @@ RUN git submodule update --init --recursive \
 RUN find * -type d -prune | while read -r d; do \
     if [ "$d" = "output" ]; then continue; fi; \
     echo "Processing game $d"; \
-    python3 set_template.py /app/godot.web.template_release.wasm32.nothreads.zip --file "$d/export_presets.cfg" --debug /app/godot.web.template_release.wasm32.nothreads.zip; \
+    python3 set_template.py /app/godot.web.template_release.wasm32.zip --file "$d/export_presets.cfg" --debug /app/godot.web.template_release.wasm32.zip; \
     /app/godot_editor/godot --headless --path $d --export-release "Web" /app/kadokadeo/resources/games/godot/output/$d; \
     mv output/$d.pck /app/gamesdata/$d.pck; \
     rm output/*; \
@@ -158,7 +158,7 @@ RUN composer install --no-dev --no-progress --no-interaction
 
 COPY --from=frontend --chown=dev:dev ["/kadokadeo/public/build", "/www/public/build"]
 COPY --from=godot --chown=dev:dev ["/app/gamesdata/*", "/www/public/gamesdata/"]
-COPY --from=godot --chown=dev:dev ["/app/godot.web.template_release.wasm32.nothreads.zip", "/godot/godot.web.template_release.wasm32.nothreads.zip"]
+COPY --from=godot --chown=dev:dev ["/app/godot.web.template_release.wasm32.zip", "/godot/godot.web.template_release.wasm32.zip"]
 COPY --from=godot --chown=dev:dev ["/app/godot_editor/godot", "/godot/godot"]
 USER root
 

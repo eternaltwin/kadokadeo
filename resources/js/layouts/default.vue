@@ -1,5 +1,6 @@
 <script setup>
 import Error from '@/components/message/Error.vue'
+import GodotLoadState from '@/components/message/GodotLoadState.vue'
 import Kalendrier from '@/components/nav/Kalendrier.vue'
 import Navbar from '@/components/nav/Navbar.vue'
 import Starbar from '@/components/nav/Starbar.vue'
@@ -31,8 +32,7 @@ const authStore = useAuthStore()
   <main id="container">
     <section id="bodySection">
       <Error class="w-3/4 mb-12!">
-        Kadokadéo est actuellement en alpha. Les scores que vous réaliserez finiront sans doute par
-        être supprimés.
+        Kadokadéo est actuellement en alpha. Il se peut que vous rencontriez des bugs. N'hésitez pas à nous faire part de vos retours!
       </Error>
       <slot />
     </section>
@@ -40,5 +40,6 @@ const authStore = useAuthStore()
     <template v-if="authStore.isAuthenticated">
       <Sidebar />
     </template>
+    <GodotLoadState />
   </main>
 </template>
