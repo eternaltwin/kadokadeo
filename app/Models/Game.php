@@ -13,6 +13,8 @@ class Game extends Model
         'stars' => 'json',
     ];
 
+    protected $with = ['category'];
+
     public function getGamedataAttribute()
     {
         $fileName = \Illuminate\Support\Str::slug($this->name, '_') . '.pck';

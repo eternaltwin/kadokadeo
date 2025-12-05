@@ -79,7 +79,7 @@ class RunsPlayedChart extends ChartWidget
                 ->default('day'),
             Select::make('game')
                 ->label('Game')
-                ->options(Game::all()->pluck('name', 'id'))
+                ->options(Game::where('is_active', true)->pluck('name', 'id'))
                 ->default(null),
         ]);
     }

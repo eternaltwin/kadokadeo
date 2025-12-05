@@ -17,12 +17,15 @@ class GamesTable
     {
         return $table
             ->columns([
+                ImageColumn::make('image_path')
+                    ->label('Image')
+                    ->state(fn ($record) => config('app.url') . $record->image_path)
+                    ->checkFileExistence(false),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
-                ImageColumn::make('image_path'),
+                    ->label('Category')
+                    ->getStateUsing(fn ($record) => $record->category?->name ?? 'Uncategorized'),
                 IconColumn::make('is_active')
                     ->boolean(),
                 IconColumn::make('is_official')

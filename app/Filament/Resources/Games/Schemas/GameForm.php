@@ -22,8 +22,7 @@ class GameForm
                 Select::make('category_id')
                     ->options(fn () => \App\Models\Category::all()->pluck('name', 'id'))
                     ->required(),
-                FileUpload::make('image_path')
-                    ->image(),
+                TextInput::make('image_path'),
                 TextInput::make('stars'),
                 Toggle::make('is_active')
                     ->required(),
