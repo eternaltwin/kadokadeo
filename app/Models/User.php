@@ -24,7 +24,7 @@ class User extends Authenticatable implements FilamentUser
     ];
 
     protected $guarded = [
-        'password',
+        // 'password',
     ];
 
     /**

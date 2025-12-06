@@ -27,6 +27,9 @@ class UserForm
                 TextInput::make('email')
                     ->label('Email address')
                     ->email(),
+                TextInput::make('password')
+                    ->password()
+                    ->dehydrated(fn ($state) => filled($state)),
                 DateTimePicker::make('last_seen_at'),
                 Toggle::make('is_admin')
                     ->required(),
