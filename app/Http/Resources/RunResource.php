@@ -23,6 +23,7 @@ class RunResource extends JsonResource
             'contract_points' => $this->contract_points,
             'seed' => $this->seed,
             'play_time_seconds' => $this->play_time_seconds,
+            'period_id' => $this->period_id,
             'replay' => $this->replay,
             'has_replay' => $this->replay !== null,
         ];

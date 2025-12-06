@@ -7,6 +7,7 @@ use App\Http\Resources\RunResource;
 use App\Models\Game;
 use App\Models\Period;
 use App\Services\ScoreService;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
@@ -23,14 +24,26 @@ class GameScoreController extends Controller implements HasMiddleware
     public function index(Game $game, ScoreService $scoreService)
     {
         $currentPeriod = Period::current()->first();
-        $scores = $scoreService->getLeaderBoard($game, 10);
+        $scores = $scoreService->getLeaderBoard($game, $currentPeriod?->id)->take(10)->get();
         $personalBest = $scoreService->getUserBestScore($game, Auth::id());
         $personalBestForPeriod = $scoreService->getUserBestScore($game, Auth::id(), $currentPeriod?->id);
+        $worldsBest = $scoreService->getUserBestScore($game, null);
 
         return response()->json([
             'scores' => RunResource::collection($scores),
+            'worldsBest' => $worldsBest ? RunResource::make($worldsBest) : null,
             'personalBest' => $personalBest ? RunResource::make($personalBest) : null,
             'personalBestForPeriod' => $personalBestForPeriod ? RunResource::make($personalBestForPeriod) : null,
         ]);
+    }
+
+    public function search(Request $request, Game $game, ScoreService $scoreService)
+    {
+        $data = $request->validate([
+            'period' => 'sometimes|required|integer|min:1|max_digits:6|exists:periods,id',
+        ]);
+        $scores = $scoreService->getLeaderBoard($game, data_get($data, 'period'))->paginate(10);
+
+        return RunResource::collection($scores);
     }
 }

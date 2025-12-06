@@ -6,6 +6,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import GamesDaily from '@/pages/games/daily.vue'
 import GamesIndex from '@/pages/games/index.vue'
+import GamesRanking from '@/pages/games/ranking.vue'
 import GamesShow from '@/pages/games/show.vue'
 import Login from '@/pages/login.vue'
 import LoginCallback from '@/pages/loginCallback.vue'
@@ -23,6 +24,12 @@ const router = createRouter({
       path: '/games/:id',
       name: 'games.show',
       component: GamesShow,
+      meta: { middleware: ['auth'] },
+    },
+    {
+      path: '/games/:id/ranking',
+      name: 'games.ranking',
+      component: GamesRanking,
       meta: { middleware: ['auth'] },
     },
     { path: '/runs/:id', name: 'runs.show', component: RunsShow, meta: { middleware: ['auth'] } },
