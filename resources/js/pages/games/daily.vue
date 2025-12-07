@@ -1,10 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 
+import GameScoreTable from '@/components/games/GameScoreTable.vue'
 import GameScript from '@/components/games/GameScript.vue'
 import Loader from '@/components/Loader.vue'
-import Number from '@/components/Number.vue'
-import { formatTime } from '@/composables/helpers'
 import { useGames } from '@/composables/useGames'
 
 const { isLoading, fetchDailyGame } = useGames()
@@ -23,6 +22,12 @@ fetchDailyGame().then((data) => {
 <template>
   <h1 class="text-center">Jeu du jour</h1>
 
+  <p>
+    Le jeu du jour est choisi aléatoirement chaque jour à minuit.<br />
+    Le contrat est commun à tous les joueurs.<br />
+    Vous n'avez qu'une seule tentative.
+  </p>
+
   <div v-if="isLoading || !game" class="relative min-h-48">
     <Loader>Chargement ...</Loader>
   </div>
@@ -34,34 +39,7 @@ fetchDailyGame().then((data) => {
                 :game-height="640" />
     <div>
       <h2>Scores</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Position</th>
-            <th>Joueur</th>
-            <th>Score</th>
-            <th>Temps</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(score, k) in scores" :key="score.id">
-            <td>{{ k + 1 }}</td>
-            <td>{{ score.user?.display_name ?? 'Inconnu' }}</td>
-            <td><Number :value="score.score" color="orange" /></td>
-            <td>
-              <RouterLink
-                v-if="score.has_replay"
-                :to="{ name: 'runs.show', params: { id: score.id } }"
-              >
-                {{ formatTime(score.play_time_seconds) }}
-              </RouterLink>
-              <template v-else>
-                {{ formatTime(score.play_time_seconds) }}
-              </template>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <GameScoreTable :scores="scores" />
     </div>
   </div>
 </template>
