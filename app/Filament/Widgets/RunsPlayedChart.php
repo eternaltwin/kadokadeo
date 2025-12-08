@@ -13,6 +13,7 @@ use Filament\Widgets\ChartWidget;
 use Filament\Widgets\ChartWidget\Concerns\HasFiltersSchema;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
+use Illuminate\Database\Eloquent\Builder;
 
 class RunsPlayedChart extends ChartWidget
 {
@@ -26,12 +27,14 @@ class RunsPlayedChart extends ChartWidget
         $endDate = $this->filters['endDate'];
         $game = $this->filters['game'] ?? null;
         $period = $this->filters['period'] ?? null;
-        $complete = $this->filters['complete'] ?? null;
+        $status = $this->filters['status'] ?? null;
 
         $runQ = Run::query()->when($game, function ($query) use ($game) {
             return $query->where('game_id', $game);
-        })->when($complete, function ($query) {
+        })->when($status === 'complete', function ($query) {
             return $query->whereNotNull('completed_at');
+        })->when($status === 'incomplete', function ($query) {
+            return $query->whereNull('completed_at');
         });
 
         $data = Trend::query($runQ)
@@ -64,10 +67,14 @@ class RunsPlayedChart extends ChartWidget
     {
         return $schema->components([
             DatePicker::make('startDate')->default(now()->subDays(30)),
-            DatePicker::make('endDate')->default(now()),
-            Checkbox::make('completed')
-                ->label('Show only completed runs')
-                ->default(true),
+            DatePicker::make('endDate')->default(now()->addDay()),
+            Select::make('status')
+                ->label('Run status')
+                ->options([
+                    'complete' => 'Complete',
+                    'incomplete' => 'Incomplete',
+                ])
+                ->default(null),
             Select::make('period')
                 ->label('Period')
                 ->options([

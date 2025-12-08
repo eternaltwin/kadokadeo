@@ -63,6 +63,10 @@ class GameController extends Controller implements HasMiddleware
         Gate::authorize('view', $dailyGame?->game);
 
         $dailyGameRuns = $dailyGame?->runs()->orderByDesc('score')->with('user')->limit(10)->get() ?? collect();
+        # hack to disable replay for this specific endpoint
+        $dailyGameRuns->each(function ($run) {
+            $run->replay = null;
+        });
 
         return GameResource::make($dailyGame->game)->additional([
             'dailyGame' => $dailyGame,

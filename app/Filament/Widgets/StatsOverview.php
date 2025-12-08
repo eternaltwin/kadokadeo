@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Run;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -17,10 +18,14 @@ class StatsOverview extends StatsOverviewWidget
             ->whereNotNull('completed_at')
             ->count();
         $increase = $thisMonthCount - $prevMonthCount;
+
+        $usersMonthCount = User::whereMonth('created_at', now()->month)->count();
         return [
             Stat::make('Total runs this month', $thisMonthCount)
-            ->description(($increase >= 0 ? '+' : '') . $increase . ' than last month')
-            ->descriptionIcon($increase >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down'),
+                ->description(($increase >= 0 ? '+' : '') . $increase . ' than last month')
+                ->descriptionIcon($increase >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down'),
+            Stat::make('Users', User::count())
+                ->description('+' . $usersMonthCount . ' this month'),
         ];
     }
 }

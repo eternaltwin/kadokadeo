@@ -6,6 +6,7 @@ use App\Models\DailyGame;
 use App\Models\Game;
 use App\Services\GameService;
 use Illuminate\Console\Command;
+use Spatie\DiscordAlerts\Facades\DiscordAlert;
 
 class PrepareDailyGame extends Command
 {
@@ -22,6 +23,36 @@ class PrepareDailyGame extends Command
      * @var string
      */
     protected $description = 'Add a new daily game for today';
+
+    protected $noRunsMessages = [
+        "Pas de participants pour le jeu du jour d'hier. Peut-être que le jeu était nul ?",
+        "Aucun score enregistré pour le jeu du jour d'hier. Si tu joues aujourd'hui tu as peut-être une chance de faire top 1 !",
+        "Personne n'a joué au jeu du jour d'hier. Sois le premier aujourd'hui !",
+        "Bon bah, personne n'a joué au jeu du jour d'hier... À toi de jouer aujourd'hui !",
+        "Aucun score pour le jeu du jour d'hier. Tu pourrais bien être le premier aujourd'hui ! ...non?",
+        "Spoiler: ||personne n'a joué au jeu du jour d'hier||. Tu as une chance de briller aujourd'hui !",
+    ];
+
+    protected $firstPlaceMessages = [
+        "Victoire écrasante !",
+        "Impressionnant !",
+        "Chapeau bas, champion !",
+        "T'as cheat ??"
+    ];
+
+    protected $secondPlaceMessages = [
+        "Bien joué !",
+        "Pas mal du tout !",
+        "Tu t'es battu jusqu'au bout !",
+        "La prochaine fois sera la bonne !"
+    ];
+
+    protected $thirdPlaceMessages = [
+        "Bravo !",
+        "Tu feras mieux demain...",
+        "Continue comme ça !",
+        "Honnêtement pas mal !"
+    ];
 
     /**
      * Execute the console command.
@@ -58,5 +89,45 @@ class PrepareDailyGame extends Command
         ]);
 
         $this->info("Daily game for '{$game->name}' created: score {$contract} to win {$points} kado points.");
+        $this->sendTopScoresToDiscord();
+    }
+
+    public function sendTopScoresToDiscord()
+    {
+        $dailyGame = DailyGame::where('day', now()->yesterday())->first();
+        if (!$dailyGame) {
+            $this->info('No daily game found for yesterday.');
+
+            return;
+        }
+        $game = $dailyGame->game;
+        $topScores = $dailyGame->runs()
+            ->where('daily_game_id', $dailyGame->id)
+            ->orderByDesc('score')
+            ->take(3)
+            ->get();
+
+        $message = "Résultats du {$dailyGame->day->format('d/m/Y')} sur {$game->name}:\n";
+        if ($topScores->isEmpty()) {
+            $message .= $this->noRunsMessages[array_rand($this->noRunsMessages)];
+        } else {
+            foreach ($topScores as $index => $run) {
+                $place = match ($index) {
+                    0 => ':first_place:',
+                    1 => ':second_place:',
+                    2 => ':third_place:',
+                    default => '',
+                };
+                $score = formatScore($run->score);
+                $customMsg = match ($index) {
+                    0 => $this->firstPlaceMessages[array_rand($this->firstPlaceMessages)],
+                    1 => $this->secondPlaceMessages[array_rand($this->secondPlaceMessages)],
+                    2 => $this->thirdPlaceMessages[array_rand($this->thirdPlaceMessages)],
+                    default => '',
+                };
+                $message .= "{$place} **{$run->user->display_name}**: {$score} points. {$customMsg}\n";
+            }
+        }
+        DiscordAlert::to('scores')->message($message);
     }
 }

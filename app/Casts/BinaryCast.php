@@ -21,7 +21,10 @@ class BinaryCast implements CastsAttributes
 
     protected function setPostgresCast($value)
     {
-        return bin2hex($value);
+        if ($value) {
+            return bin2hex($value);
+        }
+        return null;
     }
 
     /**
@@ -46,7 +49,11 @@ class BinaryCast implements CastsAttributes
     public function set(Model $model, string $key, mixed $value, array $attributes): mixed
     {
         if ($model->getConnection() instanceof PostgresConnection) {
-            return DB::raw("decode('" . $this->setPostgresCast($value) . "', 'hex')");
+            $data = $this->setPostgresCast($value);
+            if (is_null($data)) {
+                return null;
+            }
+            return DB::raw("decode('" . $data . "', 'hex')");
         }
 
         return $value;
