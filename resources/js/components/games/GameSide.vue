@@ -96,33 +96,39 @@ const selectedTab = ref('gameRules')
       <table class="gameGoals noBorder">
         <thead>
           <tr class="noBackground">
-            <th scope="col">Paliers</th>
-            <th scope="col">Valeur</th>
+            <th scope="col" style="width:30px;"></th>
+            <th scope="col" class="textLeft">Paliers</th>
+            <th scope="col" class="textRight">Valeur</th>
           </tr>
         </thead>
         <tbody class="twoColoured">
           <tr>
             <td scope="row">
-              <img src="/assets/img/gfx/greenStar.gif" alt="Etoile verte" />
+                <img src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
             </td>
-            <td>
-              <Number :value="game.stars[0]" color="orange" />
+            <td class="textLeft">
+              <img src="/gfx/iconRedStar.gif" alt="Etoile rouge" /> <Number :value="game.stars[2]" color="orange" />
             </td>
-          </tr>
-          <tr>
-            <td scope="row">
-              <img src="/assets/img/gfx/orangeStar.gif" alt="Etoile orange" />
-            </td>
-            <td>
-              <Number :value="game.stars[1]" color="orange" />
+            <td class="textRight">
+              <Number value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
             </td>
           </tr>
           <tr>
-            <td scope="row">
-              <img src="/assets/img/gfx/redStar.gif" alt="Etoile rouge" />
+            <td scope="row"></td>
+            <td class="textLeft">
+              <img src="/gfx/iconOrangeStar.gif" alt="Etoile orange" /> <Number :value="game.stars[1]" color="orange" />
             </td>
-            <td>
-              <Number :value="game.stars[2]" color="orange" />
+            <td class="textRight">
+              <Number value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
+            </td>
+          </tr>
+          <tr>
+            <td scope="row"></td>
+            <td class="textLeft">
+              <img src="/gfx/iconGreenStar.gif" alt="Etoile verte" /> <Number :value="game.stars[0]" color="orange" />
+            </td>
+            <td class="textRight">
+              <Number value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
             </td>
           </tr>
         </tbody>
@@ -131,10 +137,12 @@ const selectedTab = ref('gameRules')
 
     <article id="gameRanking" :class="selectedTab === 'gameRanking' ? '' : 'hidden'">
       <Loader v-if="isLoading">Chargement des scores...</Loader>
-      <GameScoreTable v-else :scores="scores" />
-      <RouterLink :to="{ name: 'games.ranking', params: { id: game.id }, query: { period: periodStore.period?.id } }" class="block mt-4 text-center underline">
+      <GameScoreTable v-else :scores="scores" style="margin:0 auto" />
+      <p class="center">
+        <RouterLink :to="{ name: 'games.ranking', params: { id: game.id }, query: { period: periodStore.period?.id } }">
         Voir le classement complet
-      </RouterLink>
+        </RouterLink>
+      </p>
     </article>
   </div>
 </template>

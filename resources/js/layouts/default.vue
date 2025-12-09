@@ -29,11 +29,13 @@ const authStore = useAuthStore()
     </template>
   </header>
 
+  <Error style="width:890px;margin:20px 60px 40px 60px;font-size:0.85em;">
+    Kadokadéo est actuellement en alpha. Il se peut que vous rencontriez des bugs. N'hésitez pas à nous faire part de vos retours !
+  </Error>
+
   <main id="container">
+    
     <section id="bodySection">
-      <Error class="w-3/4 mb-12!">
-        Kadokadéo est actuellement en alpha. Il se peut que vous rencontriez des bugs. N'hésitez pas à nous faire part de vos retours!
-      </Error>
       <slot />
     </section>
 

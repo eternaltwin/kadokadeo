@@ -54,7 +54,9 @@ services:
     image: nginx:1.21
     volumes:
       - ./docker/app/conf/kadokadeo.conf:/etc/nginx/conf.d/kadokadeo.conf:ro
-      - ./:/www
+      - ./:/www:rw
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 networks:
   kadokadeo_network:

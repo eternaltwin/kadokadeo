@@ -8,22 +8,22 @@ defineProps({
 </script>
 
 <template>
-  <table class="w-full">
+  <table class="fullWidth">
     <thead>
       <tr>
-        <!-- <th>Période</th> -->
-        <th>Position</th>
-        <th>Joueur</th>
-        <th>Score</th>
-        <th>Temps</th>
+        <!-- <th scope="col">Période</th> -->
+        <th scope="col">Pos</th>
+        <th scope="col">Joueur</th>
+        <th scope="col">Score</th>
+        <th scope="col">Temps</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="smallPadding">
       <tr v-for="(score, index) in scores" :key="score.id">
         <!-- <td>{{ score.period_id }}</td> -->
-        <td>{{ index + 1 }}</td>
+        <td><Number :value="index + 1" color="orange" /></td>
         <td>{{ score.user.display_name }}</td>
-        <td><Number :value="score.score" color="orange" /></td>
+        <td><Number :value="score.score" color="blue" /></td>
         <td>
           <RouterLink
             v-if="score.has_replay"

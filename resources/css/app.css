@@ -76,7 +76,7 @@ img {
 table {
     border-collapse: collapse;
     width: 92%;
-    margin: 4% auto;
+    margin: 15px auto;
     border: 2px solid #5babbb;
     text-align: center;
 }
@@ -109,6 +109,14 @@ table.whiteFirst tbody tr:nth-child(odd) {
 
 .noBorder, .noBorder th, .noBorder tr, .noBorder td {
     border: 0;
+}
+
+.noPadding th, .noPadding td {
+    padding: 0;
+}
+
+.smallPadding th, .smallPadding td {
+    padding: 2px;
 }
 
 .noBackground,  .noBackground th, .noBackground tr, .noBackground td {
@@ -175,6 +183,14 @@ table.whiteFirst tbody tr:nth-child(odd) {
 
 .show {
     display: block;
+}
+
+.textRight {
+    text-align: right;
+}
+
+.textLeft {
+    text-align: left;
 }
 
 
