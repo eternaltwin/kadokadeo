@@ -44,6 +44,10 @@ const gamesFiltered = computed(() => {
     </ul>
   </nav>
 
+  <!--<div id="gameOfTheDay">
+    <p>to do</p>
+  </div>-->
+
   <div id="gamesBoxes" class="relative min-h-48">
     <Loader v-if="isLoading">Chargement des jeux...</Loader>
     <template v-else>

@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <table class="fullWidth">
+  <table class="fullWidth noBorder">
     <thead>
       <tr>
         <!-- <th scope="col">Période</th> -->
@@ -18,7 +18,7 @@ defineProps({
         <th scope="col">Temps</th>
       </tr>
     </thead>
-    <tbody class="smallPadding">
+    <tbody>
       <tr v-for="(score, index) in scores" :key="score.id">
         <!-- <td>{{ score.period_id }}</td> -->
         <td><Number :value="index + 1" color="orange" /></td>

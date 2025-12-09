@@ -138,9 +138,9 @@ const selectedTab = ref('gameRules')
     <article id="gameRanking" :class="selectedTab === 'gameRanking' ? '' : 'hidden'">
       <Loader v-if="isLoading">Chargement des scores...</Loader>
       <GameScoreTable v-else :scores="scores" style="margin:0 auto" />
-      <p class="center">
+      <p class="center bold">
         <RouterLink :to="{ name: 'games.ranking', params: { id: game.id }, query: { period: periodStore.period?.id } }">
-        Voir le classement complet
+        Classement de ce jeu
         </RouterLink>
       </p>
     </article>

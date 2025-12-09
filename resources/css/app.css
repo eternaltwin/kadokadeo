@@ -688,6 +688,12 @@ p.btnHomepagePlay:hover {
 
 /* GAME LIST */
 
+div#gameOfTheDay {
+    width: 748px;
+    height: 142px;
+    margin: 10px auto;
+}
+
 div#gamesBoxes {
     width: 748px;
     display: flex;
