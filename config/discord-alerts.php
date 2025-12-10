@@ -5,8 +5,8 @@ return [
      * The webhook URLs that we'll use to send a message to Discord.
      */
     'webhook_urls' => [
-        'default' => env('discord_webhook'),
-        'scores' => env('discord_score'),
+        'default' => env('DISCORD_WEBHOOK'),
+        'scores' => env('DISCORD_SCORE'),
     ],
 
     /*

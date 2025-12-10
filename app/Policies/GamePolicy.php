@@ -34,6 +34,8 @@ class GamePolicy
             return $this->deny('This game is not available as a daily game today');
         }
 
+        // FIXME: a page reload without having finished the run allows the user to play again
+
         $alreadyPlayed = $dailyGame->runs()
             ->where('user_id', $user->id)
             ->exists();
