@@ -38,35 +38,50 @@ const gamesFiltered = computed(() => {
           {{ cat.name }}
         </RouterLink>
       </li>
-      <li>
-        <RouterLink :to="{ name: 'games.daily' }">Jeu du jour</RouterLink>
-      </li>
     </ul>
   </nav>
 
-  <!--<div id="gameOfTheDay">
-    <p>to do</p>
-  </div>-->
+  <div class="withRightAside">
+    <div class="gameOfTheDay">
+        <RouterLink
+            class="gameBoxDay"
+            :to="{ name: 'games.daily' }"
+            :title="`Jouer au jeu du jour`"
+        >
+            <div class="gameBoxDayBackground"></div>
+            <div class="gameBoxImg">
+              <img src="/assets/img/games/Interwheel.png" alt="Nom" />
+            </div>
+            <h3 class="gameBoxTitle">Kaskade 2</h3>
+            <div class="gameBoxDayText">
+              Le jeu du jour est choisi aléatoirement chaque jour à minuit.
+              Le contrat est commun à tous les joueurs.
+              Vous n'avez qu'une seule tentative.
+            </div>
+        </RouterLink>
+        <!-- Mettre en gris si déjà joué, indiquer le contrat (score, points kado) et le classement et le nombre de parties restantes -->
+    </div>
 
-  <div id="gamesBoxes" class="relative min-h-48">
-    <Loader v-if="isLoading">Chargement des jeux...</Loader>
-    <template v-else>
-      <RouterLink
-        v-for="game in gamesFiltered"
-        :key="`game-${game.id}`"
-        class="gameBox"
-        :to="{ name: 'games.show', params: { id: game.id } }"
-        :title="`Jouer à ${game.name}`"
-      >
-        <div class="gameBoxBackground"></div>
-        <div class="gameBoxImg">
-          <img :src="game.image_path" :alt="game.name" />
-        </div>
-        <div class="gameBoxStar">
-          <img :src="'/gfx/starGreenMedium.gif'" alt="green" />
-        </div>
-        <h3 class="gameBoxTitle">{{ game.name }}</h3>
-      </RouterLink>
-    </template>
+    <div id="gamesBoxes" class="relative min-h-48">
+        <Loader v-if="isLoading">Chargement des jeux...</Loader>
+        <template v-else>
+        <RouterLink
+            v-for="game in gamesFiltered"
+            :key="`game-${game.id}`"
+            class="gameBox"
+            :to="{ name: 'games.show', params: { id: game.id } }"
+            :title="`Jouer à ${game.name}`"
+        >
+            <div class="gameBoxBackground"></div>
+            <div class="gameBoxImg">
+            <img :src="game.image_path" :alt="game.name" />
+            </div>
+            <div class="gameBoxStar">
+              <img :src="'/gfx/starGreenMedium.gif'" alt="green" />
+            </div>
+            <h3 class="gameBoxTitle">{{ game.name }}</h3>
+        </RouterLink>
+        </template>
+    </div>
   </div>
 </template>

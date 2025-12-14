@@ -688,10 +688,26 @@ p.btnHomepagePlay:hover {
 
 /* GAME LIST */
 
-div#gameOfTheDay {
-    width: 748px;
+div.gameOfTheDay {
+    width: 700px;
     height: 142px;
-    margin: 10px auto;
+    margin: 0 auto 40px auto;
+}
+
+a.gameBoxDay {
+    position: relative;
+    width: 700px;
+    height: 142px;
+    margin: 0 0 15px 0;
+    z-index: 2;
+    display: block;
+}
+
+div.gameBoxDayBackground {
+    width: 700px;
+    height: 142px;
+    background: url("/gfx/gameBoxDay.png") no-repeat;
+    z-index: 1;
 }
 
 div#gamesBoxes {
@@ -711,6 +727,10 @@ a.gameBox {
     display: block;
 }
 
+a.gameBox:hover {
+    text-decoration: none;
+}
+
 div.gameBoxBackground {
     width: 226px;
     height: 142px;
@@ -718,7 +738,7 @@ div.gameBoxBackground {
     z-index: 1;
 }
 
-.gameBox .gameBoxImg {
+.gameBox .gameBoxImg, div.gameOfTheDay .gameBoxImg {
     width: 176px;
     height: 106px;
     position: absolute;
@@ -736,7 +756,7 @@ div.gameBoxBackground {
     z-index: 2;
 }
 
-.gameBox h3.gameBoxTitle {
+.gameBox h3.gameBoxTitle, .gameBoxDay h3.gameBoxTitle {
     width: 170px;
     position: absolute;
     top: 114px;
@@ -745,6 +765,23 @@ div.gameBoxBackground {
     font-size: 1.2em;
     text-align: center;
     color: #3d5e65;
+}
+
+.gameBoxDay h3.gameBoxTitle {
+    color: #860f3f;
+}
+
+.gameBoxDay div.gameBoxDayText {
+    width: 458px;
+    height: 83px;
+    position: absolute;
+    top: 31px;
+    left: 228px;
+    color: #860f3f;
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 0.85em;
+    margin: 5px;
 }
 
 
