@@ -26,10 +26,7 @@ class PrepareNewPeriod extends Command
      */
     public function handle()
     {
-        $period = \App\Models\Period::query()
-            ->where('start_at', '<=', now())
-            ->whereBetween('end_at', [now()->subDays(\App\Models\Period::DAYS_PER_PERIOD), now()])
-            ->first();
+        $period = \App\Models\Period::orderBy('id', 'desc')->first();
 
         if ($period && $period->start_at->diffInDays(now()) < \App\Models\Period::DAYS_PER_PERIOD) {
             $this->info('Current period is still active, no new period created.');
@@ -43,7 +40,7 @@ class PrepareNewPeriod extends Command
             // TODO
         }
 
-        $newPeriodStartDate = now()->isMonday() ? now()->startOfDay() : now()->previous(Carbon::MONDAY);
+        $newPeriodStartDate = now()->isMonday() ? now()->startOfDay() : now()->previous(Carbon::MONDAY)->startOfDay();
 
         $newPeriod = \App\Models\Period::create([
             'start_at' => $newPeriodStartDate,

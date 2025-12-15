@@ -65,6 +65,10 @@ class RunController extends Controller implements HasMiddleware
         if ($user->kado_games > 0) {
             $user->kado_games -= 1;
         }
+        if ($dailyGame) {
+            // already link the run to avoid multiple plays
+            $dailyGame->runs()->attach($run->id);
+        }
         $user->save();
 
         return new RunBeginResource($run);
@@ -80,12 +84,6 @@ class RunController extends Controller implements HasMiddleware
             $decoded = $runService->decodeRun($payload, $key, $sign);
             $run = $runService->confirmRun($run, $decoded);
             $runService->rewardStars($run);
-
-            // Daily game check : if the run corresponds to today's daily game, link the run
-            $dailyGame = $gameService->getDailyGame();
-            if ($dailyGame && $dailyGame->game_id === $run->game_id && $dailyGame->seed === $run->seed) {
-                $dailyGame->runs()->attach($run->id);
-            }
         } catch (\Throwable $e) {
             info(sprintf('RunController@end: user %d run end failed: %s', Auth::id(), $e->getMessage()));
             throw new BadRequestException($e->getMessage());
