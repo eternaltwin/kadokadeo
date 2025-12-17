@@ -104,13 +104,13 @@ const selectedTab = ref('gameRules')
         <tbody class="twoColoured">
           <tr>
             <td scope="row">
-                <img src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
+              <img src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
             </td>
             <td class="textLeft">
               <img src="/gfx/iconRedStar.gif" alt="Etoile rouge" /> <Number :value="game.stars[2]" color="orange" />
             </td>
             <td class="textRight">
-              <Number value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
+              <Number :value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
             </td>
           </tr>
           <tr>
@@ -119,7 +119,7 @@ const selectedTab = ref('gameRules')
               <img src="/gfx/iconOrangeStar.gif" alt="Etoile orange" /> <Number :value="game.stars[1]" color="orange" />
             </td>
             <td class="textRight">
-              <Number value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
+              <Number :value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
             </td>
           </tr>
           <tr>
@@ -128,7 +128,7 @@ const selectedTab = ref('gameRules')
               <img src="/gfx/iconGreenStar.gif" alt="Etoile verte" /> <Number :value="game.stars[0]" color="orange" />
             </td>
             <td class="textRight">
-              <Number value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
+              <Number :value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
             </td>
           </tr>
         </tbody>
@@ -140,7 +140,7 @@ const selectedTab = ref('gameRules')
       <GameScoreTable v-else :scores="scores" style="margin:0 auto" />
       <p class="center bold">
         <RouterLink :to="{ name: 'games.ranking', params: { id: game.id }, query: { period: periodStore.period?.id } }">
-        Classement de ce jeu
+          Classement de ce jeu
         </RouterLink>
       </p>
     </article>
