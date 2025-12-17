@@ -29,6 +29,6 @@ class DailyGame extends Model
 
     public function runs()
     {
-        return $this->belongsToMany(Run::class, 'daily_game_runs');
+        return $this->hasMany(Run::class);
     }
 }

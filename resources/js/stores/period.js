@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import { defineStore } from 'pinia'
 import { computed,ref } from 'vue'
 
+import { updateAtMidnight } from '@/composables/helpers'
 import { useApi } from '@/composables/useApi'
 
 export const usePeriodStore = defineStore('period', () => {
@@ -10,25 +11,14 @@ export const usePeriodStore = defineStore('period', () => {
 
   const { get } = useApi()
 
-  get('/period/current').then((response) => {
-    period.value = response.data.data
-  })
-
-  const updateAtMidnight = () => {
-    const now = new Date()
-    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
-    const msUntilMidnight = tomorrow - now
-
-    setTimeout(() => {
-      currentTime.value = Date.now()
-      get('/period/current').then((response) => {
-        period.value = response.data.data
-      })
-      updateAtMidnight() // Schedule next midnight update
-    }, msUntilMidnight)
+  const reload = () => {
+    currentTime.value = Date.now()
+    get('/period/current').then((response) => {
+      period.value = response.data.data
+    })
+    updateAtMidnight().then(() => reload())
   }
-
-  updateAtMidnight()
+  reload()
 
   const dayCount = computed(() => {
     if (!period.value) {

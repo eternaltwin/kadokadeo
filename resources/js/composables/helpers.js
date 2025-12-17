@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 export function formatScore(score) {
   return Number(score).toLocaleString('fr-FR').replace(/\u202f/g, ' ')
 }
@@ -16,4 +18,14 @@ export function formatTime(seconds) {
   }
 
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}
+
+export function updateAtMidnight() {
+  return new Promise((resolve) => {
+    const now = dayjs().utc()
+    const tomorrow = now.add(1, 'day').startOf('day')
+    const msUntilMidnight = tomorrow.diff(now, 'millisecond') + 1000 // add 1 second to be sure we are past midnight
+
+    setTimeout(resolve, msUntilMidnight)
+  })
 }

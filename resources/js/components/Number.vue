@@ -20,5 +20,7 @@ const charUrls = computed(() => {
 </script>
 
 <template>
-  <img v-for="(charUrl, index) in charUrls" :key="index" :src="charUrl" />
+  <span>
+    <img v-for="(charUrl, index) in charUrls" :key="index" :src="charUrl" />
+  </span>
 </template>

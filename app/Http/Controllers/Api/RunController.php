@@ -61,15 +61,13 @@ class RunController extends Controller implements HasMiddleware
             'seed' => $seed,
             'contract_score' => $score,
             'contract_points' => $points,
+            'daily_game_id' => $dailyGame?->id,
         ]);
+
         if ($user->kado_games > 0) {
             $user->kado_games -= 1;
+            $user->save();
         }
-        if ($dailyGame) {
-            // already link the run to avoid multiple plays
-            $dailyGame->runs()->attach($run->id);
-        }
-        $user->save();
 
         return new RunBeginResource($run);
     }

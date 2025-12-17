@@ -3,20 +3,14 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+import DailyGameBlock from '@/components/games/DailyGameBlock.vue'
 import Loader from '@/components/Loader.vue'
-import Number from '@/components/Number.vue'
 import { useGames } from '@/composables/useGames'
 
 const { isLoading, fetchGames } = useGames()
 const route = useRoute()
 const games = ref([])
 const categories = ref([])
-
-const orangeGems = ref(0)
-const gameOfDayRanking = ref(12)
-const gameOfDayScore = ref(32000)
-const gameOfDayName = ref('Interwheel')
-const gameOfDayKado = ref(13)
 
 fetchGames().then((data) => {
   games.value = data.data
@@ -49,47 +43,28 @@ const gamesFiltered = computed(() => {
   </nav>
 
   <div class="withRightAside">
-    <div class="gameOfTheDay">
-        <RouterLink
-            :class="orangeGems === 0 ? 'gameBoxDay grayscaled' : 'gameBoxDay'"
-            :to="{ name: 'games.daily' }"
-            :title="`Jouer au jeu du jour`"
-        >
-            <div class="gameBoxDayBackground"></div>
-            <div class="gameBoxImg">
-              <img src="/assets/img/games/Interwheel.png" alt="Nom" />
-            </div>
-            <h3 class="gameBoxTitle">{{ gameOfDayName }}</h3>
-            <div class="gameBoxDayText">
-              Le jeu du jour est choisi aléatoirement chaque jour à minuit. La partie est identique pour tous les joueurs.<br />
-              Contrat : <Number :value="gameOfDayScore" color="blue" /> pts pour gagner <Number :value="gameOfDayKado" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="icone points Kado" /><br />
-              Nombre de parties restantes : <Number :value="orangeGems" color="orange" /> <img src="/gfx/iconGemOrange.gif" alt="icone gemme orange" /><br />
-              Votre position actuelle : <Number :value="gameOfDayRanking" color="green" />
-            </div>
-        </RouterLink>
-        <!-- Mettre en gris si déjà joué, indiquer le contrat (score, points kado) et le classement et le nombre de parties restantes -->
-    </div>
+    <DailyGameBlock />
 
     <div id="gamesBoxes" class="relative min-h-48">
-        <Loader v-if="isLoading">Chargement des jeux...</Loader>
-        <template v-else>
+      <Loader v-if="isLoading">Chargement des jeux...</Loader>
+      <template v-else>
         <RouterLink
-            v-for="game in gamesFiltered"
-            :key="`game-${game.id}`"
-            class="gameBox"
-            :to="{ name: 'games.show', params: { id: game.id } }"
-            :title="`Jouer à ${game.name}`"
+          v-for="game in gamesFiltered"
+          :key="`game-${game.id}`"
+          class="gameBox"
+          :to="{ name: 'games.show', params: { id: game.id } }"
+          :title="`Jouer à ${game.name}`"
         >
-            <div class="gameBoxBackground"></div>
-            <div class="gameBoxImg">
+          <div class="gameBoxBackground"></div>
+          <div class="gameBoxImg">
             <img :src="game.image_path" :alt="game.name" />
-            </div>
-            <div class="gameBoxStar">
-              <img :src="'/gfx/starGreenMedium.gif'" alt="green" />
-            </div>
-            <h3 class="gameBoxTitle">{{ game.name }}</h3>
+          </div>
+          <div class="gameBoxStar">
+            <img :src="'/gfx/starGreenMedium.gif'" alt="green" />
+          </div>
+          <h3 class="gameBoxTitle">{{ game.name }}</h3>
         </RouterLink>
-        </template>
+      </template>
     </div>
   </div>
 </template>

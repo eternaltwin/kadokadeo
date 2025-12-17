@@ -193,10 +193,6 @@ table.whiteFirst tbody tr:nth-child(odd) {
     text-align: left;
 }
 
-.grayscaled {
-    filter: grayscale(1);
-}
-
 
 /* HEADER, TOP NAV, TOP BANNER */
 
@@ -691,28 +687,6 @@ p.btnHomepagePlay:hover {
 
 
 /* GAME LIST */
-
-div.gameOfTheDay {
-    width: 700px;
-    height: 142px;
-    margin: 0 auto 40px auto;
-}
-
-a.gameBoxDay {
-    position: relative;
-    width: 700px;
-    height: 142px;
-    margin: 0 0 15px 0;
-    z-index: 2;
-    display: block;
-}
-
-a.gameBoxDay div.gameBoxDayBackground {
-    width: 700px;
-    height: 142px;
-    background: url("/gfx/gameBoxDay.png") no-repeat;
-    z-index: 1;
-}
 
 div#gamesBoxes {
     width: 748px;

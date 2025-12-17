@@ -11,15 +11,10 @@ export function useGames() {
     return get(`/games/${id}`).then((response) => response.data)
   }
 
-  function fetchDailyGame() {
-    return get('/daily').then((response) => response.data)
-  }
-
   return {
     isLoading,
     error,
     fetchGames,
     fetchGame,
-    fetchDailyGame,
   }
 }

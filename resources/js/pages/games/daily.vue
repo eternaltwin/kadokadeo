@@ -1,45 +1,40 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, onUnmounted, toRef } from 'vue'
 
+import DailyGameBlock from '@/components/games/DailyGameBlock.vue'
 import GameScoreTable from '@/components/games/GameScoreTable.vue'
 import GameScript from '@/components/games/GameScript.vue'
 import Loader from '@/components/Loader.vue'
-import { useGames } from '@/composables/useGames'
+import { useDailyGameStore } from '@/stores/dailyGame'
 
-const { isLoading, fetchDailyGame } = useGames()
+const dailyGameStore = useDailyGameStore()
+const game = toRef(dailyGameStore, 'game')
 
-const dailyGame = ref(null)
-const game = ref(null)
-const scores = ref([])
+let intervalId = null
 
-fetchDailyGame().then((data) => {
-  game.value = data.data
-  scores.value = data.leaderboard
-  dailyGame.value = data.dailyGame
-})
+onMounted(() => intervalId = setInterval(dailyGameStore.fetchScores, 30000))
+onUnmounted(() => clearInterval(intervalId))
 </script>
 
 <template>
-  <h1 class="text-center">Jeu du jour</h1>
+  <div class="withRightAside">
+    <DailyGameBlock class="mt-4" />
 
-  <p>
-    Le jeu du jour est choisi aléatoirement chaque jour à minuit.<br />
-    Le contrat est commun à tous les joueurs.<br />
-    Vous n'avez qu'une seule tentative.
-  </p>
-
-  <div v-if="isLoading || !game" class="relative min-h-48">
-    <Loader>Chargement ...</Loader>
-  </div>
-  <div v-else class="relative">
-    <h2>{{ game.name }}</h2>
-    <GameScript :game="game"
-                :args="['--daily=true']"
-                :game-width="600"
-                :game-height="640" />
-    <div>
+    <div class="relative">
+      <Loader v-if="dailyGameStore.isScoresLoading">Chargement des scores...</Loader>
       <h2>Scores</h2>
-      <GameScoreTable :scores="scores" />
+      <GameScoreTable :scores="dailyGameStore.scores" />
+    </div>
+
+    <div v-if="dailyGameStore.isDailyGameLoading || !game" class="relative min-h-48">
+      <Loader>Chargement ...</Loader>
+    </div>
+    <div v-else class="relative">
+      <h2>{{ game.name }}</h2>
+      <GameScript :game="game"
+                  :args="['--daily=true']"
+                  :game-width="600"
+                  :game-height="640" />
     </div>
   </div>
 </template>

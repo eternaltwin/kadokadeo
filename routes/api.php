@@ -9,7 +9,9 @@ Route::get('/user', [App\Http\Controllers\Api\UserController::class, 'index']);
 
 Route::get('/period/current', [App\Http\Controllers\Api\PeriodController::class, 'current']);
 
-Route::get('/daily', [App\Http\Controllers\Api\GameController::class, 'daily']);
+Route::get('/daily/game', [App\Http\Controllers\Api\GameController::class, 'daily']);
+Route::get('/daily/scores', [App\Http\Controllers\Api\GameScoreController::class, 'dailyScores']);
+
 Route::resource('/games', App\Http\Controllers\Api\GameController::class)->only(['index', 'show']);
 Route::get('/games/{game}/scores', [App\Http\Controllers\Api\GameScoreController::class, 'index']);
 Route::get('/games/{game}/ranking', [App\Http\Controllers\Api\GameScoreController::class, 'search']);

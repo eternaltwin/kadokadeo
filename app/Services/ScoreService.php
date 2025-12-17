@@ -2,19 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\DailyGame;
 use App\Models\Game;
 use App\Models\Run;
 use Illuminate\Support\Facades\DB;
 
 class ScoreService
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function getLeaderBoard(Game $game, $periodId = null): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         $sub = $game->runs()
@@ -25,7 +21,7 @@ class ScoreService
         $scores = $game->runs()
             ->joinSub($sub, 'best', function ($join) {
                 $join->on('runs.user_id', '=', 'best.user_id')
-                ->on('runs.score', '=', 'best.max_score');
+                    ->on('runs.score', '=', 'best.max_score');
             })
             ->with('user')
             ->select(
@@ -49,5 +45,22 @@ class ScoreService
             ->when($userId, fn ($q) => $q->where('user_id', $userId))
             ->orderBy('score', 'desc')
             ->first();
+    }
+
+    public function getUserPositionOnDailyGame(DailyGame $game, int $userId): ?int
+    {
+        $rankedQuery = Run::query()
+            ->select([
+                'user_id',
+                DB::raw('DENSE_RANK() OVER (ORDER BY score DESC, play_time_seconds ASC) AS rank_position'),
+            ])
+            ->where('daily_game_id', $game->id);
+
+        $result = DB::query()
+            ->fromSub($rankedQuery, 'ranked')
+            ->where('user_id', $userId)
+            ->first();
+
+        return $result?->rank_position;
     }
 }
