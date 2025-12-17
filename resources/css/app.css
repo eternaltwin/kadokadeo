@@ -193,6 +193,10 @@ table.whiteFirst tbody tr:nth-child(odd) {
     text-align: left;
 }
 
+.grayscaled {
+    filter: grayscale(1);
+}
+
 
 /* HEADER, TOP NAV, TOP BANNER */
 
@@ -703,7 +707,7 @@ a.gameBoxDay {
     display: block;
 }
 
-div.gameBoxDayBackground {
+a.gameBoxDay div.gameBoxDayBackground {
     width: 700px;
     height: 142px;
     background: url("/gfx/gameBoxDay.png") no-repeat;
@@ -780,7 +784,7 @@ div.gameBoxBackground {
     color: #860f3f;
     text-decoration: none;
     font-weight: normal;
-    font-size: 0.85em;
+    font-size: 0.8em;
     margin: 5px;
 }
 

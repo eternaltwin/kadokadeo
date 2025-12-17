@@ -4,12 +4,19 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import Loader from '@/components/Loader.vue'
+import Number from '@/components/Number.vue'
 import { useGames } from '@/composables/useGames'
 
 const { isLoading, fetchGames } = useGames()
 const route = useRoute()
 const games = ref([])
 const categories = ref([])
+
+const orangeGems = ref(0)
+const gameOfDayRanking = ref(12)
+const gameOfDayScore = ref(32000)
+const gameOfDayName = ref('Interwheel')
+const gameOfDayKado = ref(13)
 
 fetchGames().then((data) => {
   games.value = data.data
@@ -44,7 +51,7 @@ const gamesFiltered = computed(() => {
   <div class="withRightAside">
     <div class="gameOfTheDay">
         <RouterLink
-            class="gameBoxDay"
+            :class="orangeGems === 0 ? 'gameBoxDay grayscaled' : 'gameBoxDay'"
             :to="{ name: 'games.daily' }"
             :title="`Jouer au jeu du jour`"
         >
@@ -52,11 +59,12 @@ const gamesFiltered = computed(() => {
             <div class="gameBoxImg">
               <img src="/assets/img/games/Interwheel.png" alt="Nom" />
             </div>
-            <h3 class="gameBoxTitle">Kaskade 2</h3>
+            <h3 class="gameBoxTitle">{{ gameOfDayName }}</h3>
             <div class="gameBoxDayText">
-              Le jeu du jour est choisi aléatoirement chaque jour à minuit.
-              Le contrat est commun à tous les joueurs.
-              Vous n'avez qu'une seule tentative.
+              Le jeu du jour est choisi aléatoirement chaque jour à minuit. La partie est identique pour tous les joueurs.<br />
+              Contrat : <Number :value="gameOfDayScore" color="blue" /> pts pour gagner <Number :value="gameOfDayKado" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="icone points Kado" /><br />
+              Nombre de parties restantes : <Number :value="orangeGems" color="orange" /> <img src="/gfx/iconGemOrange.gif" alt="icone gemme orange" /><br />
+              Votre position actuelle : <Number :value="gameOfDayRanking" color="green" />
             </div>
         </RouterLink>
         <!-- Mettre en gris si déjà joué, indiquer le contrat (score, points kado) et le classement et le nombre de parties restantes -->
