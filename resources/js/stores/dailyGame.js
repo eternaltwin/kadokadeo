@@ -19,9 +19,12 @@ export const useDailyGameStore = defineStore('dailyGame', () => {
     if (dgLocal) {
       const tmp = JSON.parse(dgLocal)
       if (tmp) {
-        if (tmp.date === dayjs().utc().format('YYYY-MM-DD')) {
-          dailyGame.value = tmp.game
-          game.value = tmp.game.game
+        if (tmp.date) {
+          localStorage.removeItem('dailyGame')
+        }
+        if (tmp.day?.substr(0, 10) === dayjs().utc().format('YYYY-MM-DD')) {
+          dailyGame.value = tmp
+          game.value = tmp.game
         }
       }
     }
@@ -33,10 +36,7 @@ export const useDailyGameStore = defineStore('dailyGame', () => {
         game.value = response.data.data
         localStorage.setItem(
           'dailyGame',
-          JSON.stringify({
-            date: dayjs().utc().format('YYYY-MM-DD'),
-            game: dailyGame.value,
-          }),
+          JSON.stringify(dailyGame.value),
         )
       })
     }
