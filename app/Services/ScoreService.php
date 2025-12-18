@@ -52,7 +52,7 @@ class ScoreService
         $rankedQuery = Run::query()
             ->select([
                 'user_id',
-                DB::raw('DENSE_RANK() OVER (ORDER BY score DESC, play_time_seconds ASC) AS rank_position'),
+                DB::raw('DENSE_RANK() OVER (ORDER BY score DESC NULLS LAST, play_time_seconds ASC) AS rank_position'),
             ])
             ->where('daily_game_id', $game->id);
 

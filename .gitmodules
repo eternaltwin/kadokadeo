@@ -7,3 +7,6 @@
 [submodule "resources/games/godot/interwheel"]
 	path = resources/games/godot/interwheel
 	url = https://gitlab.com/eternaltwin/kadokadeo/interwheel.git
+[submodule "resources/games/godot/kslash"]
+	path = resources/games/godot/kslash
+	url = https://gitlab.com/eternaltwin/kadokadeo/kslash.git

@@ -102,7 +102,7 @@ class PrepareDailyGame extends Command
         }
         $game = $dailyGame->game;
         $topScores = $dailyGame->runs()
-            ->where('daily_game_id', $dailyGame->id)
+            ->whereNotNull('score')
             ->orderByDesc('score')
             ->take(3)
             ->get();
