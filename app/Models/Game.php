@@ -17,7 +17,7 @@ class Game extends Model
 
     public function getGamedataAttribute()
     {
-        $fileName = \Illuminate\Support\Str::slug($this->name, '_') . '.pck';
+        $fileName = \Illuminate\Support\Str::slug($this->name, '') . '.pck';
         $filePath = public_path('gamesdata/' . $fileName);
         if (!file_exists($filePath)) {
             return null;

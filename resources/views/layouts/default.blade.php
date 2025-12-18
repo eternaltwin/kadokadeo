@@ -11,8 +11,8 @@
             public_key: '{{ str_replace("\n", "\\n", app(App\Services\RunService::class)->getPublicKey()) }}',
         }
         window.evts = new EventTarget();
-        window.evts.addEventListener('gameScore', console.log);
-        window.evts.addEventListener('gameFinished', console.log);
+        // window.evts.addEventListener('score', console.log);
+        // window.evts.addEventListener('gameFinished', console.log);
     </script>
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
