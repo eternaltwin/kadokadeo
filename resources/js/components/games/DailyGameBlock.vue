@@ -21,7 +21,7 @@ const game = toRef(dailyGameStore, 'game')
     >
       <div class="__bg z-[1] h-full w-full"></div>
       <div class="gameBoxImg">
-        <img :src="`/assets/img/games/${game.name}.png`" :alt="game.name" />
+        <img :src="game.image_path" :alt="game.name" />
       </div>
       <h3 class="gameBoxTitle">{{ game.name }}</h3>
       <div class="gameBoxDayText">
