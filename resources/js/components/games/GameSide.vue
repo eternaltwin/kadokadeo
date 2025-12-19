@@ -29,8 +29,20 @@ const refreshScores = () => {
   })
 }
 
-onMounted(() => intervalId = setInterval(refreshScores, 30000))
-onUnmounted(() => clearInterval(intervalId))
+const waitAndRefresh = () => {
+  setTimeout(() => {
+    refreshScores()
+  }, 2000)
+}
+
+onMounted(() => {
+  intervalId = setInterval(refreshScores, 1200000)
+  window.evts.addEventListener('gameFinished', waitAndRefresh)
+})
+onUnmounted(() => {
+  clearInterval(intervalId)
+  window.evts.removeEventListener('gameFinished', waitAndRefresh)
+})
 
 refreshScores()
 

@@ -12,8 +12,21 @@ const game = toRef(dailyGameStore, 'game')
 
 let intervalId = null
 
-onMounted(() => intervalId = setInterval(dailyGameStore.fetchScores, 30000))
-onUnmounted(() => clearInterval(intervalId))
+
+const waitAndRefresh = () => {
+  setTimeout(() => {
+    dailyGameStore.fetchScores()
+  }, 2000)
+}
+
+onMounted(() => {
+  intervalId = setInterval(dailyGameStore.fetchScores, 1200000)
+  window.evts.addEventListener('gameFinished', waitAndRefresh)
+})
+onUnmounted(() => {
+  clearInterval(intervalId)
+  window.evts.removeEventListener('gameFinished', waitAndRefresh)
+})
 </script>
 
 <template>

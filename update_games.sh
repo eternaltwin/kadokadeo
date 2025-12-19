@@ -15,4 +15,8 @@ find * -type d -prune | while read -r d; do
     /godot/godot --headless --path $d --export-release "Web" /www/resources/games/godot/output/$d;
     mv output/$d.pck /www/public/gamesdata/$d.pck;
     rm output/*;
+    git -C $d reset --hard HEAD;
+    git -C $d clean -fd;
+    git -C $d/addons/kadokadeo_devkit reset --hard HEAD;
+    git -C $d/addons/kadokadeo_devkit clean -fd;
 done
