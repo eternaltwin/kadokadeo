@@ -27,39 +27,56 @@ class RunsPlayedChart extends ChartWidget
         $endDate = $this->filters['endDate'];
         $game = $this->filters['game'] ?? null;
         $period = $this->filters['period'] ?? null;
-        $status = $this->filters['status'] ?? null;
 
         $runQ = Run::query()->when($game, function ($query) use ($game) {
             return $query->where('game_id', $game);
-        })->when($status === 'complete', function ($query) {
-            return $query->whereNotNull('completed_at');
-        })->when($status === 'incomplete', function ($query) {
-            return $query->whereNull('completed_at');
         });
 
-        $data = Trend::query($runQ)
+        $dataCompleted = Trend::query($runQ->clone()->whereNotNull('completed_at'))
             ->between(
-                start: Carbon::parse($startDate),
-                end: Carbon::parse($endDate),
+                start: Carbon::parse($startDate)->startOfDay(),
+                end: Carbon::parse($endDate)->endOfDay(),
+            );
+        $dataNotCompleted = Trend::query($runQ->clone()->whereNull('completed_at'))
+            ->between(
+                start: Carbon::parse($startDate)->startOfDay(),
+                end: Carbon::parse($endDate)->endOfDay(),
             );
         match ($period) {
-            'day' => $data->perDay(),
-            'week' => $data->perWeek(),
-            'month' => $data->perMonth(),
-            'year' => $data->perYear(),
-            default => $data->perMonth(),
+            'day' =>
+                [$dataCompleted->perDay(), $dataNotCompleted->perDay()],
+            'week' =>
+                [$dataCompleted->perWeek(), $dataNotCompleted->perWeek()],
+            'month' =>
+                [$dataCompleted->perMonth(), $dataNotCompleted->perMonth()],
+            'year' =>
+                [$dataCompleted->perYear(), $dataNotCompleted->perYear()],
+            default =>
+                [$dataCompleted->perMonth(), $dataNotCompleted->perMonth(),]
         };
 
-        $data = $data->count();
+        $dataCompleted = $dataCompleted->count();
+        $dataNotCompleted = $dataNotCompleted->count();
+
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Games played',
-                    'data' => $data->map(fn (TrendValue $value) => $value->aggregate),
+                    'label' => 'Complete games played',
+                    'data' => $dataCompleted->map(fn (TrendValue $value) => $value->aggregate),
+                    'borderColor' => '#11AA55',
+                ],
+                [
+                    'label' => 'Incomplete games played',
+                    'data' => $dataNotCompleted->map(fn (TrendValue $value) => $value->aggregate),
+                    'borderColor' => '#AA1155',
+                ],
+                [
+                    'label' => 'Total games played',
+                    'data' => $dataNotCompleted->map(fn (TrendValue $value, $key) => $value->aggregate + ($dataCompleted[$key]?->aggregate ?? 0)),
                 ],
             ],
-            'labels' => $data->map(fn (TrendValue $value) => $value->date),
+            'labels' => $dataCompleted->map(fn (TrendValue $value) => $value->date),
         ];
     }
 
@@ -67,14 +84,14 @@ class RunsPlayedChart extends ChartWidget
     {
         return $schema->components([
             DatePicker::make('startDate')->default(now()->subDays(30)),
-            DatePicker::make('endDate')->default(now()->addDay()),
-            Select::make('status')
-                ->label('Run status')
-                ->options([
-                    'complete' => 'Complete',
-                    'incomplete' => 'Incomplete',
-                ])
-                ->default(null),
+            DatePicker::make('endDate')->default(now()),
+            // Select::make('status')
+            //     ->label('Run status')
+            //     ->options([
+            //         'complete' => 'Complete',
+            //         'incomplete' => 'Incomplete',
+            //     ])
+            //     ->default(null),
             Select::make('period')
                 ->label('Period')
                 ->options([

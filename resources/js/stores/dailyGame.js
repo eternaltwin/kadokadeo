@@ -64,5 +64,6 @@ export const useDailyGameStore = defineStore('dailyGame', () => {
     position,
     isScoresLoading,
     fetchScores,
+    fetchDailyGameIfNecessary,
   }
 })

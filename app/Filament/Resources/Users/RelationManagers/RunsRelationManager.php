@@ -19,6 +19,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -100,7 +101,11 @@ class RunsRelationManager extends RelationManager
             ])
             ->filters([
                 TrashedFilter::make(),
-            ])
+                Filter::make('completed_at')
+                ->default(true)
+                ->label('Completed Runs')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('completed_at')),
+                ])
             ->headerActions([
                 CreateAction::make(),
                 AssociateAction::make(),

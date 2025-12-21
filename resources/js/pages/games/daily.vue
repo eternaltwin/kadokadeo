@@ -22,6 +22,7 @@ const waitAndRefresh = () => {
 onMounted(() => {
   intervalId = setInterval(dailyGameStore.fetchScores, 1200000)
   window.evts.addEventListener('gameFinished', waitAndRefresh)
+  dailyGameStore.fetchDailyGameIfNecessary()
 })
 onUnmounted(() => {
   clearInterval(intervalId)
