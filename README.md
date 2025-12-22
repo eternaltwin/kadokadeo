@@ -128,6 +128,7 @@ Run `docker run hello-world` to check if Docker is correctly installed. If not :
 - Build the project : `make`
 
 Everything in one copy/paste :
+
 ```bash
 git clone git@gitlab.com:eternaltwin/kadokadeo/kadokadeo.git 
 cd kadokadeo 
