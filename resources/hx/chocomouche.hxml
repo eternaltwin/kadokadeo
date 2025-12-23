@@ -1,0 +1,7 @@
+-js ../js/games/chocomouche.js
+-lib pixijs
+-D prod
+-cp ./lib
+-cp ./games/chocomouche
+-debug
+Game

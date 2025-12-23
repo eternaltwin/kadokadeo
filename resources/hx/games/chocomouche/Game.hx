@@ -1,0 +1,443 @@
+import pixi.filters.extras.GlowFilter;
+import pixi.core.renderers.webgl.filters.Filter;
+import common_haxe_avm1.pixi.DropShadowFilter;
+import pixi.core.Application;
+import js.Browser;
+import haxe.ds.StringMap;
+import pixi.core.Pixi.BlendModes;
+import pixi.core.text.Text;
+import common_haxe_avm1.KKApi;
+import mt.bumdum.Sprite;
+import mt.bumdum.Phys;
+import mt.bumdum.Lib;
+
+class AnonSprite15518839 extends ASprite {
+	public var _timeLeft:ASprite;
+	public var start:Float;
+	public var max:Float;
+}
+
+class AnonSprite3854477 extends ASprite {
+	public var _field:Text;
+}
+
+@:native("PIXI.filters.BevelFilter")
+extern class BevelFilter extends Filter {
+	public function new(options:Dynamic);
+}
+
+typedef Pos = {x:Int, y:Int}
+
+enum Step {
+	Play;
+	Explode;
+	NextLevel;
+	FinishLevel;
+	GameOver;
+}
+
+@:expose('GameChocoMouche')
+class Game implements kado.GameInterface {
+	public var kkm:kado.KadoKadeoManager;
+
+	public static var FL_DEBUG = true;
+
+	public static var DP_BG = 0;
+	public static var DP_SHADE = 1;
+	public static var DP_BGPLAYS = 2;
+	public static var DP_PLAYS = 3;
+	public static var DP_SLOT = 4;
+	public static var DP_INFOS = 5;
+	public static var DP_ANIM = 6;
+	public static var DP_FX = 7;
+
+	public var step:Step;
+
+	var timer:Float;
+
+	public var life:Int;
+	public var lives:List<ASprite>;
+	public var level:Int;
+	public var flGameOver:Bool;
+	public var dm:mt.DepthManager;
+
+	public var mcGrid:ASprite;
+	public var gdm:mt.DepthManager;
+
+	public var root:ASprite;
+	public var bg:ASprite;
+	public var mcTime:AnonSprite15518839;
+	public var mcWarning:ASprite;
+	public var mcLevel:AnonSprite3854477;
+
+	static public var me:Game;
+
+	public var grid:Array<Array<Slot>>;
+	public var left:Int;
+
+	public var toUpdate:Array<ASprite> = [];
+
+	public function new(kkm:kado.KadoKadeoManager) {
+		this.kkm = kkm;
+		Manager.app = kkm;
+
+		root = new ASprite();
+		kkm.stage.addChild(root);
+
+		dm = new mt.DepthManager(root);
+		me = this;
+
+		flGameOver = false;
+		level = 0;
+		left = 100;
+		initLife(3);
+
+		initBg();
+		initTime();
+
+		mcGrid = dm.empty(DP_SLOT);
+		gdm = new mt.DepthManager(mcGrid);
+		initGrid();
+	}
+
+	public function start() {
+		step = Play;
+	}
+
+	public function stop() {
+		step = GameOver;
+	}
+
+	function initBg() {
+		var grid = dm.attach("chocomouche/bg", DP_BG);
+		grid._x = 0;
+		grid._y = 0;
+		grid._alpha = 95;
+	}
+
+	public function isLocked() {
+		return step != Play || flGameOver;
+	}
+
+	public function update(ts:Float) {
+		mt.Timer.update(ts);
+
+		updateSprites();
+
+		switch (step) {
+			case Play:
+				if (flGameOver) {
+					KKApi.gameOver({});
+					stop();
+				}
+				updateTime();
+			case Explode:
+				step = Play;
+
+			case FinishLevel:
+				timer -= 4 * mt.Timer.tmod;
+				mcGrid._alpha = timer;
+				if (timer <= 0) {
+					mcGrid._alpha = Cs.GRID_ALPHA;
+					timer = null;
+					initNextLevel();
+				}
+
+			case NextLevel:
+				timer -= 1.5 * mt.Timer.tmod;
+				if (mcGrid._alpha < 100)
+					mcGrid._alpha = 100 - timer;
+				if (timer <= 0) {
+					mcGrid._alpha = 100;
+					timer = null;
+					// prepareLevel() ;
+					resetTime();
+					step = Play;
+					setNextLevel(false);
+				}
+
+			case GameOver:
+		}
+	}
+
+	public function checkEnd():Bool {
+		if (flGameOver)
+			return true;
+		if (life <= 0)
+			flGameOver = true;
+
+		return flGameOver;
+	}
+
+	public function checkLevel() {
+		if (left > 0)
+			return;
+
+		finishLevel();
+	}
+
+	function finishLevel() {
+		step = FinishLevel;
+
+		for (x in grid) {
+			for (s in x) {
+				if (!s.isDiscovered() && s.isBomb())
+					s.markMe();
+			}
+		}
+		timer = 100;
+	}
+
+	function initNextLevel() {
+		step = NextLevel;
+		level++;
+		getLevelBonus();
+		timer = 100;
+
+		setNextLevel(true);
+		prepareLevel();
+	}
+
+	// create new grid for level l
+	public function prepareLevel(?from:Pos) {
+		if (from == null) {
+			initGrid();
+		}
+
+		var b = Cs.getLevelBombs(level);
+		left = Cs.GRID_WIDTH * Cs.GRID_HEIGHT - b;
+		while (b > 0) {
+			var x = Std.random(Cs.GRID_WIDTH);
+			var y = Std.random(Cs.GRID_HEIGHT);
+			if (from != null && from.x == x && from.y == y)
+				continue;
+			var s = grid[x][y];
+			if (!s.isBomb()) {
+				s.placeBomb();
+				b--;
+			}
+		}
+
+		// resetTime() ;
+		// step = Play ;
+	}
+
+	function initGrid() {
+		if (grid != null) {
+			for (x in grid) {
+				for (s in x) {
+					if (s == null)
+						continue;
+					s.kill();
+				}
+			}
+		}
+
+		grid = new Array();
+		for (x in 0...Cs.GRID_WIDTH) {
+			grid[x] = new Array();
+			for (y in 0...Cs.GRID_HEIGHT) {
+				grid[x][y] = new Slot({x: x, y: y}, false);
+			}
+		}
+		setGridGlow();
+	}
+
+	public function setGridGlow() {
+		mcGrid.filters = [];
+		Filt.glow(mcGrid, 1, 20, 0x232323);
+
+		var dcf = new DropShadowFilter({
+			color: 0x000000,
+			alpha: 0.15,
+			blur: 2,
+			distance: 2.5,
+			rotation: 45,
+			pixelSize: 3,
+			quality: 100,
+		});
+
+		mcGrid.filters.push(dcf);
+	}
+
+	function updateSprites() {
+		var list = Sprite.spriteList.copy();
+		for (sp in list)
+			sp.update();
+
+		for (s in toUpdate) {
+			if (s.parent != null)
+				s.update();
+		}
+	}
+
+	// ### LIFE
+	function initLife(l:Int) {
+		life = l;
+		lives = new List();
+		for (i in 0...life) {
+			var mc = dm.attach("chocomouche/life", DP_INFOS);
+			mc._x = Cs.LIFE_X;
+			mc._y = Cs.LIFE_Y - lives.length * (60 + 3); // => (life_width + ecart);
+			Filt.glow(mc, 2, 3, 0xFFFFFF);
+			lives.push(mc);
+		}
+	}
+
+	function lifeLoss() {
+		life--;
+
+		var lifeMovieClip = lives.pop();
+		if (lifeMovieClip != null) {
+			var rf = dm.empty(DP_FX);
+			rf._totalframes = 15;
+			rf.getGraphics().beginFill(0xFF0000, 0.6);
+			rf.getGraphics().drawRect(0, 0, 900, 900);
+			rf.alpha = 0.6;
+			rf.blendMode = OVERLAY;
+			rf.removeOnFrame = 15;
+			rf.play();
+			toUpdate.push(rf);
+
+			for (i in 0...15) {
+				rf.onFrame.set(i + 1, () -> {
+					rf.alpha = 0.6 * (1 - (i / 15));
+				});
+			}
+
+			lifeMovieClip.removeMovieClip();
+		}
+
+		checkEnd();
+	}
+
+	public function getSlot(x:Int, y:Int) {
+		if (x < 0 || y < 0 || x >= Cs.GRID_WIDTH || y >= Cs.GRID_HEIGHT)
+			return null;
+		return grid[x][y];
+	}
+
+	// POINTS
+
+	public function getPoints(start:Float, end:Float, max:Float) {
+		var c = (max - (end - start)) / max;
+		var p = c * (Cs.POINTS + Cs.MULT_LEVEL * (Cs.INITIAL_TIME - max) / 1000);
+
+		addScore(KKApi.const(Std.int(p)));
+	}
+
+	public function getLevelBonus() {
+		addScore(Cs.LEVEL_BONUS);
+	}
+
+	public function addScore(sc) { // pr ajouter au score du joueur
+		KKApi.addScore(sc);
+	}
+
+	// TIME
+	function initTime() {
+		mcTime = cast Game.me.dm.empty(Game.DP_INFOS);
+		mcTime.getGraphics().beginFill(0);
+		mcTime.getGraphics().drawRect(0, 0, 238, 22);
+		mcTime._timeLeft = mcTime.attachMovie("chocomouche/timeLeft");
+		mcTime._x = Cs.TIME_X;
+		mcTime._y = Cs.TIME_Y;
+		resetTime();
+	}
+
+	public function resetTime(?bomb:Bool) {
+		var now = Date.now().getTime();
+		if (bomb != null && !bomb)
+			getPoints(mcTime.start, now, mcTime.max);
+
+		mcTime.start = now;
+		mcTime.max = Cs.getLevelTime(level);
+
+		setWarning(false);
+		checkLevel();
+	}
+
+	function updateTime() { // update TimeLine && check lifeloss
+		var now = Date.now().getTime();
+
+		var c = mcTime.max - (now - mcTime.start);
+		if (c > 0) {
+			mcTime._timeLeft._xscale = c / mcTime.max * 100;
+			if (mcTime._timeLeft._xscale < 40)
+				setWarning(true);
+		} else {
+			lifeLoss();
+			resetTime();
+		}
+	}
+
+	public function explode(from:Pos) {
+		step = Explode;
+		lifeLoss();
+	}
+
+	public function resetParsing() {
+		for (x in grid) {
+			for (s in x) {
+				if (s == null)
+					continue;
+				s.resetParse();
+			}
+		}
+	}
+
+	// WARNING
+	function setWarning(on:Bool) {
+		if (on) {
+			if (mcWarning != null)
+				return;
+
+			mcWarning = dm.attach("chocomouche/warning", DP_FX, 4);
+			mcWarning.loop = true;
+			mcWarning.play();
+			toUpdate.push(mcWarning);
+		} else {
+			if (mcWarning == null)
+				return;
+
+			toUpdate.remove(mcWarning);
+			mcWarning.removeMovieClip();
+			mcWarning = null;
+		}
+	}
+
+	// NEXT LEVEL MC
+	function setNextLevel(on:Bool) {
+		if (on) {
+			if (mcLevel != null)
+				return;
+
+			mcLevel = cast dm.attach("chocomouche/mLevel", DP_ANIM);
+			mcLevel.initTextField("_field", {
+				font: "Verdana",
+				align: "center",
+				x: Std.int(153 + 150 / 2),
+				y: 132,
+				bold: true,
+				color: 0xE5BD78,
+				size: 99,
+			});
+			mcLevel._field.filters = [
+				new BevelFilter({
+					lightColor: 0xF6E8D0,
+					shadowColor: 0x88402A,
+					rotation: 210,
+					tickness: 3
+				}),
+			];
+			Filt.glow(mcLevel._field, 3, 3, 0x9A3D18);
+			mcLevel._field.text = Std.string(level + 1);
+			mcLevel.position.set(225, 300);
+		} else {
+			if (mcLevel == null)
+				return;
+			mcLevel.removeMovieClip();
+			mcLevel = null;
+		}
+	}
+}

@@ -1,0 +1,6 @@
+-L pixijs
+-cp .
+#-D js-es=6
+--js ../js/kadokadeo.js
+-dce no
+kado.KadoKadeoManager
