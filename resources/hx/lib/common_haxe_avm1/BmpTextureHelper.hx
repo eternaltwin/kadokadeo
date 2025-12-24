@@ -2,7 +2,7 @@ package common_haxe_avm1;
 
 import pixi.core.sprites.Sprite;
 import haxe.Timer;
-import display.ASprite;
+import common_haxe_avm1.display.ASprite;
 import haxe.ds.StringMap;
 import pixi.core.textures.Texture;
 import js.lib.Promise;
@@ -40,7 +40,7 @@ class BmpTextureHelper {
 	static public function preload(urls:Array<String>):Promise<Void> {
 		var start = Timer.stamp();
 		return Promise.all(urls.map(n -> {
-			return (untyped Texture).fromURL('images/$n/sprite.png').then(t -> {
+			return (untyped Texture).fromURL('/assets/img/content/$n.png').then(t -> {
 				return {name: n, texture: t};
 			});
 		})).then((loaded:Array<{name:String, texture:Texture}>) -> {

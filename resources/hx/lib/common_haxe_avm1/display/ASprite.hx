@@ -1,9 +1,11 @@
 package common_haxe_avm1.display;
 
-import pixi.interaction.InteractionManager;
-import pixi.core.math.Point;
 import haxe.ds.IntMap;
+import haxe.ds.StringMap;
+import pixi.interaction.InteractionManager;
+import pixi.core.Application;
 import pixi.core.math.Matrix;
+import pixi.core.math.Point;
 import pixi.core.textures.RenderTexture;
 import pixi.core.text.TextStyle;
 import pixi.core.text.Text;
@@ -31,6 +33,9 @@ typedef TextFieldOptions = {
 }
 
 class ASprite extends Sprite {
+    static public var app:Application;
+	static public var spriteData:StringMap<Array<Int>> = new StringMap();
+	static public var spriteAnchor:StringMap<Array<Int>> = new StringMap();
 	static public var defaultAnchor:Null<String>;
 	static public var ZSORTING_ENABLED:Bool = true;
 
@@ -83,11 +88,11 @@ class ASprite extends Sprite {
 	public var centerX:Bool = false;
 
 	public function get__xmouse():Float {
-		return Manager.app.renderer.plugins.interaction.mouse.global.x;
+		return ASprite.app.renderer.plugins.interaction.mouse.global.x;
 	}
 
 	public function get__ymouse():Float {
-		return Manager.app.renderer.plugins.interaction.mouse.global.y;
+		return ASprite.app.renderer.plugins.interaction.mouse.global.y;
 	}
 
 	public function get__parent():Container {
@@ -438,7 +443,7 @@ class ASprite extends Sprite {
 	}
 
 	static public function createFromTexture(identifier:String, texture:Texture):ASprite {
-		var data = SpriteData.data.get(identifier);
+		var data = spriteData.get(identifier);
 		if (data == null)
 			throw 'Trying to load an unknown sprite "$identifier"';
 		var a = new ASprite(data);
@@ -448,12 +453,12 @@ class ASprite extends Sprite {
 	}
 
 	public function getDefaultAnchor(identifier:String) {
-		var anchor = SpriteData.anchor.get(identifier);
+		var anchor = spriteAnchor.get(identifier);
 		trace(anchor);
 	}
 
 	public function attachMovie(identifier:String, newName:String = "smc", depth:Int = 0, ?squareness:Int):ASprite {
-		var data = SpriteData.data.get(identifier);
+		var data = spriteData.get(identifier);
 		if (data == null)
 			throw 'Trying to load an unknown sprite "$identifier"';
 
@@ -468,8 +473,8 @@ class ASprite extends Sprite {
 
 		addChild(a);
 
-		if (SpriteData.anchor.exists(identifier)) {
-			var anchor = SpriteData.anchor.get(identifier);
+		if (spriteAnchor.exists(identifier)) {
+			var anchor = spriteAnchor.get(identifier);
 			a.anchor.set(anchor[0] / data[0], anchor[1] / data[1]);
 			trace(a.anchor);
 		} else if (defaultAnchor == "center") {

@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 
 

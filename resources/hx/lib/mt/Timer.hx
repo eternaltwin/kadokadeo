@@ -1,7 +1,7 @@
 package mt;
 
 class Timer {
-	public static var wantedFPS = 32;
+	public static var wantedFPS = 60;
 	public static var maxDeltaTime = 0.5;
 	public static var oldTime = haxe.Timer.stamp() * 1000.0;
 	public static var tmod_factor = 0.95;

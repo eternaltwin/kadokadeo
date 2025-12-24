@@ -1,4 +1,4 @@
-ï»¿package mt.kiroukou.motion.macros;
+package mt.kiroukou.motion.macros;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -12,7 +12,7 @@ using mt.kiroukou.tools.macros.ExprTools;
  * components
  */
 class TweenBuilder {
-	
+
 	public static function build( target : Expr, exprs:Array<haxe.macro.Expr>, ?locals ) : Expr {
 		var pos = Context.currentPos();
 		if( exprs.length == 0 )
@@ -37,5 +37,5 @@ class TweenBuilder {
 		}
 		return { expr : EArrayDecl(ret), pos : pos };
 	}
-	
+
 }

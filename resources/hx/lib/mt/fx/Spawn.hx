@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 
 class Spawn extends Visibility{//}
@@ -14,7 +14,7 @@ class Spawn extends Visibility{//}
 		if( alpha ) setFadeAlpha();
 		if( grow ) setFadeScale(1,1);
 	}
-	
+
 	public function setFadeScale(x,y) {
 		fadeScale = { sx:x,	sy:y, scx:root.scaleX, scy:root.scaleY	};
 		switch(x) {
@@ -31,16 +31,16 @@ class Spawn extends Visibility{//}
 		root.alpha = 0;
 		this.fadeAlpha = true;
 	}
-	
+
 	public function setFadeBlur(x,y) {
 		fadeBlur = { x:x, y:y };
 	}
-	
+
 	override function update() {
 		super.update();
 		coef = Math.min(coef + spc, 1);
 		setVisibility( curve(coef) );
-		
+
 		if( coef == 1 ) kill();
 
 	}

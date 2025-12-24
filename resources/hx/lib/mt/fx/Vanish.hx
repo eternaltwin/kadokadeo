@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 /**
  * Fade to black with optionnal blur and scale fx
@@ -14,7 +14,7 @@ class Vanish extends Visibility{
 		this.fadeAlpha = fadeAlpha;
 		alpha = root.alpha;
 	}
-	
+
 	/**
 	 * adds a scale fx
 	 * x : [-1,0,1]
@@ -25,7 +25,7 @@ class Vanish extends Visibility{
 		fadeScale = { sx:x,	sy:y, scx:root.scaleX, scy:root.scaleY	};
 		return this;
 	}
-	
+
 	/**
 	 * Adds a blur fx
 	 */
@@ -33,7 +33,7 @@ class Vanish extends Visibility{
 		fadeBlur = { x:x, y:y };
 		return this;
 	}
-	
+
 	override function update() {
 		if( root.parent == null ) {
 			kill();
@@ -46,7 +46,7 @@ class Vanish extends Visibility{
 		}
 
 	}
-	
+
 	override function kill() {
 		super.kill();
 		if(root.parent != null) root.parent.removeChild(root);

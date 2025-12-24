@@ -1,3 +1,5 @@
+package chocomouche;
+
 import pixi.filters.extras.GlowFilter;
 import pixi.core.renderers.webgl.filters.Filter;
 import common_haxe_avm1.pixi.DropShadowFilter;
@@ -79,7 +81,17 @@ class Game implements kado.GameInterface {
 
 	public function new(kkm:kado.KadoKadeoManager) {
 		this.kkm = kkm;
-		Manager.app = kkm;
+		ASprite.spriteData = [
+			"chocomouche/bg" => [900, 900],
+			"chocomouche/life" => [54, 66],
+			"chocomouche/mLevel" => [441, 321],
+			"chocomouche/partSlot" => [27, 30],
+			"chocomouche/slot" => [90, 90],
+			"chocomouche/timeLeft" => [238, 22],
+			"chocomouche/timeLine" => [238, 22],
+			"chocomouche/warning" => [900, 900],
+		];
+		ASprite.app = kkm;
 
 		root = new ASprite();
 		kkm.stage.addChild(root);
@@ -120,8 +132,6 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(ts:Float) {
-		mt.Timer.update(ts);
-
 		updateSprites();
 
 		switch (step) {

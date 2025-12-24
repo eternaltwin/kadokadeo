@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 
 class Radiate extends Fx{//}
@@ -17,7 +17,7 @@ class Radiate extends Fx{//}
 		speed = sp;
 		this.timer = timer;
 	}
-	
+
 	override function update() {
 		if( !root.visible ||timer--==0) {
 			kill();
@@ -25,24 +25,24 @@ class Radiate extends Fx{//}
 		}
 		maj();
 	}
-		
+
 	public function maj() {
-		
+
 		coef = (coef + speed) % 1;
 		var c = 0.5+Math.cos(curve(coef)*6.28)*0.5;
 		if( alpha )					root.alpha = c;
 		else if( color == null )	Col.setColor(root, 0, Std.int(255 * c));
 		else						Col.setPercentColor(root, c, color);
-		
+
 	}
-	
+
 	override function kill() {
 		Col.setColor(root, 0, 0);
 		super.kill();
-		
-	}
-	
 
-	
+	}
+
+
+
 //{
 }

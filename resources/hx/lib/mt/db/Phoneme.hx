@@ -1,4 +1,4 @@
-ï»¿package mt.db;
+package mt.db;
 
 class Phoneme {
 
@@ -200,5 +200,5 @@ class Phoneme {
 			}
 		return d[a.length + b.length * k];
 	}
-	
+
 }

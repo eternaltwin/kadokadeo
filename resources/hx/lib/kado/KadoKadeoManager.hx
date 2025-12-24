@@ -18,9 +18,10 @@ class KadoKadeoManager extends Application {
 
 	var gameClass:Class<GameInterface>;
 	var game:GameInterface = null;
-    var ff:FixedFramerate;
+	var ff:FixedFramerate;
 
 	var startScene:StartScene;
+	var isGameStarted:Bool;
 
 	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>) {
 		super({
@@ -34,6 +35,7 @@ class KadoKadeoManager extends Application {
 		this.gameClass = gameClass;
 		canvas.width = 900;
 		canvas.height = 960;
+		isGameStarted = false;
 
 		// Pixi intro
 		// this.loader = new Loader();
@@ -47,9 +49,10 @@ class KadoKadeoManager extends Application {
 		common_haxe_avm1.KeyboardManager.init();
 
 		ff = new FixedFramerate((delta) -> {
-            if (game != null) {
-                game.update(delta);
-            }
+			mt.Timer.update(delta);
+			if (game != null && isGameStarted) {
+				game.update(delta);
+			}
 		});
 
 		this.ticker.add(ff.onTick);
@@ -65,9 +68,18 @@ class KadoKadeoManager extends Application {
 				startScene.once("pointerdown", e -> {
 					this.stage.removeChild(startScene);
 					game = Type.createInstance(gameClass, [this]);
-					game.start();
+					trace(game);
+					var imageKeys = [for (k in common_haxe_avm1.display.ASprite.spriteData.keys()) k];
+					trace('Preloading images: ' + imageKeys);
+					common_haxe_avm1.BmpTextureHelper.preload(imageKeys).then((_) -> {
+						trace('Starting game');
+						game.start();
+						isGameStarted = true;
+					});
 				});
-			}, error -> {});
+			}, error -> {
+				trace('Contract refused: ' + error.message);
+			});
 			startScene.disable();
 		});
 		this.stage.addChild(startScene);
@@ -83,7 +95,7 @@ class KadoKadeoManager extends Application {
 	}
 
 	override public function destroy(?removeView:Bool):Void {
-        super.destroy(removeView);
+		super.destroy(removeView);
 		this.ticker.remove(ff.onTick);
 	}
 }

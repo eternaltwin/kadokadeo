@@ -1,3 +1,5 @@
+package chocomouche;
+
 import mt.bumdum.Sprite;
 
 class Cs {

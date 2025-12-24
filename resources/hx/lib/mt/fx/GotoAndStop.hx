@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 
 class GotoAndStop extends Fx{//}
@@ -7,7 +7,7 @@ class GotoAndStop extends Fx{//}
 	var frame:Int;
 	var parent:flash.display.DisplayObjectContainer;
 	public var list:Array<String>;
-	
+
 	public function new(par, inst, n, autoplay = false) {
 		super();
 		this.autoplay = autoplay;
@@ -17,14 +17,14 @@ class GotoAndStop extends Fx{//}
 		update();
 	}
 
-	
+
 	override function update() {
 		var mc:flash.display.MovieClip = cast parent;
 		for( str in list ) {
 			mc = Reflect.field(mc, str);
 			if( mc == null ) break;
 		}
-		
+
 		if( mc != null ) {
 			if( autoplay )		mc.gotoAndPlay(frame);
 			else 				mc.gotoAndStop(frame);
@@ -34,7 +34,7 @@ class GotoAndStop extends Fx{//}
 
 	}
 
-	
-	
+
+
 //{
 }

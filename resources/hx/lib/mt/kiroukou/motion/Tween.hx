@@ -1,4 +1,4 @@
-ï»¿package mt.kiroukou.motion;
+package mt.kiroukou.motion;
 
 #if macro
 import haxe.macro.Expr;

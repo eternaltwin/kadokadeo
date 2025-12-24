@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 
 /**
@@ -15,7 +15,7 @@ class FadeBack extends mt.fx.Fx {
 		ct = root.transform.colorTransform;
 		this.spc = spc;
 	}
-	
+
 	override function update() {
 		super.update();
 		coef = Math.min(coef + spc, 1);
@@ -30,7 +30,7 @@ class FadeBack extends mt.fx.Fx {
 			ct.blueOffset 	* c,
 			0
 		);
-		
+
 		if( coef == 1 )
 			kill();
 	}

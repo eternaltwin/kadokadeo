@@ -6,6 +6,7 @@ import pixi.core.display.DisplayObject;
 import pixi.core.math.Matrix;
 import pixi.core.textures.RenderTexture;
 import haxe.io.UInt8Array;
+import common_haxe_avm1.display.ASprite;
 
 using Lambda;
 using Std;
@@ -31,11 +32,11 @@ class PixelHelper {
 	}
 
 	static public function draw(onto:RenderTexture, object:DisplayObject, matrix:Matrix) {
-		(untyped Manager.app.renderer).render(object, cast {renderTexture: onto, clear: false, transform: matrix});
+		(untyped ASprite.app.renderer).render(object, cast {renderTexture: onto, clear: false, transform: matrix});
 	}
 
 	static public function extract(texture:RenderTexture) {
-		return new PixelHelper(untyped Manager.app.renderer.plugins.extract.pixels(texture), texture.width.int(), texture.height.int());
+		return new PixelHelper(untyped ASprite.app.renderer.plugins.extract.pixels(texture), texture.width.int(), texture.height.int());
 	}
 
 	public function new(pixels:UInt8Array, width:Int, height:Int) {

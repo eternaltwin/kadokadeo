@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 
 
@@ -25,7 +25,7 @@ class FadeTo extends mt.fx.Fx{//}
 		coef = 0;
 		super();
 	}
-	
+
 	override function update() {
 		super.update();
 		coef = Math.min(coef + spc, 1);

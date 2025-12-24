@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 
 class Blink extends Fx{//}
 
@@ -6,7 +6,7 @@ class Blink extends Fx{//}
 	var timer:Int;
 	var on:Int;
 	var off:Int;
-	
+
 	/**
 	 * Blink Fx
 	 * @param	mc			Target DisplayObject
@@ -21,14 +21,14 @@ class Blink extends Fx{//}
 		this.on = on;
 		this.off = off;
 	}
-	
+
 	override function update() {
 		mc.visible = Math.abs(timer) % (on + off) < on;
-		timer--;		
+		timer--;
 		if(mc.parent == null) kill();
 
 		if( timer == 0 ) kill();
 	}
-	
+
 //{
 }

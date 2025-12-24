@@ -1,4 +1,4 @@
-ï»¿package mt.pix;
+package mt.pix;
 import mt.bumdum9.Lib;
 
 class Utils implements haxe.Public{//}

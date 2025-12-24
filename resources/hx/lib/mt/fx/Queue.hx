@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 
 //TODO
@@ -12,7 +12,7 @@ class Queue<T:flash.display.Sprite> extends Fx {//}
 	var timer:Int;
 	var color:Int;
 	var blendMode:flash.display.BlendMode;
-	
+
 	public function new(mc:flash.display.Sprite , t:Class<T>, mod = 1, col=0xFFFFFF, ?blendMode ) {
 		color = col;
 		root = mc;
@@ -22,19 +22,19 @@ class Queue<T:flash.display.Sprite> extends Fx {//}
 		timer = 0;
 		if( blendMode == null ) blendMode = flash.display.BlendMode.NORMAL;
 		this.blendMode = blendMode;
-		
+
 	}
-	
+
 	override function update() {
-		
+
 		if( root.parent == null  ) {
 			kill();
 			return;
 		}
-		
+
 		timer++;
 		if( timer % mod != 0 ) return;
-		
+
 		if( oldPos != null ) {
 			var mc = Type.createInstance(tclass, []);
 			mc.blendMode = blendMode;
@@ -49,11 +49,11 @@ class Queue<T:flash.display.Sprite> extends Fx {//}
 			Col.setColor(mc, color);
 		}
 		oldPos = { x:root.x, y:root.y };
-		
-	}
-	
 
-	
-	
+	}
+
+
+
+
 //{
 }

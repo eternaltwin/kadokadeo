@@ -1,4 +1,4 @@
-ï»¿package mt.bumdum9;
+package mt.bumdum9;
 import mt.bumdum9.Lib;
 
 class Bouille extends flash.display.MovieClip{//}

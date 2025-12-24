@@ -1,21 +1,21 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 
 class Sleep extends Fx {//}
-	
+
 	var f:Fx;
 	var count:Int;
 	var onWakeUp:Void->Void;
-	
+
 	public function new(?f,?onWakeUp,count=10) {
 		this.f = f;
 		this.onWakeUp = onWakeUp;
 		this.count = count;
 		Fx.DEFAULT_MANAGER.remove(f);
 		super();
-		
+
 	}
-	
+
 	override function update() {
 		super.update();
 		if( count-- <= 0 ) {
@@ -27,7 +27,7 @@ class Sleep extends Fx {//}
 			kill();
 		}
 	}
-	
+
 	public function hide(mc:MC,play=false) {
 		mc.visible = false;
 		if ( play ) mc.stop();
@@ -36,8 +36,8 @@ class Sleep extends Fx {//}
 			if ( play ) mc.play();
 		}
 	}
-		
-	
-	
+
+
+
 //{
 }

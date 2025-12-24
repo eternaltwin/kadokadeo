@@ -1,4 +1,4 @@
-ï»¿package mt.bumdum9;
+package mt.bumdum9;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
 import flash.ui.KeyLocation;
@@ -16,10 +16,10 @@ class Keyb implements haxe.Public
 	static var KEY_CANCEL =	27;
 	static var KEY_DEBUG =	9;
 	static var KEY_DEBUG2 =	222;
-	
+
 	static var control = false;
 	static var alt = false;
-	
+
 	static var pressUp:		Void -> Void;
 	static var pressDown:	Void -> Void;
 	static var pressLeft:	Void -> Void;
@@ -30,7 +30,7 @@ class Keyb implements haxe.Public
 	static var pressDebug2:	Void -> Void;
 	static var pressLetter:	Int -> Void;
 	static var pressKey:	Int -> Void;
-	
+
 	static var defaultActions:Array < Void -> Void > ;
 	static var actions:Array < Void -> Void > ;
 	static var a = [];
@@ -42,19 +42,19 @@ class Keyb implements haxe.Public
 		var trg = flash.Lib.current.stage;
 		trg.addEventListener(KeyboardEvent.KEY_DOWN, Keyb.onKeyDown );
 		trg.addEventListener(KeyboardEvent.KEY_UP, Keyb.onKeyUp );
-		
+
 		trg.addEventListener( Event.DEACTIVATE, lostFocus  );
-		
+
 		//
-		
+
 		//
 		clean();
 	}
-	
+
 	static function bindDefaultAction(n:Int,f:Void->Void) {
 		defaultActions[n] = f;
 	}
-	
+
 	static function onKeyDown(e:KeyboardEvent) {
 		//if(a[e.keyCode]) return;
 		a[e.keyCode] = true;
@@ -77,46 +77,46 @@ class Keyb implements haxe.Public
 			case KEY_RIGHT :	pressRight();
 			case KEY_ACTION :	pressAction();
 			case KEY_CANCEL :	pressCancel();
-			
+
 			case KEY_DEBUG :	pressDebug();
 			case KEY_DEBUG2 :	pressDebug2();
 			default :
 				var ac = actions[e.keyCode];
 				if ( ac != null) ac();
 		}
-		
+
 	}
 	static function onKeyUp(e:KeyboardEvent) {
 		a[e.keyCode] = false;
 		control = e.ctrlKey;
 		alt = e.altKey;
 	}
-	
+
 	static function clean() {
-		
+
 		actions = [];
 		var id = 0;
 		for ( n in defaultActions ) {
 			actions[id] = n;
 			id++;
 		}
-		
+
 		pressUp = function() { };
 		pressDown = function() { };
 		pressLeft = function() { };
 		pressRight = function() { };
 		pressAction = function() { };
 		pressCancel = function() { };
-		
+
 		pressDebug = function() { };
 		pressDebug2 = function() { };
-		
+
 		pressLetter = function(n) { };
 		pressKey = function(n) { };
 	}
-	
+
 	static function getKeyName(code:Int) {
-		
+
 		if ( code >= 65 && code <= 90 ) return String.fromCharCode( 97 + (code-65) );
 		switch(code) {
 			case 32 :		return "space";
@@ -124,11 +124,11 @@ class Keyb implements haxe.Public
 			case 16 :		return "shift";
 			case 13 :		return "enter";
 		}
-		
+
 		return "?";
-		
+
 	}
-	
+
 	static function isShift() { return a[16]; }
 	static function isUp() { return a[KEY_UP]; }
 	static function isDown() { return a[KEY_DOWN]; }
@@ -138,11 +138,11 @@ class Keyb implements haxe.Public
 	static function isCancel() { return a[KEY_CANCEL]; }
 	static function isDebug() { return a[KEY_DEBUG]; }
 	static function isDebug2() { return a[KEY_DEBUG2]; }
-	
+
 	static function lostFocus(e) {
 		for( id in 0...a.length ) a[id] = false;
 	}
-	
+
 //{
 }
 

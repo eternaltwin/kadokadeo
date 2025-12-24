@@ -1,4 +1,4 @@
-ï»¿package mt.data;
+package mt.data;
 
 enum TextElement {
 	EText( t : String );
@@ -8,7 +8,7 @@ enum TextElement {
 class RandomText {
 
 	var texts : Hash<Array<List<TextElement>>>;
-	
+
 	function new() {
 		texts = new Hash();
 	}
@@ -16,7 +16,7 @@ class RandomText {
 	public dynamic function random( v : Int ) {
 		return Std.random(v);
 	}
-	
+
 	public function generate( start : String ) {
 		var buf = new StringBuf();
 		var t = texts.get(start);

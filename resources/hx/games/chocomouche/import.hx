@@ -1,3 +1,5 @@
+package chocomouche;
+
 using Std;
 using Lambda;
 using StringTools;

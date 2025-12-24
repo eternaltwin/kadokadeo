@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 
 class Shake extends Fx{//}
 
@@ -11,11 +11,11 @@ class Shake extends Fx{//}
 	var timer:Int;
 	var mod:Int;
 	public var timeLimit:Int;
-	
+
 	public var fitPix:Bool;
-	
+
 	public function new(mc, dx, dy, frict=0.75, mod=2) {
-		
+
 		super();
 		this.mod = mod;
 		this.mc = mc;
@@ -28,16 +28,16 @@ class Shake extends Fx{//}
 		fitPix = false;
 		update();
 	}
-	
+
 	public function init(dx, dy) {
 		ddx = dx;
 		ddy = dy;
 	}
-	
+
 	override function update() {
 		timer ++;
 		if( timer % mod != 0 ) return;
-		
+
 		ddx *= -friction;
 		ddy *= -friction;
 		mc.x = bx + ddx;
@@ -50,15 +50,15 @@ class Shake extends Fx{//}
 			kill();
 		}
 
-		
-		
+
+
 	}
-	
+
 	override function kill() {
 		mc.x = bx;
 		mc.y = by;
 		super.kill();
 	}
-	
+
 //{
 }

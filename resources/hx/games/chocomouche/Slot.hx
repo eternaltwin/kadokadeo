@@ -1,9 +1,11 @@
+package chocomouche;
+
 import pixi.core.Application;
 import mt.bumdum.Phys;
 import mt.bumdum.Sprite;
 import mt.bumdum.Lib;
-import Game.Pos;
-import Game.Step;
+import chocomouche.Game.Pos;
+import chocomouche.Game.Step;
 
 enum Status {
 	Hidden;

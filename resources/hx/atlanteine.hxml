@@ -1,0 +1,5 @@
+-js ../js/games/atlanteine.js
+-lib pixijs
+-cp ./lib
+-cp ./games
+atlanteine.Game

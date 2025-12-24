@@ -1,4 +1,4 @@
-ï»¿// ColorMatrix Class v1.2
+// ColorMatrix Class v1.2
 //
 // Author: Mario Klingemann
 // http://www.quasimondo.com

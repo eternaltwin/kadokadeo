@@ -1,4 +1,4 @@
-ï»¿package mt.fx;
+package mt.fx;
 import mt.bumdum9.Lib;
 
 class Part<T:flash.display.Sprite> extends mt.fx.Fx {
@@ -23,7 +23,7 @@ class Part<T:flash.display.Sprite> extends mt.fx.Fx {
 
 	public var onBounceGround:Void->Void;
 	public var root:T;
-		
+
 	public function new(mc:T, ?pManager) {
 		super(pManager);
 		root = mc;
@@ -44,18 +44,18 @@ class Part<T:flash.display.Sprite> extends mt.fx.Fx {
 		fadeLimit = 10;
 		fadeType = 0;
 	}
-	
+
 	public function setScale(sc) {
 		scale = sc;
 		root.scaleX = sc;
 		root.scaleY = sc;
 	}
-	
+
 	public function setAlpha(a) {
 		alpha = a;
 		root.alpha = a;
 	}
-	
+
 	override function update() {
 		// POS
 		vy += weight;
@@ -110,13 +110,13 @@ class Part<T:flash.display.Sprite> extends mt.fx.Fx {
 		//
 		updatePos();
 	}
-	
+
 	public function setPos(nx, ny) {
 		x = nx;
 		y = ny;
 		updatePos();
 	}
-	
+
 	public function updatePos() {
 		root.x = x;
 		root.y = y;
@@ -125,17 +125,17 @@ class Part<T:flash.display.Sprite> extends mt.fx.Fx {
 			root.y = Std.int(root.y);
 		}
 	}
-	
+
 	public function frameKill() {
 		var dyn:Dynamic = cast root;
 		dyn.kill = kill;
 	}
-	
+
 	public function fadeIn(n) {
 		fadeInData = { timer:0, limit:n };
 		root.scaleX = root.scaleY = 0;
 	}
-	
+
 	/**
 	 *
 	 * @param	y		y pos of the ground
@@ -150,20 +150,20 @@ class Part<T:flash.display.Sprite> extends mt.fx.Fx {
 			onBounceGround = function() { me.timer = timer; };
 		}
 	}
-	
+
 	// SHORTCUT
 	public function twist(n, ?fr:Null<Float>) {
 		if( fr != null ) rfr = fr;
 		root.rotation = Math.random() * 360;
 		vr = (Math.random() * 2 - 1) * n;
 	}
-	
+
 	public function shortrun(n) {
 		x += vx * n;
 		y += vy * n;
 		updatePos();
 	}
-	
+
 	public function sleep(count:Int, autoplay = false) {
 		var sleep = new Sleep(this, count);
 		root.visible = false;
