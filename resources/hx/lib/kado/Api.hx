@@ -1,17 +1,5 @@
 package kado;
 
-typedef ApiResponse<T> = {
-	data:T,
-};
-
-typedef ContractResponse = {
-	run_id:String,
-	server_time:Int,
-	contract_score:Int,
-	contract_points:Int,
-	seed:String,
-};
-
 class Api {
 	public static var baseUrl:String = "http://kadokadeo.localhost";
 
@@ -25,7 +13,7 @@ class Api {
 		return http;
 	}
 
-	public static function askContract(onData:Dynamic->Void, onError:Dynamic->Void) {
+	public static function askContract(onData:Dto.ApiResponse<Dto.RunDTO>->Void, onError:Dynamic->Void) {
 		var req = {};
 		var gameId = 4;
 		var http = buildClient("/api/runs/games/" + gameId);
@@ -45,4 +33,22 @@ class Api {
 
 		http.request(true);
 	}
+
+    public static function endRun(runId: String, request:Dto.EndRunRequestDTO, onData:Dto.ApiResponse<Dynamic>->Void, onError:Dynamic->Void) {
+        var http = buildClient("/api/runs/" + runId + "/finish");
+
+        http.setPostData(haxe.Json.stringify(request));
+
+        http.onData = function(data:String) {
+            var result = haxe.Json.parse(data);
+
+            onData(result);
+        }
+
+        http.onError = function(error) {
+            onError(error);
+        }
+
+        http.request(true);
+    }
 }

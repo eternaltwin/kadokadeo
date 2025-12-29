@@ -1,19 +1,17 @@
 package kado;
 
+import haxe.io.Bytes;
 import pixi.loaders.Loader;
 import js.html.CanvasElement;
 import pixi.core.Application;
 import pixi.core.text.Text;
 
+typedef KadoConfig = {
+	var public_key:String;
+}
+
 @:expose("KadoKadeo")
 class KadoKadeoManager extends Application {
-	public static var BASE_URL(default, null):String = "https://kadokadeo.eternaltwin.org/";
-
-	public static function setBaseUrl(url:String) {
-		BASE_URL = url;
-	}
-
-	// public var loader:Loader;
 	public var canvas:CanvasElement;
 
 	var gameClass:Class<GameInterface>;
@@ -22,6 +20,11 @@ class KadoKadeoManager extends Application {
 
 	var startScene:StartScene;
 	var isGameStarted:Bool;
+
+	var runDetails:Dto.RunDTO;
+	var crypto:KadoCrypto = new KadoCrypto();
+
+	var score:Int = 0;
 
 	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>) {
 		super({
@@ -41,6 +44,7 @@ class KadoKadeoManager extends Application {
 		// this.loader = new Loader();
 		loader.add("/assets/img/content/default/window_back.png")
 			.add("/assets/img/content/default/bottom_bar.png")
+			.add("/assets/img/content/default/kado_icon.png")
 			.add("/assets/img/content/default/default_artwork.jpg")
 			.load(() -> {
 				trace("KadoKadeoManager initialized");
@@ -62,40 +66,76 @@ class KadoKadeoManager extends Application {
 		startScene = new StartScene(this);
 		startScene.interactive = true;
 		startScene.once("pointerdown", e -> {
-			Api.askContract(data -> {
+			Api.askContract((data:Dto.ApiResponse<Dto.RunDTO>) -> {
 				startScene.showContract(data.data);
+				runDetails = data.data;
 				startScene.interactive = true;
-				startScene.once("pointerdown", e -> {
-					this.stage.removeChild(startScene);
-					game = Type.createInstance(gameClass, [this]);
-					trace(game);
-					var imageKeys = [for (k in common_haxe_avm1.display.ASprite.spriteData.keys()) k];
-					trace('Preloading images: ' + imageKeys);
-					common_haxe_avm1.BmpTextureHelper.preload(imageKeys).then((_) -> {
-						trace('Starting game');
-						game.start();
-						isGameStarted = true;
-					});
-				});
+				startScene.once("pointerdown", startGame);
 			}, error -> {
-				trace('Contract refused: ' + error.message);
+				trace('Contract failed: ' + error.message);
 			});
 			startScene.disable();
 		});
 		this.stage.addChild(startScene);
 	}
 
-	public function finish() {
+	function startGame() {
+		this.stage.removeChild(startScene);
+		this.stage.addChild(new BottomBar(this));
+
+		game = Type.createInstance(gameClass, [this]);
+		var imageKeys = [for (k in common_haxe_avm1.display.ASprite.spriteData.keys()) k];
+		trace('Preloading images: ' + imageKeys);
+		common_haxe_avm1.BmpTextureHelper.preload(imageKeys).then((_) -> {
+			trace('Starting game');
+			game.start();
+			isGameStarted = true;
+		}).catchError(error -> {
+			trace('Error while preloading images: ' + error.message);
+		});
+	}
+
+	public function gameOver(params:Dynamic):Void {
 		this.stage.removeChildren();
 		var txt = new Text("FIN DU JEU", {fill: 0x00FF00});
 		txt.x = 250;
 		txt.y = 250;
 		this.stage.addChild(txt);
 		trace('Game finished, showing end screen');
+
+		var win:Dynamic = js.Browser.window;
+		var kado:KadoConfig = cast win.Kado;
+
+		var jse = new externs.JSEncrypt();
+		jse.setPublicKey(kado.public_key);
+		var req = {
+			run_id: runDetails.run_id,
+			score: score + 1,
+			timestamp: Std.int(Date.now().getTime() / 1000),
+			replay: null,
+		};
+		var jsonReq = haxe.Json.stringify(req);
+        trace('Prepared end run request: ' + jsonReq);
+		var payload = crypto.preparePayload(jsonReq);
+		var request:Dto.EndRunRequestDTO = {
+			payload: haxe.crypto.Base64.encode(payload),
+			key: jse.encrypt(crypto.getKey().toHex()),
+			sign: haxe.crypto.Base64.encode(crypto.getHmacSha256(Bytes.ofString(jsonReq))),
+		}
+		Api.endRun(runDetails.run_id, request, (data:Dto.ApiResponse<Dynamic>) -> {
+			trace('Run ended successfully: ' + haxe.Json.stringify(data));
+		}, error -> {
+			trace('Error ending run: ' + error.message);
+		});
 	}
 
 	override public function destroy(?removeView:Bool):Void {
 		super.destroy(removeView);
 		this.ticker.remove(ff.onTick);
+	}
+
+	public function addScore(points:Int):Void {
+		score += points;
+		trace('Score updated: ' + score);
 	}
 }

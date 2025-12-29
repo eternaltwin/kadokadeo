@@ -1,0 +1,4 @@
+# @install: lix --silent download "gh://github.com/back2dos/jsImport#b75bda11cf8805b514d585d9c48b1d15d41664ed" into jsImport/0.0.0/github/b75bda11cf8805b514d585d9c48b1d15d41664ed
+-cp ${HAXE_LIBCACHE}/jsImport/0.0.0/github/b75bda11cf8805b514d585d9c48b1d15d41664ed/src
+-D jsImport=0.0.0
+--macro jsImport.Macro.init()

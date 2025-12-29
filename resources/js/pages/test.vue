@@ -1,10 +1,10 @@
 <script setup>
-import GameScriptPixi from '@/components/games/GameScriptPixi.vue'
+import GameScript from '@/components/games/GameScript.vue'
 </script>
 
 <template>
   <div>
-    <GameScriptPixi
+    <GameScript
       class="m-auto"
       :gameWidth="600"
       :gameHeight="640"

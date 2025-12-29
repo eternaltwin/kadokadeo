@@ -1,5 +1,6 @@
 -js ../js/games/atlanteine.js
 -lib pixijs
+-lib crypto
 -cp ./lib
 -cp ./games
 atlanteine.Game

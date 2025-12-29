@@ -1,5 +1,6 @@
 -js ../js/games/kanji_gaiden.js
 -lib pixijs
+-lib crypto
 -cp ./lib
 -cp ./games
 kanji_gaiden.Game

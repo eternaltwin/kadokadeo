@@ -1,5 +1,3 @@
-import './games/chocomouche'
-
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { createPinia } from 'pinia'

@@ -1,6 +1,5 @@
 <script setup>
 import Error from '@/components/message/Error.vue'
-import GodotLoadState from '@/components/message/GodotLoadState.vue'
 import Kalendrier from '@/components/nav/Kalendrier.vue'
 import Navbar from '@/components/nav/Navbar.vue'
 import Starbar from '@/components/nav/Starbar.vue'
@@ -34,7 +33,7 @@ const authStore = useAuthStore()
   </Error>
 
   <main id="container">
-    
+
     <section id="bodySection">
       <slot />
     </section>
@@ -42,6 +41,5 @@ const authStore = useAuthStore()
     <template v-if="authStore.isAuthenticated">
       <Sidebar />
     </template>
-    <GodotLoadState />
   </main>
 </template>

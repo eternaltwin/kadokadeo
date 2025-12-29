@@ -26,7 +26,7 @@ class Cs {
 	public static var LIFE_X = 18;
 	public static var LIFE_Y = GRID_Y + GRID_HEIGHT * SLOT_SIZE - 108;
 
-	public static var bombs = [1, 10, 11, 11, 12, 12, 12, 13, 13, 13, 15];
+	public static var bombs = [10, 10, 11, 11, 12, 12, 12, 13, 13, 13, 15];
 
 	public static var INITIAL_TIME = 26000.0;
 

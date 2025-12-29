@@ -1,6 +1,5 @@
 package kado;
 
-import kado.Api.ApiResponse;
 import pixi.core.graphics.Graphics;
 import pixi.core.display.Container;
 import pixi.core.sprites.Sprite;
@@ -87,7 +86,7 @@ class StartScene extends Container {
 		text.y = 70;
 	}
 
-	public function showContract(contract:Api.ContractResponse) {
+	public function showContract(contract:Dto.RunDTO):Void {
 		panel.setTitle("CONTRAT");
 		panel.clearContent();
 		var text = new pixi.core.text.Text('Run ID: ' + contract.run_id + '\n' + 'Server Time: ' + contract.server_time + '\n' + 'Contract Score: '

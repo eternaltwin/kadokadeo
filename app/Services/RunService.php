@@ -164,6 +164,8 @@ class RunService
             throw new \Exception("Échec du déchiffrement de la clé AES.");
         }
 
+        $decryptedAesKey = hex2bin($decryptedAesKey);
+
         // Check that the decrypted AES key is a binary chain of 16, 24 or 32 bytes (AES-128, 192, 256)
         $aesKeyLength = strlen($decryptedAesKey);
         if (!in_array($aesKeyLength, [16, 24, 32])) {
@@ -178,9 +180,9 @@ class RunService
         $aesKeyLength = strlen($aesKey);
 
         $algo = match ($aesKeyLength) {
-            16 => 'aes-128-cbc',
-            24 => 'aes-192-cbc',
-            32 => 'aes-256-cbc',
+            16 => 'aes-128-ctr',
+            24 => 'aes-192-ctr',
+            32 => 'aes-256-ctr',
         };
 
         // Decrypt payload

@@ -2594,6 +2594,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jsencrypt@npm:^3.5.4":
+  version: 3.5.4
+  resolution: "jsencrypt@npm:3.5.4"
+  checksum: 10/716be523496fffcc16f70244ab970fc9e423516d3eeb20b7a04c1795740399a2b681935499d7654742f112f67000e51dd580b5c54b8d0102540f075bfb74aff1
+  languageName: node
+  linkType: hard
+
 "jsesc@npm:^3.0.2":
   version: 3.1.0
   resolution: "jsesc@npm:3.1.0"
@@ -3416,6 +3423,7 @@ __metadata:
     eslint-plugin-unused-imports: "npm:^4.3.0"
     eslint-plugin-vue: "npm:~10.5.0"
     globals: "npm:^16.4.0"
+    jsencrypt: "npm:^3.5.4"
     laravel-vite-plugin: "npm:^2.0.0"
     pinia: "npm:^3.0.3"
     prettier: "npm:3.6.2"

@@ -137,7 +137,7 @@ class Game implements kado.GameInterface {
 		switch (step) {
 			case Play:
 				if (flGameOver) {
-					KKApi.gameOver({});
+					kkm.gameOver({});
 					stop();
 				}
 				updateTime();
@@ -341,7 +341,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function addScore(sc) { // pr ajouter au score du joueur
-		KKApi.addScore(sc);
+		kkm.addScore(sc);
 	}
 
 	// TIME
