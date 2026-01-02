@@ -72,6 +72,7 @@ class Slot extends Phys {
 		mc.onRelease = imClicked;
 		mc.onPress = imPressed;
 		mc.onReleaseOutside = imReleased;
+		mc.interactive = true;
 		common_haxe_avm1.KKApi.registerButton(mc);
 		super(mc);
 		// ### TO CONTINUE

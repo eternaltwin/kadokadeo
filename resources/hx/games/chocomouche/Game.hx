@@ -373,15 +373,16 @@ class Game implements kado.GameInterface {
 		if (bomb != null && !bomb)
 			getPoints(mcTime.start, now, mcTime.max);
 
+		mcTime.update();
 		mcTime.start = now;
 		mcTime.max = Cs.getLevelTime(level);
-		mcTime.update();
 
 		setWarning(false);
 		checkLevel();
 	}
 
 	function updateTime() { // update TimeLine && check lifeloss
+		mcTime.update();
 		var now = Date.now().getTime();
 
 		var c = mcTime.max - (now - mcTime.start);
@@ -393,7 +394,6 @@ class Game implements kado.GameInterface {
 			lifeLoss();
 			resetTime();
 		}
-		mcTime.update();
 	}
 
 	public function explode(from:Pos) {
@@ -457,8 +457,12 @@ class Game implements kado.GameInterface {
 			];
 			Filt.glow(mcLevel._field, 3, 3, 0x9A3D18);
 			mcLevel._field.text = Std.string(level + 1);
-			mcLevel._x = 225;
-			mcLevel._y = 300;
+			var s = new Phys(mcLevel);
+			s.x = 1100;
+			s.y = 300;
+			s.vx = -72;
+			s.frict = 0.92;
+			s.timer = 60;
 			mcLevel.updateState();
 		} else {
 			if (mcLevel == null)
