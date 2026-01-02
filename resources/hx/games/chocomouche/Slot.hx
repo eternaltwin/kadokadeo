@@ -230,7 +230,7 @@ class Slot extends Phys {
 
 	// ### PARTS
 	function launchParts() {
-		var nb = 4 + Std.random(4);
+		var nb = 4 + Game.me.kkm.seed.random(4);
 		var dsx = 20;
 		var dsy = 20;
 		var px = x;
@@ -242,11 +242,11 @@ class Slot extends Phys {
 			mc._xscale = 170;
 			mc._yscale = 170;
 
-			var dx = (Math.random() * 2 - 1) * 6;
-			var dy = (Math.random() * 2 - 1) * 6;
+			var dx = (Game.me.kkm.seed.rand() * 2 - 1) * 18;
+			var dy = (Game.me.kkm.seed.rand() * 2 - 1) * 18;
 
 			var s = new Phys(mc);
-			s.root.gotoAndStop(Std.random(4) + 1);
+			s.root.gotoAndStop(Game.me.kkm.seed.random(4) + 1);
 			s.x = px + dx;
 			s.y = py + dy;
 			// s.weight = 0.1 ;
@@ -254,9 +254,10 @@ class Slot extends Phys {
 			s.frict = 0.90;
 			s.vx = dx;
 			s.vy = dy;
-			s.vr = (Math.random() * 2 - 1) * 20;
+			s.vr = (Game.me.kkm.seed.rand() * 2 - 1) * 20;
 			s.fadeType = 3;
-			s.timer = 15 + Std.random(6);
+			s.timer = 15 + Game.me.kkm.seed.random(6);
+			s.root.updateState();
 
 			if (Sprite.spriteList.length - 81 > 40 && i > 3)
 				break;

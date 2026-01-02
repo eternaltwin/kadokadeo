@@ -3,7 +3,7 @@ package mt.bumdum;
 import common_haxe_avm1.display.ASprite;
 import mt.bumdum.Lib;
 
-class Phys extends Sprite { // }
+class Phys extends Sprite {
 	public var frict:Float;
 
 	public var vx:Float;
@@ -32,6 +32,7 @@ class Phys extends Sprite { // }
 	}
 
 	public override function update() {
+		root.updateState();
 		if (sleep != null) {
 			sleep--;
 			if (sleep < 0) {

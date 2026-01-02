@@ -1,31 +1,28 @@
 package kado;
 
-import js.Browser;
-import pixi.core.ticker.Ticker;
-
 class FixedFramerate {
-  public static inline var STEP = 1 / 60; // 16.666 ms
+	public static inline var STEP = 1 / 32 * 1000;
 
-  var accumulator:Float = 0;
-  var update:Float->Void;
+	public var alpha(default, null):Float = 0;
 
-  public function new(update) {
-    this.update = update;
-  }
+	var accumulator:Float = 0;
+	var update:Float->Void;
 
-  public function onTick(deltaTime:Float):Void {
-    // deltaTime = frames @ 60fps
-    var dt = deltaTime * STEP;
+	public function new(update:Float->Void) {
+		this.update = update;
+	}
 
-    accumulator += dt;
+	public function onTick(elapsedMS:Float):Void {
+		accumulator += elapsedMS;
 
-    // éviter la spirale de la mort
-    if (accumulator > 0.25)
-      accumulator = 0.25;
+		if (accumulator > 250)
+			accumulator = 250;
 
-    while (accumulator >= STEP) {
-      update(Browser.window.performance.now());
-      accumulator -= STEP;
-    }
-  }
+		while (accumulator >= STEP) {
+			update(STEP);
+			accumulator -= STEP;
+		}
+
+		alpha = accumulator / STEP;
+	}
 }

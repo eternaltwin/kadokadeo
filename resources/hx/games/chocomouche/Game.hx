@@ -125,6 +125,7 @@ class Game implements kado.GameInterface {
 		grid._x = 0;
 		grid._y = 0;
 		grid._alpha = 95;
+		grid.updateState();
 	}
 
 	public function isLocked() {
@@ -167,6 +168,27 @@ class Game implements kado.GameInterface {
 				}
 
 			case GameOver:
+		}
+		mcGrid.updateState();
+	}
+
+	public function updateGraphics(a:Float):Void {
+		root.updateGraphics(a);
+		// mcGrid?.updateGraphics(a);
+		// bg?.updateGraphics(a);
+		// mcTime?.updateGraphics(a);
+		// mcWarning?.updateGraphics(a);
+		// mcLevel?.updateGraphics(a);
+	}
+
+	function updateSprites() {
+		var list = Sprite.spriteList.copy();
+		for (sp in list)
+			sp.update();
+
+		for (s in toUpdate) {
+			if (s.parent != null)
+				s.update();
 		}
 	}
 
@@ -217,8 +239,8 @@ class Game implements kado.GameInterface {
 		var b = Cs.getLevelBombs(level);
 		left = Cs.GRID_WIDTH * Cs.GRID_HEIGHT - b;
 		while (b > 0) {
-			var x = Std.random(Cs.GRID_WIDTH);
-			var y = Std.random(Cs.GRID_HEIGHT);
+			var x = kkm.seed.random(Cs.GRID_WIDTH);
+			var y = kkm.seed.random(Cs.GRID_HEIGHT);
 			if (from != null && from.x == x && from.y == y)
 				continue;
 			var s = grid[x][y];
@@ -270,17 +292,6 @@ class Game implements kado.GameInterface {
 		mcGrid.filters.push(dcf);
 	}
 
-	function updateSprites() {
-		var list = Sprite.spriteList.copy();
-		for (sp in list)
-			sp.update();
-
-		for (s in toUpdate) {
-			if (s.parent != null)
-				s.update();
-		}
-	}
-
 	// ### LIFE
 	function initLife(l:Int) {
 		life = l;
@@ -291,6 +302,7 @@ class Game implements kado.GameInterface {
 			mc._y = Cs.LIFE_Y - lives.length * (60 + 3); // => (life_width + ecart);
 			Filt.glow(mc, 2, 3, 0xFFFFFF);
 			lives.push(mc);
+			mc.updateState();
 		}
 	}
 
@@ -303,15 +315,15 @@ class Game implements kado.GameInterface {
 			rf._totalframes = 15;
 			rf.getGraphics().beginFill(0xFF0000, 0.6);
 			rf.getGraphics().drawRect(0, 0, 900, 900);
-			rf.alpha = 0.6;
+			rf._alpha = 60;
 			rf.blendMode = OVERLAY;
-			rf.removeOnFrame = 15;
+			rf.removeOnFrame = rf._totalframes;
 			rf.play();
 			toUpdate.push(rf);
 
-			for (i in 0...15) {
+			for (i in 0...rf._totalframes) {
 				rf.onFrame.set(i + 1, () -> {
-					rf.alpha = 0.6 * (1 - (i / 15));
+					rf._alpha = 60 * (1 - (i / rf._totalframes));
 				});
 			}
 
@@ -348,10 +360,11 @@ class Game implements kado.GameInterface {
 	function initTime() {
 		mcTime = cast Game.me.dm.empty(Game.DP_INFOS);
 		mcTime.getGraphics().beginFill(0);
-		mcTime.getGraphics().drawRect(0, 0, 238, 22);
+		mcTime.getGraphics().drawRect(0, 0, 238, 16);
 		mcTime._timeLeft = mcTime.attachMovie("chocomouche/timeLeft");
+		mcTime._timeLeft._y = -3;
 		mcTime._x = Cs.TIME_X;
-		mcTime._y = Cs.TIME_Y;
+		mcTime._y = Cs.TIME_Y + 3;
 		resetTime();
 	}
 
@@ -362,6 +375,7 @@ class Game implements kado.GameInterface {
 
 		mcTime.start = now;
 		mcTime.max = Cs.getLevelTime(level);
+		mcTime.update();
 
 		setWarning(false);
 		checkLevel();
@@ -379,6 +393,7 @@ class Game implements kado.GameInterface {
 			lifeLoss();
 			resetTime();
 		}
+		mcTime.update();
 	}
 
 	public function explode(from:Pos) {
@@ -442,7 +457,9 @@ class Game implements kado.GameInterface {
 			];
 			Filt.glow(mcLevel._field, 3, 3, 0x9A3D18);
 			mcLevel._field.text = Std.string(level + 1);
-			mcLevel.position.set(225, 300);
+			mcLevel._x = 225;
+			mcLevel._y = 300;
+			mcLevel.updateState();
 		} else {
 			if (mcLevel == null)
 				return;

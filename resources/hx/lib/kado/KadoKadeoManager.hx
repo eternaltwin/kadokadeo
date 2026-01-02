@@ -5,6 +5,7 @@ import pixi.loaders.Loader;
 import js.html.CanvasElement;
 import pixi.core.Application;
 import pixi.core.text.Text;
+import pixi.core.ticker.Ticker;
 
 typedef KadoConfig = {
 	var public_key:String;
@@ -19,12 +20,14 @@ class KadoKadeoManager extends Application {
 	var ff:FixedFramerate;
 
 	var startScene:StartScene;
+	var gameOverScreen:GameOver = null;
 	var isGameStarted:Bool;
 
 	var runDetails:Dto.RunDTO;
 	var crypto:KadoCrypto = new KadoCrypto();
 
 	var score:Int = 0;
+	public var seed:mt.Rand;
 
 	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>) {
 		super({
@@ -52,14 +55,42 @@ class KadoKadeoManager extends Application {
 			});
 		common_haxe_avm1.KeyboardManager.init();
 
-		ff = new FixedFramerate((delta) -> {
-			mt.Timer.update(delta);
-			if (game != null && isGameStarted) {
-				game.update(delta);
-			}
-		});
+		ff = new FixedFramerate(updatePhysics);
 
-		this.ticker.add(ff.onTick);
+		untyped Ticker.system.add((delta:Float) -> {
+			ff.onTick(untyped Ticker.system.elapsedMS);
+		});
+		this.ticker.add(() -> {
+			updateGraphics(ff.alpha);
+		});
+	}
+
+	public function updateGraphics(a:Float) {
+		if (game != null && isGameStarted) {
+			game.updateGraphics(a);
+		}
+		if (gameOverScreen != null) {
+			gameOverScreen.updateGraphics(a);
+		}
+	}
+
+	public function updatePhysics(dt:Float) {
+		mt.Timer.update(js.Browser.window.performance.now());
+		if (game != null && isGameStarted) {
+			game.update(dt);
+		}
+		if (gameOverScreen != null) {
+			gameOverScreen.update();
+		}
+	}
+
+	inline function hashFNV1a(s:String):Int {
+		var hash = 0x811C9DC5;
+		for (i in 0...s.length) {
+			hash ^= s.charCodeAt(i);
+			hash *= 0x01000193;
+		}
+		return hash;
 	}
 
 	public function showIntroScreen() {
@@ -67,6 +98,7 @@ class KadoKadeoManager extends Application {
 		startScene.interactive = true;
 		startScene.once("pointerdown", e -> {
 			Api.askContract((data:Dto.ApiResponse<Dto.RunDTO>) -> {
+				seed = new mt.Rand(hashFNV1a("123"));
 				startScene.showContract(data.data);
 				runDetails = data.data;
 				startScene.interactive = true;
@@ -96,11 +128,14 @@ class KadoKadeoManager extends Application {
 	}
 
 	public function gameOver(params:Dynamic):Void {
-		this.stage.removeChildren();
-		var txt = new Text("FIN DU JEU", {fill: 0x00FF00});
-		txt.x = 250;
-		txt.y = 250;
-		this.stage.addChild(txt);
+		// this.stage.removeChildren();
+		gameOverScreen = new GameOver(() -> {
+			var txt = new Text("FIN DU JEU", {fill: 0xFF0000});
+			txt.x = renderer.width / 2 - txt.width / 2;
+			txt.y = renderer.height / 2 - txt.height / 2;
+			this.stage.addChild(txt);
+		});
+		this.stage.addChild(gameOverScreen);
 		trace('Game finished, showing end screen');
 
 		var win:Dynamic = js.Browser.window;
@@ -115,7 +150,7 @@ class KadoKadeoManager extends Application {
 			replay: null,
 		};
 		var jsonReq = haxe.Json.stringify(req);
-        trace('Prepared end run request: ' + jsonReq);
+		trace('Prepared end run request: ' + jsonReq);
 		var payload = crypto.preparePayload(jsonReq);
 		var request:Dto.EndRunRequestDTO = {
 			payload: haxe.crypto.Base64.encode(payload),

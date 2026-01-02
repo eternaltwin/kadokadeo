@@ -32,8 +32,42 @@ typedef TextFieldOptions = {
 	@:optional var strokeThickness:Int;
 }
 
+class TransformState {
+	var os:Sprite;
+
+	public var x:Float = 0;
+	public var y:Float = 0;
+	public var width:Float = 17;
+	public var height:Float = 17;
+	public var xscale:Float = 1;
+	public var yscale:Float = 1;
+	public var rotation:Float = 0;
+	public var alpha:Float = 1;
+
+	public function new(os:Sprite) {
+		this.os = os;
+		this.x = os.x;
+		this.y = os.y;
+		this.xscale = os.scale.x;
+		this.yscale = os.scale.y;
+		this.rotation = os.rotation;
+		this.alpha = os.alpha;
+	}
+
+	public inline function copyFrom(o:TransformState) {
+		x = o.x;
+		y = o.y;
+		width = o.width;
+		height = o.height;
+		xscale = o.xscale;
+		yscale = o.yscale;
+		rotation = o.rotation;
+		alpha = o.alpha;
+	}
+}
+
 class ASprite extends Sprite {
-    static public var app:Application;
+	static public var app:Application;
 	static public var spriteData:StringMap<Array<Int>> = new StringMap();
 	static public var spriteAnchor:StringMap<Array<Int>> = new StringMap();
 	static public var defaultAnchor:Null<String>;
@@ -45,13 +79,16 @@ class ASprite extends Sprite {
 	public var _visible(get, set):Bool;
 	public var _x(get, set):Float;
 	public var _y(get, set):Float;
-	public var _width(default, null):Float = 17;
-	public var _height(default, null):Float = 17;
+	public var _width(get, null):Float = 17;
+	public var _height(get, null):Float = 17;
 	public var _name:String;
 	public var _rotation(get, set):Float;
 	public var _totalframes:Int = 0;
 	public var _currentframe(default, null):Int = 1;
 	public var _parent(get, set):Container;
+
+	public var _prevState:TransformState;
+	public var _curState:TransformState;
 
 	public var onPress(default, set):Void->Void;
 	public var onRollOut(default, set):Void->Void;
@@ -86,6 +123,22 @@ class ASprite extends Sprite {
 	var textures:Array<Texture> = [];
 
 	public var centerX:Bool = false;
+
+	public function new(?data:Array<Int>) {
+		super();
+		_prevState = new TransformState(this);
+		_curState = new TransformState(this);
+
+		if (data != null) {
+			_curState.width = data[0];
+			_curState.height = data[1];
+			if (data.length == 4) {
+				realsize = new Point(data[2], data[3]);
+			} else {
+				realsize = new Point(data[0], data[1]);
+			}
+		}
+	}
 
 	public function get__xmouse():Float {
 		return ASprite.app.renderer.plugins.interaction.mouse.global.x;
@@ -138,19 +191,6 @@ class ASprite extends Sprite {
 		insideGraphics.lineTo(x, y);
 	}
 
-	public function get__x() {
-		if (centerX)
-			return this.x + this._width / 2;
-		return x;
-	}
-
-	public function set__x(v:Float) {
-		this.x = v;
-		if (centerX)
-			this.x -= this._width / 2;
-		return v;
-	}
-
 	var cachedPixels:PixelHelper;
 
 	public function fullMaxiHitTest(x:Float, y:Float, ?recursive:Bool) {
@@ -181,7 +221,7 @@ class ASprite extends Sprite {
 	public function hitTest(x:Float, y:Float, shapeFlag:Bool) {
 		// shapeFlag: Boolean
 		// A Boolean value specifying whether to evaluate the entire shape of the specified instance (true), or just the bounding box (false). This parameter can be specified only if the hit area is identified by using x and y coordinate parameters.
-		return (x >= this.x && y >= this.y && x <= this.x + this.width && y <= this.y + this.height);
+		return (x >= _curState.x && y >= _curState.y && x <= _curState.x + this._width && y <= _curState.y + this._height);
 	}
 
 	public function startDrag(lockCenter:Bool, left:Float, top:Float, right:Float, bottom:Float) {
@@ -253,19 +293,40 @@ class ASprite extends Sprite {
 		return v;
 	}
 
+	public function get__x() {
+		if (centerX)
+			return _curState.x + _curState.width / 2;
+		return _curState.x;
+	}
+
+	public function set__x(v:Float) {
+		_curState.x = v;
+		if (centerX)
+			_curState.x -= _curState.width / 2;
+		return v;
+	}
+
 	public function get__y()
-		return y;
+		return _curState.y;
 
 	public function set__y(v:Float) {
-		this.y = v;
-		return y;
+		_curState.y = v;
+		return _curState.y;
+	}
+
+	public function get__width() {
+		return _curState.width;
+	}
+
+	public function get__height() {
+		return _curState.height;
 	}
 
 	public function get__rotation()
-		return (rotation / (Math.PI * 2)) * 360;
+		return (_curState.rotation / (Math.PI * 2)) * 360;
 
 	public function set__rotation(v:Float) {
-		this.rotation = (v / 360) * Math.PI * 2;
+		_curState.rotation = (v / 360) * Math.PI * 2;
 		return v;
 	}
 
@@ -278,30 +339,31 @@ class ASprite extends Sprite {
 	}
 
 	public function get__alpha()
-		return alpha * 100;
+		return _curState.alpha * 100;
 
 	public function set__alpha(v:Float) {
-		alpha = v / 100;
-		return alpha;
+		_curState.alpha = v / 100;
+		return _curState.alpha;
 	}
 
 	public function get__xscale()
-		return this.scale.x * 100;
+		return _curState.xscale * 100;
 
 	public function set__xscale(v:Float) {
-		this.scale.x = v / 100;
+		_curState.xscale = v / 100;
 		return v;
 	}
 
 	public function get__yscale()
-		return this.scale.y * 100;
+		return _curState.yscale * 100;
 
 	public function set__yscale(v:Float) {
-		this.scale.y = v / 100;
+		_curState.yscale = v / 100;
 		return v;
 	}
 
 	public function update() {
+		updateState();
 		for (i in this.children) {
 			if (Std.is(i, ASprite)) {
 				(cast i).update();
@@ -310,6 +372,39 @@ class ASprite extends Sprite {
 
 		if (this.isPlaying && this.visible) {
 			this.nextFrame();
+		}
+	}
+
+	public function updateState() {
+		_prevState.copyFrom(_curState);
+		for (i in this.children) {
+			if (Std.is(i, ASprite)) {
+				(cast i).updateState();
+			}
+		}
+	}
+
+	public function updateGraphics(a:Float) {
+		this.position.x = mt.gx.MathEx.lerp(_prevState.x, _curState.x, a);
+		this.position.y = mt.gx.MathEx.lerp(_prevState.y, _curState.y, a);
+		this._width = mt.gx.MathEx.lerp(_prevState.width, _curState.width, a);
+		this._height = mt.gx.MathEx.lerp(_prevState.height, _curState.height, a);
+		this.scale.x = mt.gx.MathEx.lerp(_prevState.xscale, _curState.xscale, a);
+		this.scale.y = mt.gx.MathEx.lerp(_prevState.yscale, _curState.yscale, a);
+		this.rotation = mt.gx.MathEx.lerp(_prevState.rotation, _curState.rotation, a);
+		this.alpha = mt.gx.MathEx.lerp(_prevState.alpha, _curState.alpha, a);
+		// this.position.x = _prevState.x;
+		// this.position.y = _prevState.y;
+		// this._width = _curState.width;
+		// this._height = _curState.height;
+		// this.scale.x = _curState.xscale;
+		// this.scale.y = _curState.yscale;
+		// this.rotation = _curState.rotation;
+		// this.alpha = _curState.alpha;
+		for (i in this.children) {
+			if (Std.is(i, ASprite)) {
+				(cast i).updateGraphics(a);
+			}
 		}
 	}
 
@@ -327,27 +422,13 @@ class ASprite extends Sprite {
 		return _checkHitTestSprite(b1, b2) || _checkHitTestSprite(b2, b1);
 	}
 
-	public function new(?data:Array<Int>) {
-		super();
-
-		if (data != null) {
-			this._width = data[0];
-			this._height = data[1];
-			if (data.length == 4) {
-				realsize = new Point(data[2], data[3]);
-			} else {
-				realsize = new Point(data[0], data[1]);
-			}
-		}
-	}
-
 	public function load(baseTexture:Texture, ?squareness:Int = 1) {
 		// Textures are stacked vertically (or in a square depending of squareness)
-		_totalframes = Std.int(baseTexture.height / this._height) * squareness;
+		_totalframes = Std.int(baseTexture.height / _curState.height) * squareness;
 		for (i in 0..._totalframes) {
-			var line = (i % squareness) * this._width;
-			var col = Math.floor(i / squareness) * this._height;
-			textures.push(new Texture(baseTexture.baseTexture, new Rectangle(line, col, this._width, this._height)));
+			var line = (i % squareness) * _curState.width;
+			var col = Math.floor(i / squareness) * _curState.height;
+			textures.push(new Texture(baseTexture.baseTexture, new Rectangle(line, col, _curState.width, _curState.height)));
 		}
 
 		if (this._currentframe > this._totalframes)
