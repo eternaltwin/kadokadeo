@@ -34,7 +34,7 @@ class KadoKadeoManager extends Application {
 			view: canvas,
 			width: 900,
 			height: 960,
-			backgroundColor: 0xCDCDCD
+			backgroundColor: 0x80c0e6e9
 		});
 
 		this.canvas = canvas;
@@ -45,10 +45,10 @@ class KadoKadeoManager extends Application {
 
 		// Pixi intro
 		// this.loader = new Loader();
-		loader.add("/assets/img/content/default/window_back.png")
-			.add("/assets/img/content/default/bottom_bar.png")
-			.add("/assets/img/content/default/kado_icon.png")
-			.add("/assets/img/content/default/default_artwork.jpg")
+		loader.add('window_back', "/assets/img/content/default/window_back.png")
+			.add('bottom_bar', "/assets/img/content/default/bottom_bar.png")
+			.add('kado_icon', "/assets/img/content/default/kado_icon.png")
+			.add('game_image', "/assets/img/content/default/default_artwork.jpg")
 			.load(() -> {
 				trace("KadoKadeoManager initialized");
 				this.showIntroScreen();

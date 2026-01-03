@@ -20,10 +20,10 @@ class GameOver extends Graphics {
 	}
 
 	public function update():Void {
+		prevAlpha = nextAlpha;
 		if (saving) {
 			return;
 		}
-		prevAlpha = nextAlpha;
 		timer += mt.Timer.tmod;
 		var lim:Int = 80;
 		nextAlpha = timer / lim;

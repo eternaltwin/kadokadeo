@@ -9,7 +9,7 @@ class Panel extends NineSlicePlane {
 	var contentContainer:Container;
 
 	public function new(kkm:KadoKadeoManager) {
-		super(new Sprite(kkm.loader.resources["/assets/img/content/default/window_back.png"].texture).texture, 50, 70, 50, 50);
+		super(new Sprite(kkm.loader.resources["window_back"].texture).texture, 50, 70, 50, 50);
 		this.contentContainer = new Container();
 		this.addChild(this.contentContainer);
 	}

@@ -4,6 +4,7 @@ import GameScript from '@/components/games/GameScript.vue'
 
 <template>
   <div>
+    <!-- <span style="font-family: 'Fredoka Bold'; font-size: 48px;" class="">Choco Mouche</span> -->
     <GameScript
       class="m-auto"
       :gameWidth="600"

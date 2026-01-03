@@ -30,6 +30,11 @@
     src: url("/fonts/Jost-Medium.ttf") format("truetype");
 }
 
+@font-face {
+    font-family: "Fredoka Bold";
+    src: url("/fonts/Fredoka-Bold.ttf") format("truetype");
+}
+
 [data-lang="fr"] {
     background: url('/gfx/langFrench.gif') no-repeat;
 }

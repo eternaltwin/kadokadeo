@@ -17,7 +17,7 @@ class BottomBar extends Container {
 	}
 
 	public function makeBottomBar():Void {
-		var bb = new Sprite(kkm.loader.resources["/assets/img/content/default/bottom_bar.png"].texture);
+		var bb = new Sprite(kkm.loader.resources["bottom_bar"].texture);
 		bb.x = 0;
 		bb.y = kkm.renderer.height - 68;
 		this.addChild(bb);
@@ -33,7 +33,7 @@ class BottomBar extends Container {
         contractText.y = 38;
         bb.addChild(contractText);
 
-        var kadoIcon = new Sprite(kkm.loader.resources["/assets/img/content/default/kado_icon.png"].texture);
+        var kadoIcon = new Sprite(kkm.loader.resources["kado_icon"].texture);
         kadoIcon.anchor.set(0.5);
         kadoIcon.x = 100;
         kadoIcon.y = 40;
