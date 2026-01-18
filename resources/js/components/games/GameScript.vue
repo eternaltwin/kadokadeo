@@ -12,11 +12,11 @@ const canvas1 = ref(null)
 
 onMounted(async() => {
   // await import('@/games/kanji_gaiden')
-  // await import('@/games/atlanteine')
-  await import('@/games/chocomouche')
+  await import('@/games/atlanteine')
+  // await import('@/games/chocomouche')
   // const game1 = new window.KadoKadeo(canvas1.value, window.GameKanjiGaiden)
-  // const game1 = new window.KadoKadeo(canvas1.value, window.GameAtlanteine)
-  const game1 = new window.KadoKadeo(canvas1.value, window.GameChocoMouche)
+  const game1 = new window.KadoKadeo(canvas1.value, window.GameAtlanteine)
+  // const game1 = new window.KadoKadeo(canvas1.value, window.GameChocoMouche)
 })
 
 onBeforeUnmount(() => {

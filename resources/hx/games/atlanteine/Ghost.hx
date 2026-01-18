@@ -106,6 +106,7 @@ class Ghost extends Phys {
 			p.vr = (Math.random() * 2 - 1) * 10;
 			p.root._rotation = Math.random() * 360;
 			// if(Std.random(2)==0)Col.setColor(p.root,0xCCCC00,-255);
+            p.root.updateState();
 		}
 
 		kill();

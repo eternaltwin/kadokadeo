@@ -15,8 +15,12 @@ class FixedFramerate {
 	public function onTick(elapsedMS:Float):Void {
 		accumulator += elapsedMS;
 
-		if (accumulator > 250)
+		if (accumulator > 250) {
+			#if DEBUG
+			trace("WARN: FixedFramerate: large frame time " + accumulator + "ms");
+			#end
 			accumulator = 250;
+		}
 
 		while (accumulator >= STEP) {
 			update(STEP);

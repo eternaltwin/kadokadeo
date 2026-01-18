@@ -126,7 +126,6 @@ class ASprite extends Sprite {
 
 	public function new(?data:Array<Int>) {
 		super();
-		_prevState = new TransformState(this);
 		_curState = new TransformState(this);
 
 		if (data != null) {
@@ -376,6 +375,10 @@ class ASprite extends Sprite {
 	}
 
 	public function updateState() {
+		if (_prevState == null) {
+			_prevState = new TransformState(this);
+			_prevState.copyFrom(_curState);
+		}
 		_prevState.copyFrom(_curState);
 		for (i in this.children) {
 			if (Std.is(i, ASprite)) {
@@ -385,6 +388,9 @@ class ASprite extends Sprite {
 	}
 
 	public function updateGraphics(a:Float) {
+		if (_prevState == null) {
+			this.updateState();
+		}
 		this.position.x = mt.gx.MathEx.lerp(_prevState.x, _curState.x, a);
 		this.position.y = mt.gx.MathEx.lerp(_prevState.y, _curState.y, a);
 		this._width = mt.gx.MathEx.lerp(_prevState.width, _curState.width, a);
