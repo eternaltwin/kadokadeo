@@ -1,10 +1,8 @@
 package atlanteine;
 
-import pixi.core.math.shapes.Rectangle;
+import common_haxe_avm1.pixi.DropShadowFilter;
 import pixi.core.Pixi.BlendModes;
 import pixi.core.math.Matrix;
-import pixi.core.math.Point;
-import mt.bumdum.Geom;
 import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
 import mt.bumdum.Lib;
@@ -78,6 +76,7 @@ class Game implements kado.GameInterface {
 	public static var FL_PUSH = true;
 	public static var FL_BONUS_BLOCK = true;
 	public static var FL_TELEPORT = true;
+	public static var BACKGROUND_COLOR = 0x4E8A8F;
 
 	public static var DIR = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
@@ -98,9 +97,10 @@ class Game implements kado.GameInterface {
 	static var SCORE_BLUE = KKApi.const(1000);
 	static var SCORE_PINK = KKApi.const(12000);
 
-	public static var mcw = 900;
-	public static var mch = 900;
-	public static var SIZE = 60;
+	public static var NEW_GEN_SCALE = 3;
+	public static var mcw = 300 * NEW_GEN_SCALE;
+	public static var mch = 300 * NEW_GEN_SCALE;
+	public static var SIZE = 20 * NEW_GEN_SCALE;
 
 	static var SPEED = 0.7; // 0.4;
 	static var ZOOM_SPEED = 0.1; // 0.05;
@@ -171,12 +171,11 @@ class Game implements kado.GameInterface {
 	public function new(kkm:kado.KadoKadeoManager) {
 		this.kkm = kkm;
 		ASprite.spriteData = [
-			"atlanteine/mcBall" => [39, 71],
+			"atlanteine/mcBall" => [60, 71],
 			"atlanteine/mcWall" => [33, 35],
-			"atlanteine/mcBg" => [301, 301],
 			"atlanteine/mcBonus" => [31, 25],
-			"atlanteine/mcDalle" => [35, 46],
-			"atlanteine/mcOut" => [32, 32],
+			"atlanteine/mcDalle" => [71, 92], // Takes into account the 2/3 ratio applied in flash with scale()
+			"atlanteine/mcOut" => [64, 64],
 			"atlanteine/mcDebugField" => [32, 31],
 			"atlanteine/mcTeleport" => [30, 30],
 			"atlanteine/mcDisplacement" => [301, 301],
@@ -187,21 +186,27 @@ class Game implements kado.GameInterface {
 			"atlanteine/mcRay" => [101, 41],
 			// "atlanteine/mcScore" => [47, 24],
 			// "atlanteine/mcSquare" => [38, 52],
-			"atlanteine/mcStartDalle" => [18, 18],
+			"atlanteine/mcStartDalle" => [34, 34],
 			// "atlanteine/mcTimer" => [51, 51],
 			"atlanteine/partBlock" => [19, 17],
+			"atlanteine/baseRoche" => [73, 74],
 			"atlanteine/partCloud" => [16, 16],
 			"atlanteine/partLight" => [21, 21],
+			"atlanteine/box" => [60, 80],
 			"atlanteine/partTiret" => [7, 2],
 			"atlanteine/partWarp" => [292, 239],
 			"atlanteine/quarterAnim" => [37, 26],
+			"atlanteine/tache" => [48, 60],
+			"atlanteine/forme-zarbi" => [45, 49],
 		];
 		ASprite.app = kkm;
 		root = new ASprite();
 		kkm.stage.addChild(root);
 		me = this;
 		mdm = new mt.DepthManager(root);
-		bg = cast mdm.attach("atlanteine/mcBg", DP_BG);
+		bg = cast mdm.empty(DP_BG);
+		bg.getGraphics().beginFill(BACKGROUND_COLOR);
+		bg.getGraphics().drawRect(0, 0, mcw, mch);
 
 		xmax = Std.int(mcw / SIZE);
 		ymax = Std.int(mch / SIZE);
@@ -251,6 +256,8 @@ class Game implements kado.GameInterface {
 		var list = Sprite.spriteList.copy();
 		for (sp in list)
 			sp.update();
+
+		dm.getMC().update();
 
 		control();
 
@@ -397,8 +404,10 @@ class Game implements kado.GameInterface {
 
 	// BALL
 	function initBall() {
-		ball = new Sprite(dm.attach("atlanteine/mcBall", DP_ROCK));
-		ball.root.anchor.set(19 / 39, 24 / 71);
+		var a = dm.attach("atlanteine/mcBall", DP_ROCK);
+		a.stopOnFrame = [37, 48];
+		ball = new Sprite(a);
+		ball.root.anchor.set(30 / 60, 38 / 71);
 		(cast ball.root).ball = ball.root.createEmptyMovieClip();
 		(cast ball.root).shadow = ball.root.createEmptyMovieClip();
 		(cast ball.root).ball.smc = (cast ball.root).ball.createEmptyMovieClip();
@@ -411,10 +420,7 @@ class Game implements kado.GameInterface {
 
 		ball.x = (x + 0.5) * SIZE;
 		ball.y = (y + 0.5) * SIZE;
-		ball.setScale(SIZE / 30 * 100);
-		ball.root.stop();
 		updateBallDepths();
-        ball.root.updateState();
 	}
 
 	function updateBallDepths() {
@@ -487,7 +493,7 @@ class Game implements kado.GameInterface {
 						sp.fadeType = 0;
 						sp.root.blendMode = BlendModes.ADD;
 						sp.frict = 0.95;
-                        sp.root.updateState();
+						sp.root.updateState();
 					}
 					ballFlash = 5000;
 					Col.setColor(ball.root, 0, Std.int(ballFlash));
@@ -512,7 +518,6 @@ class Game implements kado.GameInterface {
 		}
 		ball.x = (x + 0.5 + move.coef * d[0]) * SIZE;
 		ball.y = (y + 0.5 + move.coef * d[1]) * SIZE;
-        ball.root.updateState();
 
 		//
 		if (pushInfo != null && pushInfo.flDone == false) {
@@ -674,7 +679,7 @@ class Game implements kado.GameInterface {
 					p.updatePos();
 					p.vr = (Math.random() * 2 - 1) * 30;
 					p.root._rotation = Math.random() * 360;
-                    p.root.updateState();
+					p.root.updateState();
 				}
 				flFill = false;
 			}
@@ -695,7 +700,7 @@ class Game implements kado.GameInterface {
 			}
 		}
 
-		ball.root.gotoAndPlay("go");
+		ball.root.gotoAndPlay(40);
 		move.coef = 0;
 		step = Wait;
 		haxe.Timer.delay(nextLevel, 700);
@@ -717,7 +722,7 @@ class Game implements kado.GameInterface {
 						p.vy = -5;
 						p.frict = 0.7;
 						p.timer = 20;
-                        p.root.updateState();
+						p.root.updateState();
 						// p.root.gotoAndStop(Std.random(p.root._totalframes)+1);
 						var mcf:FieldMC = cast p.root;
 						mcf.field.text = Std.string(KKApi.val(SCORE_BLOCK));
@@ -746,7 +751,7 @@ class Game implements kado.GameInterface {
 							p.timer = 10 + Math.random() * 10;
 							p.vr = (Math.random() * 2 - 1) * 20;
 							p.root._rotation = Math.random() * 360;
-                            p.root.updateState();
+							p.root.updateState();
 							Filt.glow(p.root, 3, 2, 0);
 							if (i == max * 0.5)
 								dm.over(mcScore);
@@ -784,8 +789,8 @@ class Game implements kado.GameInterface {
 		map.mcGround._y = -ball.y;
 		map._x = ball.x;
 		map._y = ball.y;
-        map.mcGround.updateState();
-        map.updateState();
+		map.mcGround.updateState();
+		map.updateState();
 
 		while (ghostList.length > 0)
 			ghostList.pop().kill();
@@ -892,7 +897,7 @@ class Game implements kado.GameInterface {
 			var p = getRandomPos([EMPTY, PATH], 4);
 			grid[p.x][p.y] = OUT;
 
-			nList = [{x: p.x, y: p.y, d: Std.random(4)}];
+			nList = [{x: p.x, y: p.y, d: kkm.seed.random(4)}];
 			flPush = FL_PUSH && level > 2;
 			getRange();
 
@@ -918,9 +923,9 @@ class Game implements kado.GameInterface {
 
 		for (i in 0...6) {
 			var m = 4;
-			var x = m + Std.random(xmax - 2 * m);
-			var y = m + Std.random(ymax - 2 * m);
-			var d = DIR[Std.random(4)];
+			var x = m + kkm.seed.random(xmax - 2 * m);
+			var y = m + kkm.seed.random(ymax - 2 * m);
+			var d = DIR[kkm.seed.random(4)];
 			while (true) {
 				x += d[0];
 				y += d[1];
@@ -937,9 +942,9 @@ class Game implements kado.GameInterface {
 		var max = Std.int(Math.min(dif * 0.2, 8));
 		for (i in 0...max) {
 			var m = 4;
-			var x = m + Std.random(xmax - 2 * m);
-			var y = m + Std.random(ymax - 2 * m);
-			var d = DIR[Std.random(4)];
+			var x = m + kkm.seed.random(xmax - 2 * m);
+			var y = m + kkm.seed.random(ymax - 2 * m);
+			var d = DIR[kkm.seed.random(4)];
 			while (true) {
 				x += d[0];
 				y += d[1];
@@ -954,7 +959,7 @@ class Game implements kado.GameInterface {
 		}
 
 		// HOLE
-		bList = shuffle2(bList);
+		bList = shuffle(bList);
 		for (i in 0...max) {
 			var p = bList.pop();
 			grid[p.x][p.y] = EMPTY;
@@ -964,8 +969,8 @@ class Game implements kado.GameInterface {
 		var max = Math.floor(dif * 0.1);
 		for (i in 0...max) {
 			var m = 1;
-			var x = m + Std.random(xmax - 2 * m);
-			var y = m + Std.random(ymax - 2 * m);
+			var x = m + kkm.seed.random(xmax - 2 * m);
+			var y = m + kkm.seed.random(ymax - 2 * m);
 			if (grid[x][y] == EMPTY)
 				grid[x][y] = ROCK;
 		}
@@ -976,7 +981,7 @@ class Game implements kado.GameInterface {
 		var flSwitch = true;
 		for (d in DIR) {
 			for (x in 0...xmax - 3) {
-				if (Std.random(6) == 0)
+				if (kkm.seed.random(6) == 0)
 					flSwitch = !flSwitch;
 				if (flSwitch) {
 					if (grid[px][py] == EMPTY) {
@@ -994,7 +999,7 @@ class Game implements kado.GameInterface {
 		var falseBlockCoef = Math.min((level / 20), 0.9);
 		for (x in 0...xmax) {
 			for (y in 0...xmax) {
-				if (grid[x][y] == ROCK && Math.random() < falseBlockCoef) {
+				if (grid[x][y] == ROCK && kkm.seed.rand() < falseBlockCoef) {
 					if ((isFree(x - 1, y) && isFree(x + 1, y)) || (isFree(x, y - 1) && isFree(x, y + 1))) {
 						grid[x][y] = BLOCK;
 					}
@@ -1013,7 +1018,7 @@ class Game implements kado.GameInterface {
 				var nx = sx + d[0] * dist;
 				var ny = sy + d[1] * dist;
 				var c = grid[nx][ny];
-				if (c == EMPTY && Std.random(3) == 0) {
+				if (c == EMPTY && kkm.seed.random(3) == 0) {
 					grid[nx][ny] = ROCK;
 					break;
 				}
@@ -1203,24 +1208,22 @@ class Game implements kado.GameInterface {
 
 				switch (type) {
 					case ROCK:
-						var mc = dm.attach("atlanteine/mcWall", DP_ROCK);
+						var mc = dm.attach("atlanteine/baseRoche", DP_ROCK);
+						mc.gotoAndStop(kkm.seed.random(7) + 1);
+						mc.anchor.set(11 / 73, 17 / 74);
 						mc._x = x * SIZE;
 						mc._y = y * SIZE;
-						mc._xscale = mc._yscale = SIZE / 30 * 100;
 
 						Col.setPercentColor(mc, Std.random(20), 0xff9900);
 						elements[x][y] = mc;
-                        mc.updateState();
 
 					case BLOCK:
-						var mc = dm.attach("atlanteine/mcDalle", DP_ROCK);
+						var mc = dm.attach("atlanteine/box", DP_ROCK);
 						mc.anchor.set(0, 0);
 						mc._x = x * SIZE;
 						mc._y = y * SIZE;
-						mc._xscale = mc._yscale = SIZE / 30 * 100;
 
 						Col.setPercentColor(mc, Std.random(20), 0xff9900);
-                        mc.update();
 						elements[x][y] = mc;
 					case TELEPORT:
 						var mc = dm.attach("atlanteine/mcTeleport", DP_ROCK);
@@ -1228,16 +1231,16 @@ class Game implements kado.GameInterface {
 						mc._x = x * SIZE;
 						mc._y = y * SIZE;
 						mc._xscale = mc._yscale = SIZE / 30 * 100;
-                        mc.updateState();
 
 						elements[x][y] = mc;
 					case OUT:
-						var mc = map.mcGround.attachMovie("atlanteine/mcOut");
+						var mc = map.mcGround.createEmptyMovieClip();
+						mc.getGraphics().beginFill(BACKGROUND_COLOR);
+						mc.getGraphics().drawRect(0, 0, 64, 64);
+						mc.attachMovie("atlanteine/mcOut");
 						mc.anchor.set(0, 0);
-						mc._x = x * SIZE;
-						mc._y = y * SIZE;
-						mc._xscale = mc._yscale = SIZE / 30 * 100;
-                        mc.updateState();
+						mc._x = x * SIZE - 8;
+						mc._y = y * SIZE - 16;
 
 						mcOut = mc;
 						dm.over(map.mcGround);
@@ -1251,30 +1254,54 @@ class Game implements kado.GameInterface {
 						groundFrame += Std.int(Math.pow(2, i));
 				}
 
-				var mcg = switch (type) {
+				switch (type) {
 					case EMPTY, PATH, ROCK, BLOCK, TELEPORT:
+						var c = new ASprite();
 						var mcg = BmpTextureHelper.getASprite("atlanteine/mcDalle");
-						mcg.anchor.set(0, 0);
 						mcg.gotoAndStop(groundFrame);
-						mcg._xscale = mcg._yscale = SIZE / 30 * 100;
-						mcg._x = x * SIZE;
-						mcg._y = y * SIZE;
-                        mcg.updateState();
-                        trace('ground at ' + x + ',' + y + ':' + mcg._x + ',' + mcg._y);
+						mcg.anchor.set(6 / mcg._width, 10 / mcg._height);
+						c.addChild(mcg);
+						var tacheFrame = Std.random(28) + 1;
+						if (tacheFrame < 12) {
+							var tache = BmpTextureHelper.getASprite("atlanteine/tache");
+							tache.gotoAndStop(Math.floor(tacheFrame / 3) + 1);
+							tache.position.set((11) * NEW_GEN_SCALE, (8.5) * NEW_GEN_SCALE);
+							c.addChild(tache);
+						} else if (tacheFrame < 16) {
+							var zarbi = BmpTextureHelper.getASprite("atlanteine/forme-zarbi");
+							zarbi.anchor.set(6 / 45, 0);
+							zarbi.gotoAndStop(zarbi._totalframes.random() + 1);
+							zarbi.position.set(5 * NEW_GEN_SCALE, 1.5 * NEW_GEN_SCALE);
+							zarbi.filters = [
+								new DropShadowFilter({
+									blur: 0,
+									rotation: 45,
+									distance: 2,
+									color: 0xD4E2C5
+								}),
+								new DropShadowFilter({
+									blur: 0,
+									rotation: 225,
+									distance: 2,
+									color: 0x99B66B
+								})
+							];
+							c.addChild(zarbi);
+						}
 
-						mcg;
+						var m = new Matrix();
+						// Fixes pixel interpolation. Math is (SIZE * NEW_GEN_SCALE - 1) = 59 (but hardcoded because it depends on the image)
+						m.translate(x * 59, y * 59);
+
+						map.mcGround.bmp.draw(c, m);
+						c.removeMovieClip();
 					default:
-						null;
-				}
-
-				if (mcg != null) {
-					map.mcGround.bmp.draw(mcg, new Matrix());
-					mcg.removeMovieClip();
 				}
 			}
 		}
 
 		map.mcGround.attachBitmap(map.mcGround.bmp, 1);
+		map.mcGround.setChildIndex(mcOut, map.mcGround.children.length - 1);
 
 		// BONUS
 		if (FL_BONUS) {
@@ -1286,39 +1313,37 @@ class Game implements kado.GameInterface {
 				var x = null;
 				var y = null;
 				var m = 1;
+
 				do {
 					x = m + Std.random(xmax - m * 2);
 					y = m + Std.random(ymax - m * 2);
 				} while (!isFree(x, y) || bonus[x][y] != null);
-
 				var mc = dm.attach("atlanteine/mcBonus", DP_ROCK);
+
 				mc._x = x * SIZE + 15;
 				mc._y = y * SIZE + 10;
 				mc._xscale = mc._yscale = SIZE / 30 * 100;
 				mc.gotoAndStop(getBonusId());
-                mc.updateState();
+				mc.updateState();
 				bonus[x][y] = mc;
 			}
 		}
-
 		// GHOST
 		if (FL_GHOST) {
 			var max = Std.int(Math.min(Math.pow((level - 10), 0.5), 5));
 			ghostList = [];
 			for (i in 0...max) {
 				var g = new Ghost(dm.attach("atlanteine/mcGhost", DP_GHOST));
+
 				g.root.anchor.set(0.5, 0.5);
-                g.root.updateState();
+				g.root.updateState();
 			}
 		}
-
 		// START DALLE
 		var p = nList[nList.length - 1];
 		var mc = dm.attach("atlanteine/mcStartDalle", DP_GROUND);
-		mc._x = p.x * SIZE + 7;
-		mc._y = p.y * SIZE + 7;
-		mc._xscale = mc._yscale = SIZE / 30 * 100;
-        mc.updateState();
+		mc._x = 7 + p.x * SIZE + 7;
+		mc._y = 7 + p.y * SIZE + 7;
 		elements[p.x][p.y] = mc;
 	}
 
@@ -1426,7 +1451,7 @@ class Game implements kado.GameInterface {
 			p._xscale = p._yscale = 20;
 			p._rotation = Math.random() * 360;
 			p.gotoAndPlay(Std.random(6) + 1);
-            p.updateState();
+			p.updateState();
 		}
 	}
 
@@ -1474,7 +1499,7 @@ class Game implements kado.GameInterface {
 	}
 
 	function updateTimerGfx() {
-		trace('FIXME: timer');
+		// trace('FIXME: timer');
 		// mcTimer.smc.gotoAndStop(1 + Std.int((levelTimer / levelTimerMax) * 160));
 	}
 
@@ -1549,8 +1574,8 @@ class Game implements kado.GameInterface {
 			m = 2;
 		var to = 0;
 		while (true) {
-			var x = m + Std.random(xmax - 2 * m);
-			var y = m + Std.random(ymax - 2 * m);
+			var x = m + kkm.seed.random(xmax - 2 * m);
+			var y = m + kkm.seed.random(ymax - 2 * m);
 			for (type in a) {
 				if (grid[x][y] == type)
 					return {x: x, y: y};
@@ -1563,27 +1588,13 @@ class Game implements kado.GameInterface {
 		return null;
 	}
 
-	function shuffle(list:Array<Int>):Array<Int> {
+	function shuffle<T>(list:Array<T>):Array<T> {
 		var pos = [];
 		for (n in 0...list.length)
 			pos.push(n);
 		var a = [];
 		while (pos.length > 0) {
-			var index = Std.random(pos.length);
-			var n = pos[index];
-			pos.splice(index, 1);
-			a.push(list[n]);
-		}
-		return a;
-	}
-
-	function shuffle2(list:Array<{x:Int, y:Int}>):Array<{x:Int, y:Int}> {
-		var pos = [];
-		for (n in 0...list.length)
-			pos.push(n);
-		var a = [];
-		while (pos.length > 0) {
-			var index = Std.random(pos.length);
+			var index = kkm.seed.random(pos.length);
 			var n = pos[index];
 			pos.splice(index, 1);
 			a.push(list[n]);

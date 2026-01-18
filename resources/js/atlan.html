@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vite App</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.0.2/browser/pixi.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/pixi-filters@5.0.0/dist/browser/pixi-filters.min.js"></script>
+        <script type="module" src="/games/atlanteine.js"></script>
+    </head>
+    <body>
+        <div id="app"></div>
+        <canvas width="100%" height="100%" id="canvas"></canvas>
+        <script type="text/javascript">
+            window.addEventListener('DOMContentLoaded', function () {
+                new KadoKadeo(document.getElementById('canvas'), GameAtlanteine);
+            })
+        </script>
+    </body>
+</html>

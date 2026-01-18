@@ -27,6 +27,7 @@ class KadoKadeoManager extends Application {
 	var crypto:KadoCrypto = new KadoCrypto();
 
 	var score:Int = 0;
+
 	public var seed:mt.Rand;
 
 	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>) {
@@ -94,6 +95,11 @@ class KadoKadeoManager extends Application {
 	}
 
 	public function showIntroScreen() {
+		#if debug
+		seed = new mt.Rand(hashFNV1a("123"));
+		startGame();
+		return;
+		#end
 		startScene = new StartScene(this);
 		startScene.interactive = true;
 		startScene.once("pointerdown", e -> {
@@ -117,10 +123,13 @@ class KadoKadeoManager extends Application {
 
 		game = Type.createInstance(gameClass, [this]);
 		var imageKeys = [for (k in common_haxe_avm1.display.ASprite.spriteData.keys()) k];
-		trace('Preloading images: ' + imageKeys);
+		// trace('Preloading images: ' + imageKeys);
 		common_haxe_avm1.BmpTextureHelper.preload(imageKeys).then((_) -> {
-			trace('Starting game');
-			game.start();
+			try {
+				game.start();
+			} catch (e:Dynamic) {
+				trace(e);
+			}
 			isGameStarted = true;
 		}).catchError(error -> {
 			trace('Error while preloading images: ' + error.message);
@@ -141,6 +150,7 @@ class KadoKadeoManager extends Application {
 		var win:Dynamic = js.Browser.window;
 		var kado:KadoConfig = cast win.Kado;
 
+		#if !debug
 		var jse = new externs.JSEncrypt();
 		jse.setPublicKey(kado.public_key);
 		var req = {
@@ -162,6 +172,7 @@ class KadoKadeoManager extends Application {
 		}, error -> {
 			trace('Error ending run: ' + error.message);
 		});
+		#end
 	}
 
 	override public function destroy(?removeView:Bool):Void {

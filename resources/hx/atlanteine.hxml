@@ -4,4 +4,5 @@
 -L jsImport
 -cp ./lib
 -cp ./games
+-debug
 atlanteine.Game

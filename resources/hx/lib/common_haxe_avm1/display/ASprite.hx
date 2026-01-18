@@ -2,7 +2,6 @@ package common_haxe_avm1.display;
 
 import haxe.ds.IntMap;
 import haxe.ds.StringMap;
-import pixi.interaction.InteractionManager;
 import pixi.core.Application;
 import pixi.core.math.Matrix;
 import pixi.core.math.Point;
@@ -12,7 +11,6 @@ import pixi.core.text.Text;
 import pixi.core.display.Container;
 import pixi.core.graphics.Graphics;
 import pixi.core.math.shapes.Rectangle;
-import pixi.core.textures.TextureMatrix;
 import pixi.core.sprites.Sprite;
 import pixi.core.textures.Texture;
 
@@ -377,7 +375,6 @@ class ASprite extends Sprite {
 	public function updateState() {
 		if (_prevState == null) {
 			_prevState = new TransformState(this);
-			_prevState.copyFrom(_curState);
 		}
 		_prevState.copyFrom(_curState);
 		for (i in this.children) {

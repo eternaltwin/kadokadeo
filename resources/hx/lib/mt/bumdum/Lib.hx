@@ -80,21 +80,20 @@ class Col {
 			return;
 		}
 
-		trace("FIXME");
 		if (inc == null)
 			inc = 0;
 		var color = colToObj(col);
 		var c = prc / 100;
 		var ct = {_: null};
 		var ct = {
-			r: Std.int(c * color.r + inc),
-			g: Std.int(c * color.g + inc),
-			b: Std.int(c * color.b + inc),
+			r: 0xFF - Std.int(c * color.r + inc), // Not perfect
+			g: 0xFF - Std.int(c * color.g + inc),
+			b: 0xFF - Std.int(c * color.b + inc),
 		};
 		setColor(mc, objToCol(ct));
 	}
 
-	static public function setColor(mc, col, ?dec) {
+	static public function setColor(mc, col:Int, ?dec) {
 		mc.tint = col;
 	}
 

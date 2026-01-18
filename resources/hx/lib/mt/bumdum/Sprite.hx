@@ -24,33 +24,33 @@ class Sprite {
 		this.scale = 100;
 	}
 
-    public function get_x() {
-        return this.root._x;
-    }
+	public function get_x() {
+		return this.root._x;
+	}
 
-    public function set_x(val:Float) {
-        this.root._x = val;
-        return val;
-    }
+	public function set_x(val:Float) {
+		this.root._x = val;
+		return val;
+	}
 
-    public function get_y() {
-        return this.root._y;
-    }
+	public function get_y() {
+		return this.root._y;
+	}
 
-    public function set_y(val:Float) {
-        this.root._y = val;
-        return val;
-    }
+	public function set_y(val:Float) {
+		this.root._y = val;
+		return val;
+	}
 
-    public function get_scale() {
-        return this.root._xscale;
-    }
+	public function get_scale() {
+		return this.root._xscale;
+	}
 
-    public function set_scale(val:Float) {
-        this.root._xscale = val;
-        this.root._yscale = val;
-        return val;
-    }
+	public function set_scale(val:Float) {
+		this.root._xscale = val;
+		this.root._yscale = val;
+		return val;
+	}
 
 	public function updatePos() {
 		this.root._x = this.x;
