@@ -258,6 +258,7 @@ class Game implements kado.GameInterface {
 			sp.update();
 
 		dm.getMC().update();
+		prec?.update();
 
 		control();
 
@@ -283,7 +284,7 @@ class Game implements kado.GameInterface {
 			prc *= 0.5;
 			if (prc < 1)
 				prc = 0;
-			// Col.setPercentColor(map, prc.int(), 0);
+			Col.setPercentColor(map, prc.int(), 0);
 			if (prc <= 0)
 				prc = null;
 		}
@@ -705,7 +706,8 @@ class Game implements kado.GameInterface {
 		step = Wait;
 		haxe.Timer.delay(nextLevel, 700);
 
-		// mcOut.smc.gotoAndPlay(2);
+		untyped (mcOut.children[1]).gotoAndPlay(2);
+		// mcOut.gotoAndPlay(2);
 
 		// BONUS CAISSE
 		if (FL_BONUS_BLOCK && pushInfo == null) {
@@ -776,7 +778,10 @@ class Game implements kado.GameInterface {
 
 		for (a in elements) {
 			for (mc in a.filter(n -> n != null)) {
-				map.mcGround.bmp.draw(mc, new Matrix());
+				var m = new Matrix();
+				// m.scale(mc._xscale / 100, mc._yscale / 100);
+				// m.translate(mc._x, mc._y);
+				map.mcGround.bmp.draw(mc, m);
 				mc.removeMovieClip();
 			}
 		}
@@ -789,14 +794,12 @@ class Game implements kado.GameInterface {
 		map.mcGround._y = -ball.y;
 		map._x = ball.x;
 		map._y = ball.y;
-		map.mcGround.updateState();
-		map.updateState();
 
 		while (ghostList.length > 0)
 			ghostList.pop().kill();
 
 		initMap();
-		// Col.setPercentColor(map, HOLE_FADE, 0);
+		Col.setPercentColor(map, HOLE_FADE, 0);
 		mdm.over(prec);
 		step = Next;
 	}
@@ -1235,7 +1238,7 @@ class Game implements kado.GameInterface {
 						elements[x][y] = mc;
 					case OUT:
 						var mc = map.mcGround.createEmptyMovieClip();
-						mc.getGraphics().beginFill(BACKGROUND_COLOR);
+						mc.getGraphics().beginFill(BACKGROUND_COLOR, 0); // 0 to see next level in the hole
 						mc.getGraphics().drawRect(0, 0, 64, 64);
 						mc.attachMovie("atlanteine/mcOut");
 						mc.anchor.set(0, 0);

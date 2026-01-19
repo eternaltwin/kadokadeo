@@ -36,9 +36,9 @@ class Ghost extends Phys {
 
 		// GFX
 		var fr = Std.int(Num.sMod(angle, 6.28) / 6.28 * 80) + 1;
-		root.smc.gotoAndStop(fr);
+		root.smc?.gotoAndStop(fr);
 		float = (float + speedFloat * mt.Timer.tmod) % 628;
-		root.smc._y = Math.cos(float * 0.01) * 4 - 8;
+		root._y = Math.cos(float * 0.01) * 4 - 8;
 
 		vx = Math.cos(angle) * speed;
 		vy = Math.sin(angle) * speed;
