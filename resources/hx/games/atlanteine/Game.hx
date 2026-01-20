@@ -3,6 +3,7 @@ package atlanteine;
 import common_haxe_avm1.pixi.DropShadowFilter;
 import pixi.core.Pixi.BlendModes;
 import pixi.core.math.Matrix;
+import pixi.core.graphics.Graphics;
 import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
 import mt.bumdum.Lib;
@@ -103,7 +104,7 @@ class Game implements kado.GameInterface {
 	public static var SIZE = 20 * NEW_GEN_SCALE;
 
 	static var SPEED = 0.7; // 0.4;
-	static var ZOOM_SPEED = 0.1; // 0.05;
+	static var ZOOM_SPEED = 0.01; // 0.05;
 	static var HOLE_FADE = 30;
 	static var TIME = 800;
 	static var TIME_LEVEL_MALUS = 12;
@@ -706,8 +707,7 @@ class Game implements kado.GameInterface {
 		step = Wait;
 		haxe.Timer.delay(nextLevel, 700);
 
-		untyped (mcOut.children[1]).gotoAndPlay(2);
-		// mcOut.gotoAndPlay(2);
+		mcOut.gotoAndPlay(2);
 
 		// BONUS CAISSE
 		if (FL_BONUS_BLOCK && pushInfo == null) {
@@ -1214,7 +1214,7 @@ class Game implements kado.GameInterface {
 						var mc = dm.attach("atlanteine/baseRoche", DP_ROCK);
 						mc.gotoAndStop(kkm.seed.random(7) + 1);
 						mc.anchor.set(11 / 73, 17 / 74);
-						mc._x = x * SIZE;
+						mc._x = x * SIZE - 4;
 						mc._y = y * SIZE;
 
 						Col.setPercentColor(mc, Std.random(20), 0xff9900);
@@ -1222,7 +1222,7 @@ class Game implements kado.GameInterface {
 
 					case BLOCK:
 						var mc = dm.attach("atlanteine/box", DP_ROCK);
-						mc.anchor.set(0, 0);
+						mc.anchor.set(0, 14 / 80);
 						mc._x = x * SIZE;
 						mc._y = y * SIZE;
 
@@ -1237,13 +1237,19 @@ class Game implements kado.GameInterface {
 
 						elements[x][y] = mc;
 					case OUT:
-						var mc = map.mcGround.createEmptyMovieClip();
-						mc.getGraphics().beginFill(BACKGROUND_COLOR, 0); // 0 to see next level in the hole
-						mc.getGraphics().drawRect(0, 0, 64, 64);
-						mc.attachMovie("atlanteine/mcOut");
-						mc.anchor.set(0, 0);
-						mc._x = x * SIZE - 8;
-						mc._y = y * SIZE - 16;
+						var mc = map.mcGround.attachMovie("atlanteine/mcOut");
+						mc.anchor.set(4 / 64, 10 / 64);
+
+						// Empty circle hole from nearby ground textures
+						var mask = new Graphics();
+						mask.beginFill(0xffffff);
+						mask.drawCircle(x * SIZE + 32, y * SIZE + 32, 36);
+						mask.endFill();
+						mask.blendMode = untyped BlendModes.ERASE;
+						map.mcGround.bmp.draw(mask, new Matrix());
+
+						mc._x = x * SIZE;
+						mc._y = y * SIZE;
 
 						mcOut = mc;
 						dm.over(map.mcGround);
@@ -1294,7 +1300,7 @@ class Game implements kado.GameInterface {
 
 						var m = new Matrix();
 						// Fixes pixel interpolation. Math is (SIZE * NEW_GEN_SCALE - 1) = 59 (but hardcoded because it depends on the image)
-						m.translate(x * 59, y * 59);
+						m.translate(x * SIZE, y * SIZE);
 
 						map.mcGround.bmp.draw(c, m);
 						c.removeMovieClip();
