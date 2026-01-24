@@ -18,6 +18,7 @@ class AnonSprite13294744 extends ASprite {
 
 class AnonSprite14226607 extends ASprite {
 	public var field:Text;
+	public var ring:Graphics;
 }
 
 private enum Step {
@@ -191,7 +192,7 @@ class Game implements kado.GameInterface {
 			// "atlanteine/mcTimer" => [51, 51],
 			"atlanteine/partBlock" => [19, 17],
 			"atlanteine/baseRoche" => [73, 74],
-			"atlanteine/partCloud" => [16, 16],
+			"atlanteine/partCloud" => [46, 46],
 			"atlanteine/partLight" => [21, 21],
 			"atlanteine/box" => [60, 80],
 			"atlanteine/partTiret" => [7, 2],
@@ -664,12 +665,12 @@ class Game implements kado.GameInterface {
 					p.root.anchor.set(0.5, 0.5);
 					p.root.stopOnFrame = [8];
 					var a = i / max * 6.28;
-					var ray = 18;
+					var ray = 18 * NEW_GEN_SCALE;
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
 					var sp = 0.5 + Math.random() * 1.5;
-					p.x = mcw - 20 + ca * ray;
-					p.y = mch - 20 + sa * ray;
+					p.x = mcw - 20 * NEW_GEN_SCALE + ca * ray;
+					p.y = mch - 20 * NEW_GEN_SCALE + sa * ray;
 					// p.weight = -(0.1+Math.random()*0.3);
 					p.vx = ca * sp;
 					p.vy = sa * sp;
@@ -677,11 +678,10 @@ class Game implements kado.GameInterface {
 					p.fadeType = 0;
 					p.frict = 0.9;
 					p.root.blendMode = BlendModes.ADD;
-					p.setScale(200);
+					p.setScale(200 * NEW_GEN_SCALE);
 					p.updatePos();
 					p.vr = (Math.random() * 2 - 1) * 30;
 					p.root._rotation = Math.random() * 360;
-					p.root.updateState();
 				}
 				flFill = false;
 			}
@@ -831,15 +831,15 @@ class Game implements kado.GameInterface {
 			p.root.play();
 			var c = levelTimer / levelTimerMax;
 			var a = c * 6.28 - 1.57;
-			var ray = 16;
-			p.x = mcw - 20 + Math.cos(a) * ray;
-			p.y = mch - 20 + Math.sin(a) * ray;
+			var ray = 16 * NEW_GEN_SCALE;
+			p.x = mcw - 20 * NEW_GEN_SCALE + Math.cos(a) * ray;
+			p.y = mch - 20 * NEW_GEN_SCALE + Math.sin(a) * ray;
 			p.weight = -(0.1 + Math.random() * 0.3);
 			p.vx = (Math.random() * 2 - 1) * 0.5;
 			p.timer = 10 + Math.random() * 10;
 			p.fadeType = 0;
 			p.root.blendMode = BlendModes.ADD;
-			p.setScale(150);
+			p.setScale(150 * NEW_GEN_SCALE);
 			p.updatePos();
 
 			//
@@ -1473,14 +1473,30 @@ class Game implements kado.GameInterface {
 			font: "Impact",
 			size: 36,
 			bold: false,
-			x: -66,
-			y: -66
+			x: -62,
+			y: -82
 		});
 		mcTimer._x = mcw;
 		mcTimer._y = mch;
 		mcTimer.field.text = Std.string(level);
+		mcTimer.ring = new Graphics();
+		mcTimer.addChild(mcTimer.ring);
 
-		Filt.glow(mcTimer, 10, 1, 0xFFFFFF);
+		Filt.glow(mcTimer, 10 * NEW_GEN_SCALE, 1, 0xFFFFFF);
+	}
+
+	function drawRing(p: Float) {
+		mcTimer.ring.clear();
+
+		var cx = -60, cy = -60;
+		var r = 36; // rayon au milieu du trait
+		var thickness = 18;
+
+		var start = -Math.PI / 2;
+		var end = start + Math.PI * 2 * p;
+
+		mcTimer.ring.lineStyle(thickness, 0xFFFFFF, 1);
+		mcTimer.ring.arc(cx, cy, r, start, end);
 	}
 
 	function updateTimer() {
@@ -1508,6 +1524,7 @@ class Game implements kado.GameInterface {
 	}
 
 	function updateTimerGfx() {
+        drawRing(levelTimer / levelTimerMax);
 		// trace('FIXME: timer');
 		// mcTimer.smc.gotoAndStop(1 + Std.int((levelTimer / levelTimerMax) * 160));
 	}

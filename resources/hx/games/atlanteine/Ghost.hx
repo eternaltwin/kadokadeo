@@ -86,7 +86,7 @@ class Ghost extends Phys {
 	public function explode() {
 		var max = 12;
 		for (i in 0...max) {
-			var p = new Phys(Game.me.dm.attach("partCloud", Game.DP_PARTS));
+			var p = new Phys(Game.me.dm.attach("atlanteine/partCloud", Game.DP_PARTS));
 			var sp = 0.2 + Math.random() * 0.5;
 			var r = sp * 10;
 			var a = i / max * 6.28;
