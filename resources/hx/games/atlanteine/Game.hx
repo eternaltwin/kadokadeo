@@ -105,7 +105,7 @@ class Game implements kado.GameInterface {
 	public static var SIZE = 20 * NEW_GEN_SCALE;
 
 	static var SPEED = 0.7; // 0.4;
-	static var ZOOM_SPEED = 0.01; // 0.05;
+	static var ZOOM_SPEED = 0.1; // 0.05;
 	static var HOLE_FADE = 30;
 	static var TIME = 800;
 	static var TIME_LEVEL_MALUS = 12;
@@ -174,6 +174,7 @@ class Game implements kado.GameInterface {
 		this.kkm = kkm;
 		ASprite.spriteData = [
 			"atlanteine/mcBall" => [60, 71],
+			"atlanteine/mcBallShadow" => [115, 115],
 			"atlanteine/mcWall" => [33, 35],
 			"atlanteine/mcBonus" => [31, 25],
 			"atlanteine/mcDalle" => [71, 92], // Takes into account the 2/3 ratio applied in flash with scale()
@@ -407,19 +408,23 @@ class Game implements kado.GameInterface {
 
 	// BALL
 	function initBall() {
-		var a = dm.attach("atlanteine/mcBall", DP_ROCK);
-		a.stopOnFrame = [37, 48];
+		var a = dm.empty(DP_ROCK);
 		ball = new Sprite(a);
-		ball.root.anchor.set(30 / 60, 38 / 71);
+		ball.root.anchor.set(0.5, 38 / 71);
 		(cast ball.root).ball = ball.root.createEmptyMovieClip();
-		(cast ball.root).shadow = ball.root.createEmptyMovieClip();
-		(cast ball.root).ball.smc = (cast ball.root).ball.createEmptyMovieClip();
+		(cast ball.root).shadow = ball.root.attachMovie("atlanteine/mcBallShadow", "smc", -1);
+		(cast ball.root).shadow.anchor.set(0.5, 0.5);
+		(cast ball.root).shadow.loop = true;
+		(cast ball.root).shadow.play();
+		(cast ball.root).ball.smc = (cast ball.root).ball.attachMovie("atlanteine/mcBall");
+		(cast ball.root).ball.smc.anchor.set(0.5, 0.5);
+		(cast ball.root).ball.smc.stopOnFrame = [37, 48];
 		var last = nList[nList.length - 1];
 		x = last.x;
 		y = last.y;
 
-		Filt.glow(ball.root, 2, 2, 0xFFFFFF);
-		Filt.glow(ball.root, 20, 1, 0xFFFF00);
+		Filt.glow(ball.root, 2 * NEW_GEN_SCALE, 2, 0xFFFFFF);
+		Filt.glow(ball.root, 20 * NEW_GEN_SCALE, 1, 0xFFFF00);
 
 		ball.x = (x + 0.5) * SIZE;
 		ball.y = (y + 0.5) * SIZE;
@@ -456,14 +461,15 @@ class Game implements kado.GameInterface {
 			var actual = grid[x][y];
 			switch (actual) {
 				case SEA:
-					ball.root.gotoAndPlay(10);
+					mcBall.ball.smc.gotoAndPlay(10);
+					mcBall.shadow._alpha = 0;
 					move.coef = 0;
 					if (isFree(x, y + 1)) {
 						move.coef += 0.2;
 						ball.y -= 17;
 						ball.root._y -= 17;
 					}
-					ball.root.filters = [];
+					mcBall.filters = [];
 					killBall();
 					break;
 				case OUT:
@@ -609,7 +615,8 @@ class Game implements kado.GameInterface {
 		step = Spawn;
 		bvy = 0;
 		mcBall = cast ball.root;
-		mcBall.ball.smc._y = -80;
+		mcBall.ball.smc._y = -80 * NEW_GEN_SCALE;
+		mcBall.shadow._alpha = 0;
 		tc = 0;
 
 		flFill = levelTimer == null;
@@ -638,7 +645,7 @@ class Game implements kado.GameInterface {
 				}
 			}
 		}
-		mcBall.shadow._alpha = 100 + mcBall.ball.smc._y * 2;
+		mcBall.shadow._alpha = 100 + mcBall.ball.smc._y * 2 * NEW_GEN_SCALE;
 
 		// SPAWN COEF
 		tc = Math.min(tc + 0.1 * mt.Timer.tmod, 1);
@@ -702,7 +709,8 @@ class Game implements kado.GameInterface {
 			}
 		}
 
-		ball.root.gotoAndPlay(40);
+		mcBall.ball.smc.gotoAndPlay(40);
+		mcBall.shadow._alpha = 0;
 		move.coef = 0;
 		step = Wait;
 		haxe.Timer.delay(nextLevel, 700);
@@ -728,7 +736,7 @@ class Game implements kado.GameInterface {
 						// p.root.gotoAndStop(Std.random(p.root._totalframes)+1);
 						var mcf:FieldMC = cast p.root;
 						mcf.field.text = Std.string(KKApi.val(SCORE_BLOCK));
-						Filt.glow(p.root, 2, 2, 0);
+						Filt.glow(p.root, 2 * NEW_GEN_SCALE, 2, 0);
 						var mcScore = p.root;
 						mcScore.initTextField('field', {
 							color: 0xFFFFFF,
@@ -754,7 +762,7 @@ class Game implements kado.GameInterface {
 							p.vr = (Math.random() * 2 - 1) * 20;
 							p.root._rotation = Math.random() * 360;
 							p.root.updateState();
-							Filt.glow(p.root, 3, 2, 0);
+							Filt.glow(p.root, 3 * NEW_GEN_SCALE, 2, 0);
 							if (i == max * 0.5)
 								dm.over(mcScore);
 						}
@@ -1485,7 +1493,7 @@ class Game implements kado.GameInterface {
 		Filt.glow(mcTimer, 10 * NEW_GEN_SCALE, 1, 0xFFFFFF);
 	}
 
-	function drawRing(p: Float) {
+	function drawRing(p:Float) {
 		mcTimer.ring.clear();
 
 		var cx = -60, cy = -60;
@@ -1524,8 +1532,7 @@ class Game implements kado.GameInterface {
 	}
 
 	function updateTimerGfx() {
-        drawRing(levelTimer / levelTimerMax);
-		// trace('FIXME: timer');
+		drawRing(levelTimer / levelTimerMax);
 		// mcTimer.smc.gotoAndStop(1 + Std.int((levelTimer / levelTimerMax) * 160));
 	}
 
