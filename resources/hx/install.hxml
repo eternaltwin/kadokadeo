@@ -1,0 +1,3 @@
+-L pixijs
+-L crypto
+-L jsImport:git:https://github.com/back2dos/jsImport.git

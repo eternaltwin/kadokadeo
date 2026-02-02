@@ -1,0 +1,16 @@
+-L pixijs
+-L crypto
+-L jsImport
+-cp ./lib
+-cp ./games
+-debug
+
+--each
+-js ../js/games/atlanteine.js
+atlanteine.Game
+--next
+-js ../js/games/chocomouche.js
+chocomouche.Game
+#--next
+#-js ../js/games/kanji_gaiden.js
+#kanji_gaiden.Game

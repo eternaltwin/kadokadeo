@@ -1,7 +1,7 @@
 -js ../js/games/atlanteine.js
 -L pixijs
 -L crypto
--L jsImport
+-L jsImport:git:https://github.com/back2dos/jsImport.git#b75bda11cf8805b514d585d9c48b1d15d41664ed
 -cp ./lib
 -cp ./games
 -debug

@@ -59,5 +59,5 @@ setup-env-variables:
 sync-database:
 	docker compose run --rm kadokadeo_app php artisan migrate --force
 
-update-games:
-	docker exec kadokadeo_app sh /www/update_games.sh
+compile-games:
+	docker exec -w /www/resources/hx -u dev kadokadeo_app haxe compile.hxml

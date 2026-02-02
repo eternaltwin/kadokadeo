@@ -104,7 +104,7 @@ class KadoKadeoManager extends Application {
 		startScene.interactive = true;
 		startScene.once("pointerdown", e -> {
 			Api.askContract((data:Dto.ApiResponse<Dto.RunDTO>) -> {
-				seed = new mt.Rand(hashFNV1a("123"));
+				seed = new mt.Rand(hashFNV1a(data.data.seed));
 				startScene.showContract(data.data);
 				runDetails = data.data;
 				startScene.interactive = true;
