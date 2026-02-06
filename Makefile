@@ -60,4 +60,4 @@ sync-database:
 	docker compose run --rm kadokadeo_app php artisan migrate --force
 
 compile-games:
-	docker exec -w /www/resources/hx -u dev kadokadeo_app haxe compile.hxml
+	docker exec -u dev kadokadeo_app haxe compile.hxml

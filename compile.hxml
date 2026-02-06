@@ -1,15 +1,15 @@
 -L pixijs
 -L crypto
 -L jsImport
--cp ./lib
--cp ./games
+-cp ./resources/hx/lib
+-cp ./resources/hx/games
 -debug
 
 --each
--js ../js/games/atlanteine.js
+-js ./resources/js/games/atlanteine.js
 atlanteine.Game
 --next
--js ../js/games/chocomouche.js
+-js ./resources/js/games/chocomouche.js
 chocomouche.Game
 #--next
 #-js ../js/games/kanji_gaiden.js

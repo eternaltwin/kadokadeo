@@ -255,7 +255,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(ts:Float) {
-    //mt.Timer.tmod *= 0.5;
+		// mt.Timer.tmod *= 0.5;
 		// SPRITE
 		var list = Sprite.spriteList.copy();
 		for (sp in list)
@@ -593,7 +593,7 @@ class Game implements kado.GameInterface {
 		for (a in elements)
 			for (mc in a.filter(n -> n != null)) {
 				if (mc._name.indexOf('box@') > -1) {
-          mc.gotoAndStop(1);
+					mc.gotoAndStop(1);
 				}
 			}
 	}
@@ -605,7 +605,7 @@ class Game implements kado.GameInterface {
 		for (a in elements)
 			for (mc in a.filter(n -> n != null)) {
 				if (mc._name.indexOf('box@') > -1) {
-          mc.gotoAndStop(2);
+					mc.gotoAndStop(2);
 				}
 			}
 	}
@@ -1234,7 +1234,7 @@ class Game implements kado.GameInterface {
 						mc.anchor.set(0, 14 / 80);
 						mc._x = x * SIZE;
 						mc._y = y * SIZE;
-            mc.gotoAndStop(1);
+						mc.gotoAndStop(1);
 
 						Col.setPercentColor(mc, Std.random(20), 0xff9900);
 						elements[x][y] = mc;
