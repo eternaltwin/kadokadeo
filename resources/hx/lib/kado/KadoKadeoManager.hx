@@ -11,6 +11,11 @@ typedef KadoConfig = {
 	var public_key:String;
 }
 
+typedef GameParams = {
+	var replayData:String;
+	var isDaily:Bool;
+}
+
 @:expose("KadoKadeo")
 class KadoKadeoManager extends Application {
 	public var canvas:CanvasElement;
@@ -18,6 +23,7 @@ class KadoKadeoManager extends Application {
 	var gameClass:Class<GameInterface>;
 	var game:GameInterface = null;
 	var ff:FixedFramerate;
+	var replay:ReplayManager;
 
 	var startScene:StartScene;
 	var gameOverScreen:GameOver = null;
@@ -30,7 +36,7 @@ class KadoKadeoManager extends Application {
 
 	public var seed:mt.Rand;
 
-	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>) {
+	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>, ?params:GameParams = null) {
 		super({
 			view: canvas,
 			width: 900,
@@ -64,6 +70,7 @@ class KadoKadeoManager extends Application {
 		this.ticker.add(() -> {
 			updateGraphics(ff.alpha);
 		});
+		this.replay = new ReplayManager(params?.replayData);
 	}
 
 	public function updateGraphics(a:Float) {
