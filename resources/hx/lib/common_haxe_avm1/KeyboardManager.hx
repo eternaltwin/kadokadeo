@@ -16,11 +16,18 @@ class KeyboardManager {
 	static public inline var ESCAPE = 27;
 
 	static private var keyState:IntMap<Bool>;
+	static private var isInitialized:Bool = false;
+	static private var inputLocked:Bool = false;
 
 	static public var lastDown:Int;
 
 	static public function init() {
+		if (isInitialized) {
+			return;
+		}
+
 		keyState = new IntMap();
+		isInitialized = true;
 
 		js.Browser.window.addEventListener("keydown", onKeyDown);
 		js.Browser.window.addEventListener("keyup", onKeyUp);
@@ -33,22 +40,57 @@ class KeyboardManager {
 	}
 
 	static private function onKeyUp(e:KeyboardEvent):Void {
-		keyState.remove(e.keyCode);
+		if (inputLocked) {
+			e.preventDefault();
+			return;
+		}
+		setKeyUp(e.keyCode);
 		e.preventDefault();
 	}
 
 	static private function onKeyDown(e:KeyboardEvent) {
-		keyState.set(e.keyCode, true);
-		lastDown = e.keyCode;
+		if (inputLocked) {
+			e.preventDefault();
+			return;
+		}
+		setKeyDown(e.keyCode);
 		if (e.keyCode == SPACE || e.keyCode == ARROW_DOWN)
 			e.preventDefault();
 	}
 
+	static public function setInputLocked(value:Bool):Void {
+		inputLocked = value;
+	}
+
+	static public function setKeyDown(keyCode:Int):Void {
+		ensureInitialized();
+		keyState.set(keyCode, true);
+		lastDown = keyCode;
+	}
+
+	static public function setKeyUp(keyCode:Int):Void {
+		ensureInitialized();
+		keyState.remove(keyCode);
+	}
+
+	static public function clearState():Void {
+		ensureInitialized();
+		keyState = new IntMap();
+		lastDown = 0;
+	}
+
 	static public function isDown(keyCode:Int):Bool {
+		ensureInitialized();
 		return keyState.exists(keyCode);
 	}
 
 	static public function isArrowDown():Bool {
 		return isDown(ARROW_RIGHT) || isDown(ARROW_UP) || isDown(ARROW_LEFT) || isDown(ARROW_DOWN);
+	}
+
+	static private inline function ensureInitialized():Void {
+		if (!isInitialized) {
+			init();
+		}
 	}
 }

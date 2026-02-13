@@ -1,7 +1,5 @@
 package kado;
 
-import haxe.io.Bytes;
-import pixi.loaders.Loader;
 import js.html.CanvasElement;
 import pixi.core.Application;
 import pixi.core.text.Text;
@@ -23,7 +21,8 @@ class KadoKadeoManager extends Application {
 	var gameClass:Class<GameInterface>;
 	var game:GameInterface = null;
 	var ff:FixedFramerate;
-	var replay:ReplayManager;
+
+	public var replay:ReplayManager;
 
 	var startScene:StartScene;
 	var gameOverScreen:GameOver = null;
@@ -84,6 +83,7 @@ class KadoKadeoManager extends Application {
 
 	public function updatePhysics(dt:Float) {
 		mt.Timer.update(js.Browser.window.performance.now());
+		replay.update();
 		if (game != null && isGameStarted) {
 			game.update(dt);
 		}
@@ -127,6 +127,7 @@ class KadoKadeoManager extends Application {
 	function startGame() {
 		this.stage.removeChild(startScene);
 		this.stage.addChild(new BottomBar(this));
+		replay.start();
 
 		game = Type.createInstance(gameClass, [this]);
 		var imageKeys = [for (k in common_haxe_avm1.display.ASprite.spriteData.keys()) k];
@@ -144,6 +145,7 @@ class KadoKadeoManager extends Application {
 	}
 
 	public function gameOver(params:Dynamic):Void {
+		replay.stop();
 		// this.stage.removeChildren();
 		gameOverScreen = new GameOver(() -> {
 			var txt = new Text("FIN DU JEU", {fill: 0xFF0000});
@@ -153,6 +155,7 @@ class KadoKadeoManager extends Application {
 		});
 		this.stage.addChild(gameOverScreen);
 		trace('Game finished, showing end screen');
+		trace('Replay data: ' + replay.encodeReplayString());
 
 		var win:Dynamic = js.Browser.window;
 		var kado:KadoConfig = cast win.Kado;
@@ -164,7 +167,7 @@ class KadoKadeoManager extends Application {
 			run_id: runDetails.run_id,
 			score: score + 1,
 			timestamp: Std.int(Date.now().getTime() / 1000),
-			replay: null,
+			replay: replay.encodeReplayString(),
 		};
 		var jsonReq = haxe.Json.stringify(req);
 		trace('Prepared end run request: ' + jsonReq);
@@ -184,6 +187,7 @@ class KadoKadeoManager extends Application {
 
 	override public function destroy(?removeView:Bool):Void {
 		super.destroy(removeView);
+		replay.stop();
 		this.ticker.remove(ff.onTick);
 	}
 

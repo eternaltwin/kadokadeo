@@ -1,5 +1,6 @@
 package atlanteine;
 
+import haxe.io.UInt16Array;
 import common_haxe_avm1.pixi.DropShadowFilter;
 import pixi.core.Pixi.BlendModes;
 import pixi.core.math.Matrix;
@@ -222,6 +223,18 @@ class Game implements kado.GameInterface {
 		flControl = true;
 		step = Step.WaitTimer;
 		initTimer();
+
+		var replayKeys = new UInt16Array(4);
+		replayKeys[0] = common_haxe_avm1.KeyboardManager.ARROW_RIGHT;
+		replayKeys[1] = common_haxe_avm1.KeyboardManager.ARROW_DOWN;
+		replayKeys[2] = common_haxe_avm1.KeyboardManager.ARROW_LEFT;
+		replayKeys[3] = common_haxe_avm1.KeyboardManager.ARROW_UP;
+		this.kkm.replay.init({
+			recordedKeys: replayKeys,
+			recordMouseClicks: false,
+			recordInputs: true,
+			recordEvents: false,
+		});
 	}
 
 	public function start() {
@@ -1524,7 +1537,7 @@ class Game implements kado.GameInterface {
 
 		if (levelTimer <= 0) {
 			if (level > SHOW_PATH_LEVEL_LIMIT) {
-				KKApi.gameOver(stats);
+				this.kkm.gameOver(stats);
 				step = GameOver;
 			} else {
 				if (ppList == null)
