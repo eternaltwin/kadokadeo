@@ -6,6 +6,7 @@ import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
 import haxe.io.UInt16Array;
+import js.lib.Uint8Array;
 import js.Browser;
 import js.html.KeyboardEvent;
 
@@ -180,7 +181,8 @@ class ReplayManager {
 		if (replayData != null) {
 			return null;
 		}
-		return Base64.encode(encodeBinaryData());
+		var compressed = externs.Pako.deflate(bytesToUint8Array(encodeBinaryData()));
+		return Base64.encode(uint8ArrayToBytes(compressed));
 	}
 
 	public function registerKeyboardEvents():Void {
@@ -356,6 +358,10 @@ class ReplayManager {
 				inputs: inputs
 			});
 		}
+		#if debug
+		trace('Decoded replay data: ' + frameCount + ' frames');
+		trace(target);
+		#end
 	}
 
 	private function writeString(output:BytesOutput, value:String):Void {
@@ -402,10 +408,32 @@ class ReplayManager {
 		}
 
 		try {
-			return Base64.decode(input);
+			var decoded = Base64.decode(input);
+			try {
+				return uint8ArrayToBytes(externs.Pako.inflate(bytesToUint8Array(decoded)));
+			} catch (_:Dynamic) {
+				// fail safe, return decoded even if decompression fails (for backward compatibility with uncompressed data)
+				return decoded;
+			}
 		} catch (_:Dynamic) {
 			return Bytes.ofString(input);
 		}
+	}
+
+	private inline function bytesToUint8Array(data:Bytes):Uint8Array {
+		var out = new Uint8Array(data.length);
+		for (i in 0...data.length) {
+			out[i] = data.get(i);
+		}
+		return out;
+	}
+
+	private inline function uint8ArrayToBytes(data:Uint8Array):Bytes {
+		var out = Bytes.alloc(data.length);
+		for (i in 0...data.length) {
+			out.set(i, data[i]);
+		}
+		return out;
 	}
 
 	private function normalizeParams(input:ReplayInitParams):ReplayInitParams {

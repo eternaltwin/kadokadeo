@@ -501,18 +501,18 @@ class Game implements kado.GameInterface {
 						var a = i / max * 6.28;
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
-						var speed = 1 + Math.random() * 4;
+						var speed = 1 + this.kkm.seed.rand() * 4;
 						var sp = new Phys(dm.attach("atlanteine/partTiret", DP_PARTS));
 						sp.root.anchor.set(0.5, 0.5);
 						sp.x = p[0] * SIZE + ca * speed * rc;
 						sp.y = p[1] * SIZE + sa * speed * rc;
 						sp.vx = ca * speed + d[0] * press;
 						sp.vy = sa * speed + d[1] * press;
-						sp.vr = (Math.random() * 2 - 1) * 20;
-						sp.root._rotation = Math.random() * 360;
-						// sp.weight = -(0.1+Math.random()*0.2);
-						sp.setScale(50 + Math.random() * 100);
-						sp.timer = 10 + Math.random() * 10;
+						sp.vr = (this.kkm.seed.rand() * 2 - 1) * 20;
+						sp.root._rotation = this.kkm.seed.rand() * 360;
+						// sp.weight = -(0.1+this.kkm.seed.rand()*0.2);
+						sp.setScale(50 + this.kkm.seed.rand() * 100);
+						sp.timer = 10 + this.kkm.seed.rand() * 10;
 						sp.fadeType = 0;
 						sp.root.blendMode = BlendModes.ADD;
 						sp.frict = 0.95;
@@ -718,7 +718,7 @@ class Game implements kado.GameInterface {
 			while (ppList.length > 0) {
 				var mc:ASprite = ppList.pop();
 				var p = new Phys(mc);
-				p.timer = 10 + Math.random() * 5;
+				p.timer = 10 + this.kkm.seed.rand() * 5;
 				p.updatePos();
 			}
 		}
@@ -1166,7 +1166,7 @@ class Game implements kado.GameInterface {
 								}
 							}
 
-							if (flAdd && Std.random(PROBA_PUSH) == 0) {
+							if (flAdd && this.kkm.seed.random(PROBA_PUSH) == 0) {
 								flPush = false;
 								var d = DIR[nd];
 								grid[bx + d[0]][by + d[1]] = BLOCK;
@@ -1225,7 +1225,7 @@ class Game implements kado.GameInterface {
 		// GROUND
 		map.mcGround = cast dm.empty(DP_GROUND);
 		map.mcGround.bmp = RenderTexture.create(mcw, mcw);
-		Col.setPercentColor(map.mcGround, Std.random(20), 0xff9900);
+		Col.setPercentColor(map.mcGround, this.kkm.seed.random(20), 0xff9900);
 
 		for (y in 0...ymax) {
 			for (x in 0...xmax) {
@@ -1239,7 +1239,7 @@ class Game implements kado.GameInterface {
 						mc._x = x * SIZE - 4;
 						mc._y = y * SIZE;
 
-						Col.setPercentColor(mc, Std.random(20), 0xff9900);
+						Col.setPercentColor(mc, this.kkm.seed.random(20), 0xff9900);
 						elements[x][y] = mc;
 
 					case BLOCK:
@@ -1249,7 +1249,7 @@ class Game implements kado.GameInterface {
 						mc._y = y * SIZE;
 						mc.gotoAndStop(1);
 
-						Col.setPercentColor(mc, Std.random(20), 0xff9900);
+						Col.setPercentColor(mc, this.kkm.seed.random(20), 0xff9900);
 						elements[x][y] = mc;
 					case TELEPORT:
 						var mc = dm.attach("atlanteine/mcTeleport", DP_ROCK);
@@ -1293,7 +1293,7 @@ class Game implements kado.GameInterface {
 						mcg.gotoAndStop(groundFrame);
 						mcg.anchor.set(6 / mcg._width, 10 / mcg._height);
 						c.addChild(mcg);
-						var tacheFrame = Std.random(28) + 1;
+						var tacheFrame = this.kkm.seed.random(28) + 1;
 						if (tacheFrame < 12) {
 							var tache = BmpTextureHelper.getASprite("atlanteine/tache");
 							tache.gotoAndStop(Math.floor(tacheFrame / 3) + 1);
@@ -1302,7 +1302,7 @@ class Game implements kado.GameInterface {
 						} else if (tacheFrame < 16) {
 							var zarbi = BmpTextureHelper.getASprite("atlanteine/forme-zarbi");
 							zarbi.anchor.set(6 / 45, 0);
-							zarbi.gotoAndStop(zarbi._totalframes.random() + 1);
+							zarbi.gotoAndStop(this.kkm.seed.random(zarbi._totalframes) + 1);
 							zarbi.position.set(5 * NEW_GEN_SCALE, 1.5 * NEW_GEN_SCALE);
 							zarbi.filters = [
 								new DropShadowFilter({
@@ -1347,8 +1347,8 @@ class Game implements kado.GameInterface {
 				var m = 1;
 
 				do {
-					x = m + Std.random(xmax - m * 2);
-					y = m + Std.random(ymax - m * 2);
+					x = m + this.kkm.seed.random(xmax - m * 2);
+					y = m + this.kkm.seed.random(ymax - m * 2);
 				} while (!isFree(x, y) || bonus[x][y] != null);
 				var mc = dm.attach("atlanteine/mcBonus", DP_ROCK);
 
@@ -1452,7 +1452,7 @@ class Game implements kado.GameInterface {
 		var sum = 0;
 		for (n in proba)
 			sum += n;
-		var rnd = Std.random(sum);
+		var rnd = this.kkm.seed.random(sum);
 		sum = 0;
 		for (i in 0...proba.length) {
 			sum += proba[i];

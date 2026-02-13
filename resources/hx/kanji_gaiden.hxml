@@ -1,6 +1,7 @@
 -js ../js/games/kanji_gaiden.js
--lib pixijs
--lib crypto
+-L pixijs
+-L crypto
+-L jsImport
 -cp ./lib
 -cp ./games
 kanji_gaiden.Game
