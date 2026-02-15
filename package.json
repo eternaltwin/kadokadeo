@@ -6,7 +6,7 @@
         "node": "^20.19.0 || >=22.12.0"
     },
     "scripts": {
-        "build": "vite build",
+        "build": "haxe compile.hxml && vite build",
         "dev": "vite --host",
         "lint": "eslint ./resources/js --fix --cache",
         "format": "prettier --write ./resources/js"
