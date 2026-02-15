@@ -50,15 +50,19 @@ class KadoKadeoManager extends Application {
 		isGameStarted = false;
 
 		// Pixi intro
+
 		// this.loader = new Loader();
 		loader.add('window_back', "/assets/img/content/default/window_back.png")
 			.add('bottom_bar', "/assets/img/content/default/bottom_bar.png")
 			.add('kado_icon', "/assets/img/content/default/kado_icon.png")
-			.add('game_image', "/assets/img/content/default/default_artwork.jpg")
-			.load(() -> {
-				trace("KadoKadeoManager initialized");
-				this.showIntroScreen();
-			});
+			.add('game_image', "/assets/img/content/default/default_artwork.jpg");
+		for (i in 0...10) {
+			loader.add('score_figure_' + i, "/assets/img/content/default/score_figure_" + i + ".svg");
+		}
+		loader.load(() -> {
+			trace("KadoKadeoManager initialized");
+			this.showIntroScreen();
+		});
 		common_haxe_avm1.KeyboardManager.init();
 
 		ff = new FixedFramerate(updatePhysics);
