@@ -17,6 +17,8 @@
         "mkdir -p /root",
         "printf /app/.haxelib > /root/.haxelib",
         "haxelib install --always /app/resources/hx/install.hxml",
+        "openssl genrsa -out /app/storage/app/private/privkey.pem",
+        "openssl rsa -in /app/storage/app/private/privkey.pem -pubout -out /app/storage/app/private/pubkey.pem",
         "..."
       ]
     }
