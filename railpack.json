@@ -1,6 +1,24 @@
 {
   "$schema": "https://schema.railpack.com",
+  "packages": {
+    "haxe": "4.3.7"
+  },
+  "buildAptPackages": ["neko"],
   "deploy": {
-    "aptPackages": ["haxe"]
+    "variables": {
+      "HAXELIB_PATH": "/app/.haxelib",
+      "HAXE_STD_PATH": "/root/.local/share/mise/installs/haxe/4.3.7/std"
+    }
+  },
+  "steps": {
+    "build": {
+      "commands": [
+        "mkdir -p /app/.haxelib",
+        "mkdir -p /root",
+        "printf /app/.haxelib > /root/.haxelib",
+        "haxelib install --always /app/resources/hx/install.hxml",
+        "..."
+      ]
+    }
   }
 }

@@ -54,6 +54,3 @@ Thumbs.db
 docker-compose.override.yml
 docker/database-data
 .eslintcache
-/resources/js/kadokadeo.js
-
-resources/js/games/
