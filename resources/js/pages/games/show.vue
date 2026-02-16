@@ -45,7 +45,10 @@ const gameHeight = computed(() => (isZoomed.value ? 640 : 320))
       </p>
       <div :id="isZoomed ? 'gameZoomIn' : 'gameZoomOut'">
         <div id="gameInterface">
-          <GameScript :game="game" :game-width="gameWidth" :game-height="gameHeight" />
+          <GameScript :game="game"
+                      :game-width="gameWidth"
+                      :game-height="gameHeight"
+                      :canvas-style="{ position: 'absolute', left: '22px', top: '22px' }" />
 
           <nav id="gameUpperButtons">
             <ul>
@@ -80,15 +83,4 @@ const gameHeight = computed(() => (isZoomed.value ? 640 : 320))
 </template>
 
 <style scoped>
-:deep(canvas#gameCanvas) {
-  position: absolute;
-  top: 22px;
-  left: 22px;
-  display: block;
-  margin: 0;
-  padding: 0;
-  border: 1px solid #56b7c1;
-  outline: none;
-  box-sizing: content-box;
-}
 </style>
