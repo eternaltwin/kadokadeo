@@ -12,5 +12,5 @@ atlanteine.Game
 -js ./resources/js/games/chocomouche.js
 chocomouche.Game
 #--next
-#-js ../js/games/kanji_gaiden.js
+#-js ./resources/js/games/kanji_gaiden.js
 #kanji_gaiden.Game

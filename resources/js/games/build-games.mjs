@@ -1,0 +1,30 @@
+import { mkdir, readdir } from 'node:fs/promises'
+import { basename, join } from 'node:path'
+
+import { build } from 'esbuild'
+
+const sourceDir = 'resources/js/games'
+const outputDir = 'public/gamesdata'
+
+const games = (await readdir(sourceDir))
+  .filter((fileName) => fileName.endsWith('.js'))
+  .sort()
+  .map((fileName) => ({
+    entry: join(sourceDir, fileName),
+    output: join(outputDir, basename(fileName)),
+  }))
+
+await mkdir(outputDir, { recursive: true })
+
+for (const game of games) {
+  await build({
+    entryPoints: [game.entry],
+    outfile: game.output,
+    bundle: true,
+    platform: 'browser',
+    format: 'iife',
+    target: 'es2018',
+    sourcemap: true,
+    logLevel: 'info',
+  })
+}

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class Game extends Model
 {
@@ -17,7 +18,7 @@ class Game extends Model
 
     public function getGamedataAttribute()
     {
-        $fileName = \Illuminate\Support\Str::slug($this->name, '') . '.pck';
+        $fileName = $this->game_key . '.js';
         $filePath = public_path('gamesdata/' . $fileName);
         if (!file_exists($filePath)) {
             return null;
@@ -29,6 +30,16 @@ class Game extends Model
                 'size' => filesize($filePath),
             ];
         });
+    }
+
+    public function getPascalNameAttribute(): string
+    {
+        return Str::of('Game'.$this->name)->pascal()->toString();
+    }
+
+    public function getGameKeyAttribute(): string
+    {
+        return Str::of($this->name)->lower()->replaceMatches('/[^a-z0-9]/', '')->toString();
     }
 
     public function category()
