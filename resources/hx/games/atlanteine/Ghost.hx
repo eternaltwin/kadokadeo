@@ -10,8 +10,8 @@ class Ghost extends Phys {
 
 	var game:Game;
 	var smc:ASprite;
-	var debug:Graphics;
 
+	// var debug:Graphics;
 	var turnCol:Int;
 	var angle:Float;
 	var va:Float;
@@ -24,8 +24,8 @@ class Ghost extends Phys {
 		this.game = game;
 		game.ghostList.push(this);
 
-		debug = mc.createEmptyMovieClip().getGraphics();
-		smc = mc.attachMovie("atlanteine/mcGhost");
+		// debug = mc.createEmptyMovieClip().getGraphics();
+		smc = mc.attachMovie("atlanteine/mcGhost", "smc", 0, 10);
 		smc.anchor.set(0.5, 0.5);
 
 		angle = game.kkm.seed.rand() * 6.28;
@@ -61,12 +61,12 @@ class Ghost extends Phys {
 	function checkCols() {
 		var px = getPos(x);
 		var py = getPos(y);
-		#if debug
-		debug.clear();
-		debug.beginFill(0xFF0000, 0.5);
-		debug.drawCircle((px * Game.SIZE - x) + 30, (py * Game.SIZE - y) + 30, Game.SIZE / 2);
-		debug.endFill();
-		#end
+		// #if debug
+		// debug.clear();
+		// debug.beginFill(0xFF0000, 0.5);
+		// debug.drawCircle((px * Game.SIZE - x) + 30, (py * Game.SIZE - y) + 30, Game.SIZE / 2);
+		// debug.endFill();
+		// #end
 
 		if (!game.isFree(px, py)) {
 			explode();

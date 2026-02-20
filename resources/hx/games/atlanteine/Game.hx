@@ -169,6 +169,8 @@ class Game implements kado.GameInterface {
 	public var mcTimer:AnonSprite14226607;
 	public var stats:{_f:Int, _b:Array<Int>, _s:Int};
 
+	// var dbg:Graphics;
+
 	public function new(kkm:kado.KadoKadeoManager) {
 		this.kkm = kkm;
 		ASprite.spriteData = [
@@ -208,6 +210,7 @@ class Game implements kado.GameInterface {
 		bg = cast mdm.empty(DP_BG);
 		bg.getGraphics().beginFill(BACKGROUND_COLOR);
 		bg.getGraphics().drawRect(0, 0, mcw, mch);
+		// dbg = cast mdm.empty(DP_PARTS).getGraphics();
 
 		xmax = Std.int(mcw / SIZE);
 		ymax = Std.int(mch / SIZE);
@@ -272,6 +275,12 @@ class Game implements kado.GameInterface {
 
 		dm.getMC().update();
 		prec?.update();
+
+		// #if debug
+		// dbg.clear();
+		// dbg.beginFill(0x00FF00, 0.5);
+		// dbg.drawCircle(ball.x, ball.y, 30);
+		// #end
 
 		control();
 
@@ -728,6 +737,7 @@ class Game implements kado.GameInterface {
 		mcOut.gotoAndPlay(2);
 
 		// BONUS CAISSE
+		// TODO: ce bout de code ne fonctionne pas en JS
 		if (FL_BONUS_BLOCK && pushInfo == null) {
 			for (a in elements)
 				for (mc in a.filter(n -> n != null)) {
@@ -1365,6 +1375,7 @@ class Game implements kado.GameInterface {
 			ghostList = [];
 			for (i in 0...max) {
 				var g = new Ghost(this, dm.empty(DP_GHOST));
+				Filt.glow(g.root, 15, 2, 0xFFFFFF);
 
 				g.root.anchor.set(0.5, 0.5);
 			}
