@@ -190,9 +190,11 @@ class KadoKadeoManager extends Application {
 	}
 
 	override public function destroy(?removeView:Bool):Void {
+		this.stop();
+		this.replay.stop();
+		this.ticker.stop();
+		untyped Ticker.system.stop();
 		super.destroy(removeView);
-		replay.stop();
-		this.ticker.remove(ff.onTick);
 	}
 
 	public function addScore(points:Int):Void {

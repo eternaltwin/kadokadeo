@@ -113,8 +113,6 @@ class Game implements kado.GameInterface {
 	static var PROBA_PUSH = 5;
 	static var SHOW_PATH_LEVEL_LIMIT = 3;
 
-	public static var me:Game;
-
 	var flFill:Bool;
 	var flPush:Bool;
 	var flControl:Bool;
@@ -183,7 +181,7 @@ class Game implements kado.GameInterface {
 			"atlanteine/mcDebugField" => [32, 31],
 			"atlanteine/mcTeleport" => [30, 30],
 			"atlanteine/mcDisplacement" => [301, 301],
-			"atlanteine/mcGhost" => [31, 31],
+			"atlanteine/mcGhost" => [128, 126],
 			"atlanteine/mcLine" => [151, 51],
 			"atlanteine/mcPoint" => [51, 51],
 			"atlanteine/mcPush" => [28, 18],
@@ -206,7 +204,6 @@ class Game implements kado.GameInterface {
 		ASprite.app = kkm;
 		root = new ASprite();
 		kkm.stage.addChild(root);
-		me = this;
 		mdm = new mt.DepthManager(root);
 		bg = cast mdm.empty(DP_BG);
 		bg.getGraphics().beginFill(BACKGROUND_COLOR);
@@ -217,7 +214,6 @@ class Game implements kado.GameInterface {
 
 		dif = 0;
 		level = 1;
-
 		clevel = 1;
 		skin = 0;
 		flControl = true;
@@ -565,7 +561,7 @@ class Game implements kado.GameInterface {
 	function checkGhostCol() {
 		for (g in ghostList) {
 			var dist = ball.getDist({x: g.x, y: g.y});
-			if (dist < 10) {
+			if (dist < 10 * NEW_GEN_SCALE) {
 				g.explode();
 				killBall();
 				ball.kill();
@@ -817,8 +813,9 @@ class Game implements kado.GameInterface {
 		map._x = ball.x;
 		map._y = ball.y;
 
-		while (ghostList.length > 0)
+		while (ghostList.length > 0) {
 			ghostList.pop().kill();
+		}
 
 		initMap();
 		Col.setPercentColor(map, HOLE_FADE, 0);
@@ -987,6 +984,8 @@ class Game implements kado.GameInterface {
 		bList = shuffle(bList);
 		for (i in 0...max) {
 			var p = bList.pop();
+			if (p == null)
+				continue;
 			grid[p.x][p.y] = EMPTY;
 		}
 
@@ -1365,10 +1364,9 @@ class Game implements kado.GameInterface {
 			var max = Std.int(Math.min(Math.pow((level - 10), 0.5), 5));
 			ghostList = [];
 			for (i in 0...max) {
-				var g = new Ghost(dm.attach("atlanteine/mcGhost", DP_GHOST));
+				var g = new Ghost(this, dm.empty(DP_GHOST));
 
 				g.root.anchor.set(0.5, 0.5);
-				g.root.updateState();
 			}
 		}
 		// START DALLE
@@ -1607,13 +1605,13 @@ class Game implements kado.GameInterface {
 	}
 
 	//
-	static public function isFree(x, y) {
-		var next = Game.me.grid[x][y];
+	public function isFree(x, y) {
+		var next = grid[x][y];
 		return next == PATH || next == EMPTY;
 	}
 
-	static public function isBlock(x, y) {
-		var next = Game.me.grid[x][y];
+	public function isBlock(x, y) {
+		var next = grid[x][y];
 		return next == BLOCK || next == ROCK;
 	}
 

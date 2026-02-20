@@ -1,11 +1,16 @@
 package atlanteine;
 
+import pixi.core.graphics.Graphics;
 import pixi.core.Pixi.BlendModes;
 import mt.bumdum.Phys;
 import mt.bumdum.Lib;
 
 class Ghost extends Phys {
-	static var RAY = 6;
+	static var RAY = 6 * Game.NEW_GEN_SCALE;
+
+	var game:Game;
+	var smc:ASprite;
+	var debug:Graphics;
 
 	var turnCol:Int;
 	var angle:Float;
@@ -14,15 +19,20 @@ class Ghost extends Phys {
 	var speedFloat:Float;
 	var float:Float;
 
-	public function new(mc:ASprite) {
+	public function new(game:Game, mc:ASprite) {
 		super(mc);
-		Game.me.ghostList.push(this);
+		this.game = game;
+		game.ghostList.push(this);
 
-		angle = Math.random() * 6.28;
+		debug = mc.createEmptyMovieClip().getGraphics();
+		smc = mc.attachMovie("atlanteine/mcGhost");
+		smc.anchor.set(0.5, 0.5);
+
+		angle = game.kkm.seed.rand() * 6.28;
 		va = 0;
-		speed = 1 + Math.random() * 1;
-		speedFloat = 20 + Math.random() * 20;
-		float = Math.random() * 628;
+		speed = 1 + game.kkm.seed.rand() * 1;
+		speedFloat = 20 + game.kkm.seed.rand() * 20;
+		float = game.kkm.seed.rand() * 628;
 
 		var p = getFreePos();
 		x = (p[0] + 0.5) * Game.SIZE;
@@ -30,15 +40,15 @@ class Ghost extends Phys {
 	}
 
 	override function update() {
-		va += (Math.random() * 2 - 1) * 0.05;
+		va += (game.kkm.seed.rand() * 2 - 1) * 0.05;
 		va *= Math.pow(0.92, mt.Timer.tmod);
 		angle = Num.hMod(angle + va, 3.14);
 
 		// GFX
 		var fr = Std.int(Num.sMod(angle, 6.28) / 6.28 * 80) + 1;
-		root.smc?.gotoAndStop(fr);
+		smc.gotoAndStop(fr);
 		float = (float + speedFloat * mt.Timer.tmod) % 628;
-		root._y = Math.cos(float * 0.01) * 4 - 8;
+		smc._y = Math.cos(float * 0.01) * 4 - 8;
 
 		vx = Math.cos(angle) * speed;
 		vy = Math.sin(angle) * speed;
@@ -51,8 +61,14 @@ class Ghost extends Phys {
 	function checkCols() {
 		var px = getPos(x);
 		var py = getPos(y);
+		#if debug
+		debug.clear();
+		debug.beginFill(0xFF0000, 0.5);
+		debug.drawCircle((px * Game.SIZE - x) + 30, (py * Game.SIZE - y) + 30, Game.SIZE / 2);
+		debug.endFill();
+		#end
 
-		if (!Game.isFree(px, py)) {
+		if (!game.isFree(px, py)) {
 			explode();
 			return;
 		}
@@ -62,7 +78,7 @@ class Ghost extends Phys {
 			var nx = getPos(x + d[0] * RAY);
 			var ny = getPos(y + d[1] * RAY);
 
-			if (!Game.isFree(nx, ny)) {
+			if (!game.isFree(nx, ny)) {
 				var rr = RAY;
 				if (d[0] != 0) {
 					x = Num.mm(px * Game.SIZE + rr, x, (px + 1) * Game.SIZE - rr);
@@ -86,7 +102,7 @@ class Ghost extends Phys {
 	public function explode() {
 		var max = 12;
 		for (i in 0...max) {
-			var p = new Phys(Game.me.dm.attach("atlanteine/partCloud", Game.DP_PARTS));
+			var p = new Phys(game.dm.attach("atlanteine/partCloud", Game.DP_PARTS));
 			var sp = 0.2 + Math.random() * 0.5;
 			var r = sp * 10;
 			var a = i / max * 6.28;
@@ -118,13 +134,13 @@ class Ghost extends Phys {
 		var y = null;
 		var to = 0;
 		do {
-			x = Std.random(Game.me.xmax);
-			y = Std.random(Game.me.ymax);
+			x = game.kkm.seed.random(game.xmax);
+			y = game.kkm.seed.random(game.ymax);
 			if (to++ > 100) {
 				trace("noFreePos!");
 				break;
 			}
-		} while (!Game.isFree(x, y));
+		} while (!game.isFree(x, y));
 		return [x, y];
 	}
 
@@ -133,7 +149,7 @@ class Ghost extends Phys {
 	}
 
 	override function kill() {
-		Game.me.ghostList.remove(this);
+		game.ghostList.remove(this);
 		super.kill();
 	}
 

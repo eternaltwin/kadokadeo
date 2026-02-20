@@ -16,7 +16,6 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', redirect: '/games', meta: {} },
-    { path: '/test', component: () => import('@/pages/test.vue'), meta: {} },
     { path: '/login', name: 'login', component: Login, meta: {} },
     { path: '/oauth/callback', component: LoginCallback, meta: {} },
     { path: '/daily', name: 'games.daily', component: GamesDaily, meta: { middleware: ['auth'] } },

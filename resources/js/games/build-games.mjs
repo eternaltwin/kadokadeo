@@ -7,7 +7,7 @@ const sourceDir = 'resources/js/games'
 const outputDir = 'public/gamesdata'
 
 const games = (await readdir(sourceDir))
-  .filter((fileName) => fileName.endsWith('.js'))
+  .filter((fileName) => !fileName.startsWith('tmp') && fileName.endsWith('.js'))
   .sort()
   .map((fileName) => ({
     entry: join(sourceDir, fileName),
