@@ -1,8 +1,8 @@
 package kado;
 
+import js.Browser;
 import js.html.CanvasElement;
 import pixi.core.Application;
-import pixi.core.text.Text;
 import pixi.core.ticker.Ticker;
 
 typedef KadoConfig = {
@@ -22,6 +22,8 @@ class KadoKadeoManager extends Application {
 	var game:GameInterface = null;
 	var ff:FixedFramerate;
 
+	public var lang = "fr";
+
 	public var replay:ReplayManager;
 
 	var startScene:StartScene;
@@ -31,7 +33,7 @@ class KadoKadeoManager extends Application {
 	var runDetails:Dto.RunDTO;
 	var crypto:KadoCrypto = new KadoCrypto();
 
-	var score:Int = 0;
+	public var score:Int = 0;
 
 	public var seed:mt.Rand;
 
@@ -53,6 +55,8 @@ class KadoKadeoManager extends Application {
 
 		// this.loader = new Loader();
 		loader.add('window_back', "/assets/img/content/default/window_back.png")
+			.add('window_back_2', "/assets/img/content/default/window_back_2.png")
+			.add('gameover_back', "/assets/img/content/default/gameover_back.jpg")
 			.add('bottom_bar', "/assets/img/content/default/bottom_bar.png")
 			.add('kado_icon', "/assets/img/content/default/kado_icon.png")
 			.add('game_image', "/assets/img/content/default/default_artwork.jpg");
@@ -60,8 +64,12 @@ class KadoKadeoManager extends Application {
 			loader.add('score_figure_' + i, "/assets/img/content/default/score_figure_" + i + ".svg");
 		}
 		loader.load(() -> {
-			trace("KadoKadeoManager initialized");
-			this.showIntroScreen();
+			Browser.window.document.fonts.ready.then((fontFaceSet) -> {
+				trace("KadoKadeoManager initialized");
+				this.showIntroScreen();
+				// score = 31300;
+				// this.gameOver({});
+			});
 		});
 		common_haxe_avm1.KeyboardManager.init();
 
@@ -72,6 +80,7 @@ class KadoKadeoManager extends Application {
 		});
 		this.ticker.add(() -> {
 			updateGraphics(ff.alpha);
+			pixi.core.Pixi.tweenManager.update();
 		});
 		this.replay = new ReplayManager(params?.replayData);
 	}
@@ -152,10 +161,7 @@ class KadoKadeoManager extends Application {
 		replay.stop();
 		// this.stage.removeChildren();
 		gameOverScreen = new GameOver(() -> {
-			var txt = new Text("FIN DU JEU", {fill: 0xFF0000});
-			txt.x = renderer.width / 2 - txt.width / 2;
-			txt.y = renderer.height / 2 - txt.height / 2;
-			this.stage.addChild(txt);
+			this.stage.addChild(new EndScene(this));
 		});
 		this.stage.addChild(gameOverScreen);
 		trace('Game finished, showing end screen');
@@ -179,7 +185,7 @@ class KadoKadeoManager extends Application {
 		var request:Dto.EndRunRequestDTO = {
 			payload: haxe.crypto.Base64.encode(payload),
 			key: jse.encrypt(crypto.getKey().toHex()),
-			sign: haxe.crypto.Base64.encode(crypto.getHmacSha256(Bytes.ofString(jsonReq))),
+			sign: haxe.crypto.Base64.encode(crypto.getHmacSha256(haxe.io.Bytes.ofString(jsonReq))),
 		}
 		Api.endRun(runDetails.run_id, request, (data:Dto.ApiResponse<Dynamic>) -> {
 			trace('Run ended successfully: ' + haxe.Json.stringify(data));

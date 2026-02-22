@@ -1,3 +1,3 @@
--L pixijs:git:https://gitlab.com/eternaltwin/kadokadeo/pixi-haxe#7f854d0d0009fb25deca3e110ae577aef1d1b934
+-L pixijs:git:https://gitlab.com/eternaltwin/kadokadeo/pixi-haxe#1001683b025b354018f256641cd386013959e557
 -L crypto
 -L jsImport:git:https://github.com/back2dos/jsImport.git

@@ -243,7 +243,7 @@ class Str {
 }
 
 class Filt {
-	static public function glow(mc:pixi.core.sprites.Sprite, distance = 2, strength:Float = 1, color = 0, inner = false) {
+	static public function glow(mc:DisplayObject, distance = 2, strength:Float = 1, color = 0, inner = false) {
 		var f = Type.createInstance(GlowFilter, [
 			{
 				distance: distance,
@@ -260,7 +260,7 @@ class Filt {
 		mc.filters.push(f);
 	}
 
-	static public function blur(mc:pixi.core.sprites.Sprite, blurX:Float = 0, blurY:Float = 0) {
+	static public function blur(mc:DisplayObject, blurX:Float = 0, blurY:Float = 0) {
 		var f = new BlurFilter();
 		f.blurX = blurX;
 		f.blurY = blurY;

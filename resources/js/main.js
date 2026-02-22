@@ -6,6 +6,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
+import('./pixi-tween')
+
 dayjs.extend(utc)
 
 const app = createApp(App)

@@ -1,4 +1,3 @@
-
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -7,421 +6,452 @@
 @source '../** /*.js';
 
 @layer base {
-    html, :host {
-        line-height: unset;
-    }
+  html,
+  :host {
+    line-height: unset;
+  }
 }
-
 
 /* CUSTOMIZED FONT */
 
 @font-face {
-    font-family: "Junegull-Regular";
-    src: url("/fonts/Junegull-Regular.eot");
-    src: url("/fonts/Junegull-Regular.eot?#iefix") format("embedded-opentype"),
-        url("/fonts/Junegull-Regular.woff") format("otf"),
-        url("/fonts/Junegull-Regular.woff") format("woff"),
-        url("/fonts/Junegull-Regular.ttf") format("truetype"),
-        url("/fonts/Junegull-Regular.svg#Junegull-Regular") format("svg");
+  font-family: 'Junegull-Regular';
+  src: url('/fonts/Junegull-Regular.eot');
+  src:
+    url('/fonts/Junegull-Regular.eot?#iefix') format('embedded-opentype'),
+    url('/fonts/Junegull-Regular.woff') format('otf'),
+    url('/fonts/Junegull-Regular.woff') format('woff'),
+    url('/fonts/Junegull-Regular.ttf') format('truetype'),
+    url('/fonts/Junegull-Regular.svg#Junegull-Regular') format('svg');
 }
 
 @font-face {
-    font-family: "Jost-Medium";
-    src: url("/fonts/Jost-Medium.ttf") format("truetype");
+  font-family: 'Jost-Medium';
+  src: url('/fonts/Jost-Medium.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: "Fredoka Bold";
-    src: url("/fonts/Fredoka-Bold.ttf") format("truetype");
+  font-family: 'Fredoka Bold';
+  src: url('/fonts/Fredoka-Bold.ttf') format('truetype');
 }
 
-[data-lang="fr"] {
-    background: url('/gfx/langFrench.gif') no-repeat;
+[data-lang='fr'] {
+  background: url('/gfx/langFrench.gif') no-repeat;
+}
+
+@theme {
+  --font-junegull: 'Junegull-Regular', sans-serif;
+  --font-fredoka: 'Fredoka Bold', sans-serif;
 }
 
 /* GLOBAL */
 
 body {
-    width: 1010px;
-    margin: 0 auto;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    background: url("/gfx/bgHeader.png") top repeat-x, url("/gfx/bgBodyPattern.jpg") repeat;
-    background-color: #f1f9fb;
-    font-size: 1em;
-    font-family: Trebuchet MS, Arial, sans-serif;
-    color: #0687b1;
+  width: 1010px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  background:
+    url('/gfx/bgHeader.png') top repeat-x,
+    url('/gfx/bgBodyPattern.jpg') repeat;
+  background-color: #f1f9fb;
+  font-size: 1em;
+  font-family:
+    Trebuchet MS,
+    Arial,
+    sans-serif;
+  color: #0687b1;
 }
 
 p {
-    margin: 16px 10px;
-    padding: 0;
+  margin: 16px 10px;
+  padding: 0;
 }
 
 a {
-    color: #ffa400;
-    text-decoration: none;
+  color: #ffa400;
+  text-decoration: none;
 }
 
 a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 img {
-    border: 0;
-    margin: 0;
-    padding: 0;
-    vertical-align: middle;
-    display: inline;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+  display: inline;
 }
 
 table {
-    border-collapse: collapse;
-    width: 92%;
-    margin: 15px auto;
-    border: 2px solid #5babbb;
-    text-align: center;
+  border-collapse: collapse;
+  width: 92%;
+  margin: 15px auto;
+  border: 2px solid #5babbb;
+  text-align: center;
 }
 
-table th, table td {
-    vertical-align: middle;
-    text-align: center;
-    padding: 5px;
-    border: 1px solid #5babbb;
+table th,
+table td {
+  vertical-align: middle;
+  text-align: center;
+  padding: 5px;
+  border: 1px solid #5babbb;
 }
 
 table th {
-    font-size: 0.9em;
-    font-weight: bold;
-    background: linear-gradient(#edffff, #dcf7ff);
-    padding: 2px;
+  font-size: 0.9em;
+  font-weight: bold;
+  background: linear-gradient(#edffff, #dcf7ff);
+  padding: 2px;
 }
 
 table tbody tr {
-    background-color: #eaf8fa;
+  background-color: #eaf8fa;
 }
 
 table tbody tr:nth-child(even) {
-    background-color: #fff;
+  background-color: #fff;
 }
 
 table.whiteFirst tbody tr:nth-child(odd) {
-    background-color: #fff;
+  background-color: #fff;
 }
 
-.noBorder, .noBorder th, .noBorder tr, .noBorder td {
-    border: 0;
+.noBorder,
+.noBorder th,
+.noBorder tr,
+.noBorder td {
+  border: 0;
 }
 
-.noPadding th, .noPadding td {
-    padding: 0;
+.noPadding th,
+.noPadding td {
+  padding: 0;
 }
 
-.smallPadding th, .smallPadding td {
-    padding: 2px;
+.smallPadding th,
+.smallPadding td {
+  padding: 2px;
 }
 
-.noBackground,  .noBackground th, .noBackground tr, .noBackground td {
-    background: none transparent;
+.noBackground,
+.noBackground th,
+.noBackground tr,
+.noBackground td {
+  background: none transparent;
 }
 
-#container h1 { /* Mozilla Firefox and IE doesn't support the background-clip:text; and -webkit-text-stroke properties */
-    margin: 25px 10px 20px 10px;
-    padding: 0;
-    font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
-    font-size: 2.5em;
-    letter-spacing: 0.1em;
-    color: #44cce7;
-    font-weight: bold;
-    text-shadow: -1px -1px 0 #1f6776, 1px -1px 0 #1f6776, -1px 1px 0 #1f6776, 1px 1px 0 #1f6776;
+#container h1 {
+  /* Mozilla Firefox and IE doesn't support the background-clip:text; and -webkit-text-stroke properties */
+  margin: 25px 10px 20px 10px;
+  padding: 0;
+  font-family:
+    'Junegull-Regular',
+    Trebuchet MS,
+    Arial,
+    sans-serif;
+  font-size: 2.5em;
+  letter-spacing: 0.1em;
+  color: #44cce7;
+  font-weight: bold;
+  text-shadow:
+    -1px -1px 0 #1f6776,
+    1px -1px 0 #1f6776,
+    -1px 1px 0 #1f6776,
+    1px 1px 0 #1f6776;
 }
 
-@supports ((background-clip: text) or (-webkit-background-clip: text)) { /* For compatible browsers */
-    #container h1 {
-        -webkit-text-stroke: 1px #1f6776;
-        background: linear-gradient(to bottom, #fff 15%, #caf4fc 55%, #82e1f3 56%, #d3f4fa 85%);
-        background-color: #defaff;
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        text-shadow: none;
-    }
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  /* For compatible browsers */
+  #container h1 {
+    -webkit-text-stroke: 1px #1f6776;
+    background: linear-gradient(to bottom, #fff 15%, #caf4fc 55%, #82e1f3 56%, #d3f4fa 85%);
+    background-color: #defaff;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: none;
+  }
 }
 
 #container h2 {
-    width: 90%;
-    height: 35px;
-    margin: 40px 0 10px 10px;
-    padding: 4px 5px 0 40px;
-    font-size: 1.5em;
-    background: url("/gfx/bgTitleBlue.jpg") no-repeat;
-    text-transform: uppercase;
+  width: 90%;
+  height: 35px;
+  margin: 40px 0 10px 10px;
+  padding: 4px 5px 0 40px;
+  font-size: 1.5em;
+  background: url('/gfx/bgTitleBlue.jpg') no-repeat;
+  text-transform: uppercase;
 }
 
 .bold {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .italic {
-    font-style: italic;
+  font-style: italic;
 }
 
 .center {
-    text-align: center;
+  text-align: center;
 }
 
 .centerMargin {
-    margin: auto;
+  margin: auto;
 }
 
 .nomargin {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .show {
-    display: block;
+  display: block;
 }
 
 .textRight {
-    text-align: right;
+  text-align: right;
 }
 
 .textLeft {
-    text-align: left;
+  text-align: left;
 }
-
 
 /* HEADER, TOP NAV, TOP BANNER */
 
 header#topPage {
-    width: 1010px;
-    height: 100px;
-    margin: 0 auto 20px auto;
-    display: flex;
-    justify-content: flex-start;
-    position: relative;
+  width: 1010px;
+  height: 100px;
+  margin: 0 auto 20px auto;
+  display: flex;
+  justify-content: flex-start;
+  position: relative;
 }
 
 header#topPage nav#languageNav {
-    width: 32px;
-    margin: 5px 0 0 0;
-    padding: 0;
+  width: 32px;
+  margin: 5px 0 0 0;
+  padding: 0;
 }
 
 header#topPage nav#languageNav ul {
-    width: 32px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
+  width: 32px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 header#topPage nav#languageNav ul li a {
-    width: 29px;
-    height: 22px;
-    margin: 0 0 1px 0;
-    display: block;
-    text-decoration: none;
+  width: 29px;
+  height: 22px;
+  margin: 0 0 1px 0;
+  display: block;
+  text-decoration: none;
 }
 
 header#topPage h1 {
-    width: 424px;
-    height: 78px;
-    margin: 0;
-    padding: 0;
-    background: url("/gfx/logoBasic.png") no-repeat;
+  width: 424px;
+  height: 78px;
+  margin: 0;
+  padding: 0;
+  background: url('/gfx/logoBasic.png') no-repeat;
 }
 
 header#topPage h1 span {
-    display: none;
+  display: none;
 }
 
 header#topPage nav#topNav {
-    margin: 5px 0 0 0;
+  margin: 5px 0 0 0;
 }
 
 header#topPage nav#topNav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: space-around
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-around;
 }
 
-header#topPage nav#topNav ul li, header#topPage nav#topNav ul li a {
-    width: 117px;
-    height: 95px;
-    display: block;
-    text-decoration: none;
+header#topPage nav#topNav ul li,
+header#topPage nav#topNav ul li a {
+  width: 117px;
+  height: 95px;
+  display: block;
+  text-decoration: none;
 }
 
 header#topPage nav#topNav ul li a#topNavGames {
-    background: url("/gfx/menuGames.png") no-repeat;
+  background: url('/gfx/menuGames.png') no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavCompetition {
-    background: url("/gfx/menuCompetition.png") no-repeat;
+  background: url('/gfx/menuCompetition.png') no-repeat;
 }
 
 header#topPage nav#topNav ul li a#topNavProfile {
-    background: url("/gfx/menuProfile.png") no-repeat;
+  background: url('/gfx/menuProfile.png') no-repeat;
 }
 
 header#topPage nav#topNav ul li:hover {
-    background: url("/gfx/menuHover.png") no-repeat;
+  background: url('/gfx/menuHover.png') no-repeat;
 }
 
 header#topPage nav#topNav ul li a span {
-    display: none;
+  display: none;
 }
 
 header#topPage nav#kalendrier {
-    width: 201px;
-    height: 141px;
-    margin: 2px 0 0 0;
-    padding: 0;
-    background: url("/gfx/bgKalendrier.png") no-repeat;
-    font-size: 0.75em;
-    position: relative;
+  width: 201px;
+  height: 141px;
+  margin: 2px 0 0 0;
+  padding: 0;
+  background: url('/gfx/bgKalendrier.png') no-repeat;
+  font-size: 0.75em;
+  position: relative;
 }
 
 header#topPage nav#kalendrier .kalendrierDays {
-    width: 140px;
-    height: 36px;
-    position: absolute;
-    top: 47px;
-    left: 18px;
-    display: flex;
-    flex-wrap: wrap;
+  width: 140px;
+  height: 36px;
+  position: absolute;
+  top: 47px;
+  left: 18px;
+  display: flex;
+  flex-wrap: wrap;
 }
 
-header#topPage nav#kalendrier .kalendrierPreviousDay, header#topPage nav#kalendrier .kalendrierPresentDay {
-    width: 15px;
-    height: 15px;
-    margin: 0 5px 6px 0;
+header#topPage nav#kalendrier .kalendrierPreviousDay,
+header#topPage nav#kalendrier .kalendrierPresentDay {
+  width: 15px;
+  height: 15px;
+  margin: 0 5px 6px 0;
 }
 
 header#topPage nav#kalendrier .kalendrierPreviousDay {
-    background: url("/gfx/kalendarPreviousDay.gif") no-repeat;
+  background: url('/gfx/kalendarPreviousDay.gif') no-repeat;
 }
 
 header#topPage nav#kalendrier .kalendrierPresentDay {
-    background: url("/gfx/kalendarPresentDay.gif") no-repeat;
+  background: url('/gfx/kalendarPresentDay.gif') no-repeat;
 }
 
 header#topPage nav#kalendrier p.kalUser {
-    position: absolute;
-    top: 8px;
-    left: 15px;
-    margin: 0;
-    padding: 0;
+  position: absolute;
+  top: 8px;
+  left: 15px;
+  margin: 0;
+  padding: 0;
 }
 
 header#topPage nav#kalendrier p.kalendrierText {
-    width: 103px;
-    height: 12px;
-    position: absolute;
-    top: 87px;
-    left: 54px;
-    margin: 0;
-    padding: 0;
-    color: #7a9ca4;
-    text-align: center;
-    font-size: 0.8em;
+  width: 103px;
+  height: 12px;
+  position: absolute;
+  top: 87px;
+  left: 54px;
+  margin: 0;
+  padding: 0;
+  color: #7a9ca4;
+  text-align: center;
+  font-size: 0.8em;
 }
 
 header#topPage nav#kalendrier ul.navKalendrierButtonsRight,
 header#topPage nav#kalendrier ul.navKalendrierButtonsBottom {
-    list-style: none;
-    position: absolute;
-    margin: 0;
-    padding: 0;
-    display: flex;
+  list-style: none;
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  display: flex;
 }
 
 header#topPage nav#kalendrier ul.navKalendrierButtonsRight {
-    top: 6px;
-    left: 166px;
-    flex-direction: column;
+  top: 6px;
+  left: 166px;
+  flex-direction: column;
 }
 
 header#topPage nav#kalendrier ul.navKalendrierButtonsBottom {
-    top: 110px;
-    left: 7px;
-    flex-direction: row;
+  top: 110px;
+  left: 7px;
+  flex-direction: row;
 }
 
 header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a,
 header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a {
-    display: block;
-    width: 25px;
-    height: 21px;
-    background: url("/gfx/kalendarButton.gif") no-repeat;
-    text-align: center;
-    line-height: 17px;
+  display: block;
+  width: 25px;
+  height: 21px;
+  background: url('/gfx/kalendarButton.gif') no-repeat;
+  text-align: center;
+  line-height: 17px;
 }
 
 header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a {
-    margin: 0 0 5px 0;
+  margin: 0 0 5px 0;
 }
 
 header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a {
-    margin: 0 5px 0 0;
+  margin: 0 5px 0 0;
 }
 
 header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a:hover,
 header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a:hover {
-    background: url("/gfx/kalendarButtonHover.gif") no-repeat;
+  background: url('/gfx/kalendarButtonHover.gif') no-repeat;
 }
 
 header#topPage aside#topBarInfo {
-    width: 389px;
-    height: 40px;
-    background: url("/gfx/bgTopBarInfo.png") no-repeat;
-    position: absolute;
-    top: 73px;
-    left: 49px;
+  width: 389px;
+  height: 40px;
+  background: url('/gfx/bgTopBarInfo.png') no-repeat;
+  position: absolute;
+  top: 73px;
+  left: 49px;
 }
 
 header#topPage aside#topBarInfo ul {
-    width: 349px;
-    height: 27px;
-    list-style: none;
-    margin: 4px 18px 9px 22px;
-    padding: 0;
-    display: flex;
-    justify-content: space-between;
+  width: 349px;
+  height: 27px;
+  list-style: none;
+  margin: 4px 18px 9px 22px;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
 }
 
 header#topPage aside#topBarInfo ul li#topBarKadoPoints {
-    padding: 2px 0 0 28px;
-    background: url("/gfx/topBarPointsKado.png") left no-repeat;
+  padding: 2px 0 0 28px;
+  background: url('/gfx/topBarPointsKado.png') left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarGreenStar {
-    padding: 2px 0 0 30px;
-    background: url("/gfx/topBarGreenStar.png") left no-repeat;
+  padding: 2px 0 0 30px;
+  background: url('/gfx/topBarGreenStar.png') left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarOrangeStar {
-    padding: 2px 0 0 30px;
-    background: url("/gfx/topBarOrangeStar.png") left no-repeat;
+  padding: 2px 0 0 30px;
+  background: url('/gfx/topBarOrangeStar.png') left no-repeat;
 }
 
 header#topPage aside#topBarInfo ul li#topBarRedStar {
-    padding: 2px 5px 0 30px;
-    background: url("/gfx/topBarRedStar.png") left no-repeat;
+  padding: 2px 5px 0 30px;
+  background: url('/gfx/topBarRedStar.png') left no-repeat;
 }
 
 /*header#topPage aside#topBarInfo ul li span {
@@ -438,670 +468,692 @@ header#topPage aside#topBarInfo ul li#topBarRedStar {
     text-shadow: none;
 }*/
 
-
 /* CONTAINER AND RIGHT SIDE BOXES */
 
 #container {
-    width: 1010px;
-    margin: 30px auto;
-    display: flex;
-    justify-content: flex-start;
+  width: 1010px;
+  margin: 30px auto;
+  display: flex;
+  justify-content: flex-start;
 }
 
 #bodySection {
-    width: 890px;
-    margin: 0 60px;
-    background: url("/gfx/bgContainerTopBlue.jpg") top left no-repeat, url("/gfx/bgContainerTopRepeat.jpg") top repeat-x;
-    background-color: #eaf8fb;
-    border: 2px solid #5babbb;
-    box-shadow: 0 0 0 2px #ffffff, 0 0 30px 1px rgba(0, 0, 0, 0.5);
+  width: 890px;
+  margin: 0 60px;
+  background:
+    url('/gfx/bgContainerTopBlue.jpg') top left no-repeat,
+    url('/gfx/bgContainerTopRepeat.jpg') top repeat-x;
+  background-color: #eaf8fb;
+  border: 2px solid #5babbb;
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 30px 1px rgba(0, 0, 0, 0.5);
 }
 
 #bodySection .withRightAside {
-    margin: 0 140px 0 0;
+  margin: 0 140px 0 0;
 }
 
 .inColumns {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .inColumns .twoCols {
-    width: 46%;
-    margin: 0 2% 0 2%;
+  width: 46%;
+  margin: 0 2% 0 2%;
 }
 
 .halfWidth {
-    width: 50%;
+  width: 50%;
 }
 
 .fullWidth {
-    width: 100%;
+  width: 100%;
 }
 
 nav#tabNav {
-    width: 745px;
-	height: 34px;
-	position: relative;
-	top: -34px;
-	left: -4px;
-	margin: 0px;
-	padding: 0px;
-	margin-bottom : 1px;
+  width: 745px;
+  height: 34px;
+  position: relative;
+  top: -34px;
+  left: -4px;
+  margin: 0px;
+  padding: 0px;
+  margin-bottom: 1px;
 }
 
 nav#tabNav ul {
-	position: relative;
-	display: block;
-	list-style: none;
-	height: 32px;
-    display: flex;
-    flex-direction: row;
+  position: relative;
+  display: block;
+  list-style: none;
+  height: 32px;
+  display: flex;
+  flex-direction: row;
 }
 
 nav#tabNav ul li {
-    height: 32px;
-    background-color: #5babbb;
-	border: 2px solid #fff;
-    border-bottom: 0;
-	padding: 2px;
-	margin: 0 5px 0 0;
-	font-size: 1.2em;
-	font-variant: small-caps;
-	letter-spacing: 0px;
+  height: 32px;
+  background-color: #5babbb;
+  border: 2px solid #fff;
+  border-bottom: 0;
+  padding: 2px;
+  margin: 0 5px 0 0;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  letter-spacing: 0px;
 }
 
 nav#tabNav ul li a {
-    display: block;
-    width: 151px;
-    height: 28px;
-    border: 1px solid #eaf8fa ;
-	line-height: 28px;
-	text-align: center;
-	color: #0687b1;
-	text-decoration: none;
-	font-weight: bold;
-	background: url("/gfx/bgTabmenu.jpg") repeat-x;
+  display: block;
+  width: 151px;
+  height: 28px;
+  border: 1px solid #eaf8fa;
+  line-height: 28px;
+  text-align: center;
+  color: #0687b1;
+  text-decoration: none;
+  font-weight: bold;
+  background: url('/gfx/bgTabmenu.jpg') repeat-x;
 }
 
 nav#tabNav ul li a:hover {
-	color: #5babbb;
-	background: url("/gfx/bgTabmenuHover.jpg") repeat-x;
+  color: #5babbb;
+  background: url('/gfx/bgTabmenuHover.jpg') repeat-x;
 }
 
 nav#tabNav ul li#tabNavActive a {
-	color: #5babbb;
-    height: 32px;
-	border: 2px solid #f4feff ;
-	background: url("/gfx/bgTabmenuActive.jpg") repeat-x;
+  color: #5babbb;
+  height: 32px;
+  border: 2px solid #f4feff;
+  background: url('/gfx/bgTabmenuActive.jpg') repeat-x;
 }
 
 #containerSide {
-    width: 200px;
-    margin: 0 0 30px -200px;
-    font-size: 0.75em;
+  width: 200px;
+  margin: 0 0 30px -200px;
+  font-size: 0.75em;
 }
 
 #containerSide h2 {
-    width: 100%;
-    height: 18px;
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0 0 0 20px;
-    font-size: 1.15em;
-    text-transform: none;
+  width: 100%;
+  height: 18px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 0 0 20px;
+  font-size: 1.15em;
+  text-transform: none;
 }
 
 #containerSide ul {
-    margin: 5px;
-    list-style-type: none;
-    padding: 0;
+  margin: 5px;
+  list-style-type: none;
+  padding: 0;
 }
 
-#containerSide .sideBoxGreen, #containerSide .sideBoxBlue, #containerSide .sideBoxPink {
-    margin: 30px 0 0 0;
-    box-shadow: 10px 10px 10px rgba(90, 170, 182, 0.25);
+#containerSide .sideBoxGreen,
+#containerSide .sideBoxBlue,
+#containerSide .sideBoxPink {
+  margin: 30px 0 0 0;
+  box-shadow: 10px 10px 10px rgba(90, 170, 182, 0.25);
 }
 
 #containerSide .sideBoxGreen {
-    background: url("/gfx/bgContainerTopGreen.jpg") -205px 13px no-repeat;
-    background-color: #f3ffd7;
-    border: 3px solid #89bc24;
+  background: url('/gfx/bgContainerTopGreen.jpg') -205px 13px no-repeat;
+  background-color: #f3ffd7;
+  border: 3px solid #89bc24;
 }
 
 #containerSide .sideBoxGreen h2 {
-    background: url("/gfx/bgTitleGreen.jpg") -15px -5px no-repeat;
-    color: #6fa20a;
-    border-bottom: 3px solid #89bc24;
+  background: url('/gfx/bgTitleGreen.jpg') -15px -5px no-repeat;
+  color: #6fa20a;
+  border-bottom: 3px solid #89bc24;
 }
 
 #containerSide ul#menuSide {
-    font-size: 1.5em;
+  font-size: 1.5em;
 }
 
 #containerSide ul#menuSide li a {
-    width: 100%;
-    display: block;
-    box-sizing: border-box;
-    margin: 1px 0;
-    padding: 0 0 0 25px;
-    text-decoration: none;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  margin: 1px 0;
+  padding: 0 0 0 25px;
+  text-decoration: none;
 }
 
 #containerSide ul#menuSide li a:hover {
-    padding: 0 0 0 27px;
+  padding: 0 0 0 27px;
 }
 
 #containerSide ul#menuSide li.news a {
-    background: url("/gfx/menuIconNews.gif") 0px 2px no-repeat;
+  background: url('/gfx/menuIconNews.gif') 0px 2px no-repeat;
 }
 
 #containerSide ul#menuSide li.scores a {
-    background: url("/gfx/menuIconScores.gif") -2px 3px no-repeat;
+  background: url('/gfx/menuIconScores.gif') -2px 3px no-repeat;
 }
 
 #containerSide ul#menuSide li.account a {
-    background: url("/gfx/menuIconAccount.gif") 0px 3px no-repeat;
+  background: url('/gfx/menuIconAccount.gif') 0px 3px no-repeat;
 }
 
 #containerSide ul#menuSide li.help a {
-    background: url("/gfx/menuIconHelp.gif") -3px 0px no-repeat;
+  background: url('/gfx/menuIconHelp.gif') -3px 0px no-repeat;
 }
 
 #containerSide .sideBoxBlue {
-    background: url("/gfx/bgContainerTopBlue.jpg") -205px 13px no-repeat;
-    background-color: #eaf8fa;
-    border: 3px solid #5babbb;
+  background: url('/gfx/bgContainerTopBlue.jpg') -205px 13px no-repeat;
+  background-color: #eaf8fa;
+  border: 3px solid #5babbb;
 }
 
 #containerSide .sideBoxBlue h2 {
-    background: url("/gfx/bgTitleBlue.jpg") -15px -5px no-repeat;
-    color: #0687b1;
-    border-bottom: 3px solid #5babbb;
+  background: url('/gfx/bgTitleBlue.jpg') -15px -5px no-repeat;
+  color: #0687b1;
+  border-bottom: 3px solid #5babbb;
 }
 
 #containerSide .sideBoxPink {
-    background: url("/gfx/bgContainerTopPink.jpg") -205px 13px no-repeat;
-    background-color: #ffecf2;
-    border: 3px solid #ff6b9c;
+  background: url('/gfx/bgContainerTopPink.jpg') -205px 13px no-repeat;
+  background-color: #ffecf2;
+  border: 3px solid #ff6b9c;
 }
 
 #containerSide .sideBoxPink h2 {
-    background: url("/gfx/bgTitlePink.jpg") -15px -5px no-repeat;
-    color: #ff6b9c;
-    border-bottom: 3px solid #ff6b9c;
+  background: url('/gfx/bgTitlePink.jpg') -15px -5px no-repeat;
+  color: #ff6b9c;
+  border-bottom: 3px solid #ff6b9c;
 }
-
 
 /* HOME PAGE */
 
 .inColumns .homeLeftColumn {
-    width: 488px;
-    height: 475px;
-    background: url("/gfx/bgIntroHomePage.png") no-repeat;
-    margin: 0;
+  width: 488px;
+  height: 475px;
+  background: url('/gfx/bgIntroHomePage.png') no-repeat;
+  margin: 0;
 }
 
 .inColumns .homeRightColumn {
-    width: 360px;
-    margin: 0 16px;
+  width: 360px;
+  margin: 0 16px;
 }
 
 p.btnHomepagePlay {
-    width: 362px;
-    height: 52px;
-    background: url("/gfx/btnHomepagePlay.png") no-repeat;
-    margin: 40px 0 0 0;
-    padding: 5px 0 0 0;
-    font-family: "Junegull-Regular", Trebuchet MS, Arial, sans-serif;
-    font-size: 2em;
-    letter-spacing: 0.1em;
-    text-align: center;
+  width: 362px;
+  height: 52px;
+  background: url('/gfx/btnHomepagePlay.png') no-repeat;
+  margin: 40px 0 0 0;
+  padding: 5px 0 0 0;
+  font-family:
+    'Junegull-Regular',
+    Trebuchet MS,
+    Arial,
+    sans-serif;
+  font-size: 2em;
+  letter-spacing: 0.1em;
+  text-align: center;
 }
 
 p.btnHomepagePlay:hover {
-    background: url("/gfx/btnHomepagePlayHover.png") no-repeat;
-    padding: 8px 0 0 0;
-    text-decoration: none;
+  background: url('/gfx/btnHomepagePlayHover.png') no-repeat;
+  padding: 8px 0 0 0;
+  text-decoration: none;
 }
 
-.btnHomepagePlay a { /* Mozilla Firefox and IE doesn't support the background-clip:text; property */
-    width: 290px;
-    margin: 0 10px 0 62px;
-    font-weight: bold;
-    color: #037601;
-    text-shadow: #fffe03 0 3px 0;
+.btnHomepagePlay a {
+  /* Mozilla Firefox and IE doesn't support the background-clip:text; property */
+  width: 290px;
+  margin: 0 10px 0 62px;
+  font-weight: bold;
+  color: #037601;
+  text-shadow: #fffe03 0 3px 0;
 }
 
-@supports ((background-clip: text) or (-webkit-background-clip: text)) { /* For compatible browsers */
-    .btnHomepagePlay a {
-        background: -webkit-linear-gradient(to bottom, #22bc00 0%, #0c8e06 40%, #014400 41%, #037601 100%);
-        background: linear-gradient(to bottom, #22bc00 0%, #0c8e06 40%, #014400 41%, #037601 100%);
-        background-color: #037601;
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        color: transparent;
-        text-shadow: none;
-        filter: drop-shadow(0 3px 0 #fffe03);
-    }
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  /* For compatible browsers */
+  .btnHomepagePlay a {
+    background: -webkit-linear-gradient(
+      to bottom,
+      #22bc00 0%,
+      #0c8e06 40%,
+      #014400 41%,
+      #037601 100%
+    );
+    background: linear-gradient(to bottom, #22bc00 0%, #0c8e06 40%, #014400 41%, #037601 100%);
+    background-color: #037601;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(0 3px 0 #fffe03);
+  }
 }
-
 
 /* GAME LIST */
 
 div#gamesBoxes {
-    width: 748px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 0 10px;
+  width: 748px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 0 10px;
 }
 
 a.gameBox {
-    position: relative;
-    width: 226px;
-    height: 142px;
-    margin: 0 0 15px 0;
-    z-index: 2;
-    display: block;
+  position: relative;
+  width: 226px;
+  height: 142px;
+  margin: 0 0 15px 0;
+  z-index: 2;
+  display: block;
 }
 
 a.gameBox:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 div.gameBoxBackground {
-    width: 226px;
-    height: 142px;
-    background: url("/gfx/gameBox.png") no-repeat;
-    z-index: 1;
+  width: 226px;
+  height: 142px;
+  background: url('/gfx/gameBox.png') no-repeat;
+  z-index: 1;
 }
 
-.gameBox .gameBoxImg, div.gameOfTheDay .gameBoxImg {
-    width: 176px;
-    height: 106px;
-    position: absolute;
-    top: 8px;
-    left: 37px;
-    z-index: -1;
+.gameBox .gameBoxImg,
+div.gameOfTheDay .gameBoxImg {
+  width: 176px;
+  height: 106px;
+  position: absolute;
+  top: 8px;
+  left: 37px;
+  z-index: -1;
 }
 
 .gameBox .gameBoxStar {
-    width: 31px;
-    height: 29px;
-    position: absolute;
-    top: 101px;
-    left: 7px;
-    z-index: 2;
+  width: 31px;
+  height: 29px;
+  position: absolute;
+  top: 101px;
+  left: 7px;
+  z-index: 2;
 }
 
-.gameBox h3.gameBoxTitle, .gameBoxDay h3.gameBoxTitle {
-    width: 170px;
-    position: absolute;
-    top: 114px;
-    left: 45px;
-    line-height: 19px;
-    font-size: 1.2em;
-    text-align: center;
-    color: #3d5e65;
+.gameBox h3.gameBoxTitle,
+.gameBoxDay h3.gameBoxTitle {
+  width: 170px;
+  position: absolute;
+  top: 114px;
+  left: 45px;
+  line-height: 19px;
+  font-size: 1.2em;
+  text-align: center;
+  color: #3d5e65;
 }
 
 .gameBoxDay h3.gameBoxTitle {
-    color: #860f3f;
+  color: #860f3f;
 }
 
 .gameBoxDay div.gameBoxDayText {
-    width: 458px;
-    height: 83px;
-    position: absolute;
-    top: 31px;
-    left: 228px;
-    color: #860f3f;
-    text-decoration: none;
-    font-weight: normal;
-    font-size: 0.8em;
-    margin: 5px;
+  width: 458px;
+  height: 83px;
+  position: absolute;
+  top: 31px;
+  left: 228px;
+  color: #860f3f;
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 0.8em;
+  margin: 5px;
 }
-
 
 /* GAME SHOW */
 
 #gameZoomIn {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.75);
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
 }
 
 #gameInterface {
-    padding: 0;
+  padding: 0;
 }
 
 #gameZoomOut #gameInterface {
-    width: 724px;
-    height: 370px;
-    margin: 30px auto 50px auto;
-    background: url("/gfx/gameInterface.png") no-repeat;
-    position: relative;
+  width: 724px;
+  height: 370px;
+  margin: 30px auto 50px auto;
+  background: url('/gfx/gameInterface.png') no-repeat;
+  position: relative;
 }
 
 #gameZoomIn #gameInterface {
-    width: 1024px;
-    height: 690px;
-    margin: auto;
-    background: url("/gfx/gameInterfaceZoom.png") no-repeat;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform:translate(-50%, -50%);
+  width: 1024px;
+  height: 690px;
+  margin: auto;
+  background: url('/gfx/gameInterfaceZoom.png') no-repeat;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 #gameInterface #gameUpperButtons {
-    width: 332px;
-    height: 25px;
-    position: absolute;
-    top: -20px;
-    left: 376px;
-    font-size: 0.75em;
+  width: 332px;
+  height: 25px;
+  position: absolute;
+  top: -20px;
+  left: 376px;
+  font-size: 0.75em;
 }
 
 #gameZoomOut #gameInterface #gameUpperButtons {
-    left: 376px;
+  left: 376px;
 }
 
 #gameZoomIn #gameInterface #gameUpperButtons {
-    left: 676px;
+  left: 676px;
 }
 
 #gameInterface #gameUpperButtons ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: flex-end;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: flex-end;
 }
 
 #gameInterface #gameUpperButtons ul li {
-    width: 101px;
-    height: 20px;
-    margin-left: 8px;
-    background: url("/gfx/gameInterfaceButton.gif") no-repeat;
+  width: 101px;
+  height: 20px;
+  margin-left: 8px;
+  background: url('/gfx/gameInterfaceButton.gif') no-repeat;
 }
 
 #gameInterface #gameUpperButtons ul li a {
-    width: 101px;
-    height: 20px;
-    display: block;
-    text-align: center;
-    margin: 0;
-    padding: 4px 0 0 0;
-    font-weight: bold;
-    color: #0687b1;
+  width: 101px;
+  height: 20px;
+  display: block;
+  text-align: center;
+  margin: 0;
+  padding: 4px 0 0 0;
+  font-weight: bold;
+  color: #0687b1;
 }
 
 #gameInterface #gameUpperButtons ul li:hover {
-    height: 18px;
-    margin: 2px 0 0 8px;
+  height: 18px;
+  margin: 2px 0 0 8px;
 }
 
 #gameInterface #gameUpperButtons ul li a:hover {
-    height: 18px;
-    padding: 4px 0 0 0;
-    text-decoration: none;
-    color: #ffa400;
+  height: 18px;
+  padding: 4px 0 0 0;
+  text-decoration: none;
+  color: #ffa400;
 }
 
 .gameSide {
-    width: 303px;
-    position: absolute;
-    top: 23px;
-    margin: 0;
-    padding: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    font-size: 0.75em;
+  width: 303px;
+  position: absolute;
+  top: 23px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-size: 0.75em;
 }
 
 #gameZoomOut .gameSide {
-    height: 320px;
-    left: 396px;
+  height: 320px;
+  left: 396px;
 }
 
 #gameZoomIn .gameSide {
-    height: 640px;
-    left: 696px;
+  height: 640px;
+  left: 696px;
 }
 
 .gameSide p {
-    margin: 8px 0;
+  margin: 8px 0;
 }
 
 .gameSide hr {
-    width: 200px;
-    margin: 8px auto;
-    border: 0;
-    border-top: 1px solid #0687b1;
+  width: 200px;
+  margin: 8px auto;
+  border: 0;
+  border-top: 1px solid #0687b1;
 }
 
 .gameSide article {
-    width: 287px;
-    margin: 8px;
+  width: 287px;
+  margin: 8px;
 }
 
 .gameSide h3 {
-    width: 100%;
-    margin: 15px 0 8px 0;
-    font-weight: bold;
-    font-size: 1.3em;
-    color: #0687b1;
-    border-bottom: 3px double #0687b1;
-    text-align: right;
-    letter-spacing: 1px;
+  width: 100%;
+  margin: 15px 0 8px 0;
+  font-weight: bold;
+  font-size: 1.3em;
+  color: #0687b1;
+  border-bottom: 3px double #0687b1;
+  text-align: right;
+  letter-spacing: 1px;
 }
 
 nav.gameNav ul {
-    list-style: none;
-    margin: 2px auto 0 0;
-    padding: 0;
-    display: flex;
-    justify-content: space-around;
-    font-size: 1em;
+  list-style: none;
+  margin: 2px auto 0 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-around;
+  font-size: 1em;
 }
 
 nav.gameNav ul li a {
-    width: 100px;
-    height: 25px;
-    box-sizing: border-box;
-    display: block;
-    text-align: center;
-    margin: 0;
-    padding: 2px 0 0 0;
-    background-color: #d8e9eb;
-    color: #0687b1;
-    border-top: 2px solid #FFF;
-    border-right: 1px solid #56b7c1;
-    border-bottom: 1px solid #56b7c1;
-    border-left: 1px solid #FFF;
+  width: 100px;
+  height: 25px;
+  box-sizing: border-box;
+  display: block;
+  text-align: center;
+  margin: 0;
+  padding: 2px 0 0 0;
+  background-color: #d8e9eb;
+  color: #0687b1;
+  border-top: 2px solid #fff;
+  border-right: 1px solid #56b7c1;
+  border-bottom: 1px solid #56b7c1;
+  border-left: 1px solid #fff;
 }
 
 nav.gameNav ul li a:hover {
-    padding: 4px 0 0 0;
-    border-top: 2px solid #56b7c1;
-    border-right: 1px solid #FFF;
-    border-bottom: 1px solid #FFF;
-    border-left: 1px solid #56b7c1;
-    text-decoration: none;
-    color: #ffa400;
-    background-color: #e9f3f4;
+  padding: 4px 0 0 0;
+  border-top: 2px solid #56b7c1;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  border-left: 1px solid #56b7c1;
+  text-decoration: none;
+  color: #ffa400;
+  background-color: #e9f3f4;
 }
 
 nav.gameNav ul li.showed a,
 nav.gameNav ul li.showed a:hover {
-    padding: 4px 0 0 0;
-    background-color: #eee6d8;
-    border-top: 0;
-    border-right: 0;
-    border-left: 0;
-    border-bottom: 1px solid #ffa400;
-    color: #ffa400;
-    font-weight: bold;
+  padding: 4px 0 0 0;
+  background-color: #eee6d8;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  border-bottom: 1px solid #ffa400;
+  color: #ffa400;
+  font-weight: bold;
 }
 
 #gameRules table.gameCommands {
-    width: 284px;
-    margin: 8px auto;
+  width: 284px;
+  margin: 8px auto;
 }
 
 #gameStars table {
-    width: 100%;
-    margin: 0;
+  width: 100%;
+  margin: 0;
 }
 
 #gameStars table.gameGoals tbody tr {
-    background: #d1ecef;
+  background: #d1ecef;
 }
 
 #gameStars table.gameGoals tbody tr:nth-child(even) {
-    background-color: #fff;
+  background-color: #fff;
 }
 
 #gameZoomOut #gameZoomClose {
-    display: none;
+  display: none;
 }
 
 #gameZoomIn #gameZoomClose {
-    position: fixed;
-    right: 7px;
-    top: 0;
+  position: fixed;
+  right: 7px;
+  top: 0;
 }
 
 #gameZoomIn #gameZoomClose a {
-    color: #FFF;
-    text-decoration: none;
-    padding: 5px;
-    background-color: rgba(0,0,0,0.75);
-    border: 1px solid #000;
+  color: #fff;
+  text-decoration: none;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.75);
+  border: 1px solid #000;
 }
 
 #gameZoomIn #gameZoomClose a:hover {
-    text-decoration: none;
-    border: 1px solid #fff;
-    background-color: #000;
+  text-decoration: none;
+  border: 1px solid #fff;
+  background-color: #000;
 }
 
 #gameZoomIn #gameZoomClose a span {
-    font-weight: bold;
-    color: #ff0000;
-    font-size: 1.3em;
-    padding-left: 5px;
+  font-weight: bold;
+  color: #ff0000;
+  font-size: 1.3em;
+  padding-left: 5px;
 }
-
 
 /* FORMS */
 
 form div {
-    margin-top: 16px;
-    margin-bottom: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 form div label {
-    font-weight: bold;
+  font-weight: bold;
 }
 
-form div input, input[type=submit], input[type=button], input[type=reset] {
-    width: 100%;
-    min-width: 80px;
-    margin: 5px 0 5px 0;
-    padding: 5px;
-    box-sizing: border-box;
-    border: 2px solid #fff;
-    border-left: 7px solid #fff;
-    color: #20a8c3;
-    background: url("/gfx/bgInput.jpg") repeat-x;
+form div input,
+input[type='submit'],
+input[type='button'],
+input[type='reset'] {
+  width: 100%;
+  min-width: 80px;
+  margin: 5px 0 5px 0;
+  padding: 5px;
+  box-sizing: border-box;
+  border: 2px solid #fff;
+  border-left: 7px solid #fff;
+  color: #20a8c3;
+  background: url('/gfx/bgInput.jpg') repeat-x;
 }
 
 form div input:focus {
-    color: #89bc24;
-    background: url("/gfx/bgInputFocus.jpg") repeat-x;
+  color: #89bc24;
+  background: url('/gfx/bgInputFocus.jpg') repeat-x;
 }
 
-input[type=submit], input[type=button], input[type=reset] {
-    height: 32px;
-    padding-left: 15px;
-    color: #6fa20a;
-    font-size: 1em;
-    font-weight: bold;
-    text-decoration: none;
-    border: 1px solid #6fa20a;
-    background: url("/gfx/bgFormButtonLeft.jpg") left no-repeat, url("/gfx/bgFormButtonFill.jpg") repeat-x;
-    background-color: #e6ffbd;
-    cursor: pointer;
+input[type='submit'],
+input[type='button'],
+input[type='reset'] {
+  height: 32px;
+  padding-left: 15px;
+  color: #6fa20a;
+  font-size: 1em;
+  font-weight: bold;
+  text-decoration: none;
+  border: 1px solid #6fa20a;
+  background:
+    url('/gfx/bgFormButtonLeft.jpg') left no-repeat,
+    url('/gfx/bgFormButtonFill.jpg') repeat-x;
+  background-color: #e6ffbd;
+  cursor: pointer;
 }
 
-input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover {
-    background: url("/gfx/bgFormButtonLeftHover.jpg") left no-repeat, url("/gfx/bgFormButtonFillHover.jpg") repeat-x;
+input[type='submit']:hover,
+input[type='button']:hover,
+input[type='reset']:hover {
+  background:
+    url('/gfx/bgFormButtonLeftHover.jpg') left no-repeat,
+    url('/gfx/bgFormButtonFillHover.jpg') repeat-x;
 }
 
-
-
-
-
-
-
-div.confirm, div.error {
-    padding: 1px;
-    margin: 5px;
-    margin-bottom: 10px;
-    font-weight: bold;
+div.confirm,
+div.error {
+  padding: 1px;
+  margin: 5px;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 div.confirm {
-    border: 2px solid #89bc24;
-    border-left: 10px solid #89bc24;
-    background-color: #6fa20a;
-    color: #89bc24;
+  border: 2px solid #89bc24;
+  border-left: 10px solid #89bc24;
+  background-color: #6fa20a;
+  color: #89bc24;
 }
 
-div.confirm div, div.error div {
-    border: 3px solid white;
-    background-repeat: no-repeat;
-    padding: 5px;
+div.confirm div,
+div.error div {
+  border: 3px solid white;
+  background-repeat: no-repeat;
+  padding: 5px;
 }
 
 div.confirm div {
-    background-color: #f3ffd7;
-    background-image: url("/gfx/bgGreen.png");
+  background-color: #f3ffd7;
+  background-image: url('/gfx/bgGreen.png');
 }
 
 div.confirm p,
 div.confirm ul {
-    color: #89bc24;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 14px;
+  color: #89bc24;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 14px;
 }
 
 div.error {
-    border: 2px solid #ff6b9c;
-    border-left: 10px solid #ff6b9c;
-    background-color: #f40b58;
+  border: 2px solid #ff6b9c;
+  border-left: 10px solid #ff6b9c;
+  background-color: #f40b58;
 }
 
 div.error div {
-    background-color: #ffecf2;
-    background-image: url("/gfx/bgPink.png");
+  background-color: #ffecf2;
+  background-image: url('/gfx/bgPink.png');
 }
 
 div.error p,
 div.error ul {
-    color: #ff6b9c;
-    font-weight: bold;
+  color: #ff6b9c;
+  font-weight: bold;
 }
