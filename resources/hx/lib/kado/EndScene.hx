@@ -1,5 +1,6 @@
 package kado;
 
+import pixi.extras.AnimatedSprite;
 import common_haxe_avm1.pixi.DropShadowFilter;
 import pixi.core.graphics.Graphics;
 import pixi.core.display.Container;
@@ -116,6 +117,7 @@ class EndScene extends Container {
 		back.width = kkm.renderer.width;
 		back.height = kkm.renderer.height;
 		this.addChild(makePanScore());
+		this.addChild(test());
 	}
 
 	public function makePanScore():Container {
@@ -160,7 +162,7 @@ class EndScene extends Container {
 		fieldBest.x = (kkm.renderer.width - fieldBest.width) / 2;
 		fieldBest.y = 168;
 		Filt.glow(fieldBest, 15, 2, 0xffff00);
-		trace(fieldBest);
+
 		var tweenFilterBest = pixi.core.Pixi.tweenManager.createTween(fieldBest);
 		tweenFilterBest.time = 300;
 		tweenFilterBest.pingPong = true;
@@ -191,6 +193,23 @@ class EndScene extends Container {
 			y: 50
 		});
 		tweenY.start();
+
+		return cont;
+	}
+
+	public function test():Container {
+		var cont = new Container();
+
+		var sheet = kkm.loader.resources["kkm"].spritesheet;
+		var piou = new AnimatedSprite(untyped sheet.animations["piou_walk"]);
+
+		// set speed, start playback and add it to the stage
+		piou.animationSpeed = 0.5;
+		piou.play();
+
+		cont.addChild(piou);
+		piou.x = 200;
+		piou.y = 200;
 
 		return cont;
 	}

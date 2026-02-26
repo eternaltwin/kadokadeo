@@ -1,12 +1,10 @@
-import * as PIXI from 'pixi.js'
-
 export default class TweenPath {
   constructor() {
     this._colsed = false
-    this.polygon = new PIXI.Polygon()
+    this.polygon = new window.PIXI.Polygon()
     this.polygon.closed = false
-    this._tmpPoint = new PIXI.Point()
-    this._tmpPoint2 = new PIXI.Point()
+    this._tmpPoint = new window.PIXI.Point()
+    this._tmpPoint2 = new window.PIXI.Point()
     this._tmpDistance = []
 
     this.currentPath = null
@@ -15,43 +13,43 @@ export default class TweenPath {
   }
 
   moveTo(x, y) {
-    PIXI.Graphics.prototype.moveTo.call(this, x,y)
+    window.PIXI.Graphics.prototype.moveTo.call(this, x,y)
     this.dirty = true
     return this
   }
 
   lineTo(x, y) {
-    PIXI.Graphics.prototype.lineTo.call(this, x,y)
+    window.PIXI.Graphics.prototype.lineTo.call(this, x,y)
     this.dirty = true
     return this
   }
 
   bezierCurveTo(cpX, cpY, cpX2, cpY2, toX, toY) {
-    PIXI.Graphics.prototype.bezierCurveTo.call(this, cpX, cpY, cpX2, cpY2, toX, toY)
+    window.PIXI.Graphics.prototype.bezierCurveTo.call(this, cpX, cpY, cpX2, cpY2, toX, toY)
     this.dirty = true
     return this
   }
 
   quadraticCurveTo(cpX, cpY, toX, toY) {
-    PIXI.Graphics.prototype.quadraticCurveTo.call(this, cpX, cpY, toX, toY)
+    window.PIXI.Graphics.prototype.quadraticCurveTo.call(this, cpX, cpY, toX, toY)
     this.dirty = true
     return this
   }
 
   arcTo(x1, y1, x2, y2, radius) {
-    PIXI.Graphics.prototype.arcTo.call(this, x1, y1, x2, y2, radius)
+    window.PIXI.Graphics.prototype.arcTo.call(this, x1, y1, x2, y2, radius)
     this.dirty = true
     return this
   }
 
   arc(cx, cy, radius, startAngle, endAngle, anticlockwise) {
-    PIXI.Graphics.prototype.arc.call(this, cx, cy, radius, startAngle, endAngle, anticlockwise)
+    window.PIXI.Graphics.prototype.arc.call(this, cx, cy, radius, startAngle, endAngle, anticlockwise)
     this.dirty = true
     return this
   }
 
   drawShape(shape) {
-    PIXI.Graphics.prototype.drawShape.call(this, shape)
+    window.PIXI.Graphics.prototype.drawShape.call(this, shape)
     this.dirty = true
     return this
   }

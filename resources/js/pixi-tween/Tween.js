@@ -1,8 +1,6 @@
-import * as PIXI from 'pixi.js'
-
 import Easing from './Easing'
 
-export default class Tween extends PIXI.utils.EventEmitter {
+export default class Tween extends window.PIXI.utils.EventEmitter {
   constructor(target, manager) {
     super()
     this.target = target

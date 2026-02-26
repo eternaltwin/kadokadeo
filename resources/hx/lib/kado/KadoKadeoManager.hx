@@ -57,6 +57,7 @@ class KadoKadeoManager extends Application {
 		loader.add('window_back', "/assets/img/content/default/window_back.png")
 			.add('window_back_2', "/assets/img/content/default/window_back_2.png")
 			.add('gameover_back', "/assets/img/content/default/gameover_back.jpg")
+			.add('kkm', "/assets/img/content/default/kkm.json")
 			.add('bottom_bar', "/assets/img/content/default/bottom_bar.png")
 			.add('kado_icon', "/assets/img/content/default/kado_icon.png")
 			.add('game_image', "/assets/img/content/default/default_artwork.jpg");
