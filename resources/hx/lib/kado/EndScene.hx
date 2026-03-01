@@ -201,15 +201,48 @@ class EndScene extends Container {
 		var cont = new Container();
 
 		var sheet = kkm.loader.resources["kkm"].spritesheet;
-		var piou = new AnimatedSprite(untyped sheet.animations["piou_walk"]);
+		var piou_cont = new Container();
+		var piou_walk = new AnimatedSprite(untyped sheet.animations["piou_walk"]);
+		var piou_shade = new Sprite(sheet.textures["piou_shade.png"]);
+		piou_shade.scale.set(0.77);
+		piou_cont.addChild(piou_shade);
+		piou_cont.addChild(piou_walk);
+		piou_cont.x = 50;
+		piou_cont.y = 100;
+		piou_walk.y = 20;
+		piou_walk.animationSpeed = 0.5;
+		piou_walk.play();
 
-		// set speed, start playback and add it to the stage
-		piou.animationSpeed = 0.5;
-		piou.play();
+		var road = new Sprite(sheet.textures["road.png"]);
+		cont.addChild(road);
 
-		cont.addChild(piou);
-		piou.x = 200;
-		piou.y = 200;
+		var end_line_cont = new Container();
+		var end_line_1 = new Sprite(sheet.textures["end_line_1.png"]);
+		var end_line_2 = new Sprite(sheet.textures["end_line_2.png"]);
+		end_line_2.y = -52;
+		end_line_2.x = 1;
+		end_line_cont.addChild(end_line_1);
+		end_line_cont.addChild(end_line_2);
+		end_line_cont.x = 705;
+		end_line_cont.y = 112;
+		cont.addChild(end_line_cont);
+
+		cont.addChild(piou_cont);
+		cont.x = 50;
+		cont.y = 500;
+
+		cont.alpha = 0;
+		var tweenAppear = pixi.core.Pixi.tweenManager.createTween(cont);
+		tweenAppear.time = 1000;
+		tweenAppear.easing = pixi.core.Pixi.tween.Easing.outExpo();
+		tweenAppear.delay = 1000;
+		tweenAppear.from({
+			alpha: 0
+		});
+		tweenAppear.to({
+			alpha: 1
+		});
+		tweenAppear.start();
 
 		return cont;
 	}
