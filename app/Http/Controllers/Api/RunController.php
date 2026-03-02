@@ -12,6 +12,7 @@ use App\Models\Period;
 use App\Models\Run;
 use App\Services\GameService;
 use App\Services\RunService;
+use App\Services\ScoreService;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -76,11 +77,16 @@ class RunController extends Controller implements HasMiddleware
         return new RunBeginResource($run);
     }
 
-    public function end(RunEndRequest $request, Run $run, RunService $runService, GameService $gameService)
+    public function end(RunEndRequest $request, Run $run, RunService $runService, ScoreService $scoreService)
     {
+        $user = $request->user();
+        $periodId = Period::current()->first()?->id;
         $payload = $request->validated('payload');
         $key = $request->validated('key');
         $sign = $request->validated('sign');
+
+        $previousBest = $scoreService->getUserBestScore($run->game, $user->id, $periodId);
+        $previousBestScore = ($previousBest?->score ?? 0);
 
         try {
             $decoded = $runService->decodeRun($payload, $key, $sign);
@@ -91,7 +97,15 @@ class RunController extends Controller implements HasMiddleware
             throw new BadRequestException($e->getMessage());
         }
 
-        return new JsonResource($run);
+        $leaderBoardQuery = $scoreService->getLeaderBoard($run->game, $periodId);
+        $toBeatCount = $leaderBoardQuery->where('runs.score', '>', $run->score)->count();
+
+        return [
+            'is_best' => $run->score > $previousBestScore,
+            'previous_star' => $run->game->getStarFromScore($previousBestScore),
+            'current_star' => $run->game->getStarFromScore($run->score),
+            'people_to_beat' => $toBeatCount,
+        ];
     }
 
     public function show(Run $run)

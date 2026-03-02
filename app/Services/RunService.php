@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Game;
 use App\Models\GamePeriodStar;
 use App\Models\Run;
 use Carbon\Carbon;
@@ -108,12 +109,7 @@ class RunService
         }
         $game = $run->game;
         $user = $run->user;
-        $gainedStar = -1;
-        foreach ($game->stars as $index => $threshold) {
-            if ($run->score >= $threshold) {
-                $gainedStar = $index;
-            }
-        }
+        $gainedStar = $game->getStarFromScore($run->score);
         // no star gained
         if ($gainedStar === -1) {
             return;

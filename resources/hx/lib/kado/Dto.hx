@@ -17,3 +17,10 @@ typedef EndRunRequestDTO = {
 	var key:String;
 	var sign:String;
 }
+
+typedef EndRunResponseDTO = {
+	var is_best:Bool;
+	var previous_star:Int;
+	var current_star:Int;
+	var people_to_beat:Int;
+}

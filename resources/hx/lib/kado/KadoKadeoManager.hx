@@ -31,6 +31,7 @@ class KadoKadeoManager extends Application {
 	var isGameStarted:Bool;
 
 	var runDetails:Dto.RunDTO;
+	var endRunDetails:Dto.EndRunResponseDTO;
 	var crypto:KadoCrypto = new KadoCrypto();
 
 	public var score:Int = 0;
@@ -185,11 +186,19 @@ class KadoKadeoManager extends Application {
 			key: jse.encrypt(crypto.getKey().toHex()),
 			sign: haxe.crypto.Base64.encode(crypto.getHmacSha256(haxe.io.Bytes.ofString(jsonReq))),
 		}
-		Api.endRun(runDetails.run_id, request, (data:Dto.ApiResponse<Dynamic>) -> {
+		Api.endRun(runDetails.run_id, request, (data:Dto.ApiResponse<Dto.EndRunResponseDTO>) -> {
 			trace('Run ended successfully: ' + haxe.Json.stringify(data));
+			endRunDetails = data.data;
 		}, error -> {
 			trace('Error ending run: ' + error.message);
 		});
+		#else
+		endRunDetails = {
+			is_best: true,
+			previous_star: -1,
+			current_star: 0,
+			people_to_beat: 5,
+		}
 		#end
 	}
 

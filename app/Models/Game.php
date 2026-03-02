@@ -62,4 +62,16 @@ class Game extends Model
         return $this->hasMany(GameControl::class)
             ->orderBy('order');
     }
+
+    public function getStarFromScore(int $score): int
+    {
+        $gainedStar = -1;
+        foreach ($this->stars as $index => $threshold) {
+            if ($score >= $threshold) {
+                $gainedStar = $index;
+            }
+        }
+
+        return $gainedStar;
+    }
 }
