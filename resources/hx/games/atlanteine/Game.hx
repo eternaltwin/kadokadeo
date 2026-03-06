@@ -745,7 +745,7 @@ class Game implements kado.GameInterface {
 						var max = 6;
 
 						// SCORE
-						KKApi.addScore(SCORE_BLOCK);
+						kkm.addScore(SCORE_BLOCK);
 						var p = new Phys(dm.empty(DP_PARTS));
 						p.x = mc._x + SIZE * 0.5;
 						p.y = mc._y + SIZE * 0.5;
@@ -851,7 +851,7 @@ class Game implements kado.GameInterface {
 			var timerMod = (mt.Timer.wantedFPS * mt.Timer.deltaT);
 			var n = Math.min(levelTimer, 34 * timerMod);
 			levelTimer -= n;
-			KKApi.addScore(KKApi.const(Std.int(n) * SCORE_TIME));
+			kkm.addScore(Std.int(n) * SCORE_TIME);
 			updateTimerGfx();
 
 			// PARTS
@@ -1475,11 +1475,11 @@ class Game implements kado.GameInterface {
 	function pickBonus(mc:ASprite) {
 		switch (mc._currentframe) {
 			case 1:
-				KKApi.addScore(SCORE_GREEN);
+				kkm.addScore(SCORE_GREEN);
 			case 2:
-				KKApi.addScore(SCORE_BLUE);
+				kkm.addScore(SCORE_BLUE);
 			case 3:
-				KKApi.addScore(SCORE_PINK);
+				kkm.addScore(SCORE_PINK);
 		}
 		ballFlash = 255;
 		Col.setColor(ball.root, 0, Std.int(ballFlash));

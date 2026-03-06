@@ -29,6 +29,7 @@ class KadoKadeoManager extends Application {
 
 	var startScene:StartScene;
 	var gameOverScreen:GameOver = null;
+	var bottomBar:BottomBar = null;
 	var isGameStarted:Bool;
 
 	var runDetails:Dto.RunDTO;
@@ -69,9 +70,9 @@ class KadoKadeoManager extends Application {
 			this.sheet = loader.resources["kkm"].spritesheet;
 			Browser.window.document.fonts.ready.then((fontFaceSet) -> {
 				trace("KadoKadeoManager initialized");
-				// this.showIntroScreen();
-				score = 31300;
-				this.gameOver({});
+				this.showIntroScreen();
+				// score = 31300;
+				// this.gameOver({});
 			});
 		});
 		common_haxe_avm1.KeyboardManager.init();
@@ -142,10 +143,11 @@ class KadoKadeoManager extends Application {
 
 	function startGame() {
 		this.stage.removeChild(startScene);
-		this.stage.addChild(new BottomBar(this));
 		replay.start();
 
 		game = Type.createInstance(gameClass, [this]);
+		bottomBar = new BottomBar(this);
+		this.stage.addChild(bottomBar);
 		var imageKeys = [for (k in common_haxe_avm1.display.ASprite.spriteData.keys()) k];
 		// trace('Preloading images: ' + imageKeys);
 		common_haxe_avm1.BmpTextureHelper.preload(imageKeys).then((_) -> {
@@ -166,10 +168,8 @@ class KadoKadeoManager extends Application {
 		gameOverScreen = new GameOver(() -> {
 			// TODO: show loading screen
 			makeEndRunHttpRequest().then((endRunDetails:Dto.EndRunResponseDTO) -> {
-				trace(endRunDetails);
 				gameOverScreen.destroy();
 				this.stage.addChild(new EndScene(this, endRunDetails));
-				trace(this.stage);
 			}).catchError((_) -> {
 				// TODO: show error
 			});
@@ -189,7 +189,9 @@ class KadoKadeoManager extends Application {
 
 	public function addScore(points:Int):Void {
 		score += points;
-		trace('Score updated: ' + score);
+		if (bottomBar != null) {
+			bottomBar.updateScore(score);
+		}
 	}
 
 	private function makeEndRunHttpRequest():Promise<Dto.EndRunResponseDTO> {
@@ -222,10 +224,10 @@ class KadoKadeoManager extends Application {
 		});
 		#else
 		return Promise.resolve({
-			is_best: false,
+			is_best: true,
 			previous_star: -1,
 			current_star: 0,
-			people_to_beat: 2,
+			people_to_beat: 0,
 		});
 		#end
 	}

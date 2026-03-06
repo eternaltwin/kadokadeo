@@ -6,18 +6,22 @@ import pixi.core.sprites.Sprite;
 
 class BottomBar extends Container {
 	var kkm:KadoKadeoManager;
+	var bb:Sprite;
 
 	var contractText:pixi.core.text.Text;
+	var digitSprites:Array<Sprite> = [];
 
 	public function new(kkm:KadoKadeoManager) {
 		super();
 		this.kkm = kkm;
 
 		this.makeBottomBar();
+		this.initDigitSprites();
+		this.updateScore(0);
 	}
 
 	public function makeBottomBar():Void {
-		var bb = new Sprite(kkm.loader.resources["bottom_bar"].texture);
+		bb = new Sprite(kkm.loader.resources["bottom_bar"].texture);
 		bb.x = 0;
 		bb.y = kkm.renderer.height - 68;
 		this.addChild(bb);
@@ -40,12 +44,28 @@ class BottomBar extends Container {
 		kadoIcon.width = 40;
 		kadoIcon.height = 40;
 		bb.addChild(kadoIcon);
+	}
 
-		// var testscore = new Sprite(kkm.loader.resources["score_figure_2"].texture);
-		// testscore.anchor.set(0.5);
-		// testscore.x = 800;
-		// testscore.y = 40;
-		// testscore.scale.set(0.1);
-		// bb.addChild(testscore);
+	public function updateScore(score:Int):Void {
+		var paddedScore = Std.string(score);
+		// pad with zeros to ensure it has at least 7 digits
+		while (paddedScore.length < 7) {
+			paddedScore = "0" + paddedScore;
+		}
+
+		for (i in 0...paddedScore.length) {
+			var sprite = digitSprites[i];
+			sprite.texture = kkm.sheet.textures["figure_" + paddedScore.charAt(i) + ".png"];
+		}
+	}
+
+	private function initDigitSprites():Void {
+		for (i in 0...7) {
+			var digitSprite = new Sprite(kkm.sheet.textures["figure_0.png"]);
+			digitSprite.x = 500 + i * 50;
+			digitSprite.y = 65;
+			digitSprites.push(digitSprite);
+			bb.addChild(digitSprite);
+		}
 	}
 }

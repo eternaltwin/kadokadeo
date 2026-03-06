@@ -1,8 +1,8 @@
 package kado;
 
+import js.Browser;
 import pixi.extras.AnimatedSprite;
 import common_haxe_avm1.pixi.DropShadowFilter;
-import pixi.core.graphics.Graphics;
 import pixi.core.display.Container;
 import pixi.core.sprites.Sprite;
 import pixi.mesh.NineSlicePlane;
@@ -120,6 +120,7 @@ class EndScene extends Container {
 		back.height = kkm.renderer.height;
 		this.addChild(makePanScore());
 		this.addChild(makePiouTrack());
+		this.addChild(clickToReplay());
 	}
 
 	public function makePanScore():Container {
@@ -202,17 +203,17 @@ class EndScene extends Container {
 	private function makePiouTrack():Container {
 		var cont = new Container();
 
-		var piou_cont = new Container();
-		var piou_walk = new AnimatedSprite(untyped kkm.sheet.animations["piou_walk"]);
-		var piou_shade = new Sprite(kkm.sheet.textures["piou_shade.png"]);
-		piou_shade.scale.set(0.77);
-		piou_cont.addChild(piou_shade);
-		piou_cont.addChild(piou_walk);
-		piou_cont.x = 50;
-		piou_cont.y = 100;
-		piou_walk.y = 20;
-		piou_walk.animationSpeed = 0.5;
-		piou_walk.play();
+		var piouCont = new Container();
+		var piouWalk = new AnimatedSprite(untyped kkm.sheet.animations["piou_walk"]);
+		var piouShade = new Sprite(kkm.sheet.textures["piou_shade.png"]);
+		piouShade.scale.set(0.77);
+		piouCont.addChild(piouShade);
+		piouCont.addChild(piouWalk);
+		piouCont.x = 50;
+		piouCont.y = 100;
+		piouWalk.y = 20;
+		piouWalk.animationSpeed = 0.5;
+		piouWalk.gotoAndStop(0);
 
 		var road = new Sprite(kkm.sheet.textures["road.png"]);
 		cont.addChild(road);
@@ -228,7 +229,7 @@ class EndScene extends Container {
 		end_line_cont.y = 112;
 		cont.addChild(end_line_cont);
 
-		cont.addChild(piou_cont);
+		cont.addChild(piouCont);
 		cont.x = 50;
 		cont.y = 500;
 
@@ -266,6 +267,57 @@ class EndScene extends Container {
 		textQual.alpha = details.people_to_beat > 0 ? 1 : 0;
 		cont.addChild(textQual);
 		cont.addChild(textQualField);
+
+		var tweenPiouMove = pixi.core.Pixi.tweenManager.createTween(piouCont);
+		tweenPiouMove.time = 1500;
+		tweenPiouMove.delay = 2000;
+		tweenPiouMove.from({x: 50}).to({x: 705}).start();
+		Browser.window.setTimeout(() -> {
+			piouWalk.play();
+		}, 2000);
+		Browser.window.setTimeout(() -> {
+			piouWalk.gotoAndStop(0);
+			var piouFloat = new AnimatedSprite(untyped kkm.sheet.animations["piou_float"]);
+			piouFloat.animationSpeed = 0.5;
+			piouFloat.y = -50;
+			piouCont.removeChild(piouWalk);
+			piouCont.addChild(piouFloat);
+			piouFloat.play();
+
+			var tweenFloat1 = pixi.core.Pixi.tweenManager.createTween(piouFloat);
+			tweenFloat1.time = 600;
+			tweenFloat1.pingPong = true;
+			tweenFloat1.loop = true;
+			tweenFloat1.from({y: piouFloat.y}).to({y: piouFloat.y - 20}).start();
+			var tweenFloat2 = pixi.core.Pixi.tweenManager.createTween(piouFloat);
+			tweenFloat2.time = 800;
+			tweenFloat2.loop = true;
+			tweenFloat2.from({rotation: 0}).to({rotation: 6.28}).start();
+		}, 3500);
+
+		return cont;
+	}
+
+	private function clickToReplay():Container {
+		var cont = new Container();
+		var field = cont.addChild(new pixi.core.text.Text(text[14], {
+			fontFamily: 'Verdana',
+			fontSize: 28,
+			fill: 0x056a83,
+			align: 'center',
+		}));
+		field.x = (kkm.renderer.width - field.width) / 2;
+		field.y = 900;
+		field.alpha = 0;
+		cont.addChild(field);
+
+		var tweenBlink = pixi.core.Pixi.tweenManager.createTween(field);
+		tweenBlink.time = 500;
+		tweenBlink.delay = 1000;
+		tweenBlink.loop = true;
+		tweenBlink.pingPong = true;
+		tweenBlink.easing = untyped(a) -> a < 0.251 ? 0 : 1;
+		tweenBlink.from({alpha: 1}).to({alpha: 0}).start();
 
 		return cont;
 	}

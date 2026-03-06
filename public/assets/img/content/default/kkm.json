@@ -142,7 +142,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_2.png":
 {
@@ -151,7 +151,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_3.png":
 {
@@ -160,7 +160,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_4.png":
 {
@@ -169,7 +169,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_5.png":
 {
@@ -178,7 +178,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_6.png":
 {
@@ -187,7 +187,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_7.png":
 {
@@ -196,7 +196,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_8.png":
 {
@@ -205,7 +205,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_9.png":
 {
@@ -214,7 +214,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_10.png":
 {
@@ -223,7 +223,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_11.png":
 {
@@ -232,7 +232,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_12.png":
 {
@@ -241,7 +241,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_13.png":
 {
@@ -250,7 +250,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_14.png":
 {
@@ -259,7 +259,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_15.png":
 {
@@ -268,7 +268,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_16.png":
 {
@@ -277,7 +277,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_17.png":
 {
@@ -286,7 +286,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_float_18.png":
 {
@@ -295,7 +295,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":98},
 	"sourceSize": {"w":67,"h":98},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.7}
 },
 "piou_shade.png":
 {
@@ -806,6 +806,6 @@
 	"format": "RGBA8888",
 	"size": {"w":1996,"h":1076},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:4e48208b4a783dceb298697838fa2814:36ea0cc73a5a8b86c24b264335ca8e5c:b39806d3784331a700b82cc04aa91ebd$"
+	"smartupdate": "$TexturePacker:SmartUpdate:9b69874b84c8e3bc9d652ccadb318b9c:36ea0cc73a5a8b86c24b264335ca8e5c:b39806d3784331a700b82cc04aa91ebd$"
 }
 }
