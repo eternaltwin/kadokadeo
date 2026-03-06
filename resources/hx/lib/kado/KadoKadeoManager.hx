@@ -1,5 +1,6 @@
 package kado;
 
+import js.lib.Promise;
 import js.Browser;
 import js.html.CanvasElement;
 import pixi.core.Application;
@@ -34,6 +35,8 @@ class KadoKadeoManager extends Application {
 	var endRunDetails:Dto.EndRunResponseDTO;
 	var crypto:KadoCrypto = new KadoCrypto();
 
+	public var sheet:pixi.core.textures.Spritesheet;
+
 	public var score:Int = 0;
 
 	public var seed:mt.Rand;
@@ -63,11 +66,12 @@ class KadoKadeoManager extends Application {
 			.add('kado_icon', "/assets/img/content/default/kado_icon.png")
 			.add('game_image', "/assets/img/content/default/default_artwork.jpg");
 		loader.load(() -> {
+			this.sheet = loader.resources["kkm"].spritesheet;
 			Browser.window.document.fonts.ready.then((fontFaceSet) -> {
 				trace("KadoKadeoManager initialized");
-				this.showIntroScreen();
-				// score = 31300;
-				// this.gameOver({});
+				// this.showIntroScreen();
+				score = 31300;
+				this.gameOver({});
 			});
 		});
 		common_haxe_avm1.KeyboardManager.init();
@@ -160,16 +164,39 @@ class KadoKadeoManager extends Application {
 		replay.stop();
 		// this.stage.removeChildren();
 		gameOverScreen = new GameOver(() -> {
-			this.stage.addChild(new EndScene(this));
+			// TODO: show loading screen
+			makeEndRunHttpRequest().then((endRunDetails:Dto.EndRunResponseDTO) -> {
+				trace(endRunDetails);
+				gameOverScreen.destroy();
+				this.stage.addChild(new EndScene(this, endRunDetails));
+				trace(this.stage);
+			}).catchError((_) -> {
+				// TODO: show error
+			});
 		});
 		this.stage.addChild(gameOverScreen);
 		trace('Game finished, showing end screen');
 		trace('Replay data: ' + replay.encodeReplayString());
+	}
 
+	override public function destroy(?removeView:Bool):Void {
+		this.stop();
+		this.replay.stop();
+		this.ticker.stop();
+		untyped Ticker.system.stop();
+		super.destroy(removeView);
+	}
+
+	public function addScore(points:Int):Void {
+		score += points;
+		trace('Score updated: ' + score);
+	}
+
+	private function makeEndRunHttpRequest():Promise<Dto.EndRunResponseDTO> {
+		#if !debug
 		var win:Dynamic = js.Browser.window;
 		var kado:KadoConfig = cast win.Kado;
 
-		#if !debug
 		var jse = new externs.JSEncrypt();
 		jse.setPublicKey(kado.public_key);
 		var req = {
@@ -186,32 +213,20 @@ class KadoKadeoManager extends Application {
 			key: jse.encrypt(crypto.getKey().toHex()),
 			sign: haxe.crypto.Base64.encode(crypto.getHmacSha256(haxe.io.Bytes.ofString(jsonReq))),
 		}
-		Api.endRun(runDetails.run_id, request, (data:Dto.ApiResponse<Dto.EndRunResponseDTO>) -> {
+		return Api.endRun(runDetails.run_id, request, (data:Dto.ApiResponse<Dto.EndRunResponseDTO>) -> {
 			trace('Run ended successfully: ' + haxe.Json.stringify(data));
 			endRunDetails = data.data;
+			return endRunDetails;
 		}, error -> {
 			trace('Error ending run: ' + error.message);
 		});
 		#else
-		endRunDetails = {
-			is_best: true,
+		return Promise.resolve({
+			is_best: false,
 			previous_star: -1,
 			current_star: 0,
-			people_to_beat: 5,
-		}
+			people_to_beat: 2,
+		});
 		#end
-	}
-
-	override public function destroy(?removeView:Bool):Void {
-		this.stop();
-		this.replay.stop();
-		this.ticker.stop();
-		untyped Ticker.system.stop();
-		super.destroy(removeView);
-	}
-
-	public function addScore(points:Int):Void {
-		score += points;
-		trace('Score updated: ' + score);
 	}
 }

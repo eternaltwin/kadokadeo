@@ -41,11 +41,11 @@ class BottomBar extends Container {
 		kadoIcon.height = 40;
 		bb.addChild(kadoIcon);
 
-		var testscore = new Sprite(kkm.loader.resources["score_figure_2"].texture);
-		testscore.anchor.set(0.5);
-		testscore.x = 800;
-		testscore.y = 40;
-		testscore.scale.set(0.1);
-		bb.addChild(testscore);
+		// var testscore = new Sprite(kkm.loader.resources["score_figure_2"].texture);
+		// testscore.anchor.set(0.5);
+		// testscore.x = 800;
+		// testscore.y = 40;
+		// testscore.scale.set(0.1);
+		// bb.addChild(testscore);
 	}
 }

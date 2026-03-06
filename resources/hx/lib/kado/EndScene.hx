@@ -10,14 +10,16 @@ import mt.bumdum.Lib;
 
 class EndScene extends Container {
 	var kkm:KadoKadeoManager;
+	var details:Dto.EndRunResponseDTO;
 
 	var text:Array<String>;
 
 	var fieldBest:pixi.core.text.Text;
 
-	public function new(kkm:KadoKadeoManager) {
+	public function new(kkm:KadoKadeoManager, details:Dto.EndRunResponseDTO) {
 		super();
 		this.kkm = kkm;
+		this.details = details;
 		var textFr = [
 			"VOUS ETES QUALIFIE !",
 			"VOUS N\'ETES PAS QUALIFIE",
@@ -117,11 +119,10 @@ class EndScene extends Container {
 		back.width = kkm.renderer.width;
 		back.height = kkm.renderer.height;
 		this.addChild(makePanScore());
-		this.addChild(test());
+		this.addChild(makePiouTrack());
 	}
 
 	public function makePanScore():Container {
-		var isBest = true;
 		var cont = new NineSlicePlane(new Sprite(kkm.loader.resources["window_back_2"].texture).texture, 50, 70, 50, 50);
 		cont.width = 900;
 		cont.height = 204;
@@ -144,7 +145,7 @@ class EndScene extends Container {
 			letterSpacing: 6
 		}));
 		fieldScore.x = (kkm.renderer.width - fieldScore.width) / 2;
-		fieldScore.y = isBest ? 35 : 60;
+		fieldScore.y = details.is_best ? 35 : 60;
 		Filt.glow(fieldScore, 6, 4, 0xba3801);
 		fieldScore.filters.push(new DropShadowFilter({
 			blur: 5,
@@ -161,6 +162,7 @@ class EndScene extends Container {
 		}));
 		fieldBest.x = (kkm.renderer.width - fieldBest.width) / 2;
 		fieldBest.y = 168;
+		fieldBest.alpha = details.is_best ? 1 : 0;
 		Filt.glow(fieldBest, 15, 2, 0xffff00);
 
 		var tweenFilterBest = pixi.core.Pixi.tweenManager.createTween(fieldBest);
@@ -197,13 +199,12 @@ class EndScene extends Container {
 		return cont;
 	}
 
-	public function test():Container {
+	private function makePiouTrack():Container {
 		var cont = new Container();
 
-		var sheet = kkm.loader.resources["kkm"].spritesheet;
 		var piou_cont = new Container();
-		var piou_walk = new AnimatedSprite(untyped sheet.animations["piou_walk"]);
-		var piou_shade = new Sprite(sheet.textures["piou_shade.png"]);
+		var piou_walk = new AnimatedSprite(untyped kkm.sheet.animations["piou_walk"]);
+		var piou_shade = new Sprite(kkm.sheet.textures["piou_shade.png"]);
 		piou_shade.scale.set(0.77);
 		piou_cont.addChild(piou_shade);
 		piou_cont.addChild(piou_walk);
@@ -213,12 +214,12 @@ class EndScene extends Container {
 		piou_walk.animationSpeed = 0.5;
 		piou_walk.play();
 
-		var road = new Sprite(sheet.textures["road.png"]);
+		var road = new Sprite(kkm.sheet.textures["road.png"]);
 		cont.addChild(road);
 
 		var end_line_cont = new Container();
-		var end_line_1 = new Sprite(sheet.textures["end_line_1.png"]);
-		var end_line_2 = new Sprite(sheet.textures["end_line_2.png"]);
+		var end_line_1 = new Sprite(kkm.sheet.textures["end_line_1.png"]);
+		var end_line_2 = new Sprite(kkm.sheet.textures["end_line_2.png"]);
 		end_line_2.y = -52;
 		end_line_2.x = 1;
 		end_line_cont.addChild(end_line_1);
@@ -244,6 +245,41 @@ class EndScene extends Container {
 		});
 		tweenAppear.start();
 
+		var textQualField = cont.addChild(new pixi.core.text.Text(text[19], {
+			fontFamily: 'Junegull-Regular',
+			fontSize: 32,
+			fill: 0x056a83,
+			align: 'center',
+		}));
+		textQualField.x = (kkm.renderer.width - textQualField.width) / 2 - cont.x;
+		textQualField.y = 150;
+		textQualField.alpha = details.people_to_beat == 0 ? 1 : 0;
+
+		var textQual = cont.addChild(new pixi.core.text.Text(txtPlayersToOvertake(details.people_to_beat), {
+			// fontFamily: 'Junegull-Regular',
+			fontSize: 32,
+			fill: 0x056a83,
+			align: 'center',
+		}));
+		textQual.x = (kkm.renderer.width - textQual.width) / 2 - cont.x;
+		textQual.y = 200;
+		textQual.alpha = details.people_to_beat > 0 ? 1 : 0;
+		cont.addChild(textQual);
+		cont.addChild(textQualField);
+
 		return cont;
+	}
+
+	private function txtPlayersToOvertake(n:Int):String {
+		if (kkm.lang == "en") {
+			return "You still have " + n + " players to overtake!";
+		}
+		if (kkm.lang == "es") {
+			return "¡Todavía tienes que superar a " + n + " jugadores!";
+		}
+		if (kkm.lang == "de") {
+			return "Du hast noch " + n + " Spieler vor dir!";
+		}
+		return "Il y a encore " + n + " joueurs à dépasser !";
 	}
 }
