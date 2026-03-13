@@ -47,7 +47,7 @@ class Particules {
 		tbl.push(p);
 	}
 
-	public function main() {
+	public function update() {
 		var i = 0;
 		var n = tbl.length;
 		while (i < n) {

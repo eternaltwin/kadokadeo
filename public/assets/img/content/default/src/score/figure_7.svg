@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" width="50" height="63" enable-background="new -23.5 -8.5 500 630" viewBox="-23.5 -8.5 500 630">
+<linearGradient id="a" x1="228" x2="228" y1="55.001" y2="562.667" gradientUnits="userSpaceOnUse">
+<stop offset=".003" style="stop-color:#fff"/>
+<stop offset=".261" style="stop-color:#fdfeff"/>
+<stop offset=".353" style="stop-color:#f6fcfd"/>
+<stop offset=".419" style="stop-color:#ebf7fa"/>
+<stop offset=".473" style="stop-color:#daf0f6"/>
+<stop offset=".519" style="stop-color:#c4e7f1"/>
+<stop offset=".559" style="stop-color:#a8ddeb"/>
+<stop offset=".595" style="stop-color:#89d0e3"/>
+<stop offset=".6" style="stop-color:#84cee2"/>
+<stop offset="1" style="stop-color:#daeff5"/>
+</linearGradient>
+<path fill="url(#a)" d="M180 562.7c-3.2 0-6.4-.8-9.3-2.3l-88.8-46.7c-9.6-5.1-13.4-16.9-8.6-26.6l149.4-299.4H75c-11 0-20-9-20-20V75c0-11 9-20 20-20h306c11 0 20 9 20 20v42c0 3-.7 5.9-1.9 8.5l-201 425.7c-2.3 4.9-6.6 8.7-11.7 10.4-2.1.7-4.3 1.1-6.4 1.1"/>
+<path fill="#fff" d="M381 75v42L180 542.7 91.2 496 255 167.7H75V75zm0-40H75c-22.1 0-40 17.9-40 40v92.7c0 22.1 17.9 40 40 40h115.3L55.4 478.1c-9.7 19.5-2.1 43.1 17.2 53.3l88.8 46.7c5.8 3 12.2 4.6 18.6 4.6 4.3 0 8.6-.7 12.7-2.1 10.3-3.5 18.8-11 23.5-20.9l201-425.7c2.5-5.3 3.8-11.2 3.8-17.1V75c0-22.1-17.9-40-40-40"/>
+<defs>
+<filter id="b" width="456" height="617.7" x="0" y="0" filterUnits="userSpaceOnUse">
+<feFlood result="back" style="flood-color:white;flood-opacity:1"/>
+<feBlend in="SourceGraphic" in2="back"/>
+</filter>
+</defs>
+<path fill="#fff" d="M381 75v42L180 542.7 91.2 496 255 167.7H75V75zm0-75H75C33.6 0 0 33.6 0 75v92.7c0 41.4 33.6 75 75 75h58.8L24.1 462.5c-18.2 36.5-3.9 80.9 32.2 99.9l88.8 46.7c10.9 5.7 22.9 8.6 34.9 8.6 8 0 16-1.3 23.8-3.9 19.4-6.5 35.3-20.6 44-39.1l201-425.7c4.7-10 7.2-21 7.2-32V75c0-41.4-33.6-75-75-75"/>
+<path fill="#4c7f8d" d="M381 75v42L180 542.7 91.2 496 255 167.7H75V75zm0-25H75c-13.8 0-25 11.2-25 25v92.7c0 13.8 11.2 25 25 25h139.6L68.8 484.8c-6.1 12.2-1.3 27 10.7 33.3l88.8 46.7c3.6 1.9 7.6 2.9 11.6 2.9 2.7 0 5.3-.4 7.9-1.3 6.5-2.2 11.8-6.9 14.7-13l201-425.7c1.6-3.3 2.4-7 2.4-10.7V75c.1-13.8-11.1-25-24.9-25"/>
+</svg>

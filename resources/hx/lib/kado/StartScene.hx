@@ -19,7 +19,7 @@ class StartScene extends Container {
 
 		this.makeBottomBar();
 
-		var art = new Sprite(kkm.loader.resources["game_image"].texture);
+		var art = Sprite.from("game_image.png");
 		this.addChild(art);
 
 		this.overlay = new Graphics();
@@ -42,7 +42,7 @@ class StartScene extends Container {
 	}
 
 	public function makeBottomBar():Void {
-		var bb = new Sprite(kkm.loader.resources["bottom_bar"].texture);
+		var bb = Sprite.from("bottom_bar.png");
 		bb.x = 0;
 		bb.y = kkm.renderer.height - 68;
 		this.addChild(bb);

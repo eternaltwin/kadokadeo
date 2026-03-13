@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" width="50" height="63" enable-background="new -10.8 -8.5 500 630" viewBox="-10.8 -8.5 500 630">
+<linearGradient id="a" x1="242.333" x2="242.333" y1="75" y2="539.665" gradientUnits="userSpaceOnUse">
+<stop offset=".003" style="stop-color:#fff"/>
+<stop offset=".261" style="stop-color:#fdfeff"/>
+<stop offset=".353" style="stop-color:#f6fcfd"/>
+<stop offset=".419" style="stop-color:#ebf7fa"/>
+<stop offset=".473" style="stop-color:#daf0f6"/>
+<stop offset=".519" style="stop-color:#c4e7f1"/>
+<stop offset=".559" style="stop-color:#a8ddeb"/>
+<stop offset=".595" style="stop-color:#89d0e3"/>
+<stop offset=".6" style="stop-color:#84cee2"/>
+<stop offset="1" style="stop-color:#daeff5"/>
+</linearGradient>
+<path fill="url(#a)" d="M357.9 559.7h-85.8c-11 0-20-9-20-20v-63.1H75c-11 0-20-9-20-20v-85.2c0-3.9 1.2-7.8 3.3-11.1L255.5 63.9c3.7-5.6 10-8.9 16.7-8.9H358c11 0 20 9 20 20v276.4h31.7c11 0 20 9 20 20v85.2c0 11-9 20-20 20H378v63.1c-.1 11-9 20-20.1 20M228.2 338.3H251v-35.6z"/>
+<path fill="#fff" d="M357.9 75v296.4h51.7v85.2h-51.7v83.1h-85.8v-83.1H75v-85.2L272.1 75zM191.7 358.3H271v-124zM357.9 35h-85.8c-13.4 0-25.9 6.7-33.3 17.8L41.7 349.2c-4.4 6.6-6.7 14.3-6.7 22.2v85.2c0 22.1 17.9 40 40 40h157.1v43.1c0 22.1 17.9 40 40 40h85.8c22.1 0 40-17.9 40-40v-43.1h11.7c22.1 0 40-17.9 40-40v-85.2c0-22.1-17.9-40-40-40h-11.7V75c0-22.1-17.9-40-40-40"/>
+<defs>
+<filter id="b" width="484.7" height="614.7" x="0" y="0" filterUnits="userSpaceOnUse">
+<feFlood result="back" style="flood-color:white;flood-opacity:1"/>
+<feBlend in="SourceGraphic" in2="back"/>
+</filter>
+</defs>
+<path fill="#fff" d="M357.9 75v296.4h51.7v85.2h-51.7v83.1h-85.8v-83.1H75v-85.2L272.1 75zM191.7 358.3H271v-124zM357.9 0h-85.8c-25.1 0-48.5 12.6-62.4 33.5L12.6 329.8A75.07 75.07 0 0 0 0 371.4v85.2c0 41.4 33.6 75 75 75h122.1v8.1c0 41.4 33.6 75 75 75h85.8c41.4 0 75-33.6 75-75v-11.8c30-9.8 51.7-38 51.7-71.3v-85.2c0-33.3-21.7-61.5-51.7-71.3V75c0-41.4-33.6-75-75-75"/>
+<path fill="#4c7f8d" d="M357.9 75v296.4h51.7v85.2h-51.7v83.1h-85.8v-83.1H75v-85.2L272.1 75zM191.7 358.3H271v-124zM357.9 50h-85.8c-8.4 0-16.2 4.2-20.8 11.2L54.2 357.5c-2.7 4.1-4.2 8.9-4.2 13.8v85.2c0 13.8 11.2 25 25 25h172.1v58.1c0 13.8 11.2 25 25 25h85.8c13.8 0 25-11.2 25-25v-58.1h26.7c13.8 0 25-11.2 25-25v-85.2c0-13.8-11.2-25-25-25h-26.7V75c0-13.8-11.2-25-25-25M237.3 333.3l8.7-13.5v13.5z"/>
+</svg>

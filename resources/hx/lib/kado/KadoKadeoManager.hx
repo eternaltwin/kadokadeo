@@ -1,10 +1,6 @@
 package kado;
 
-import pixi.core.textures.Texture;
-import pixi.core.sprites.Sprite;
-import js.lib.Object;
 import pixi.loaders.Loader;
-import pixi.core.Pixi;
 import js.lib.Promise;
 import js.Browser;
 import js.html.CanvasElement;
@@ -67,13 +63,7 @@ class KadoKadeoManager extends Application {
 		// Pixi intro
 
 		// this.loader = new Loader();
-		loader.add('window_back', "/assets/img/content/default/window_back.png")
-			.add('window_back_2', "/assets/img/content/default/window_back_2.png")
-			.add('gameover_back', "/assets/img/content/default/gameover_back.jpg")
-			.add('kkm', "/assets/img/content/default/kkm.json")
-			.add('bottom_bar', "/assets/img/content/default/bottom_bar.png")
-			.add('kado_icon', "/assets/img/content/default/kado_icon.png")
-			.add('game_image', "/assets/img/content/default/default_artwork.jpg");
+		loader.add('kkm', "/assets/img/content/default/kkm-0.json");
 		loader.load(() -> {
 			this.sheet = loader.resources["kkm"].spritesheet;
 			Browser.window.document.fonts.ready.then((fontFaceSet) -> {
@@ -178,6 +168,7 @@ class KadoKadeoManager extends Application {
 				this.stage.addChild(new EndScene(this, endRunDetails));
 			}).catchError((_) -> {
 				// TODO: show error
+				trace(_);
 			});
 		});
 		this.stage.addChild(gameOverScreen);

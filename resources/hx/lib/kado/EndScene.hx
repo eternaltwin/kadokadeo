@@ -115,7 +115,7 @@ class EndScene extends Container {
 			default: textFr;
 		};
 
-		var back = this.addChild(new Sprite(kkm.loader.resources["gameover_back"].texture));
+		var back = this.addChild(Sprite.from("gameover_back.png"));
 		back.width = kkm.renderer.width;
 		back.height = kkm.renderer.height;
 		this.addChild(makePanScore());
@@ -124,7 +124,7 @@ class EndScene extends Container {
 	}
 
 	public function makePanScore():Container {
-		var cont = new NineSlicePlane(new Sprite(kkm.loader.resources["window_back_2"].texture).texture, 50, 70, 50, 50);
+		var cont = new NineSlicePlane(Sprite.from("window_back_2.png").texture, 50, 70, 50, 50);
 		cont.width = 900;
 		cont.height = 204;
 		cont.x = (kkm.renderer.width - cont.width) / 2;
@@ -205,7 +205,7 @@ class EndScene extends Container {
 
 		var piouCont = new Container();
 		var piouWalk = new AnimatedSprite(untyped kkm.sheet.animations["piou_walk"]);
-		var piouShade = new Sprite(kkm.sheet.textures["piou_shade.png"]);
+		var piouShade = Sprite.from("piou_shade.png");
 		piouShade.scale.set(0.77);
 		piouCont.addChild(piouShade);
 		piouCont.addChild(piouWalk);
@@ -215,12 +215,12 @@ class EndScene extends Container {
 		piouWalk.animationSpeed = 0.5;
 		piouWalk.gotoAndStop(0);
 
-		var road = new Sprite(kkm.sheet.textures["road.png"]);
+		var road = Sprite.from("road.png");
 		cont.addChild(road);
 
 		var end_line_cont = new Container();
-		var end_line_1 = new Sprite(kkm.sheet.textures["end_line_1.png"]);
-		var end_line_2 = new Sprite(kkm.sheet.textures["end_line_2.png"]);
+		var end_line_1 = Sprite.from("end_line_1.png");
+		var end_line_2 = Sprite.from("end_line_2.png");
 		end_line_2.y = -52;
 		end_line_2.x = 1;
 		end_line_cont.addChild(end_line_1);

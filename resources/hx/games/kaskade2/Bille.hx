@@ -20,12 +20,12 @@ class Bille {
 	public var gy:Float;
 
 	public function new(game:Game, px, py) {
-		mc = game.dmanager.attach("bille", Const.PLAN_BILLE);
-		star = downcast(mc).star;
+		// star = downcast(mc).star;
 		if (game.nlevels == Const.MAXCOLORS)
 			id = Const.MAXCOLORS - 1;
 		else
 			id = game.random(game.nlevels);
+		mc = game.dmanager.attach("bille/bille_" + (id + 1), Const.PLAN_BILLE);
 		mc.gotoAndStop(id + 1);
 		mc._xscale = 0;
 		mc._yscale = 0;
@@ -45,7 +45,7 @@ class Bille {
 	}
 
 	public function activate(b) {
-		downcast(mc).sub.gotoAndStop(b ? 2 : 1);
+		// downcast(mc).sub.gotoAndStop(b ? 2 : 1);
 	}
 
 	public function gravityLeft() {

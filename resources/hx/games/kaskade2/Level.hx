@@ -7,7 +7,7 @@ class Level {
 
 	public var billes:Array<Array<Bille>>;
 	public var groups:Array<Array<Bille>>;
-	public var gravityList:Array<Bille>;
+	public var gravityList:Array<Bille> = [];
 
 	public function new(g) {
 		game = g;
@@ -15,28 +15,21 @@ class Level {
 	}
 
 	public function initLevel() {
-		var x = 0;
 		billes = new Array();
-		while (x < Const.LVL_WIDTH) {
-			var y = 0;
+		for (x in 0...Const.LVL_WIDTH) {
 			billes[x] = new Array();
-			while (y < Const.LVL_HEIGHT) {
+			for (y in 0...Const.LVL_HEIGHT) {
 				billes[x][y] = new Bille(game, x, y);
-				y++;
 			}
-			x++;
 		}
 		makeGroups();
 	}
 
 	public function gravity() {
-		var y = 0;
-		var x = 0;
 		gravityList = new Array();
-		while (y < Const.LVL_HEIGHT) {
-			x = Const.LVL_WIDTH - 1;
+		for (y in 0...Const.LVL_HEIGHT) {
 			var space = false;
-			while (x >= 0) {
+			for (x in (Const.LVL_WIDTH - 1)...0) {
 				var b = billes[x][y];
 				if (b == null)
 					space = true;
@@ -46,19 +39,15 @@ class Level {
 					b.gravityLeft();
 					gravityList.push(b);
 				}
-				x--;
 			}
-			y++;
 		}
 
 		if (gravityList.length > 0)
 			return;
 
-		x = 0;
-		while (x < Const.LVL_WIDTH) {
+		for (x in 0...Const.LVL_WIDTH) {
 			var space = false;
-			y = Const.LVL_HEIGHT - 1;
-			while (y >= 0) {
+			for (y in (Const.LVL_HEIGHT - 1)...0) {
 				var b = billes[x][y];
 				if (b == null)
 					space = true;
@@ -68,22 +57,16 @@ class Level {
 					b.gravityDown();
 					gravityList.push(b);
 				}
-				y--;
 			}
-			x++;
 		}
 
 		if (gravityList.length == 0) {
-			x = 0;
-			while (x < Const.LVL_WIDTH) {
-				y = 0;
-				while (y < Const.LVL_HEIGHT) {
+			for (x in 0...Const.LVL_WIDTH) {
+				for (y in 0...Const.LVL_HEIGHT) {
 					if (billes[x][y] == null) {
 						billes[x][y] = new Bille(game, x, y);
 					}
-					y++;
 				}
-				x++;
 			}
 			gravityList = null;
 			makeGroups();
@@ -95,40 +78,41 @@ class Level {
 		var id = b.id;
 		b.group = g;
 		g.push(b);
-		b = billes[x - 1][y];
-		if (b.id == id && b.group == null) {
-			makeGroupsRec(b, x - 1, y, g);
+		if (x - 1 >= 0) {
+			b = billes[x - 1][y];
+			if (b.id == id && b.group == null) {
+				makeGroupsRec(b, x - 1, y, g);
+			}
 		}
-		b = billes[x + 1][y];
-		if (b.id == id && b.group == null) {
-			makeGroupsRec(b, x + 1, y, g);
+		if (x + 1 < Const.LVL_WIDTH) {
+			b = billes[x + 1][y];
+			if (b.id == id && b.group == null) {
+				makeGroupsRec(b, x + 1, y, g);
+			}
 		}
-		b = billes[x][y - 1];
-		if (b.id == id && b.group == null) {
-			makeGroupsRec(b, x, y - 1, g);
+		if (y - 1 >= 0) {
+			b = billes[x][y - 1];
+			if (b.id == id && b.group == null) {
+				makeGroupsRec(b, x, y - 1, g);
+			}
 		}
-		b = billes[x][y + 1];
-		if (b.id == id && b.group == null) {
-			makeGroupsRec(b, x, y + 1, g);
+		if (y + 1 < Const.LVL_HEIGHT) {
+			b = billes[x][y + 1];
+			if (b.id == id && b.group == null) {
+				makeGroupsRec(b, x, y + 1, g);
+			}
 		}
 	}
 
 	public function makeGroups() {
-		var i, x, y;
-		x = 0;
-		while (x < Const.LVL_WIDTH) {
-			y = 0;
-			while (y < Const.LVL_HEIGHT) {
+		for (x in 0...Const.LVL_WIDTH) {
+			for (y in 0...Const.LVL_HEIGHT) {
 				billes[x][y].group = null;
-				y++;
 			}
-			x++;
 		}
 		groups = new Array();
-		x = 0;
-		while (x < Const.LVL_WIDTH) {
-			y = 0;
-			while (y < Const.LVL_HEIGHT) {
+		for (x in 0...Const.LVL_WIDTH) {
+			for (y in 0...Const.LVL_HEIGHT) {
 				var b = billes[x][y];
 				if (b != null && b.group == null) {
 					var g = new Array();
@@ -136,18 +120,16 @@ class Level {
 					if (g.length < 2 || g[0].id == Const.MAXCOLORS - 1) { // COUPS
 						for (b in g) {
 							b.group = null;
-							b.star.gotoAndPlay("off");
+							// b.star.gotoAndPlay("off");
 						}
 					} else {
 						groups.push(g);
 						for (b in g) {
-							b.star.gotoAndPlay("on");
+							// b.star.gotoAndPlay("on");
 						}
 					}
 				}
-				y++;
 			}
-			x++;
 		}
 		if (groups.length == 0) {
 			game.gameOver();
@@ -177,7 +159,7 @@ class Level {
 		}
 	}
 
-	public function main() {
+	public function update() {
 		animate();
 
 		var i = 0;

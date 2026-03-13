@@ -5,10 +5,9 @@ import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
 import mt.bumdum.Lib;
 import common_haxe_avm1.KKApi;
-import common_haxe_avm1.BmpTextureHelper;
 import common_haxe_avm1.KeyboardManager;
 
-@:expose('GameKaskade')
+@:expose('GameKaskade2')
 class Game implements kado.GameInterface {
 	public var kkm:kado.KadoKadeoManager;
 
@@ -53,7 +52,6 @@ class Game implements kado.GameInterface {
 
 	public function new(kkm:kado.KadoKadeoManager) {
 		this.kkm = kkm;
-		ASprite.spriteData = ['' => [0, 0],];
 		root = new ASprite();
 		kkm.stage.addChild(root);
 		dmanager = new mt.DepthManager(root);
@@ -87,33 +85,33 @@ class Game implements kado.GameInterface {
 		if (lock)
 			return;
 
-		var xm = Std.xmouse() - Const.WIDTH / 2;
-		var ym = Std.ymouse() - Const.HEIGHT / 2;
+		// var xm = Std.xmouse() - Const.WIDTH / 2;
+		// var ym = Std.ymouse() - Const.HEIGHT / 2;
 
 		var delt = Math.sqrt(Const.WIDTH * Const.WIDTH + Const.HEIGHT * Const.HEIGHT) / 2;
 
-		var x = xm * Bille.INV_COS - ym * Bille.INV_SIN + delt / 2;
-		var y = xm * Bille.INV_SIN + ym * Bille.INV_COS + delt / 2;
+		// var x = xm * Bille.INV_COS - ym * Bille.INV_SIN + delt / 2;
+		// var y = xm * Bille.INV_SIN + ym * Bille.INV_COS + delt / 2;
 
-		x /= Const.BILLE_RAY;
-		y /= Const.BILLE_RAY;
+		// x /= Const.BILLE_RAY;
+		// y /= Const.BILLE_RAY;
 
-		cur = {x: x.int(), y: y.int()};
+		// cur = {x: x.int(), y: y.int()};
 
-		var b = level.billes[x.int()][y.int()];
-		if (curGroup == b.group)
-			return;
-		for (group in curGroup) {
-			group.activate(false);
-		}
-		curGroup = b.group;
-		if (b.group != null) {
-			for (group in curGroup) {
-				group.activate(true);
-			}
-			showCursor();
-		} else
-			hideCursor();
+		// var b = level.billes[x.int()][y.int()];
+		// if (curGroup == b.group)
+		// 	return;
+		// for (group in curGroup) {
+		// 	group.activate(false);
+		// }
+		// curGroup = b.group;
+		// if (b.group != null) {
+		// 	for (group in curGroup) {
+		// 		group.activate(true);
+		// 	}
+		// 	showCursor();
+		// } else
+		// 	hideCursor();
 	}
 
 	public function showCursor() {
@@ -165,7 +163,7 @@ class Game implements kado.GameInterface {
 			p._x = b.mc._x;
 			p._y = b.mc._y;
 			p._rotation = Std.random(360);
-			downcast(p).sub.gotoAndPlay((Std.random(3) + 1) + "");
+			// downcast(p).sub.gotoAndPlay((Std.random(3) + 1) + "");
 			p._alpha = 30 + Std.random(70);
 			p.gotoAndStop(b.mc._currentframe + "");
 			b.mc.removeMovieClip();
@@ -191,26 +189,26 @@ class Game implements kado.GameInterface {
 			flash -= Timer.tmod * 3;
 			if (flash < 0)
 				flash = 0;
-			var c = new Color(dmanager.getMC());
 			var k = (flash * 2.55).int();
 			var f = (flash / 2).int();
-			c.setTransform({
-				ra: 100 - f,
-				rb: k,
-				ga: 100 - f,
-				gb: 0,
-				ba: 100 - f,
-				bb: 0,
-				aa: 100,
-				ab: 0
-			});
+			// var c = new Color(dmanager.getMC());
+			// c.setTransform({
+			// 	ra: 100 - f,
+			// 	rb: k,
+			// 	ga: 100 - f,
+			// 	gb: 0,
+			// 	ba: 100 - f,
+			// 	bb: 0,
+			// 	aa: 100,
+			// 	ab: 0
+			// });
 			if (flash == 0)
 				flash = null;
 		}
 		time += Timer.deltaT;
 		timebar.gotoAndStop((KKApi.val(ncoups) + 1).int());
-		particules.main();
-		level.main();
+		particules.update();
+		level.update();
 	}
 
 	public function gameOver() {

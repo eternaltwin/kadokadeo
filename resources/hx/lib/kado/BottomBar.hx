@@ -1,6 +1,6 @@
 package kado;
 
-import pixi.core.graphics.Graphics;
+import pixi.core.textures.Texture;
 import pixi.core.display.Container;
 import pixi.core.sprites.Sprite;
 
@@ -10,6 +10,8 @@ class BottomBar extends Container {
 
 	var contractText:pixi.core.text.Text;
 	var digitSprites:Array<Sprite> = [];
+
+	var textures:Array<Texture> = [];
 
 	public function new(kkm:KadoKadeoManager) {
 		super();
@@ -21,7 +23,7 @@ class BottomBar extends Container {
 	}
 
 	public function makeBottomBar():Void {
-		bb = new Sprite(kkm.loader.resources["bottom_bar"].texture);
+		bb = Sprite.from("bottom_bar.png");
 		bb.x = 0;
 		bb.y = kkm.renderer.height - 68;
 		this.addChild(bb);
@@ -37,7 +39,7 @@ class BottomBar extends Container {
 		contractText.y = 38;
 		bb.addChild(contractText);
 
-		var kadoIcon = new Sprite(kkm.loader.resources["kado_icon"].texture);
+		var kadoIcon = Sprite.from("kado_icon.png");
 		kadoIcon.anchor.set(0.5);
 		kadoIcon.x = 100;
 		kadoIcon.y = 40;
@@ -55,14 +57,18 @@ class BottomBar extends Container {
 
 		for (i in 0...paddedScore.length) {
 			var sprite = digitSprites[i];
-			sprite.texture = kkm.sheet.textures["figure_" + paddedScore.charAt(i) + ".png"];
+			sprite.texture = this.textures[Std.parseInt(paddedScore.charAt(i))];
 		}
 	}
 
 	private function initDigitSprites():Void {
+		for (i in 0...10) {
+			textures.push(Texture.from("score/figure_" + i + ".svg"));
+		}
+		trace(this.textures);
 		for (i in 0...7) {
-			var digitSprite = new Sprite(kkm.sheet.textures["figure_0.png"]);
-			digitSprite.x = 500 + i * 50;
+			var digitSprite = Sprite.from("score/figure_0.svg");
+			digitSprite.x = 550 + i * 43;
 			digitSprite.y = 65;
 			digitSprites.push(digitSprite);
 			bb.addChild(digitSprite);

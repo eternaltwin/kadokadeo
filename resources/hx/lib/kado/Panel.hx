@@ -1,5 +1,6 @@
 package kado;
 
+import pixi.core.textures.Texture;
 import pixi.core.sprites.Sprite;
 import pixi.mesh.NineSlicePlane;
 import pixi.core.display.Container;
@@ -9,7 +10,7 @@ class Panel extends NineSlicePlane {
 	var contentContainer:Container;
 
 	public function new(kkm:KadoKadeoManager) {
-		super(new Sprite(kkm.loader.resources["window_back"].texture).texture, 50, 70, 50, 50);
+		super(Texture.from("window_back.png"), 50, 70, 50, 50);
 		this.contentContainer = new Container();
 		this.addChild(this.contentContainer);
 	}
