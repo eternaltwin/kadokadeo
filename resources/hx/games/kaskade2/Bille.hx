@@ -1,13 +1,16 @@
 package kaskade2;
 
+import mt.bumdum.Phys;
 import mt.Timer;
 
-class Bille {
+class Bille extends Phys {
 	public static var COS = Math.cos(Math.PI / 4);
 	public static var SIN = Math.sin(Math.PI / 4);
 
 	public static var INV_COS = Math.cos(-Math.PI / 4);
 	public static var INV_SIN = Math.sin(-Math.PI / 4);
+
+	var game:Game;
 
 	public var mc:ASprite;
 	public var star:ASprite;
@@ -20,17 +23,50 @@ class Bille {
 	public var gy:Float;
 
 	public function new(game:Game, px, py) {
+		this.game = game;
 		// star = downcast(mc).star;
 		if (game.nlevels == Const.MAXCOLORS)
 			id = Const.MAXCOLORS - 1;
 		else
 			id = game.random(game.nlevels);
-		mc = game.dmanager.attach("bille/bille_" + (id + 1), Const.PLAN_BILLE);
+		mc = game.dm.attach("bille/bille_" + (id + 1), Const.PLAN_BILLE);
 		mc.gotoAndStop(id + 1);
-		mc._xscale = 0;
-		mc._yscale = 0;
-		setPos(px, py);
 		activate(false);
+		super(mc);
+		setPos(px, py);
+		this.scale = 0;
+
+		mc.onRollOver = onRollOver;
+		mc.onRollOut = onRollOut;
+	}
+
+	public function onRollOver() {
+		if (this.game.lock)
+			return;
+		if (this.game.curGroup == this.group)
+			return;
+		if (this.game.curGroup != null) {
+			for (group in this.game.curGroup) {
+				group.activate(false);
+			}
+		}
+		this.game.curGroup = this.group;
+		if (this.group != null) {
+			for (group in this.game.curGroup) {
+				group.activate(true);
+			}
+		}
+	}
+
+	public function onRollOut() {
+		if (this.game.lock)
+			return;
+		if (this.game.curGroup == this.group && this.game.curGroup != null) {
+			for (group in this.game.curGroup) {
+				group.activate(false);
+			}
+			this.game.curGroup = null;
+		}
 	}
 
 	public function setPos(x, y) {
@@ -40,12 +76,12 @@ class Bille {
 	}
 
 	public function move() {
-		mc._x = px * COS - py * SIN + Const.DELTA_X;
-		mc._y = px * SIN + py * COS + Const.DELTA_Y;
+		this.x = px * COS - py * SIN + Const.DELTA_X;
+		this.y = px * SIN + py * COS + Const.DELTA_Y;
 	}
 
 	public function activate(b) {
-		// downcast(mc).sub.gotoAndStop(b ? 2 : 1);
+		mc.gotoAndStop(b ? 2 : 1);
 	}
 
 	public function gravityLeft() {
@@ -59,7 +95,7 @@ class Bille {
 	}
 
 	public function gravityMain() {
-		var s:Float = 10 * Timer.tmod;
+		var s:Float = 10 * Timer.tmod * Const.NEW_GEN_SCALE;
 		if (gx > 0) {
 			if (gx >= s)
 				gx -= s;

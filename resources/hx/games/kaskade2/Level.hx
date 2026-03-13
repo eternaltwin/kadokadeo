@@ -29,7 +29,8 @@ class Level {
 		gravityList = new Array();
 		for (y in 0...Const.LVL_HEIGHT) {
 			var space = false;
-			for (x in (Const.LVL_WIDTH - 1)...0) {
+			var x = Const.LVL_WIDTH - 1;
+			while (x >= 0) {
 				var b = billes[x][y];
 				if (b == null)
 					space = true;
@@ -39,6 +40,7 @@ class Level {
 					b.gravityLeft();
 					gravityList.push(b);
 				}
+				x--;
 			}
 		}
 
@@ -47,7 +49,8 @@ class Level {
 
 		for (x in 0...Const.LVL_WIDTH) {
 			var space = false;
-			for (y in (Const.LVL_HEIGHT - 1)...0) {
+			var y = Const.LVL_HEIGHT - 1;
+			while (y >= 0) {
 				var b = billes[x][y];
 				if (b == null)
 					space = true;
@@ -57,6 +60,7 @@ class Level {
 					b.gravityDown();
 					gravityList.push(b);
 				}
+				y--;
 			}
 		}
 
@@ -138,18 +142,16 @@ class Level {
 
 	public function animate() {
 		var ds:Float = 10 * Timer.tmod;
-		var x, y;
-		x = Const.LVL_WIDTH - 1;
+		var x = Const.LVL_WIDTH - 1;
 		while (x >= 0) {
-			y = Const.LVL_HEIGHT - 1;
+			var y = Const.LVL_HEIGHT - 1;
 			while (y >= 0) {
-				var mc = billes[x][y].mc;
-				if (mc._xscale < 100) {
-					var s = mc._xscale + ds * (y + 1) / 3;
+				var b = billes[x][y];
+				if (b != null && b.scale < 100) {
+					var s = b.scale + ds * (y + 1) / 3;
 					if (s > 100)
 						s = 100;
-					mc._xscale = s;
-					mc._yscale = s;
+					b.scale = s;
 					ds *= 0.95;
 				}
 				y--;
@@ -162,19 +164,21 @@ class Level {
 	public function update() {
 		animate();
 
-		var i = 0;
-		while (i < gravityList.length) {
-			var b = gravityList[i];
-			if (!b.gravityMain()) {
-				gravityList.remove(b);
-				i--;
-				if (gravityList.length == 0) {
-					game.bg.useHandCursor = false;
-					gravity();
-					break;
+		if (gravityList != null) {
+			var i = 0;
+			while (i < gravityList.length) {
+				var b = gravityList[i];
+				if (!b.gravityMain()) {
+					gravityList.remove(b);
+					i--;
+					if (gravityList.length == 0) {
+						game.bg.useHandCursor = false;
+						gravity();
+						break;
+					}
 				}
+				i++;
 			}
-			i++;
 		}
 	}
 }

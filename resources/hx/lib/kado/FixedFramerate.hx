@@ -1,7 +1,7 @@
 package kado;
 
 class FixedFramerate {
-	public static inline var STEP = 1 / 32 * 1000;
+	public static inline var STEP = 1 / 4 * 1000;
 
 	public var alpha(default, null):Float = 0;
 

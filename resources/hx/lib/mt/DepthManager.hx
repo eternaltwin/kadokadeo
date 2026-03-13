@@ -6,7 +6,8 @@ import common_haxe_avm1.display.ASprite;
 class DepthManager {
 	static var INST_COUNTER = 0;
 
-	var root_mc:ASprite;
+	public var root_mc:ASprite;
+
 	var plans:Array<{tbl:Array<ASprite>, cur:Int}>;
 
 	public function new(mc:ASprite) {
@@ -44,7 +45,7 @@ class DepthManager {
 		plan_data.cur = cur;
 	}
 
-	public function attach(inst:String, plan:Int, ?squareness:Int):ASprite {
+	public function attach(inst:String, plan:Int):ASprite {
 		var plan_data = getPlan(plan);
 		var p = plan_data.tbl;
 		var d = plan_data.cur;
@@ -53,7 +54,7 @@ class DepthManager {
 			return attach(inst, plan);
 		}
 		var iname = inst + "@" + (INST_COUNTER++);
-		var mc = root_mc.attachMovie(inst, iname, d + plan * 1000, squareness);
+		var mc = root_mc.attachMovie(inst, iname, d + plan * 1000);
 		p[d] = mc;
 		plan_data.cur = d + 1;
 		return mc;

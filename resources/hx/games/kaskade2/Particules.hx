@@ -48,10 +48,7 @@ class Particules {
 	}
 
 	public function update() {
-		var i = 0;
-		var n = tbl.length;
-		while (i < n) {
-			var p = tbl[i];
+		for (p in tbl) {
 			var f = Math.pow(p.f, Timer.tmod);
 			p.vx *= f;
 			p.vy *= f;
@@ -63,12 +60,10 @@ class Particules {
 			p.mc._x = p.x;
 			p.mc._y = p.y;
 			p.mc._rotation = p.a * 180 / Math.PI;
-			if (p.x < -100 || p.x > 400 || p.y < -100 || p.y > 400) {
+			if (p.x < -300 || p.x > 1200 || p.y < -300 || p.y > 1300) {
 				p.mc.removeMovieClip();
-				tbl.splice(i, 1);
-				i--;
+				tbl.splice(tbl.indexOf(p), 1);
 			}
-			i++;
 		}
 	}
 }

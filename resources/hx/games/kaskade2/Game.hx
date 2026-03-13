@@ -1,5 +1,6 @@
 package kaskade2;
 
+import mt.bumdum.Sprite;
 import mt.Timer;
 import common_haxe_avm1.KKApi;
 
@@ -23,84 +24,37 @@ class Game implements kado.GameInterface {
 	var level:Level;
 	var particules:Particules;
 
-	public var dmanager:mt.DepthManager;
+	public var dm:mt.DepthManager;
 	public var nlevels:Int;
+	public var curGroup:Array<Bille>;
 
-	var stats:{
-		$r:Int,
-		$l:Int,
-		$t:Array<Int>,
-		$g:Array<Int>,
-		$c:Array<Array<Int>>,
-	};
-
-	var cur:{x:Int, y:Int};
+	var stats:{t:Array<Int>, g:Array<Int>} = {t: [], g: []};
 
 	public var bg:ASprite;
+	public var lock:Bool;
 
 	var timebar:ASprite;
-	var curGroup:Array<Bille>;
 	var flash:Float;
-	var lock:Bool;
 	var time:Float;
 	var ncoups:KKConst;
 
 	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
 		this.kkm = kkm;
-		dmanager = new mt.DepthManager(root);
-		particules = new Particules(dmanager);
+		dm = new mt.DepthManager(root);
+		particules = new Particules(dm);
 		nlevels = 3;
 		level = new Level(this);
 		time = 0;
 		ncoups = Const.NCOUPS;
 		lock = false;
-		bg = dmanager.attach("bg", Const.PLAN_BG);
-		timebar = dmanager.attach("timebar", Const.PLAN_OVER);
-		// FIXME: callback ?
-		// bg.onMouseMove = callback(this, onMouseMove);
-		// bg.onMouseDown = callback(this, onClick);
+		bg = dm.attach("bg", Const.PLAN_BG);
+		timebar = dm.attach("timebar", Const.PLAN_OVER);
 		bg.useHandCursor = false;
+		root.onRelease = onClick;
 	}
-
-	public function start() {}
-
-	public function stop() {}
 
 	public function random(max) {
 		return kkm.seed.random(max);
-	}
-
-	public function onMouseMove() {
-		if (lock)
-			return;
-
-		// var xm = Std.xmouse() - Const.WIDTH / 2;
-		// var ym = Std.ymouse() - Const.HEIGHT / 2;
-
-		var delt = Math.sqrt(Const.WIDTH * Const.WIDTH + Const.HEIGHT * Const.HEIGHT) / 2;
-
-		// var x = xm * Bille.INV_COS - ym * Bille.INV_SIN + delt / 2;
-		// var y = xm * Bille.INV_SIN + ym * Bille.INV_COS + delt / 2;
-
-		// x /= Const.BILLE_RAY;
-		// y /= Const.BILLE_RAY;
-
-		// cur = {x: x.int(), y: y.int()};
-
-		// var b = level.billes[x.int()][y.int()];
-		// if (curGroup == b.group)
-		// 	return;
-		// for (group in curGroup) {
-		// 	group.activate(false);
-		// }
-		// curGroup = b.group;
-		// if (b.group != null) {
-		// 	for (group in curGroup) {
-		// 		group.activate(true);
-		// 	}
-		// 	showCursor();
-		// } else
-		// 	hideCursor();
 	}
 
 	public function showCursor() {
@@ -119,44 +73,36 @@ class Game implements kado.GameInterface {
 		if (lock || curGroup == null)
 			return;
 
-		var x = 0;
-		while (x < Const.LVL_WIDTH) {
-			var y = 0;
-			while (y < Const.LVL_HEIGHT) {
+		for (x in 0...Const.LVL_WIDTH) {
+			for (y in 0...Const.LVL_HEIGHT) {
 				var b = level.billes[x][y];
-				if (b.group == curGroup)
+				if (b.group == curGroup) {
+					level.billes[x][y].kill();
 					level.billes[x][y] = null;
-				y++;
+				}
 			}
-			x++;
 		}
 
 		var n = curGroup.length;
 		ncoups = KKApi.const(KKApi.val(ncoups) - 1);
 
 		var pts = (n * (n - 1) / 2 * KKApi.val(Const.C100)).int();
-		stats.$t.push(time.int());
-		stats.$g.push(n);
-		stats.$c.push([cur.x, cur.y]);
+		stats.t.push(time.int());
+		stats.g.push(n);
 		kkm.addScore(KKApi.const(pts));
 
-		var i = 0;
-		while (i < curGroup.length) {
-			var j = 0;
-			var b = curGroup[i];
-			while (j < 3) {
-				particules.addWordPart(b.mc._x, b.mc._y, b.mc._currentframe);
-				j++;
-			}
-			var p = dmanager.attach("explosion", Const.PLAN_PART);
-			p._x = b.mc._x;
-			p._y = b.mc._y;
+		for (b in curGroup) {
+			// for (j in 0...3) {
+			// 	particules.addWordPart(b.mc._x, b.mc._y, b.mc._currentframe);
+			// }
+			var p = dm.attach("explosion", Const.PLAN_PART);
+			p._x = b.x;
+			p._y = b.y;
 			p._rotation = Std.random(360);
-			// downcast(p).sub.gotoAndPlay((Std.random(3) + 1) + "");
+			p.gotoAndPlay(1);
 			p._alpha = 30 + Std.random(70);
-			p.gotoAndStop(b.mc._currentframe + "");
-			b.mc.removeMovieClip();
-			i++;
+			// p.gotoAndStop(b.mc._currentframe + ""); // replace by tint
+			b.kill();
 		}
 		lock = true;
 		level.gravity();
@@ -169,10 +115,21 @@ class Game implements kado.GameInterface {
 		}
 		curGroup = null;
 		lock = false;
-		onMouseMove();
+	}
+
+	function updateSprites() {
+		var list = Sprite.spriteList.copy();
+		for (sp in list)
+			sp.update();
+
+		// for (s in toUpdate) {
+		// 	if (s.parent != null)
+		// 		s.update();
+		// }
 	}
 
 	public function update(ts:Float) {
+		updateSprites();
 		var p = Math.pow(0.6, Timer.tmod);
 		if (flash != null) {
 			flash -= Timer.tmod * 3;
@@ -180,7 +137,7 @@ class Game implements kado.GameInterface {
 				flash = 0;
 			var k = (flash * 2.55).int();
 			var f = (flash / 2).int();
-			// var c = new Color(dmanager.getMC());
+			// var c = new Color(dm.getMC());
 			// c.setTransform({
 			// 	ra: 100 - f,
 			// 	rb: k,
@@ -198,6 +155,7 @@ class Game implements kado.GameInterface {
 		timebar.gotoAndStop((KKApi.val(ncoups) + 1).int());
 		particules.update();
 		level.update();
+		dm.root_mc.update();
 	}
 
 	public function gameOver() {

@@ -1,5 +1,6 @@
 package common_haxe_avm1.display;
 
+import mt.bumdum.Phys;
 import pixi.core.Tween;
 import js.lib.Object;
 import pixi.loaders.Loader;
@@ -446,26 +447,6 @@ class ASprite extends Sprite {
 		return _checkHitTestSprite(b1, b2) || _checkHitTestSprite(b2, b1);
 	}
 
-	public function load(baseTexture:Texture, ?squareness:Int = 1) {
-		// Textures are stacked vertically (or in a square depending of squareness)
-		_totalframes = Std.int(baseTexture.height / _curState.height) * squareness;
-		for (i in 0..._totalframes) {
-			var line = (i % squareness) * _curState.width;
-			var col = Math.floor(i / squareness) * _curState.height;
-			textures.push(new Texture(baseTexture.baseTexture, new Rectangle(line, col, _curState.width, _curState.height)));
-		}
-
-		if (this._currentframe > this._totalframes)
-			this._currentframe = this._totalframes;
-
-		// Preserve scaleX / scaleY
-		var scaleX = this.scale.x;
-		var scaleY = this.scale.y;
-		this.texture = textures[this._currentframe - 1];
-		this.scale.x = scaleX;
-		this.scale.y = scaleY;
-	}
-
 	public function prevFrame() {
 		if (this._currentframe == 1) {
 			stop();
@@ -547,14 +528,7 @@ class ASprite extends Sprite {
 		return t;
 	}
 
-	static public function createFromTexture(identifier:String, texture:Texture):ASprite {
-		var a = new ASprite(identifier);
-		a.load(texture);
-
-		return a;
-	}
-
-	public function attachMovie(identifier:String, newName:String = "smc", depth:Int = 0, ?squareness:Int):ASprite {
+	public function attachMovie(identifier:String, newName:String = "smc", depth:Int = 0):ASprite {
 		var a = new ASprite(identifier);
 		addChild(a);
 

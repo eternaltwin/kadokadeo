@@ -25,7 +25,7 @@ class Ghost extends Phys {
 		game.ghostList.push(this);
 
 		// debug = mc.createEmptyMovieClip().getGraphics();
-		smc = mc.attachMovie("mcGhost", "smc", 0, 10);
+		smc = mc.attachMovie("mcGhost");
 
 		angle = game.kkm.seed.rand() * 6.28;
 		va = 0;
