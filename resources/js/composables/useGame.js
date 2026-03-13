@@ -65,7 +65,7 @@ export function useGame(game) {
     activeScript = null
   }
 
-  async function mount(canvas, args = []) {
+  async function mount(canvas, args = {}) {
     const token = ++loadToken
     destroy()
 
@@ -93,7 +93,7 @@ export function useGame(game) {
     }
 
     activeScript = config
-    gameInstance = new window.KadoKadeo(canvas, gameClass, args)
+    gameInstance = new window.KadoKadeo(canvas, gameClass, { ...args, name: currentGame.name.toLowerCase().replaceAll(/\W/g, '') })
   }
 
   function invalidate() {

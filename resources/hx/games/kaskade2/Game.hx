@@ -151,7 +151,7 @@ class Game implements kado.GameInterface {
 		stats.$t.push(time.int());
 		stats.$g.push(n);
 		stats.$c.push([cur.x, cur.y]);
-		KKApi.addScore(KKApi.const(pts));
+		kkm.addScore(KKApi.const(pts));
 
 		var i = 0;
 		while (i < curGroup.length) {
@@ -177,7 +177,7 @@ class Game implements kado.GameInterface {
 
 	public function nextTurn() {
 		if (KKApi.val(ncoups) == 0) {
-			gameOver();
+			this.gameOver();
 			return;
 		}
 		curGroup = null;
@@ -214,7 +214,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function gameOver() {
-		KKApi.gameOver(stats);
+		kkm.gameOver(stats);
 	}
 
 	public function destroy() {}

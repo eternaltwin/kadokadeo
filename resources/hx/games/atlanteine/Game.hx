@@ -9,7 +9,6 @@ import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
 import mt.bumdum.Lib;
 import common_haxe_avm1.KKApi;
-import common_haxe_avm1.BmpTextureHelper;
 import common_haxe_avm1.KeyboardManager;
 
 class AnonSprite13294744 extends ASprite {
@@ -173,36 +172,6 @@ class Game implements kado.GameInterface {
 
 	public function new(kkm:kado.KadoKadeoManager) {
 		this.kkm = kkm;
-		ASprite.spriteData = [
-			"atlanteine/mcBall" => [60, 71],
-			"atlanteine/mcBallShadow" => [115, 115],
-			"atlanteine/mcWall" => [33, 35],
-			"atlanteine/mcBonus" => [31, 25],
-			"atlanteine/mcDalle" => [71, 92], // Takes into account the 2/3 ratio applied in flash with scale()
-			"atlanteine/mcOut" => [64, 64],
-			"atlanteine/mcDebugField" => [32, 31],
-			"atlanteine/mcTeleport" => [30, 30],
-			"atlanteine/mcDisplacement" => [301, 301],
-			"atlanteine/mcGhost" => [128, 126],
-			"atlanteine/mcLine" => [151, 51],
-			"atlanteine/mcPoint" => [51, 51],
-			"atlanteine/mcPush" => [28, 18],
-			"atlanteine/mcRay" => [101, 41],
-			// "atlanteine/mcScore" => [47, 24],
-			// "atlanteine/mcSquare" => [38, 52],
-			"atlanteine/mcStartDalle" => [34, 34],
-			// "atlanteine/mcTimer" => [51, 51],
-			"atlanteine/partBlock" => [19, 17],
-			"atlanteine/baseRoche" => [73, 74],
-			"atlanteine/partCloud" => [46, 46],
-			"atlanteine/partLight" => [21, 21],
-			"atlanteine/box" => [60, 80],
-			"atlanteine/partTiret" => [7, 2],
-			"atlanteine/partWarp" => [292, 239],
-			"atlanteine/quarterAnim" => [37, 26],
-			"atlanteine/tache" => [48, 60],
-			"atlanteine/forme-zarbi" => [45, 49],
-		];
 		ASprite.app = kkm;
 		root = new ASprite();
 		kkm.stage.addChild(root);
@@ -331,7 +300,7 @@ class Game implements kado.GameInterface {
 		// PATH ANIM
 		if (ppList != null) {
 			if (Std.random(5) == 0) {
-				var mc:Ppath = cast dm.attach("atlanteine/mcPoint", DP_GROUND);
+				var mc:Ppath = cast dm.attach("mcPoint", DP_GROUND);
 				mc.anchor.set(0.5, 0.5);
 				mc.n = nList.length - 1;
 				mc.c = 0;
@@ -429,14 +398,13 @@ class Game implements kado.GameInterface {
 	function initBall() {
 		var a = dm.empty(DP_ROCK);
 		ball = new Sprite(a);
-		ball.root.anchor.set(0.5, 38 / 71);
+		// ball.root.anchor.set(0.5, 38 / 71);
 		(cast ball.root).ball = ball.root.createEmptyMovieClip();
-		(cast ball.root).shadow = ball.root.attachMovie("atlanteine/mcBallShadow", "smc", -1);
-		(cast ball.root).shadow.anchor.set(0.5, 0.5);
+		(cast ball.root).shadow = ball.root.attachMovie("mcBallShadow", "smc", -1);
+		trace((cast ball.root).shadow);
 		(cast ball.root).shadow.loop = true;
 		(cast ball.root).shadow.play();
-		(cast ball.root).ball.smc = (cast ball.root).ball.attachMovie("atlanteine/mcBall");
-		(cast ball.root).ball.smc.anchor.set(0.5, 0.5);
+		(cast ball.root).ball.smc = (cast ball.root).ball.attachMovie("mcBall");
 		(cast ball.root).ball.smc.stopOnFrame = [37, 48];
 		var last = nList[nList.length - 1];
 		x = last.x;
@@ -507,8 +475,7 @@ class Game implements kado.GameInterface {
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
 						var speed = 1 + this.kkm.seed.rand() * 4;
-						var sp = new Phys(dm.attach("atlanteine/partTiret", DP_PARTS));
-						sp.root.anchor.set(0.5, 0.5);
+						var sp = new Phys(dm.attach("partTiret", DP_PARTS));
 						sp.x = p[0] * SIZE + ca * speed * rc;
 						sp.y = p[1] * SIZE + sa * speed * rc;
 						sp.vx = ca * speed + d[0] * press;
@@ -686,9 +653,8 @@ class Game implements kado.GameInterface {
 			if (levelTimer == levelTimerMax) {
 				var max = 12;
 				for (i in 0...max) {
-					var p = new Phys(mdm.attach("atlanteine/partCloud", DP_INTER));
+					var p = new Phys(mdm.attach("partCloud", DP_INTER));
 					p.root.play();
-					p.root.anchor.set(0.5, 0.5);
 					p.root.stopOnFrame = [8];
 					var a = i / max * 6.28;
 					var ray = 18 * NEW_GEN_SCALE;
@@ -770,8 +736,7 @@ class Game implements kado.GameInterface {
 
 						// PARTS
 						for (i in 0...max) {
-							var p = new Phys(dm.attach("atlanteine/partBlock", DP_PARTS));
-							p.root.anchor.set(0.5, 0.5);
+							var p = new Phys(dm.attach("partBlock", DP_PARTS));
 							p.x = mc._x + SIZE * 0.5;
 							p.y = mc._y + SIZE * 0.5;
 							p.vx = (Math.random() * 2 - 1) * 2;
@@ -855,8 +820,7 @@ class Game implements kado.GameInterface {
 			updateTimerGfx();
 
 			// PARTS
-			var p = new Phys(mdm.attach("atlanteine/partCloud", DP_INTER));
-			p.root.anchor.set(0.5, 0.5);
+			var p = new Phys(mdm.attach("partCloud", DP_INTER));
 			p.root.play();
 			var c = levelTimer / levelTimerMax;
 			var a = c * 6.28 - 1.57;
@@ -1242,9 +1206,8 @@ class Game implements kado.GameInterface {
 
 				switch (type) {
 					case ROCK:
-						var mc = dm.attach("atlanteine/baseRoche", DP_ROCK);
+						var mc = dm.attach("baseRoche", DP_ROCK);
 						mc.gotoAndStop(kkm.seed.random(7) + 1);
-						mc.anchor.set(11 / 73, 17 / 74);
 						mc._x = x * SIZE - 4;
 						mc._y = y * SIZE;
 
@@ -1252,8 +1215,7 @@ class Game implements kado.GameInterface {
 						elements[x][y] = mc;
 
 					case BLOCK:
-						var mc = dm.attach("atlanteine/box", DP_ROCK);
-						mc.anchor.set(0, 14 / 80);
+						var mc = dm.attach("box", DP_ROCK);
 						mc._x = x * SIZE;
 						mc._y = y * SIZE;
 						mc.gotoAndStop(1);
@@ -1261,21 +1223,19 @@ class Game implements kado.GameInterface {
 						Col.setPercentColor(mc, this.kkm.seed.random(20), 0xff9900);
 						elements[x][y] = mc;
 					case TELEPORT:
-						var mc = dm.attach("atlanteine/mcTeleport", DP_ROCK);
-						mc.anchor.set(3 / 38, 5 / 52);
+						var mc = dm.attach("mcTeleport", DP_ROCK);
 						mc._x = x * SIZE;
 						mc._y = y * SIZE;
 						mc._xscale = mc._yscale = SIZE / 30 * 100;
 
 						elements[x][y] = mc;
 					case OUT:
-						var mc = map.mcGround.attachMovie("atlanteine/mcOut");
-						mc.anchor.set(4 / 64, 10 / 64);
+						var mc = map.mcGround.attachMovie("mcOut");
 
 						// Empty circle hole from nearby ground textures
 						var mask = new Graphics();
 						mask.beginFill(0xffffff);
-						mask.drawCircle(x * SIZE + 32, y * SIZE + 32, 36);
+						mask.drawCircle(x * SIZE + 34, y * SIZE + 32, 36);
 						mask.endFill();
 						mask.blendMode = untyped BlendModes.ERASE;
 						map.mcGround.bmp.draw(mask, new Matrix());
@@ -1298,19 +1258,17 @@ class Game implements kado.GameInterface {
 				switch (type) {
 					case EMPTY, PATH, ROCK, BLOCK, TELEPORT:
 						var c = new ASprite();
-						var mcg = BmpTextureHelper.getASprite("atlanteine/mcDalle");
+						var mcg = new ASprite("mcDalle");
 						mcg.gotoAndStop(groundFrame);
-						mcg.anchor.set(6 / mcg._width, 10 / mcg._height);
 						c.addChild(mcg);
 						var tacheFrame = this.kkm.seed.random(28) + 1;
 						if (tacheFrame < 12) {
-							var tache = BmpTextureHelper.getASprite("atlanteine/tache");
+							var tache = new ASprite("tache");
 							tache.gotoAndStop(Math.floor(tacheFrame / 3) + 1);
 							tache.position.set((11) * NEW_GEN_SCALE, (8.5) * NEW_GEN_SCALE);
 							c.addChild(tache);
 						} else if (tacheFrame < 16) {
-							var zarbi = BmpTextureHelper.getASprite("atlanteine/forme-zarbi");
-							zarbi.anchor.set(6 / 45, 0);
+							var zarbi = new ASprite("formeZarbi");
 							zarbi.gotoAndStop(this.kkm.seed.random(zarbi._totalframes) + 1);
 							zarbi.position.set(5 * NEW_GEN_SCALE, 1.5 * NEW_GEN_SCALE);
 							zarbi.filters = [
@@ -1343,6 +1301,16 @@ class Game implements kado.GameInterface {
 
 		map.mcGround.attachBitmap(map.mcGround.bmp, 1);
 		map.mcGround.setChildIndex(mcOut, map.mcGround.children.length - 1);
+		// var dbg = map.mcGround.createEmptyMovieClip();
+		// dbg.getGraphics().lineStyle(1, 0xffffff, 0.5);
+		// for (x in 0...xmax) {
+		// 	dbg.getGraphics().moveTo(x * SIZE, 0);
+		// 	dbg.getGraphics().lineTo(x * SIZE, ymax * SIZE);
+		// }
+		// for (y in 0...ymax) {
+		// 	dbg.getGraphics().moveTo(0, y * SIZE);
+		// 	dbg.getGraphics().lineTo(xmax * SIZE, y * SIZE);
+		// }
 
 		// BONUS
 		if (FL_BONUS) {
@@ -1359,7 +1327,7 @@ class Game implements kado.GameInterface {
 					x = m + this.kkm.seed.random(xmax - m * 2);
 					y = m + this.kkm.seed.random(ymax - m * 2);
 				} while (!isFree(x, y) || bonus[x][y] != null);
-				var mc = dm.attach("atlanteine/mcBonus", DP_ROCK);
+				var mc = dm.attach("mcBonus", DP_ROCK);
 
 				mc._x = x * SIZE + 15;
 				mc._y = y * SIZE + 10;
@@ -1376,13 +1344,11 @@ class Game implements kado.GameInterface {
 			for (i in 0...max) {
 				var g = new Ghost(this, dm.empty(DP_GHOST));
 				Filt.glow(g.root, 15, 2, 0xFFFFFF);
-
-				g.root.anchor.set(0.5, 0.5);
 			}
 		}
 		// START DALLE
 		var p = nList[nList.length - 1];
-		var mc = dm.attach("atlanteine/mcStartDalle", DP_GROUND);
+		var mc = dm.attach("mcStartDalle", DP_GROUND);
 		mc._x = 7 + p.x * SIZE + 7;
 		mc._y = 7 + p.y * SIZE + 7;
 		elements[p.x][p.y] = mc;
@@ -1485,8 +1451,7 @@ class Game implements kado.GameInterface {
 		Col.setColor(ball.root, 0, Std.int(ballFlash));
 
 		for (i in 0...3) {
-			var p = dm.attach("atlanteine/partWarp", DP_PARTS);
-			p.anchor.set(0.5, 0.5);
+			var p = dm.attach("partWarp", DP_PARTS);
 			p._x = mc._x + SIZE * 0.5 + (Math.random() * 2 - 1) * 6;
 			p._y = mc._y + SIZE * 0.5 + (Math.random() * 2 - 1) * 6;
 			p._xscale = p._yscale = 20;
@@ -1585,7 +1550,7 @@ class Game implements kado.GameInterface {
 		mcDisplay.bmp.draw(map, m);
 
 		// DISPLACEMENT
-		var mc = mdm.attach("atlanteine/mcDisplacement", 0);
+		var mc = mdm.attach("mcDisplacement", 0);
 		var dbmp = RenderTexture.create(mcw, mch);
 		dbmp.fill(0x000000);
 		dbmp.draw(mc, new Matrix());
@@ -1669,7 +1634,7 @@ class Game implements kado.GameInterface {
 				if (type == 999)
 					type = 0;
 				if (type != null) {
-					var mc:FieldMC = cast mdm.attach("atlanteine/mcDebugField", DP_FRONT);
+					var mc:FieldMC = cast mdm.attach("mcDebugField", DP_FRONT);
 					mc._x = x * SIZE;
 					mc._y = y * SIZE;
 					mc.field.text = Std.string(type);
@@ -1686,7 +1651,7 @@ class Game implements kado.GameInterface {
 			n++;
 			var x = p.x;
 			var y = p.y;
-			var mc:FieldMC = cast mdm.attach("atlanteine/mcDebugField", DP_FRONT);
+			var mc:FieldMC = cast mdm.attach("mcDebugField", DP_FRONT);
 			mc._x = x * SIZE;
 			mc._y = y * SIZE;
 			mc.field.text = Std.string(n);
@@ -1700,7 +1665,7 @@ class Game implements kado.GameInterface {
 			for (y in 0...ymax) {
 				var type = grid[x][y];
 				if (type == PATH) {
-					var mc:FieldMC = cast mdm.attach("atlanteine/mcDebugField", DP_FRONT);
+					var mc:FieldMC = cast mdm.attach("mcDebugField", DP_FRONT);
 					mc._x = x * SIZE;
 					mc._y = y * SIZE;
 					mc.field.text = "0";

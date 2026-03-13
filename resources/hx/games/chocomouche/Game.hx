@@ -1,12 +1,7 @@
 package chocomouche;
 
-import pixi.filters.extras.GlowFilter;
 import pixi.core.renderers.webgl.filters.Filter;
 import common_haxe_avm1.pixi.DropShadowFilter;
-import pixi.core.Application;
-import js.Browser;
-import haxe.ds.StringMap;
-import pixi.core.Pixi.BlendModes;
 import pixi.core.text.Text;
 import common_haxe_avm1.KKApi;
 import mt.bumdum.Sprite;
@@ -81,16 +76,6 @@ class Game implements kado.GameInterface {
 
 	public function new(kkm:kado.KadoKadeoManager) {
 		this.kkm = kkm;
-		ASprite.spriteData = [
-			"chocomouche/bg" => [900, 900],
-			"chocomouche/life" => [54, 66],
-			"chocomouche/mLevel" => [441, 321],
-			"chocomouche/partSlot" => [27, 30],
-			"chocomouche/slot" => [90, 90],
-			"chocomouche/timeLeft" => [238, 22],
-			"chocomouche/timeLine" => [238, 22],
-			"chocomouche/warning" => [900, 900],
-		];
 		ASprite.app = kkm;
 
 		root = new ASprite();
@@ -121,7 +106,7 @@ class Game implements kado.GameInterface {
 	}
 
 	function initBg() {
-		var grid = dm.attach("chocomouche/bg", DP_BG);
+		var grid = dm.attach("bg", DP_BG);
 		grid._x = 0;
 		grid._y = 0;
 		grid._alpha = 95;
@@ -174,11 +159,6 @@ class Game implements kado.GameInterface {
 
 	public function updateGraphics(a:Float):Void {
 		root.updateGraphics(a);
-		// mcGrid?.updateGraphics(a);
-		// bg?.updateGraphics(a);
-		// mcTime?.updateGraphics(a);
-		// mcWarning?.updateGraphics(a);
-		// mcLevel?.updateGraphics(a);
 	}
 
 	function updateSprites() {
@@ -297,12 +277,12 @@ class Game implements kado.GameInterface {
 		life = l;
 		lives = new List();
 		for (i in 0...life) {
-			var mc = dm.attach("chocomouche/life", DP_INFOS);
+			var mc = dm.attach("life", DP_INFOS);
 			mc._x = Cs.LIFE_X;
 			mc._y = Cs.LIFE_Y - lives.length * (60 + 3); // => (life_width + ecart);
 			Filt.glow(mc, 2, 3, 0xFFFFFF);
 			lives.push(mc);
-			mc.updateState();
+			// mc.updateState();
 		}
 	}
 
@@ -361,7 +341,7 @@ class Game implements kado.GameInterface {
 		mcTime = cast Game.me.dm.empty(Game.DP_INFOS);
 		mcTime.getGraphics().beginFill(0);
 		mcTime.getGraphics().drawRect(0, 0, 238, 16);
-		mcTime._timeLeft = mcTime.attachMovie("chocomouche/timeLeft");
+		mcTime._timeLeft = mcTime.attachMovie("timeLeft");
 		mcTime._timeLeft._y = -3;
 		mcTime._x = Cs.TIME_X;
 		mcTime._y = Cs.TIME_Y + 3;
@@ -417,15 +397,22 @@ class Game implements kado.GameInterface {
 			if (mcWarning != null)
 				return;
 
-			mcWarning = dm.attach("chocomouche/warning", DP_FX, 4);
-			mcWarning.loop = true;
-			mcWarning.play();
-			toUpdate.push(mcWarning);
+			mcWarning = dm.empty(DP_FX);
+			mcWarning.getGraphics().beginFill(0xFF2222, 0.5);
+			mcWarning.getGraphics().drawRect(0, 0, 900, 900);
+			mcWarning._alpha = 0;
+			mcWarning.blendMode = OVERLAY;
+			mcWarning.tween = pixi.core.Pixi.tweenManager.createTween(mcWarning);
+			mcWarning.tween.time = 500;
+			mcWarning.tween.pingPong = true;
+			mcWarning.tween.loop = true;
+			mcWarning.tween.easing = pixi.core.Pixi.tween.Easing.inSine();
+			mcWarning.tween.from({alpha: 0}).to({alpha: 0.6}).start();
 		} else {
 			if (mcWarning == null)
 				return;
 
-			toUpdate.remove(mcWarning);
+			mcWarning.tween.remove();
 			mcWarning.removeMovieClip();
 			mcWarning = null;
 		}
@@ -437,7 +424,7 @@ class Game implements kado.GameInterface {
 			if (mcLevel != null)
 				return;
 
-			mcLevel = cast dm.attach("chocomouche/mLevel", DP_ANIM);
+			mcLevel = cast dm.attach("mLevel", DP_ANIM);
 			mcLevel.initTextField("_field", {
 				font: "Verdana",
 				align: "center",

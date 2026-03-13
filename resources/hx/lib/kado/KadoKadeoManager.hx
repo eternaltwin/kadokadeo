@@ -1,5 +1,10 @@
 package kado;
 
+import pixi.core.textures.Texture;
+import pixi.core.sprites.Sprite;
+import js.lib.Object;
+import pixi.loaders.Loader;
+import pixi.core.Pixi;
 import js.lib.Promise;
 import js.Browser;
 import js.html.CanvasElement;
@@ -13,6 +18,7 @@ typedef KadoConfig = {
 typedef GameParams = {
 	var replayData:String;
 	var isDaily:Bool;
+	var name:String;
 }
 
 @:expose("KadoKadeo")
@@ -35,6 +41,7 @@ class KadoKadeoManager extends Application {
 	var runDetails:Dto.RunDTO;
 	var endRunDetails:Dto.EndRunResponseDTO;
 	var crypto:KadoCrypto = new KadoCrypto();
+	var params:GameParams;
 
 	public var sheet:pixi.core.textures.Spritesheet;
 
@@ -42,7 +49,7 @@ class KadoKadeoManager extends Application {
 
 	public var seed:mt.Rand;
 
-	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>, ?params:GameParams = null) {
+	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>, params:GameParams) {
 		super({
 			view: canvas,
 			width: 900,
@@ -52,6 +59,7 @@ class KadoKadeoManager extends Application {
 
 		this.canvas = canvas;
 		this.gameClass = gameClass;
+		this.params = params;
 		canvas.width = 900;
 		canvas.height = 960;
 		isGameStarted = false;
@@ -144,22 +152,20 @@ class KadoKadeoManager extends Application {
 	function startGame() {
 		this.stage.removeChild(startScene);
 		replay.start();
+		var loader:Loader = untyped PIXI.Loader.shared;
 
-		game = Type.createInstance(gameClass, [this]);
 		bottomBar = new BottomBar(this);
 		this.stage.addChild(bottomBar);
-		var imageKeys = [for (k in common_haxe_avm1.display.ASprite.spriteData.keys()) k];
-		// trace('Preloading images: ' + imageKeys);
-		common_haxe_avm1.BmpTextureHelper.preload(imageKeys).then((_) -> {
-			try {
-				game.start();
-			} catch (e:Dynamic) {
-				trace(e);
-			}
-			isGameStarted = true;
-		}).catchError(error -> {
-			trace('Error while preloading images: ' + error.message);
+		var assetName = '/assets/img/content/' + this.params.name + '/' + this.params.name + '-0.json';
+		loader.add(assetName).load(() -> {
+			beginGame();
 		});
+	}
+
+	private function beginGame() {
+		this.game = Type.createInstance(gameClass, [this]);
+		game.start();
+		isGameStarted = true;
 	}
 
 	public function gameOver(params:Dynamic):Void {
@@ -215,11 +221,11 @@ class KadoKadeoManager extends Application {
 			key: jse.encrypt(crypto.getKey().toHex()),
 			sign: haxe.crypto.Base64.encode(crypto.getHmacSha256(haxe.io.Bytes.ofString(jsonReq))),
 		}
-		return Api.endRun(runDetails.run_id, request, (data:Dto.ApiResponse<Dto.EndRunResponseDTO>) -> {
+		return Api.endRun(runDetails.run_id, request).then((data:Dto.ApiResponse<Dto.EndRunResponseDTO>) -> {
 			trace('Run ended successfully: ' + haxe.Json.stringify(data));
 			endRunDetails = data.data;
 			return endRunDetails;
-		}, error -> {
+		}).catchError((error) -> {
 			trace('Error ending run: ' + error.message);
 		});
 		#else

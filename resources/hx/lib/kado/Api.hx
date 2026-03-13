@@ -1,5 +1,7 @@
 package kado;
 
+import js.lib.Promise;
+
 class Api {
 	public static var baseUrl:String = "http://kadokadeo.localhost";
 
@@ -34,21 +36,23 @@ class Api {
 		http.request(true);
 	}
 
-    public static function endRun(runId: String, request:Dto.EndRunRequestDTO, onData:Dto.ApiResponse<Dynamic>->Void, onError:Dynamic->Void) {
-        var http = buildClient("/api/runs/" + runId + "/finish");
+	public static function endRun(runId:String, request:Dto.EndRunRequestDTO):Promise<Dto.ApiResponse<Dynamic>> {
+		return new Promise((resolve, reject) -> {
+			var http = buildClient("/api/runs/" + runId + "/finish");
 
-        http.setPostData(haxe.Json.stringify(request));
+			http.setPostData(haxe.Json.stringify(request));
 
-        http.onData = function(data:String) {
-            var result = haxe.Json.parse(data);
+			http.onData = function(data:String) {
+				var result = haxe.Json.parse(data);
 
-            onData(result);
-        }
+				resolve(result);
+			}
 
-        http.onError = function(error) {
-            onError(error);
-        }
+			http.onError = function(error) {
+				reject(error);
+			}
 
-        http.request(true);
-    }
+			http.request(true);
+		});
+	}
 }

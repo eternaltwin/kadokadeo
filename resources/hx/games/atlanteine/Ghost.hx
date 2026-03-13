@@ -25,8 +25,7 @@ class Ghost extends Phys {
 		game.ghostList.push(this);
 
 		// debug = mc.createEmptyMovieClip().getGraphics();
-		smc = mc.attachMovie("atlanteine/mcGhost", "smc", 0, 10);
-		smc.anchor.set(0.5, 0.5);
+		smc = mc.attachMovie("mcGhost", "smc", 0, 10);
 
 		angle = game.kkm.seed.rand() * 6.28;
 		va = 0;
@@ -102,7 +101,7 @@ class Ghost extends Phys {
 	public function explode() {
 		var max = 12;
 		for (i in 0...max) {
-			var p = new Phys(game.dm.attach("atlanteine/partCloud", Game.DP_PARTS));
+			var p = new Phys(game.dm.attach("partCloud", Game.DP_PARTS));
 			var sp = 0.2 + Math.random() * 0.5;
 			var r = sp * 10;
 			var a = i / max * 6.28;

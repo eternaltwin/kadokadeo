@@ -1,11 +1,9 @@
 package chocomouche;
 
-import pixi.core.Application;
 import mt.bumdum.Phys;
 import mt.bumdum.Sprite;
 import mt.bumdum.Lib;
 import chocomouche.Game.Pos;
-import chocomouche.Game.Step;
 
 enum Status {
 	Hidden;
@@ -61,7 +59,7 @@ class Slot extends Phys {
 		mc.getGraphics().endFill();
 
 		dm = new mt.DepthManager(mc);
-		slot = dm.attach("chocomouche/slot", 1);
+		slot = dm.attach("slot", 1);
 		slot.anchor.set(0.5, 0.5);
 		slot.gotoAndStop(MC_DEFAULT);
 		mc._x = Cs.GRID_X + pos.x * Cs.SLOT_SIZE;
@@ -239,7 +237,7 @@ class Slot extends Phys {
 		var vr = 0;
 
 		for (i in 0...nb) {
-			var mc = Game.me.dm.attach("chocomouche/partSlot", Game.DP_FX);
+			var mc = Game.me.dm.attach("partSlot", Game.DP_FX);
 			mc._xscale = 170;
 			mc._yscale = 170;
 
