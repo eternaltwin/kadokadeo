@@ -4,6 +4,7 @@ import pixi.core.display.DisplayObject;
 import pixi.core.display.Container;
 import pixi.filters.blur.BlurFilter;
 import pixi.filters.extras.GlowFilter;
+import pixi.filters.extras.ColorReplaceFilter;
 import common_haxe_avm1.display.ASprite;
 
 typedef Point = {x:Float, y:Float}
@@ -271,6 +272,17 @@ class Filt {
 		}
 
 		mc.filters.push(f);
+	}
+
+	static public function replaceColor(mc:DisplayObject, orig:Int, target:Int, epsilon:Float) {
+		var f = new ColorReplaceFilter(untyped orig, untyped target, epsilon);
+
+		if (mc.filters == null) {
+			mc.filters = [untyped f];
+			return;
+		}
+
+		mc.filters.push(untyped f);
 	}
 
 	static public function grey(mc:ASprite, ?c:Float, ?inc:Int, ?o, ?m1) {

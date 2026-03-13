@@ -3,6 +3,7 @@ package kaskade2;
 import mt.bumdum.Sprite;
 import mt.Timer;
 import common_haxe_avm1.KKApi;
+import mt.bumdum.Lib;
 
 @:expose('GameKaskade2')
 class Game implements kado.GameInterface {
@@ -101,7 +102,16 @@ class Game implements kado.GameInterface {
 			p._rotation = Std.random(360);
 			p.gotoAndPlay(1);
 			p._alpha = 30 + Std.random(70);
-			// p.gotoAndStop(b.mc._currentframe + ""); // replace by tint
+			p.removeOnFrame = 11;
+			var color;
+			if (b.id == 0)
+				color = 0xFF4242;
+			else if (b.id == 1)
+				color = 0x4242FF;
+			else
+				color = 0x42FF42;
+			Filt.replaceColor(p, 0x4C4C4C, color, 0.5);
+			Filt.glow(p, 10, 2, color);
 			b.kill();
 		}
 		lock = true;
