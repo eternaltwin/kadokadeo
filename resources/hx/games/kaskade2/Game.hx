@@ -129,6 +129,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(ts:Float) {
+		dm.root_mc.update();
 		updateSprites();
 		var p = Math.pow(0.6, Timer.tmod);
 		if (flash != null) {
@@ -155,7 +156,6 @@ class Game implements kado.GameInterface {
 		timebar.gotoAndStop((KKApi.val(ncoups) + 1).int());
 		particules.update();
 		level.update();
-		dm.root_mc.update();
 	}
 
 	public function gameOver() {
