@@ -1,5 +1,7 @@
 package kado;
 
+import mt.DepthManager;
+import common_haxe_avm1.display.ASprite;
 import pixi.loaders.Loader;
 import js.lib.Promise;
 import js.Browser;
@@ -29,10 +31,13 @@ class KadoKadeoManager extends Application {
 
 	public var replay:ReplayManager;
 
+	var root:ASprite;
+	var gameRoot:ASprite;
+	var dm:DepthManager;
+
 	var startScene:StartScene;
 	var gameOverScreen:GameOver = null;
 	var bottomBar:BottomBar = null;
-	var isGameStarted:Bool;
 
 	var runDetails:Dto.RunDTO;
 	var endRunDetails:Dto.EndRunResponseDTO;
@@ -58,7 +63,9 @@ class KadoKadeoManager extends Application {
 		this.params = params;
 		canvas.width = 900;
 		canvas.height = 960;
-		isGameStarted = false;
+		this.root = new ASprite();
+		this.dm = new DepthManager(root);
+		this.stage.addChild(root);
 
 		// Pixi intro
 
@@ -88,8 +95,8 @@ class KadoKadeoManager extends Application {
 	}
 
 	public function updateGraphics(a:Float) {
-		if (game != null && isGameStarted) {
-			game.updateGraphics(a);
+		if (gameRoot != null) {
+			gameRoot.updateGraphics(a);
 		}
 		if (gameOverScreen != null) {
 			gameOverScreen.updateGraphics(a);
@@ -99,7 +106,7 @@ class KadoKadeoManager extends Application {
 	public function updatePhysics(dt:Float) {
 		mt.Timer.update(js.Browser.window.performance.now());
 		replay.update();
-		if (game != null && isGameStarted) {
+		if (game != null) {
 			game.update(dt);
 		}
 		if (gameOverScreen != null) {
@@ -141,11 +148,12 @@ class KadoKadeoManager extends Application {
 
 	function startGame() {
 		this.stage.removeChild(startScene);
-		replay.start();
+		this.replay.start();
 		var loader:Loader = untyped PIXI.Loader.shared;
 
-		bottomBar = new BottomBar(this);
-		this.stage.addChild(bottomBar);
+		var b = dm.empty(2);
+		this.bottomBar = new BottomBar(this);
+		b.addChild(this.bottomBar);
 		var assetName = '/assets/img/content/' + this.params.name + '/' + this.params.name + '-0.json';
 		loader.add(assetName).load(() -> {
 			beginGame();
@@ -153,13 +161,13 @@ class KadoKadeoManager extends Application {
 	}
 
 	private function beginGame() {
-		this.game = Type.createInstance(gameClass, [this]);
-		game.start();
-		isGameStarted = true;
+		ASprite.app = this;
+		this.gameRoot = dm.empty(1);
+		this.game = Type.createInstance(gameClass, [this, gameRoot]);
 	}
 
 	public function gameOver(params:Dynamic):Void {
-		replay.stop();
+		this.replay.stop();
 		// this.stage.removeChildren();
 		gameOverScreen = new GameOver(() -> {
 			// TODO: show loading screen

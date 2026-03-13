@@ -61,7 +61,6 @@ class Game implements kado.GameInterface {
 	public var mcGrid:ASprite;
 	public var gdm:mt.DepthManager;
 
-	public var root:ASprite;
 	public var bg:ASprite;
 	public var mcTime:AnonSprite15518839;
 	public var mcWarning:ASprite;
@@ -74,12 +73,8 @@ class Game implements kado.GameInterface {
 
 	public var toUpdate:Array<ASprite> = [];
 
-	public function new(kkm:kado.KadoKadeoManager) {
+	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
 		this.kkm = kkm;
-		ASprite.app = kkm;
-
-		root = new ASprite();
-		kkm.stage.addChild(root);
 
 		dm = new mt.DepthManager(root);
 		me = this;
@@ -95,14 +90,7 @@ class Game implements kado.GameInterface {
 		mcGrid = dm.empty(DP_SLOT);
 		gdm = new mt.DepthManager(mcGrid);
 		initGrid();
-	}
-
-	public function start() {
 		step = Play;
-	}
-
-	public function stop() {
-		step = GameOver;
 	}
 
 	function initBg() {
@@ -124,7 +112,7 @@ class Game implements kado.GameInterface {
 			case Play:
 				if (flGameOver) {
 					kkm.gameOver({});
-					stop();
+					step = GameOver;
 				}
 				updateTime();
 			case Explode:
@@ -155,10 +143,6 @@ class Game implements kado.GameInterface {
 			case GameOver:
 		}
 		mcGrid.updateState();
-	}
-
-	public function updateGraphics(a:Float):Void {
-		root.updateGraphics(a);
 	}
 
 	function updateSprites() {

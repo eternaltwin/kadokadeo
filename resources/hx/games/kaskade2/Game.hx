@@ -1,11 +1,7 @@
 package kaskade2;
 
 import mt.Timer;
-import mt.bumdum.Sprite;
-import mt.bumdum.Phys;
-import mt.bumdum.Lib;
 import common_haxe_avm1.KKApi;
-import common_haxe_avm1.KeyboardManager;
 
 @:expose('GameKaskade2')
 class Game implements kado.GameInterface {
@@ -24,7 +20,6 @@ class Game implements kado.GameInterface {
 	// CORRECT Partie correcte pour tester replay
 	// static var replaySeed = 10426;
 	// static var replay = [[4, 3], [6, 2], [5, 2], [2, 3], [4, 3], [3, 1], [5, 4], [2, 2], [4, 4], [6, 2], [2, 4], [4, 4], [4, 3], [5, 4], [5, 4], [4, 2], [4, 2], [7, 4], [7, 3], [7, 4]];
-	var root:ASprite;
 	var level:Level;
 	var particules:Particules;
 
@@ -50,10 +45,8 @@ class Game implements kado.GameInterface {
 	var time:Float;
 	var ncoups:KKConst;
 
-	public function new(kkm:kado.KadoKadeoManager) {
+	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
 		this.kkm = kkm;
-		root = new ASprite();
-		kkm.stage.addChild(root);
 		dmanager = new mt.DepthManager(root);
 		particules = new Particules(dmanager);
 		nlevels = 3;
@@ -72,10 +65,6 @@ class Game implements kado.GameInterface {
 	public function start() {}
 
 	public function stop() {}
-
-	public function updateGraphics(a:Float) {
-		root.updateGraphics(a);
-	}
 
 	public function random(max) {
 		return kkm.seed.random(max);

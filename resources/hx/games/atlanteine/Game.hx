@@ -159,7 +159,6 @@ class Game implements kado.GameInterface {
 
 	public var mdm:mt.DepthManager;
 	public var dm:mt.DepthManager;
-	public var root:ASprite;
 	public var bg:ASprite;
 	public var mcOut:ASprite;
 	public var map:Map;
@@ -170,11 +169,8 @@ class Game implements kado.GameInterface {
 
 	// var dbg:Graphics;
 
-	public function new(kkm:kado.KadoKadeoManager) {
+	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
 		this.kkm = kkm;
-		ASprite.app = kkm;
-		root = new ASprite();
-		kkm.stage.addChild(root);
 		mdm = new mt.DepthManager(root);
 		bg = cast mdm.empty(DP_BG);
 		bg.getGraphics().beginFill(BACKGROUND_COLOR);
@@ -191,6 +187,10 @@ class Game implements kado.GameInterface {
 		flControl = true;
 		step = Step.WaitTimer;
 		initTimer();
+		initMap();
+		spawnBall();
+
+		displayPushIcon();
 
 		var replayKeys = new UInt16Array(4);
 		replayKeys[0] = common_haxe_avm1.KeyboardManager.ARROW_RIGHT;
@@ -204,15 +204,6 @@ class Game implements kado.GameInterface {
 			recordEvents: false,
 		});
 	}
-
-	public function start() {
-		initMap();
-		spawnBall();
-
-		displayPushIcon();
-	}
-
-	public function stop() {}
 
 	function initMap() {
 		map = cast mdm.empty(DP_LEVEL);
@@ -232,7 +223,7 @@ class Game implements kado.GameInterface {
 				break;
 		}
 		drawLevel();
-		root.update();
+		// root.update();
 	}
 
 	public function update(ts:Float) {
@@ -289,10 +280,6 @@ class Game implements kado.GameInterface {
 		}
 
 		updateDisplay();
-	}
-
-	public function updateGraphics(a:Float):Void {
-		root.updateGraphics(a);
 	}
 
 	// ANIMS
@@ -401,7 +388,6 @@ class Game implements kado.GameInterface {
 		// ball.root.anchor.set(0.5, 38 / 71);
 		(cast ball.root).ball = ball.root.createEmptyMovieClip();
 		(cast ball.root).shadow = ball.root.attachMovie("mcBallShadow", "smc", -1);
-		trace((cast ball.root).shadow);
 		(cast ball.root).shadow.loop = true;
 		(cast ball.root).shadow.play();
 		(cast ball.root).ball.smc = (cast ball.root).ball.attachMovie("mcBall");

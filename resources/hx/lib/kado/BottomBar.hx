@@ -1,17 +1,15 @@
 package kado;
 
+import common_haxe_avm1.display.ASprite;
 import pixi.core.textures.Texture;
-import pixi.core.display.Container;
 import pixi.core.sprites.Sprite;
 
-class BottomBar extends Container {
+class BottomBar extends ASprite {
 	var kkm:KadoKadeoManager;
 	var bb:Sprite;
 
 	var contractText:pixi.core.text.Text;
 	var digitSprites:Array<Sprite> = [];
-
-	var textures:Array<Texture> = [];
 
 	public function new(kkm:KadoKadeoManager) {
 		super();
@@ -65,7 +63,6 @@ class BottomBar extends Container {
 		for (i in 0...10) {
 			textures.push(Texture.from("score/figure_" + i + ".svg"));
 		}
-		trace(this.textures);
 		for (i in 0...7) {
 			var digitSprite = Sprite.from("score/figure_0.svg");
 			digitSprite.x = 550 + i * 43;
