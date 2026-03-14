@@ -142,6 +142,8 @@ class Slot extends Phys {
 		if (canBeClicked())
 			return;
 
+		Game.me.recordSlotClick(pos);
+
 		imReleased();
 
 		/*	if (Key.isDown(Key.CONTROL))

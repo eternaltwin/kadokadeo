@@ -1,5 +1,6 @@
 package chocomouche;
 
+import haxe.io.UInt16Array;
 import pixi.core.renderers.webgl.filters.Filter;
 import common_haxe_avm1.pixi.DropShadowFilter;
 import pixi.core.text.Text;
@@ -75,6 +76,11 @@ class Game implements kado.GameInterface {
 
 	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
 		this.kkm = kkm;
+		this.kkm.replay.init({
+			recordedKeys: new UInt16Array(0),
+			recordInputs: false,
+			recordEvents: true,
+		});
 
 		dm = new mt.DepthManager(root);
 		me = this;
@@ -106,6 +112,10 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(ts:Float) {
+		for (event in kkm.replay.consumeEvents()) {
+			applyReplayEvent(event);
+		}
+
 		updateSprites();
 
 		switch (step) {
@@ -143,6 +153,32 @@ class Game implements kado.GameInterface {
 			case GameOver:
 		}
 		mcGrid.updateState();
+	}
+
+	function applyReplayEvent(event:Dynamic) {
+		if (event == null) {
+			return;
+		}
+
+		var kind:Int = Reflect.field(event, "k");
+		var x:Null<Int> = Reflect.field(event, "x");
+		var y:Null<Int> = Reflect.field(event, "y");
+		if (kind == null || x == null || y == null) {
+			return;
+		}
+
+		switch (kind) {
+			case 2:
+				var slot = getSlot(x, y);
+				if (slot != null) {
+					slot.imClicked();
+				}
+			default:
+		}
+	}
+
+	public function recordSlotClick(pos:Pos) {
+		kkm.replay.recordEvent({k: 2, x: pos.x, y: pos.y});
 	}
 
 	function updateSprites() {
