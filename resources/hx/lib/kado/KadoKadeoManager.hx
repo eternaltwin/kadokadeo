@@ -81,6 +81,7 @@ class KadoKadeoManager extends Application {
 			});
 		});
 		common_haxe_avm1.KeyboardManager.init();
+		common_haxe_avm1.MouseManager.init(this);
 
 		ff = new FixedFramerate(updatePhysics);
 
@@ -161,9 +162,14 @@ class KadoKadeoManager extends Application {
 	}
 
 	private function beginGame() {
-		ASprite.app = this;
 		this.gameRoot = dm.empty(1);
-		this.game = Type.createInstance(gameClass, [this, gameRoot]);
+		var isReplay = this.replay.isPlayingReplay();
+		if (isReplay) {
+			this.gameRoot.interactive = false;
+			this.gameRoot.interactiveChildren = false;
+		}
+
+		this.game = Type.createInstance(gameClass, [this, gameRoot, isReplay]);
 	}
 
 	public function gameOver(params:Dynamic):Void {

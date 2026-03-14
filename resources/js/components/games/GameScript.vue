@@ -15,7 +15,10 @@ const canvas = ref(null)
 const { mount, destroy, invalidate } = useGame(() => props.game)
 
 async function mountGame() {
-  await mount(canvas.value, props.args)
+  await mount(canvas.value, {
+    ...props.args,
+    // replayData: '',
+  })
 }
 
 onMounted(async() => {

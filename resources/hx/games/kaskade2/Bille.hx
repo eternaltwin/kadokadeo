@@ -35,9 +35,6 @@ class Bille extends Phys {
 		super(mc);
 		setPos(px, py);
 		this.scale = 0;
-
-		mc.onRollOver = onRollOver;
-		mc.onRollOut = onRollOut;
 	}
 
 	public function onRollOver() {

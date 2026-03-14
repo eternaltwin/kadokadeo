@@ -2,6 +2,8 @@ package kado;
 
 import haxe.crypto.Base64;
 import haxe.ds.IntMap;
+import haxe.Serializer;
+import haxe.Unserializer;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
@@ -12,18 +14,12 @@ import js.html.KeyboardEvent;
 
 typedef ReplayInitParams = {
 	var recordedKeys:UInt16Array;
-	var recordMouseClicks:Bool;
 	@:optional var recordInputs:Bool;
 	@:optional var recordEvents:Bool;
 	// var recordMousePosition:Bool;
 }
 
-typedef ReplayEvent = {
-	var eventId:String;
-	@:optional var payload:String;
-	// var customData:String
-	// var mousePosition:{ x:Int, y:Int };
-}
+typedef ReplayEvent = Dynamic;
 
 typedef ReplayInputEvent = {
 	var keyCode:Int;
@@ -39,6 +35,10 @@ typedef ReplayFrameRecord = {
 class ReplayManager {
 	public static inline var REPLAY_VERSION:Int = 1;
 	private static inline var MAGIC_HEADER:String = "KADO";
+	private static inline var FLAG_INPUTS:Int = 1;
+	private static inline var FLAG_EVENTS:Int = 2;
+	private static inline var EVENT_ENCODING_PACKED_GRID:Int = 0;
+	private static inline var EVENT_ENCODING_SERIALIZED:Int = 1;
 
 	private var replayData:Bytes;
 	private var currentFrame:Int = 0;
@@ -115,6 +115,14 @@ class ReplayManager {
 		unregisterKeyboardEvents();
 	}
 
+	public inline function isPlayingReplay():Bool {
+		return this.isPlaying;
+	}
+
+	public inline function isRecordingReplay():Bool {
+		return this.isRecording;
+	}
+
 	public function update():Void {
 		if (!this.isRecording && !this.isPlaying) {
 			return;
@@ -127,14 +135,14 @@ class ReplayManager {
 		currentFrame++;
 	}
 
-	public function recordEvent(eventId:String, ?payload:String, ?frameIndex:Int):Void {
-		if (!this.isRecording || !this.shouldRecordEvents || eventId == null || eventId.length == 0) {
+	public function recordEvent(event:ReplayEvent, ?frameIndex:Int):Void {
+		if (!this.isRecording || !this.shouldRecordEvents || event == null) {
 			return;
 		}
 
 		var frame = frameIndex == null ? currentFrame : frameIndex;
 		var record = getOrCreateFrameRecord(frame);
-		record.events.push({eventId: eventId, payload: payload});
+		record.events.push(event);
 	}
 
 	public function recordInput(keyCode:Int, isDown:Bool, ?frameIndex:Int):Void {
@@ -172,8 +180,21 @@ class ReplayManager {
 		var output = new BytesOutput();
 		output.writeString(MAGIC_HEADER);
 		output.writeByte(REPLAY_VERSION);
-		writeInitParams(output);
-		writeFrameRecords(output);
+
+		var flags = 0;
+		if (params.recordInputs)
+			flags |= FLAG_INPUTS;
+		if (params.recordEvents)
+			flags |= FLAG_EVENTS;
+		output.writeByte(flags);
+
+		writeInitParams(output, flags);
+		if ((flags & FLAG_INPUTS) != 0) {
+			writeInputRecords(output);
+		}
+		if ((flags & FLAG_EVENTS) != 0) {
+			writeEventRecords(output);
+		}
 		return output.getBytes();
 	}
 
@@ -254,39 +275,66 @@ class ReplayManager {
 		return true;
 	}
 
-	private function writeInitParams(output:BytesOutput):Void {
-		output.writeByte(params.recordMouseClicks ? 1 : 0);
-		output.writeByte(params.recordInputs ? 1 : 0);
-		output.writeByte(params.recordEvents ? 1 : 0);
+	private function writeInitParams(output:BytesOutput, flags:Int):Void {
+		if ((flags & FLAG_INPUTS) == 0) {
+			return;
+		}
 
-		output.writeUInt16(params.recordedKeys.length);
+		writeVarUInt(output, params.recordedKeys.length);
 		for (i in 0...params.recordedKeys.length) {
-			output.writeUInt16(params.recordedKeys[i]);
+			writeVarUInt(output, params.recordedKeys[i]);
 		}
 	}
 
-	private function writeFrameRecords(output:BytesOutput):Void {
+	private function writeInputRecords(output:BytesOutput):Void {
 		var frameIndexes = [for (frameIndex in frameRecords.keys()) frameIndex];
 		frameIndexes.sort((a, b) -> a - b);
+		frameIndexes = frameIndexes.filter((frameIndex) -> {
+			var record = frameRecords.get(frameIndex);
+			return record != null && record.inputs.length > 0;
+		});
 
-		output.writeInt32(frameIndexes.length);
+		writeVarUInt(output, frameIndexes.length);
+		var previousFrame = 0;
 		for (frameIndex in frameIndexes) {
 			var record = frameRecords.get(frameIndex);
-			if (record == null) {
+			if (record == null || record.inputs.length == 0) {
 				continue;
 			}
 
-			output.writeInt32(frameIndex);
-			output.writeUInt16(record.events.length);
-			for (event in record.events) {
-				writeString(output, event.eventId);
-				writeNullableString(output, event.payload);
+			writeVarUInt(output, frameIndex - previousFrame);
+			previousFrame = frameIndex;
+
+			writeVarUInt(output, record.inputs.length);
+			for (input in record.inputs) {
+				var packed = (input.keyCode << 1) | (input.isDown ? 1 : 0);
+				writeVarUInt(output, packed);
+			}
+		}
+	}
+
+	private function writeEventRecords(output:BytesOutput):Void {
+		var frameIndexes = [for (frameIndex in frameRecords.keys()) frameIndex];
+		frameIndexes.sort((a, b) -> a - b);
+		frameIndexes = frameIndexes.filter((frameIndex) -> {
+			var record = frameRecords.get(frameIndex);
+			return record != null && record.events.length > 0;
+		});
+
+		writeVarUInt(output, frameIndexes.length);
+		var previousFrame = 0;
+		for (frameIndex in frameIndexes) {
+			var record = frameRecords.get(frameIndex);
+			if (record == null || record.events.length == 0) {
+				continue;
 			}
 
-			output.writeUInt16(record.inputs.length);
-			for (input in record.inputs) {
-				output.writeUInt16(input.keyCode);
-				output.writeByte(input.isDown ? 1 : 0);
+			writeVarUInt(output, frameIndex - previousFrame);
+			previousFrame = frameIndex;
+
+			writeVarUInt(output, record.events.length);
+			for (event in record.events) {
+				writeEvent(output, event);
 			}
 		}
 	}
@@ -302,25 +350,29 @@ class ReplayManager {
 		if (version != REPLAY_VERSION) {
 			throw "Unsupported replay version " + version;
 		}
+		var flags = input.readByte();
 
-		readInitParams(input);
-		readFrameRecords(input, replayFrameRecords);
+		readInitParams(input, flags);
+		if ((flags & FLAG_INPUTS) != 0) {
+			readInputRecords(input, replayFrameRecords);
+		}
+		if ((flags & FLAG_EVENTS) != 0) {
+			readEventRecords(input, replayFrameRecords);
+		}
 	}
 
-	private function readInitParams(input:BytesInput):Void {
-		var recordMouseClicks = input.readByte() == 1;
-		var recordInputs = input.readByte() == 1;
-		var recordEvents = input.readByte() == 1;
+	private function readInitParams(input:BytesInput, flags:Int):Void {
+		var recordInputs = (flags & FLAG_INPUTS) != 0;
+		var recordEvents = (flags & FLAG_EVENTS) != 0;
 
-		var keyCount = input.readUInt16();
+		var keyCount = recordInputs ? readVarUInt(input) : 0;
 		var keys = new UInt16Array(keyCount);
 		for (i in 0...keyCount) {
-			keys[i] = input.readUInt16();
+			keys[i] = readVarUInt(input);
 		}
 
 		this.params = normalizeParams({
 			recordedKeys: keys,
-			recordMouseClicks: recordMouseClicks,
 			recordInputs: recordInputs,
 			recordEvents: recordEvents
 		});
@@ -330,33 +382,35 @@ class ReplayManager {
 		this.shouldRecordEvents = this.params.recordEvents;
 	}
 
-	private function readFrameRecords(input:BytesInput, target:IntMap<ReplayFrameRecord>):Void {
-		var frameCount = input.readInt32();
+	private function readInputRecords(input:BytesInput, target:IntMap<ReplayFrameRecord>):Void {
+		var frameCount = readVarUInt(input);
+		var frameIndex = 0;
 
 		for (i in 0...frameCount) {
-			var frameIndex = input.readInt32();
-			var eventCount = input.readUInt16();
-			var events = new Array<ReplayEvent>();
-			for (j in 0...eventCount) {
-				events.push({
-					eventId: readString(input),
-					payload: readNullableString(input)
-				});
-			}
-
-			var inputCount = input.readUInt16();
-			var inputs = new Array<ReplayInputEvent>();
+			frameIndex += readVarUInt(input);
+			var inputCount = readVarUInt(input);
+			var record = getOrCreateFrameRecordFromMap(target, frameIndex);
 			for (j in 0...inputCount) {
-				inputs.push({
-					keyCode: input.readUInt16(),
-					isDown: input.readByte() == 1
+				var packed = readVarUInt(input);
+				record.inputs.push({
+					keyCode: packed >> 1,
+					isDown: (packed & 1) == 1
 				});
 			}
+		}
+	}
 
-			target.set(frameIndex, {
-				events: events,
-				inputs: inputs
-			});
+	private function readEventRecords(input:BytesInput, target:IntMap<ReplayFrameRecord>):Void {
+		var frameCount = readVarUInt(input);
+		var frameIndex = 0;
+
+		for (i in 0...frameCount) {
+			frameIndex += readVarUInt(input);
+			var eventCount = readVarUInt(input);
+			var record = getOrCreateFrameRecordFromMap(target, frameIndex);
+			for (j in 0...eventCount) {
+				record.events.push(readEvent(input));
+			}
 		}
 		#if debug
 		trace('Decoded replay data: ' + frameCount + ' frames');
@@ -364,35 +418,107 @@ class ReplayManager {
 		#end
 	}
 
-	private function writeString(output:BytesOutput, value:String):Void {
-		var bytes = Bytes.ofString(value);
-		if (bytes.length > 65534) {
-			throw "Replay string is too long to encode";
-		}
-		output.writeUInt16(bytes.length);
-		output.write(bytes);
-	}
+	private function writeEvent(output:BytesOutput, event:ReplayEvent):Void {
+		var k = intFieldOrNull(event, "k");
+		var x = intFieldOrNull(event, "x");
+		var y = intFieldOrNull(event, "y");
+		var canPack = k != null && x != null && y != null && k >= 0 && k < 4 && x >= 0 && x < 8 && y >= 0 && y < 8;
 
-	private function writeNullableString(output:BytesOutput, ?value:String):Void {
-		if (value == null) {
-			output.writeUInt16(65535);
+		if (canPack) {
+			output.writeByte(EVENT_ENCODING_PACKED_GRID);
+			output.writeByte((k << 6) | (x << 3) | y);
 			return;
 		}
 
-		writeString(output, value);
+		output.writeByte(EVENT_ENCODING_SERIALIZED);
+		writeVarString(output, Serializer.run(event));
 	}
 
-	private function readString(input:BytesInput):String {
-		var length = input.readUInt16();
+	private function readEvent(input:BytesInput):ReplayEvent {
+		var encoding = input.readByte();
+		switch (encoding) {
+			case EVENT_ENCODING_PACKED_GRID:
+				var packed = input.readByte();
+				return {
+					k: (packed >> 6) & 0x3,
+					x: (packed >> 3) & 0x7,
+					y: packed & 0x7
+				};
+			case EVENT_ENCODING_SERIALIZED:
+				return Unserializer.run(readVarString(input));
+			default:
+				throw "Unsupported event encoding " + encoding;
+		}
+	}
+
+	private function getOrCreateFrameRecordFromMap(target:IntMap<ReplayFrameRecord>, frameIndex:Int):ReplayFrameRecord {
+		var record = target.get(frameIndex);
+		if (record != null) {
+			return record;
+		}
+
+		record = {
+			events: [],
+			inputs: []
+		};
+		target.set(frameIndex, record);
+		return record;
+	}
+
+	private function writeVarString(output:BytesOutput, value:String):Void {
+		var bytes = Bytes.ofString(value);
+		writeVarUInt(output, bytes.length);
+		output.write(bytes);
+	}
+
+	private function readVarString(input:BytesInput):String {
+		var length = readVarUInt(input);
 		return input.readString(length);
 	}
 
-	private function readNullableString(input:BytesInput):Null<String> {
-		var length = input.readUInt16();
-		if (length == 65535) {
+	private function writeVarUInt(output:BytesOutput, value:Int):Void {
+		if (value < 0) {
+			throw "Replay varint cannot encode negative value";
+		}
+
+		var n = value;
+		while (n >= 0x80) {
+			output.writeByte((n & 0x7F) | 0x80);
+			n = n >>> 7;
+		}
+		output.writeByte(n);
+	}
+
+	private function readVarUInt(input:BytesInput):Int {
+		var result = 0;
+		var shift = 0;
+
+		while (true) {
+			var b = input.readByte();
+			result |= (b & 0x7F) << shift;
+			if ((b & 0x80) == 0) {
+				return result;
+			}
+
+			shift += 7;
+			if (shift > 28) {
+				throw "Replay varint is too long";
+			}
+		}
+	}
+
+	private function intFieldOrNull(event:ReplayEvent, field:String):Null<Int> {
+		var value:Dynamic = Reflect.field(event, field);
+		if (value == null) {
 			return null;
 		}
-		return input.readString(length);
+
+		var intValue = Std.int(value);
+		if (intValue != value) {
+			return null;
+		}
+
+		return intValue;
 	}
 
 	private function refreshTrackedKeys():Void {
@@ -443,7 +569,6 @@ class ReplayManager {
 
 		return {
 			recordedKeys: input.recordedKeys != null ? input.recordedKeys : new UInt16Array(0),
-			recordMouseClicks: input.recordMouseClicks,
 			recordInputs: input.recordInputs != null ? input.recordInputs : true,
 			recordEvents: input.recordEvents != null ? input.recordEvents : true
 		};
@@ -452,7 +577,6 @@ class ReplayManager {
 	private function defaultParams():ReplayInitParams {
 		return {
 			recordedKeys: new UInt16Array(0),
-			recordMouseClicks: false,
 			recordInputs: true,
 			recordEvents: true
 		};

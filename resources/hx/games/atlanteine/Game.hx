@@ -199,7 +199,6 @@ class Game implements kado.GameInterface {
 		replayKeys[3] = common_haxe_avm1.KeyboardManager.ARROW_UP;
 		this.kkm.replay.init({
 			recordedKeys: replayKeys,
-			recordMouseClicks: false,
 			recordInputs: true,
 			recordEvents: false,
 		});

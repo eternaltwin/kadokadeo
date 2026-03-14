@@ -1,12 +1,8 @@
 package common_haxe_avm1.display;
 
-import mt.bumdum.Phys;
 import pixi.core.Tween;
-import js.lib.Object;
 import pixi.loaders.Loader;
 import haxe.ds.IntMap;
-import haxe.ds.StringMap;
-import pixi.core.Application;
 import pixi.core.math.Matrix;
 import pixi.core.math.Point;
 import pixi.core.textures.RenderTexture;
@@ -69,7 +65,6 @@ class TransformState {
 }
 
 class ASprite extends Sprite {
-	static public var app:Application;
 	static public var defaultAnchor:Null<String>;
 	static public var ZSORTING_ENABLED:Bool = true;
 
@@ -160,11 +155,11 @@ class ASprite extends Sprite {
 	}
 
 	public function get__xmouse():Float {
-		return ASprite.app.renderer.plugins.interaction.mouse.global.x;
+		return common_haxe_avm1.MouseManager.getMouseX();
 	}
 
 	public function get__ymouse():Float {
-		return ASprite.app.renderer.plugins.interaction.mouse.global.y;
+		return common_haxe_avm1.MouseManager.getMouseY();
 	}
 
 	public function get__parent():Container {

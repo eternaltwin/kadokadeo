@@ -1,7 +1,6 @@
 package kanji_gaiden;
 
 import mt.flash.Key;
-import js.Browser;
 import mt.bumdum.Lib;
 import common_haxe_avm1.KKApi;
 
@@ -18,7 +17,8 @@ class AnonSprite696460 extends ASprite {
 
 @:expose('GameKanjiGaiden')
 class Game implements kado.GameInterface {
-    public var kkm:kado.KadoKadeoManager;
+	public var kkm:kado.KadoKadeoManager;
+
 	public static var DP_BONUS = 17;
 	public static var DP_WARN = 16;
 	public static var DP_SC = 15;
@@ -67,7 +67,7 @@ class Game implements kado.GameInterface {
 
 	public var mcScore:AnonSprite696460;
 
-	public function new(kkm:kado.KadoKadeoManager) {
+	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
 		this.kkm = kkm;
 		ASprite.spriteData = [
 			"kanji_gaiden/bamboo" => [75, 448],
@@ -92,10 +92,6 @@ class Game implements kado.GameInterface {
 			"kanji_gaiden/bamboo_bottom" => [143, 151],
 			"kanji_gaiden/kunai_bounce" => [192, 42],
 		];
-		ASprite.app = kkm;
-
-		root = new ASprite();
-		kkm.stage.addChild(root);
 
 		dm = new mt.DepthManager(root);
 		me = this;

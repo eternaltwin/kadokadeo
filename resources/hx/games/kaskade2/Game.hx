@@ -1,5 +1,6 @@
 package kaskade2;
 
+import haxe.io.UInt16Array;
 import mt.bumdum.Sprite;
 import mt.Timer;
 import common_haxe_avm1.KKApi;
@@ -38,9 +39,19 @@ class Game implements kado.GameInterface {
 	var flash:Float;
 	var time:Float;
 	var ncoups:KKConst;
+	var isReplayMode:Bool;
+	var hoveredBille:Bille;
+	var lastHoveredCell:{x:Int, y:Int};
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
+	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
 		this.kkm = kkm;
+		this.isReplayMode = isReplay;
+		this.kkm.replay.init({
+			recordedKeys: new UInt16Array(0),
+			recordInputs: false,
+			recordEvents: true,
+		});
+
 		dm = new mt.DepthManager(root);
 		particules = new Particules(dm);
 		nlevels = 3;
@@ -73,6 +84,14 @@ class Game implements kado.GameInterface {
 	public function onClick() {
 		if (lock || curGroup == null)
 			return;
+
+		var clicked = lastHoveredCell;
+		if (clicked == null && curGroup.length > 0) {
+			clicked = getBilleGridPos(curGroup[0]);
+		}
+		if (clicked != null) {
+			kkm.replay.recordEvent({k: 2, x: clicked.x, y: clicked.y});
+		}
 
 		for (x in 0...Const.LVL_WIDTH) {
 			for (y in 0...Const.LVL_HEIGHT) {
@@ -115,6 +134,8 @@ class Game implements kado.GameInterface {
 			b.kill();
 		}
 		lock = true;
+		hoveredBille = null;
+		lastHoveredCell = null;
 		level.gravity();
 	}
 
@@ -139,6 +160,14 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(ts:Float) {
+		for (event in kkm.replay.consumeEvents()) {
+			applyReplayEvent(event);
+		}
+
+		if (!isReplayMode) {
+			updateHoverFromMouse();
+		}
+
 		dm.root_mc.update();
 		updateSprites();
 		var p = Math.pow(0.6, Timer.tmod);
@@ -166,6 +195,110 @@ class Game implements kado.GameInterface {
 		timebar.gotoAndStop((KKApi.val(ncoups) + 1).int());
 		particules.update();
 		level.update();
+	}
+
+	function updateHoverFromMouse() {
+		if (lock) {
+			return;
+		}
+
+		var cell = screenToGrid(dm.root_mc._xmouse, dm.root_mc._ymouse);
+		var bille:Bille = null;
+		if (cell != null) {
+			bille = findBilleAt(cell.x, cell.y);
+		}
+
+		if (bille == hoveredBille) {
+			return;
+		}
+
+		if (hoveredBille != null) {
+			hoveredBille.onRollOut();
+		}
+
+		hoveredBille = bille;
+		lastHoveredCell = cell;
+
+		if (hoveredBille != null && cell != null) {
+			hoveredBille.onRollOver();
+			kkm.replay.recordEvent({k: 0, x: cell.x, y: cell.y});
+		}
+	}
+
+	function screenToGrid(mx:Float, my:Float):{x:Int, y:Int} {
+		var dx = mx - Const.DELTA_X;
+		var dy = my - Const.DELTA_Y;
+
+		var px = dx * Bille.COS + dy * Bille.SIN;
+		var py = -dx * Bille.SIN + dy * Bille.COS;
+
+		var halfW = (Const.LVL_WIDTH * Const.BILLE_RAY) / 2;
+		var halfH = (Const.LVL_HEIGHT * Const.BILLE_RAY) / 2;
+		var gx = Std.int(Math.round((px + halfW) / Const.BILLE_RAY)) - 1;
+		var gy = Std.int(Math.round((py + halfH) / Const.BILLE_RAY));
+
+		if (gx < 0 || gy < 0 || gx >= Const.LVL_WIDTH || gy >= Const.LVL_HEIGHT) {
+			return null;
+		}
+
+		return {x: gx, y: gy};
+	}
+
+	function applyReplayEvent(event:Dynamic) {
+		if (event == null) {
+			return;
+		}
+
+		var kind:Int = Reflect.field(event, "k");
+		var x:Null<Int> = Reflect.field(event, "x");
+		var y:Null<Int> = Reflect.field(event, "y");
+		if (kind == null || x == null || y == null) {
+			return;
+		}
+
+		switch (kind) {
+			case 0:
+				var b = findBilleAt(x, y);
+				if (b != null) {
+					hoveredBille = b;
+					lastHoveredCell = {x: x, y: y};
+					b.onRollOver();
+				}
+			case 1:
+			case 2:
+				var b = findBilleAt(x, y);
+				if (b != null) {
+					hoveredBille = b;
+					lastHoveredCell = {x: x, y: y};
+					b.onRollOver();
+				}
+				onClick();
+			default:
+		}
+	}
+
+	function findBilleAt(x:Int, y:Int):Bille {
+		if (x < 0 || y < 0 || x >= Const.LVL_WIDTH || y >= Const.LVL_HEIGHT) {
+			return null;
+		}
+		return level.billes[x][y];
+	}
+
+	function getBilleGridPos(target:Bille):{x:Int, y:Int} {
+		if (target == null) {
+			return null;
+		}
+
+		for (x in 0...Const.LVL_WIDTH) {
+			for (y in 0...Const.LVL_HEIGHT) {
+				var b = level.billes[x][y];
+				if (b == target) {
+					return {x: x, y: y};
+				}
+			}
+		}
+
+		return null;
 	}
 
 	public function gameOver() {
