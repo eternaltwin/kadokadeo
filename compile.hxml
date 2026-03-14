@@ -14,6 +14,6 @@ chocomouche.Game
 --next
 -js ./resources/js/games/kaskade2.js
 kaskade2.Game
-#--next
-#-js ./resources/js/games/kanji_gaiden.js
-#kanji_gaiden.Game
+# --next
+# -js ./resources/js/games/kanjigaiden.js
+# kanjigaiden.Game
