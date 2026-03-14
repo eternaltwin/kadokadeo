@@ -46,6 +46,7 @@ function unloadScript(url, globalName) {
   if (globalName && window[globalName]) {
     delete window[globalName]
   }
+  delete window.KadoKadeo
 }
 
 export function useGame(game) {
@@ -63,6 +64,9 @@ export function useGame(game) {
       unloadScript(activeScript.src, activeScript.global)
     }
     activeScript = null
+    PIXI.utils.destroyTextureCache()
+    PIXI.utils.clearTextureCache()
+    PIXI.Loader.shared.resources = {}
   }
 
   async function mount(canvas, args = {}) {
