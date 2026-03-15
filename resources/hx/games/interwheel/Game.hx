@@ -124,7 +124,7 @@ class Game implements kado.GameInterface {
 			}
 		}
 		var by:Float = 100 * Cs.NEW_GEN_SCALE;
-		while (by < 2000 * Cs.NEW_GEN_SCALE) {
+		while (by < height) {
 			if (Math.random() < 0.2) {
 				var link = "mcMotif";
 				var bx:Float = Std.random(Cs.mcw);
@@ -140,14 +140,13 @@ class Game implements kado.GameInterface {
 				mc.removeMovieClip();
 			}
 
-			by += Std.random(100);
+			by += Std.random(100 * Cs.NEW_GEN_SCALE);
 		}
 
 		for (y in 0...yMax) {
 			for (i in 0...2) {
 				var mc = gdm.attach("mcSide", 10);
-				mc.gotoAndStop(n * 10 + Std.random(10) + 1);
-				Cs.drawMcAt(bmp, mc, i * (Cs.mcw - Cs.SIDE), y * 40);
+				Cs.drawMcAt(bmp, mc, i * (Cs.mcw - Cs.SIDE), y * size);
 				mc.removeMovieClip();
 			}
 		}

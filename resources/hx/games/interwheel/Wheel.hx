@@ -202,8 +202,8 @@ class Wheel extends Element {
 			o.mc = wdm.attach("mcMine", 0); // Std.attachMC(root,"mcMine"+i,i)//
 			o.mc._x = Math.cos(o.a) * ray * c;
 			o.mc._y = Math.sin(o.a) * ray * c;
-			o.mc._xscale = c * 100;
-			o.mc._yscale = c * 100;
+			o.mc._xscale = c * 100 * 2 / Cs.NEW_GEN_SCALE;
+			o.mc._yscale = c * 100 * 2 / Cs.NEW_GEN_SCALE;
 			o.mc._rotation = o.a / 0.0174;
 		}
 		var skin = wdm.attach("mcWheelBase", 0);

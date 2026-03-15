@@ -111,6 +111,12 @@ class Blob extends Phys {
 					x = Cs.mm(m, x, Cs.mcw - m);
 					initStep(3); // vx *= -1
 				}
+				#if debug
+				if (checkPress()) {
+					jump(-1.57);
+					vy = -50;
+				}
+				#end
 
 				/*
 					// check ground
@@ -159,7 +165,7 @@ class Blob extends Phys {
 				if (checkPress())
 					jump(a);
 			case 3:
-				vy += 0.6 * Timer.tmod;
+				vy += 0.6 * Timer.tmod * Cs.NEW_GEN_SCALE;
 				vy *= Math.pow(0.92, Timer.tmod);
 				if (checkPress()) {
 					var sens = (x < Cs.mcw * 0.5) ? 1 : -1;

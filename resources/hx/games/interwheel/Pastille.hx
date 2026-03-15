@@ -44,8 +44,9 @@ class Pastille extends Element {
 				}
 			}
 		}
-		trace("FIXME: attach pastille " + type);
-		// cn = downcast(root).c;
-		// cn.gotoAndStop(type + 1);
+		cn = root;
+		if (cn != null) {
+			cn.gotoAndStop(type + 1);
+		}
 	}
 }

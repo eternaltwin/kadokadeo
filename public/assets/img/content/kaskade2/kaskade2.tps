@@ -124,7 +124,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename></filename>
+                <filename>kaskade2-{n}.json</filename>
             </struct>
         </map>
         <key>multiPackMode</key>
