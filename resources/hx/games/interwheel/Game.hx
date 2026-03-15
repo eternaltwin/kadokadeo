@@ -249,7 +249,7 @@ class Game implements kado.GameInterface {
 				p.y = y;
 				list.push(p);
 			}
-			y -= 20;
+			y -= 20 * Cs.NEW_GEN_SCALE;
 		}
 		eList.push({list: cast list, s: Cs.START_WHEEL_ID, e: Cs.START_WHEEL_ID - 1});
 	}

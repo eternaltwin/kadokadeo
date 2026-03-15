@@ -4,10 +4,10 @@ import common_haxe_avm1.KeyboardManager;
 import mt.Timer;
 
 class Blob extends Phys {
-	public static var GROUND_SPEED = 15;
-	public static var RAY = 8;
-	public static var WEIGHT = 0.5;
-	public static var JUMP = 12;
+	public static var GROUND_SPEED = 15 * Cs.NEW_GEN_SCALE;
+	public static var RAY = 8 * Cs.NEW_GEN_SCALE;
+	public static var WEIGHT = 0.5 * Cs.NEW_GEN_SCALE;
+	public static var JUMP = 12 * Cs.NEW_GEN_SCALE;
 
 	public static var JUMP_SIDE_ANGLE = 0.77;
 
@@ -17,6 +17,7 @@ class Blob extends Phys {
 	var flWater:Bool;
 
 	public var step:Int;
+
 	var inst:Float;
 	var blop:Float;
 	var wet:Float;
@@ -42,8 +43,8 @@ class Blob extends Phys {
 		vvx = 0;
 		vvy = 0;
 
-		mc.onPress = this.mouseDown;
-		mc.onRelease = this.mouseUp;
+		Cs.game.dm.root_mc.onPress = this.mouseDown;
+		Cs.game.dm.root_mc.onRelease = this.mouseUp;
 	}
 
 	public function initStep(s) {

@@ -69,6 +69,8 @@ class Spark extends Phys {
 		mc._y = y;
 		mc._xscale = sc;
 		mc._yscale = sc;
+		mc.removeOnFrame = 15;
+		mc.play();
 		/*
 			var max = 12
 			var r = 8

@@ -185,15 +185,15 @@ class Wheel extends Element {
 		light = dm.attach("mcWheelLight", 0);
 		light.gotoAndStop(fr);
 
-		wh._xscale = ray; // * 2;
-		wh._yscale = ray; // * 2;
-		sh._xscale = ray; // * 2;
-		sh._yscale = ray; // * 2;
-		dust._xscale = ray; // * 2;
-		dust._yscale = ray; // * 2;
+		wh._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
+		wh._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
+		sh._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
+		sh._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
+		dust._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
+		dust._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
 		if (fr == 2) {
-			light._xscale = ray; // * 2;
-			light._yscale = ray; // * 2;
+			light._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
+			light._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
 		}
 
 		var wdm = new DepthManager(wh);

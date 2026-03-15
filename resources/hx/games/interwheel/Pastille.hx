@@ -6,7 +6,7 @@ class Pastille extends Element {
 
 	public function new() {
 		super();
-		ray = 20;
+		ray = 20 * Cs.NEW_GEN_SCALE;
 		skin = "mcPastille";
 
 		type = 0;
@@ -18,7 +18,7 @@ class Pastille extends Element {
 
 	public override function update() {
 		super.update();
-		if (Cs.game.blob.getDist(this) < 70) {
+		if (Cs.game.blob.getDist(this) < 70 * Cs.NEW_GEN_SCALE) {
 			flRemove = true;
 			var p = new Spark(Cs.game.dm.empty(Game.DP_PART));
 			p.x = x;
@@ -36,10 +36,12 @@ class Pastille extends Element {
 		super.attach();
 		var o = Cs.game.eList[0];
 		for (wh in o.list) {
-			if (Cs.getDist(wh, this) < wh.ray + 20) {
+			if (Cs.getDist(wh, this) < wh.ray + 20 * Cs.NEW_GEN_SCALE) {
 				flRemove = true;
-				root.removeMovieClip();
-				root = null;
+				if (root != null) {
+					root.removeMovieClip();
+					root = null;
+				}
 			}
 		}
 		trace("FIXME: attach pastille " + type);
