@@ -3,10 +3,10 @@ package interwheel;
 import mt.Timer;
 
 class Phys extends Sprite {
-	var weight:Float;
-	var frict:Float;
-	var vx:Float;
-	var vy:Float;
+	public var weight:Float;
+	public var frict:Float;
+	public var vx:Float;
+	public var vy:Float;
 
 	function new(mc) {
 		super(mc);

@@ -1,10 +1,21 @@
 package interwheel;
 
+import common_haxe_avm1.KKApi;
+import mt.Timer;
+
+class McPastille extends ASprite {
+	public var pastille:ASprite;
+	public var bg:ASprite;
+}
+
 class Spark extends Phys {
 	var distLimit:Float;
 	var coefLimit:Float;
 	var coef:Float;
-	var score:Int;
+
+	public var c:ASprite;
+
+	public var score:Int;
 
 	public function new(mc) {
 		Cs.game.sparkList.push(this);
@@ -14,6 +25,9 @@ class Spark extends Phys {
 
 		distLimit = 5;
 		coefLimit = 0.1;
+
+		mc.attachMovie("mcPastilleBg");
+		c = mc.attachMovie("mcPastille");
 	}
 
 	public override function update() {

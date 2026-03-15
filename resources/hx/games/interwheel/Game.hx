@@ -11,12 +11,16 @@ class McPanel extends ASprite {
 	public var panel:ASprite;
 	public var txt:String;
 }
+
 typedef FocusTarget = {
 	var x:Float;
 	var y:Float;
 }
 
-class Game {
+@:expose('GameInterwheel')
+class Game implements kado.GameInterface {
+	public var kkm:kado.KadoKadeoManager;
+
 	public static var DP_BG = 1;
 	public static var DP_SHADE = 2;
 	public static var DP_OIL = 3;
@@ -43,7 +47,9 @@ class Game {
 	public var dm:DepthManager;
 	public var gdm:DepthManager;
 	public var focus:FocusTarget;
+	public var eList:Array<{s:Int, e:Int, list:Array<Element>}>;
 	public var sList:Array<Sprite>;
+	public var sparkList:Array<Spark>;
 	public var water:ASprite;
 	public var map:ASprite;
 
@@ -54,13 +60,10 @@ class Game {
 		type:Int
 	}>;
 	var awList:Array<Wheel>;
-	var sparkList:Array<Spark>;
 	var bg:ASprite;
 	var bgs:ASprite;
 	var wheelLoading:ASprite;
 	var panel:McPanel;
-
-	var eList:Array<{s:Int, e:Int, list:Array<Element>}>;
 
 	public var stats:{
 		b:Array<Int>,
@@ -70,11 +73,12 @@ class Game {
 		bl:Int
 	};
 
-	public function new(mc) {
+	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
+		this.kkm = kkm;
 		Cs.init();
 		Cs.game = this;
 
-		gdm = new DepthManager(mc);
+		gdm = new DepthManager(root);
 		map = gdm.empty(1);
 		map._y = Cs.mch;
 		map._x = Cs.mcw;
@@ -99,6 +103,7 @@ class Game {
 		};
 
 		maxHeight = 0;
+		focus = {x: Cs.mcw, y: 0};
 
 		initStep(1);
 	}
@@ -230,12 +235,12 @@ class Game {
 			list.push(w);
 		}
 		roof = ow.y - ow.ray;
-		eList.push({list: list, s: Cs.START_WHEEL_ID, e: Cs.START_WHEEL_ID - 1});
+		eList.push({list: cast list, s: Cs.START_WHEEL_ID, e: Cs.START_WHEEL_ID - 1});
 	}
 
 	function initPastilles() {
 		var list = new Array();
-		var y = -100;
+		var y = -100 * Cs.NEW_GEN_SCALE;
 		while (y > roof) {
 			if (Math.random() < y / roof) {
 				var p = new Pastille();
@@ -246,7 +251,7 @@ class Game {
 			}
 			y -= 20;
 		}
-		eList.push({list: list, s: Cs.START_WHEEL_ID, e: Cs.START_WHEEL_ID - 1});
+		eList.push({list: cast list, s: Cs.START_WHEEL_ID, e: Cs.START_WHEEL_ID - 1});
 	}
 
 	public function initStep(s:Int) {
@@ -261,7 +266,7 @@ class Game {
 				blob = new Blob(dm.attach("mcBlob", DP_BLOB));
 				blob.x = Cs.mcw * 0.5;
 				blob.y = 0;
-				blob.cw = eList[0].list[Cs.START_WHEEL_ID];
+				blob.cw = cast eList[0].list[Cs.START_WHEEL_ID];
 				blob.initStep(2);
 
 				// water = dm.attach("mcWater", DP_WATER);
@@ -292,7 +297,8 @@ class Game {
 		}
 	}
 
-	public function update() {
+	public function update(delta:Float) {
+		dm.root_mc.update();
 		timer -= Timer.tmod;
 		#if debug
 		if (KeyboardManager.isDown(KeyboardEvent.DOM_VK_RETURN)) {
@@ -310,13 +316,11 @@ class Game {
 
 				var dx = -blob.y - maxHeight;
 				if (dx > 0)
-					KKApi.addScore(KKApi.const(int(dx)));
+					kkm.addScore(KKApi.const(Std.int(dx)));
 				maxHeight = Math.max(-blob.y, maxHeight);
-				var n = int(maxHeight * 0.2);
+				var n = Std.int(maxHeight * 0.2);
 				panel.txt = n + "$m".substring(1);
 				stats.hm = n;
-
-				break;
 			case 1:
 				initDecor(genStep);
 				genStep++;
@@ -324,10 +328,9 @@ class Game {
 					initStep(0);
 			case 9:
 				if (timer < 0) {
-					KKApi.gameOver(stats);
+					kkm.gameOver(stats);
 					initStep(10);
 				}
-				break;
 		}
 
 		// SPARKS BOUNCE
@@ -356,7 +359,7 @@ class Game {
 		scrollMap();
 
 		// SPRITES
-		var list = sList.duplicate();
+		var list = sList.copy();
 		for (e in list) {
 			e.update();
 		}
@@ -371,7 +374,7 @@ class Game {
 
 		// map._y = Math.max( Cs.mch-10,map._y+svy*Timer.tmod )
 		map._y += svy * Timer.tmod;
-		bgs._y = Cs.mch + map._y * 0.1;
+		// bgs._y = Cs.mch + map._y * 0.1;
 
 		if (flCameraJump) {
 			map._y = ty;
@@ -412,17 +415,21 @@ class Game {
 				}
 
 				var w = o.list[o.s - 1];
-				if (w.y - w.ray < -map._y + Cs.mcw) {
-					o.s--;
-					w.attach();
-					flBreak = false;
+				if (w != null) {
+					if (w.y - w.ray < -map._y + Cs.mcw) {
+						o.s--;
+						w.attach();
+						flBreak = false;
+					}
 				}
 
 				w = o.list[o.e + 1];
-				if (w.y + w.ray > -map._y) {
-					o.e++;
-					w.attach();
-					flBreak = false;
+				if (w != null) {
+					if (w.y + w.ray > -map._y) {
+						o.e++;
+						w.attach();
+						flBreak = false;
+					}
 				}
 				flFirst = false;
 				if (flBreak || tr++ > 20)

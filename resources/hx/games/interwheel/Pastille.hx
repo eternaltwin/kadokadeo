@@ -20,31 +20,30 @@ class Pastille extends Element {
 		super.update();
 		if (Cs.game.blob.getDist(this) < 70) {
 			flRemove = true;
-			var p = new Spark(Cs.game.dm.attach("mcPastille", Game.DP_PART));
-			// TODO: mcPastilleBg
+			var p = new Spark(Cs.game.dm.empty(Game.DP_PART));
 			p.x = x;
 			p.y = y;
-			downcast(p.root).c.gotoAndStop(string(type + 1));
+			p.c.gotoAndStop(type + 1);
 			p.score = Cs.SCORE_PASTILLE[type];
-			Cs.game.stats.$b[type]
-			++;
+			Cs.game.stats.b[type]++;
 		};
 		var sc = 90 + Math.random() * 20;
-		cn._xscale = sc;
-		cn._yscale = sc;
+		// cn._xscale = sc;
+		// cn._yscale = sc;
 	}
 
 	public override function attach() {
 		super.attach();
 		var o = Cs.game.eList[0];
-		for (wh in list) {
+		for (wh in o.list) {
 			if (Cs.getDist(wh, this) < wh.ray + 20) {
 				flRemove = true;
 				root.removeMovieClip();
 				root = null;
 			}
 		}
-		cn = downcast(root).c;
-		cn.gotoAndStop(string(type + 1));
+		trace("FIXME: attach pastille " + type);
+		// cn = downcast(root).c;
+		// cn.gotoAndStop(type + 1);
 	}
 }

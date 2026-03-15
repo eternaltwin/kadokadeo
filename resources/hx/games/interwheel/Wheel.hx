@@ -66,7 +66,7 @@ class Wheel extends Element {
 							p.timer = 10 + Math.random() * 30;
 							p.vr = (Math.random() * 2 - 1) * 20;
 							p.root._rotation = Math.random() * 360;
-							p.root.gotoAndStop(string(Std.random(p.root._totalframes) + 1));
+							p.root.gotoAndStop(Std.random(p.root._totalframes) + 1);
 						}
 						// SMOKE
 						for (n in 0...6) {
@@ -95,7 +95,7 @@ class Wheel extends Element {
 							p.weight = Math.random() * 0.01;
 							p.setScale(50 + Math.random() * 50);
 							p.root._rotation = Math.random() * 360;
-							p.root.gotoAndStop(string(Std.random(p.root._totalframes) + 1));
+							p.root.gotoAndStop(Std.random(p.root._totalframes) + 1);
 							p.updatePos();
 						}
 						// GROSSE TACHE
@@ -114,8 +114,8 @@ class Wheel extends Element {
 						var ldm = new DepthManager(wh);
 						var base = ldm.empty(4);
 						var mask = ldm.attach("mcMask", 4);
-						mask.gotoAndStop(string(fr));
-						base.setMask(mask);
+						mask.gotoAndStop(fr);
+						// base.setMask(mask); // FIXME: mask ?
 						var bdm = new DepthManager(base);
 						var bx = Math.cos(o.a) * 50;
 						var by = Math.sin(o.a) * 50;
@@ -128,7 +128,7 @@ class Wheel extends Element {
 							p.y = by + Math.sin(a) * sp;
 							p.setScale((50 + Math.random() * 60) * scm);
 							p.root._rotation = Math.random() * 360;
-							p.root.gotoAndStop(string(Std.random(p.root._totalframes) + 1));
+							p.root.gotoAndStop(Std.random(p.root._totalframes) + 1);
 						}
 
 						// YEUX
@@ -174,26 +174,26 @@ class Wheel extends Element {
 
 		sh = Cs.game.dm.attach("mcMask", Game.DP_SHADE);
 		sh._x = x;
-		sh._y = y + 6;
+		sh._y = y + 6 * Cs.NEW_GEN_SCALE;
 		sh._alpha = 20;
-		sh.gotoAndStop(string(fr));
+		sh.gotoAndStop(fr);
 
 		var dust = dm.attach("mcDust", 0);
 
 		wh = dm.empty(0);
 
 		light = dm.attach("mcWheelLight", 0);
-		light.gotoAndStop(string(fr));
+		light.gotoAndStop(fr);
 
-		wh._xscale = ray * 2;
-		wh._yscale = ray * 2;
-		sh._xscale = ray * 2;
-		sh._yscale = ray * 2;
-		dust._xscale = ray * 2;
-		dust._yscale = ray * 2;
+		wh._xscale = ray; // * 2;
+		wh._yscale = ray; // * 2;
+		sh._xscale = ray; // * 2;
+		sh._yscale = ray; // * 2;
+		dust._xscale = ray; // * 2;
+		dust._yscale = ray; // * 2;
 		if (fr == 2) {
-			light._xscale = ray * 2;
-			light._yscale = ray * 2;
+			light._xscale = ray; // * 2;
+			light._yscale = ray; // * 2;
 		}
 
 		var wdm = new DepthManager(wh);
@@ -207,7 +207,7 @@ class Wheel extends Element {
 			o.mc._rotation = o.a / 0.0174;
 		}
 		var skin = wdm.attach("mcWheelBase", 0);
-		skin.gotoAndStop(string(fr));
+		skin.gotoAndStop(fr);
 	}
 
 	public override function detach() {

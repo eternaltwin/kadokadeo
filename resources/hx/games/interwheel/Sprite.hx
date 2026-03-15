@@ -3,8 +3,7 @@ package interwheel;
 class Sprite {
 	public var x:Float;
 	public var y:Float;
-
-	var root:ASprite;
+	public var root:ASprite;
 
 	public function new(mc) {
 		root = mc;
@@ -31,7 +30,7 @@ class Sprite {
 		root._y = y;
 	}
 
-	public function getDist(o) {
+	public function getDist(o:{x:Float, y:Float}) {
 		var dx = o.x - x;
 		var dy = o.y - y;
 		return Math.sqrt(dx * dx + dy * dy);
@@ -43,7 +42,7 @@ class Sprite {
 		return Math.atan2(dy, dx);
 	}
 
-	public function toward(o, c, lim) {
+	public function toward(o:{x:Float, y:Float}, c:Float, lim:Float) {
 		var a = getAng(o);
 		var dx = o.x - x;
 		var dy = o.y - y;

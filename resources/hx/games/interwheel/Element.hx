@@ -23,7 +23,9 @@ class Element {
 	}
 
 	public function detach() {
-		root.removeMovieClip();
-		root = null;
+		if (root != null) {
+			root.removeMovieClip();
+			root = null;
+		}
 	}
 }

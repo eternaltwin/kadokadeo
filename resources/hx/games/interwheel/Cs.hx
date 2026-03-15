@@ -12,7 +12,7 @@ class Cs {
 	public static var SIDE = 10 * NEW_GEN_SCALE;
 	public static var SPACE = 8 * NEW_GEN_SCALE;
 
-	public static var VIEW_WHEEL = 50 * NEW_GEN_SCALE;
+	public static var VIEW_WHEEL = 50;
 	public static var START_WHEEL_ID = 10;
 	// GAMEPLAY
 	public static var WMAX = 50;
@@ -34,7 +34,7 @@ class Cs {
 
 	public static var WATER_TIMER = 0;
 	public static var WATER_SPEED = 1 * NEW_GEN_SCALE;
-	public static var WATER_SPEED_INC = 0.0003 * NEW_GEN_SCALE;
+	public static var WATER_SPEED_INC = 0.0003;
 	public static var DROWN_LIMIT = 100 * NEW_GEN_SCALE;
 
 	// SCORE
@@ -48,7 +48,7 @@ class Cs {
 		return Math.min(Math.max(a, b), c);
 	}
 
-	public static function sMod(v: Float, mod:Float) {
+	public static function sMod(v:Float, mod:Float) {
 		while (v >= mod)
 			v -= mod;
 		while (v < 0)
@@ -56,7 +56,7 @@ class Cs {
 		return v;
 	}
 
-	public static function hMod(v: Float, mod:Float) {
+	public static function hMod(v:Float, mod:Float) {
 		while (v > mod)
 			v -= mod * 2;
 		while (v < -mod)

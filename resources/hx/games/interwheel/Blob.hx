@@ -16,7 +16,7 @@ class Blob extends Phys {
 	var flRelease:Bool;
 	var flWater:Bool;
 
-	var step:Int;
+	public var step:Int;
 	var inst:Float;
 	var blop:Float;
 	var wet:Float;
@@ -27,6 +27,7 @@ class Blob extends Phys {
 	var vvy:Float;
 
 	public var cw:Wheel;
+
 	var wa:Float;
 
 	public function new(mc:ASprite) {
@@ -72,7 +73,7 @@ class Blob extends Phys {
 				wa = Cs.hMod(cw.a - ba, 3.14);
 				root.gotoAndPlay(45);
 				inst = 0;
-				Cs.game.focus = {y: cw.y - Cs.VIEW_WHEEL}; // upcast(cw)
+				Cs.game.focus = {x: Cs.mcw / 2, y: cw.y - Cs.VIEW_WHEEL}; // upcast(cw)
 				ox = x;
 				oy = y;
 			case 3:

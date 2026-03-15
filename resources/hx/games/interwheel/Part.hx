@@ -8,12 +8,12 @@ class Part extends Phys {
 	public var fadeType:Float;
 	public var fadeLimit:Float;
 
-	var scale:Float;
-	var vr:Float;
-	var vs:Float;
-	var rFrict:Float;
-	var sFrict:Float;
-	var deathScore:Int;
+	public var scale:Float;
+	public var vr:Float;
+	public var vs:Float;
+	public var rFrict:Float;
+	public var sFrict:Float;
+	public var deathScore:Int;
 
 	public function new(mc) {
 		super(mc);

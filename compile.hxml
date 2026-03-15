@@ -14,9 +14,9 @@ chocomouche.Game
 --next
 -js ./resources/js/games/kaskade2.js
 kaskade2.Game
-# --next
-# -js ./resources/js/games/interwheel.js
-# interwheel.Game
+--next
+-js ./resources/js/games/interwheel.js
+interwheel.Game
 # --next
 # -js ./resources/js/games/kanjigaiden.js
 # kanjigaiden.Game
