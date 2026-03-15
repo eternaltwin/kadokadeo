@@ -18,7 +18,7 @@ class KKApi {
 	public static function registerButton(d:Dynamic) {}
 
 	public static function gameOver(d:Dynamic) {
-		//js.Browser.document.getElementById("gameOver").style.display = "block";
+		// js.Browser.document.getElementById("gameOver").style.display = "block";
 	}
 
 	public static function cadd(s:KKConst, a:KKConst):KKConst {
@@ -47,6 +47,7 @@ class KKApi {
 		return 0;
 	}
 
-	static function updateScore() {
-	}
+	static function updateScore() {}
+
+	public static function processing(v:Bool) {}
 }

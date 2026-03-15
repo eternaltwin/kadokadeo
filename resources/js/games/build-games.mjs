@@ -1,4 +1,4 @@
-import { mkdir, readdir } from 'node:fs/promises'
+import { mkdir, readdir, unlink } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 
 import { build } from 'esbuild'
@@ -27,4 +27,10 @@ for (const game of games) {
     sourcemap: true,
     logLevel: 'info',
   })
+}
+
+// delete all tmp*.js
+const tmpFiles = (await readdir(sourceDir)).filter((fileName) => fileName.startsWith('tmp') && fileName.endsWith('.js'))
+for (const tmpFile of tmpFiles) {
+  await unlink(join(sourceDir, tmpFile))
 }

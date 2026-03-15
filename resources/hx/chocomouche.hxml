@@ -1,7 +1,0 @@
--js ../js/games/chocomouche.js
--L pixijs
--L crypto
--L jsImport
--cp ./lib
--cp ./games
-chocomouche.Game
