@@ -44,6 +44,14 @@ class Cs {
 
 	public static function init() {}
 
+	public static inline function rand():Float {
+		return game.kkm.seed.rand();
+	}
+
+	public static inline function random(max:Int):Int {
+		return game.kkm.seed.random(max);
+	}
+
 	public static function mm(a, b, c) {
 		return Math.min(Math.max(a, b), c);
 	}

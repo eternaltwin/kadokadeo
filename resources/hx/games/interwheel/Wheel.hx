@@ -19,7 +19,7 @@ class Wheel extends Element {
 	public function new() {
 		super();
 		a = 0;
-		speed = (Std.random(2) * 2 - 1) * (0.1 + Math.random() * 0.1);
+		speed = (Cs.random(2) * 2 - 1) * (0.1 + Cs.rand() * 0.1);
 		skin = "mcWheel";
 		fr = Std.random(5) + 1;
 		mList = new Array();
@@ -224,7 +224,7 @@ class Wheel extends Element {
 		var a:Float = 0;
 		while (true) {
 			var flBreak = true;
-			a = Math.random() * 6.28;
+			a = Cs.rand() * 6.28;
 			for (o in mList) {
 				var da:Float = Math.abs(Cs.hMod(o.a - a, 3.14));
 				if (da * ray < Cs.MINE_SPACE) {

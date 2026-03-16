@@ -173,20 +173,20 @@ class Game implements kado.GameInterface {
 		list.push(ow);
 
 		for (i in 0...Cs.WMAX) {
-			var c = Cs.mm(0, (i / Cs.WMAX) + (Math.random() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
-			var c2 = Cs.mm(0, (i / Cs.WMAX) + (Math.random() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
-			var c3 = Cs.mm(0, (i / Cs.WMAX) + (Math.random() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
+			var c = Cs.mm(0, (i / Cs.WMAX) + (Cs.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
+			var c2 = Cs.mm(0, (i / Cs.WMAX) + (Cs.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
+			var c3 = Cs.mm(0, (i / Cs.WMAX) + (Cs.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
 
 			var w = new Wheel();
-			w.ray = Cs.WHEEL_RAY_MIN + (1 - c2) * (Cs.WHEEL_RAY_MAX - Cs.WHEEL_RAY_MIN) + Math.random() * Cs.WHEEL_RAY_RANDOM;
-			w.speed = Cs.WHEEL_SPEED_MIN + c3 * (Cs.WHEEL_SPEED_MAX - Cs.WHEEL_SPEED_MIN) + Math.random() * Cs.WHEEL_SPEED_RANDOM;
+			w.ray = Cs.WHEEL_RAY_MIN + (1 - c2) * (Cs.WHEEL_RAY_MAX - Cs.WHEEL_RAY_MIN) + Cs.rand() * Cs.WHEEL_RAY_RANDOM;
+			w.speed = Cs.WHEEL_SPEED_MIN + c3 * (Cs.WHEEL_SPEED_MAX - Cs.WHEEL_SPEED_MIN) + Cs.rand() * Cs.WHEEL_SPEED_RANDOM;
 
 			var dist = Cs.WHEEL_DIST_MIN + c * (Cs.WHEEL_DIST_MAX - Cs.WHEEL_DIST_MIN) + (ow.ray + w.ray);
 			var a = null;
 			var lim = Cs.SIDE + Cs.SPACE + w.ray;
 			var flBreak = null;
 			while (true) {
-				a = -1.57 + (Math.random() * 2 - 1) * 1.4;
+				a = -1.57 + (Cs.rand() * 2 - 1) * 1.4;
 				w.x = ow.x + Math.cos(a) * dist;
 				w.y = ow.y + Math.sin(a) * dist;
 				flBreak = w.x > lim && w.x < Cs.mcw - lim;
@@ -202,20 +202,20 @@ class Game implements kado.GameInterface {
 					break;
 			}
 			// w.addMine();
-			while (Math.random() + 0.4 < c) {
+			while (Cs.rand() + 0.4 < c) {
 				w.addMine();
 			}
 
 			// INTER WHEEL
-			if (Math.random() > c) {
+			if (Cs.rand() > c) {
 				var nw = new Wheel();
 				nw.y = (w.y + ow.y) * 0.5;
 				var tr = 0;
 				while (true) {
 					flBreak = true;
 
-					nw.ray = Cs.WHEEL_RAY_MIN + 10 + Math.random() * (Cs.WHEEL_RAY_MAX - Cs.WHEEL_RAY_MIN);
-					nw.speed = Cs.WHEEL_SPEED_MIN + Math.random() * (Cs.WHEEL_SPEED_MAX - Cs.WHEEL_SPEED_MIN);
+					nw.ray = Cs.WHEEL_RAY_MIN + 10 + Cs.rand() * (Cs.WHEEL_RAY_MAX - Cs.WHEEL_RAY_MIN);
+					nw.speed = Cs.WHEEL_SPEED_MIN + Cs.rand() * (Cs.WHEEL_SPEED_MAX - Cs.WHEEL_SPEED_MIN);
 					var m = Cs.SIDE + Cs.SPACE + nw.ray;
 					nw.x = m + Cs.mcw - (2 * m);
 					var lst = [w, ow];
@@ -247,10 +247,10 @@ class Game implements kado.GameInterface {
 		var list = new Array();
 		var y = -100 * Cs.NEW_GEN_SCALE;
 		while (y > roof) {
-			if (Math.random() < y / roof) {
+			if (Cs.rand() < y / roof) {
 				var p = new Pastille();
 				var m = Cs.SIDE + p.ray;
-				p.x = m + Math.random() * (Cs.mcw - 2 * m);
+				p.x = m + Cs.rand() * (Cs.mcw - 2 * m);
 				p.y = y;
 				list.push(p);
 			}
