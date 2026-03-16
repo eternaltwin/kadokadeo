@@ -1,6 +1,5 @@
 package interwheel;
 
-import common_haxe_avm1.KKApi;
 import mt.Timer;
 
 class McPastille extends ASprite {
@@ -26,7 +25,9 @@ class Spark extends Phys {
 		distLimit = 5;
 		coefLimit = 0.1;
 
-		mc.attachMovie("mcPastilleBg");
+		var bg = mc.attachMovie("mcPastilleBg");
+		bg.loop = true;
+		bg.play();
 		c = mc.attachMovie("mcPastille");
 	}
 
@@ -41,7 +42,7 @@ class Spark extends Phys {
 
 		if (getDist(Cs.game.blob) < Blob.RAY + 8) {
 			blast();
-			KKApi.addScore(score);
+			Cs.game.kkm.addScore(score);
 			kill();
 		}
 

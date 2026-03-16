@@ -26,6 +26,11 @@
 }
 
 @font-face {
+  font-family: 'Chubby Cheeks';
+  src: url('/fonts/Chubby-Cheeks.ttf') format('truetype');
+}
+
+@font-face {
   font-family: 'Jost-Medium';
   src: url('/fonts/Jost-Medium.ttf') format('truetype');
 }
@@ -42,6 +47,7 @@
 @theme {
   --font-junegull: 'Junegull-Regular', sans-serif;
   --font-fredoka: 'Fredoka Bold', sans-serif;
+  --font-chubby-cheeks: 'Chubby Cheeks', sans-serif;
 }
 
 /* GLOBAL */

@@ -1,5 +1,6 @@
 package interwheel;
 
+import pixi.core.text.Text;
 import js.html.KeyboardEvent;
 import mt.Timer;
 import common_haxe_avm1.KeyboardManager;
@@ -9,7 +10,7 @@ import common_haxe_avm1.KKApi;
 
 class McPanel extends ASprite {
 	public var panel:ASprite;
-	public var txt:String;
+	public var txt:Text;
 }
 
 typedef FocusTarget = {
@@ -115,6 +116,11 @@ class Game implements kado.GameInterface {
 		var yMax = Std.int(height / size);
 
 		var bmp = RenderTexture.create(Cs.mcw, height);
+		var bg = new ASprite();
+		bg.getGraphics().beginFill(0xe5be6a);
+		bg.getGraphics().drawRect(0, 0, Cs.mcw, height);
+		Cs.drawMcAt(bmp, bg, 0, 0);
+		bg.removeMovieClip();
 		for (x in 0...xMax) {
 			for (y in 0...yMax) {
 				var mc = gdm.attach("mcTile", 10);
@@ -281,7 +287,15 @@ class Game implements kado.GameInterface {
 
 				panel = new McPanel();
 				panel.panel = gdm.attach("mcPanel", 5);
-				panel.txt = "0m";
+				panel.txt = panel.panel.initTextField('field', {
+					color: 0xe1bd6a,
+					align: "left",
+					font: "Chubby Cheeks",
+					size: 46,
+					bold: false,
+					x: 28,
+					y: 16
+				});
 
 				wheelLoading.removeMovieClip();
 			case 1: // INITDECOR
@@ -318,7 +332,7 @@ class Game implements kado.GameInterface {
 					kkm.addScore(KKApi.const(Std.int(dx)));
 				maxHeight = Math.max(-blob.y, maxHeight);
 				var n = Std.int(maxHeight * 0.2);
-				panel.txt = n + "$m".substring(1);
+				panel.txt.text = n + "m";
 				stats.hm = n;
 			case 1:
 				initDecor(genStep);

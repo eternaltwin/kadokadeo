@@ -27,9 +27,11 @@ class Pastille extends Element {
 			p.score = Cs.SCORE_PASTILLE[type];
 			Cs.game.stats.b[type]++;
 		};
-		var sc = 90 + Math.random() * 20;
-		// cn._xscale = sc;
-		// cn._yscale = sc;
+		if (cn != null) {
+			var sc = 90 + Math.random() * 20;
+			cn._xscale = sc;
+			cn._yscale = sc;
+		}
 	}
 
 	public override function attach() {
@@ -47,6 +49,9 @@ class Pastille extends Element {
 		cn = root;
 		if (cn != null) {
 			cn.gotoAndStop(type + 1);
+			var bg = cn.attachMovie("mcPastilleBg");
+			bg.loop = true;
+			bg.play();
 		}
 	}
 }

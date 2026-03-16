@@ -1,6 +1,5 @@
 package interwheel;
 
-import common_haxe_avm1.KKApi;
 import mt.Timer;
 
 class Part extends Phys {
@@ -61,7 +60,7 @@ class Part extends Phys {
 
 	public override function kill() {
 		if (deathScore != null)
-			KKApi.addScore(deathScore);
+			Cs.game.kkm.addScore(deathScore);
 		super.kill();
 	}
 }

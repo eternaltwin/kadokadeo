@@ -40,7 +40,6 @@ const gameHeight = computed(() => (isZoomed.value ? 640 : 320))
     </template>
     <template v-else>
       <h1 class="center">{{ game.name }}</h1>
-      <p class="font-fredoka">load font</p>
       <p v-if="authStore.user?.kado_games >= 0">
         Il vous reste {{ authStore.user.kado_games }} parties à jouer aujourd'hui
       </p>
