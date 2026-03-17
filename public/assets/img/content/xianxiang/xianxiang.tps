@@ -124,11 +124,11 @@
             <key>json</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>C:/Julien/Sites Web/eternaltwin/kadokadeo_jmo-php/kadokadeo/public/games/11/images/spritesSet.json</filename>
+                <filename>xiangxiang-{n}.json</filename>
             </struct>
         </map>
         <key>multiPackMode</key>
-        <enum type="SettingsBase::MultiPackMode">MultiPackOff</enum>
+        <enum type="SettingsBase::MultiPackMode">MultiPackAuto</enum>
         <key>forceIdenticalLayout</key>
         <false/>
         <key>outputFormat</key>
