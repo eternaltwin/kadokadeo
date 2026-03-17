@@ -173,7 +173,7 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">src/bg/1.png</key>
+            <key type="filename">src/bg.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -227,7 +227,7 @@
             <key type="filename">src/explosion/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0.5,0.762052</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -246,7 +246,7 @@
             <key type="filename">src/link/5.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0.5,0.497549</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -258,22 +258,22 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/match/1.png</key>
-            <key type="filename">src/match/10.png</key>
-            <key type="filename">src/match/11.png</key>
-            <key type="filename">src/match/12.png</key>
-            <key type="filename">src/match/13.png</key>
-            <key type="filename">src/match/14.png</key>
-            <key type="filename">src/match/15.png</key>
-            <key type="filename">src/match/16.png</key>
-            <key type="filename">src/match/2.png</key>
-            <key type="filename">src/match/3.png</key>
-            <key type="filename">src/match/4.png</key>
-            <key type="filename">src/match/5.png</key>
-            <key type="filename">src/match/6.png</key>
-            <key type="filename">src/match/7.png</key>
-            <key type="filename">src/match/8.png</key>
-            <key type="filename">src/match/9.png</key>
+            <key type="filename">src/matchNumber/1.png</key>
+            <key type="filename">src/matchNumber/10.png</key>
+            <key type="filename">src/matchNumber/11.png</key>
+            <key type="filename">src/matchNumber/12.png</key>
+            <key type="filename">src/matchNumber/13.png</key>
+            <key type="filename">src/matchNumber/14.png</key>
+            <key type="filename">src/matchNumber/15.png</key>
+            <key type="filename">src/matchNumber/16.png</key>
+            <key type="filename">src/matchNumber/2.png</key>
+            <key type="filename">src/matchNumber/3.png</key>
+            <key type="filename">src/matchNumber/4.png</key>
+            <key type="filename">src/matchNumber/5.png</key>
+            <key type="filename">src/matchNumber/6.png</key>
+            <key type="filename">src/matchNumber/7.png</key>
+            <key type="filename">src/matchNumber/8.png</key>
+            <key type="filename">src/matchNumber/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
