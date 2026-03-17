@@ -43,6 +43,7 @@ class KadoKadeoManager extends Application {
 	var endRunDetails:Dto.EndRunResponseDTO;
 	var crypto:KadoCrypto = new KadoCrypto();
 	var params:GameParams;
+	var simulationTimeMs:Float = mt.Timer.oldTime;
 
 	public var sheet:pixi.core.textures.Spritesheet;
 
@@ -105,10 +106,15 @@ class KadoKadeoManager extends Application {
 	}
 
 	public function updatePhysics(dt:Float) {
-		mt.Timer.update(js.Browser.window.performance.now());
-		replay.update();
+		simulationTimeMs += dt;
+		mt.Timer.update(simulationTimeMs);
+		mt.Timer.deltaT = dt / 1000;
+		mt.Timer.calc_tmod = 1;
+		mt.Timer.tmod = 1;
 		if (game != null) {
+			replay.beginFrame();
 			game.update(dt);
+			replay.endFrame();
 		}
 		if (gameOverScreen != null) {
 			gameOverScreen.update();
@@ -149,7 +155,6 @@ class KadoKadeoManager extends Application {
 
 	function startGame() {
 		this.stage.removeChild(startScene);
-		this.replay.start();
 		var loader:Loader = untyped PIXI.Loader.shared;
 
 		var b = dm.empty(2);
@@ -162,6 +167,7 @@ class KadoKadeoManager extends Application {
 	}
 
 	private function beginGame() {
+		this.replay.start();
 		this.gameRoot = dm.empty(1);
 		var isReplay = this.replay.isPlayingReplay();
 		if (isReplay) {

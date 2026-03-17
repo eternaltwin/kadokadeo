@@ -43,8 +43,8 @@ class Blob extends Phys {
 		vvx = 0;
 		vvy = 0;
 
-		Cs.game.dm.root_mc.onPress = this.mouseDown;
-		Cs.game.dm.root_mc.onRelease = this.mouseUp;
+		Cs.game.dm.root_mc.onPress = this.onPressInput;
+		Cs.game.dm.root_mc.onRelease = this.onReleaseInput;
 	}
 
 	public function initStep(s) {
@@ -293,12 +293,16 @@ class Blob extends Phys {
 		kill();
 	}
 
-	function mouseDown() {
-		flClick = true;
+	public function setMousePressed(value:Bool):Void {
+		flClick = value;
 	}
 
-	function mouseUp() {
-		flClick = false;
+	function onPressInput() {
+		Cs.game.onBlobMouseDown();
+	}
+
+	function onReleaseInput() {
+		Cs.game.onBlobMouseUp();
 	}
 
 	function checkPress() {

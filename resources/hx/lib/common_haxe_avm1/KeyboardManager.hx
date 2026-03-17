@@ -18,6 +18,7 @@ class KeyboardManager {
 	static private var keyState:IntMap<Bool>;
 	static private var isInitialized:Bool = false;
 	static private var inputLocked:Bool = false;
+	static private var pendingOps:Array<{keyCode:Int, isDown:Bool}> = [];
 
 	static public var lastDown:Int;
 
@@ -44,7 +45,7 @@ class KeyboardManager {
 			e.preventDefault();
 			return;
 		}
-		setKeyUp(e.keyCode);
+		queueKeyOp(e.keyCode, false);
 		e.preventDefault();
 	}
 
@@ -53,13 +54,35 @@ class KeyboardManager {
 			e.preventDefault();
 			return;
 		}
-		setKeyDown(e.keyCode);
+		queueKeyOp(e.keyCode, true);
 		if (e.keyCode == SPACE || e.keyCode == ARROW_DOWN)
 			e.preventDefault();
 	}
 
 	static public function setInputLocked(value:Bool):Void {
 		inputLocked = value;
+		if (value) {
+			pendingOps = [];
+		}
+	}
+
+	static public function beginFrame():Int {
+		ensureInitialized();
+		if (pendingOps.length == 0) {
+			return 0;
+		}
+
+		var ops = pendingOps;
+		pendingOps = [];
+		var applied = 0;
+		for (op in ops) {
+			if (op.isDown)
+				setKeyDown(op.keyCode);
+			else
+				setKeyUp(op.keyCode);
+			applied++;
+		}
+		return applied;
 	}
 
 	static public function setKeyDown(keyCode:Int):Void {
@@ -76,6 +99,7 @@ class KeyboardManager {
 	static public function clearState():Void {
 		ensureInitialized();
 		keyState = new IntMap();
+		pendingOps = [];
 		lastDown = 0;
 	}
 
@@ -92,5 +116,10 @@ class KeyboardManager {
 		if (!isInitialized) {
 			init();
 		}
+	}
+
+	static private inline function queueKeyOp(keyCode:Int, isDown:Bool):Void {
+		ensureInitialized();
+		pendingOps.push({keyCode: keyCode, isDown: isDown});
 	}
 }

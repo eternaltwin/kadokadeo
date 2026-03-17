@@ -1,7 +1,7 @@
 package interwheel;
 
 import pixi.core.text.Text;
-import js.html.KeyboardEvent;
+import haxe.io.UInt16Array;
 import mt.Timer;
 import common_haxe_avm1.KeyboardManager;
 import mt.DepthManager;
@@ -33,6 +33,8 @@ class Game implements kado.GameInterface {
 	public static var DP_WPART = 12;
 
 	public static var DEBUG = false;
+	public static inline var REPLAY_MOUSE_DOWN:Int = 100;
+	public static inline var REPLAY_MOUSE_UP:Int = 101;
 
 	var flCameraJump:Bool;
 
@@ -74,8 +76,16 @@ class Game implements kado.GameInterface {
 		bl:Int
 	};
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
+	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
 		this.kkm = kkm;
+		var replayKeys = new UInt16Array(1);
+		replayKeys[0] = KeyboardManager.SPACE;
+		this.kkm.replay.init({
+			recordedKeys: replayKeys,
+			recordInputs: true,
+			recordEvents: true,
+		});
+
 		Cs.init();
 		Cs.game = this;
 
@@ -311,10 +321,14 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(delta:Float) {
+		for (event in kkm.replay.consumeEvents()) {
+			applyReplayEvent(event);
+		}
+
 		dm.root_mc.update();
 		timer -= Timer.tmod;
 		#if debug
-		if (KeyboardManager.isDown(KeyboardEvent.DOM_VK_RETURN)) {
+		if (KeyboardManager.isDown(13)) {
 			water._y -= 4 * Timer.tmod;
 		}
 		#end
@@ -376,6 +390,39 @@ class Game implements kado.GameInterface {
 		for (e in list) {
 			e.update();
 		}
+	}
+
+	function applyReplayEvent(event:Dynamic):Void {
+		if (event == null) {
+			return;
+		}
+
+		var kind:Null<Int> = Reflect.field(event, "k");
+		if (kind == null || blob == null) {
+			return;
+		}
+
+		switch (kind) {
+			case REPLAY_MOUSE_DOWN:
+				blob.setMousePressed(true);
+			case REPLAY_MOUSE_UP:
+				blob.setMousePressed(false);
+			default:
+		}
+	}
+
+	public function onBlobMouseDown():Void {
+		if (blob != null) {
+			blob.setMousePressed(true);
+		}
+		kkm.replay.recordEvent({k: REPLAY_MOUSE_DOWN});
+	}
+
+	public function onBlobMouseUp():Void {
+		if (blob != null) {
+			blob.setMousePressed(false);
+		}
+		kkm.replay.recordEvent({k: REPLAY_MOUSE_UP});
 	}
 
 	function scrollMap() {

@@ -10,6 +10,7 @@ typedef MouseCoords = {
 class MouseManager {
 	static private var app:Application;
 	static private var isInitialized:Bool = false;
+	static private var pendingCallbacks:Array<Void->Void> = [];
 
 	static public function init(context:Application):Void {
 		app = context;
@@ -39,5 +40,27 @@ class MouseManager {
 
 	static public function getApp():Application {
 		return app;
+	}
+
+	static public function queueInputCallback(callback:Void->Void):Void {
+		if (callback == null) {
+			return;
+		}
+		pendingCallbacks.push(callback);
+	}
+
+	static public function beginFrame():Int {
+		if (pendingCallbacks.length == 0) {
+			return 0;
+		}
+
+		var callbacks = pendingCallbacks;
+		pendingCallbacks = [];
+		var applied = 0;
+		for (callback in callbacks) {
+			callback();
+			applied++;
+		}
+		return applied;
 	}
 }

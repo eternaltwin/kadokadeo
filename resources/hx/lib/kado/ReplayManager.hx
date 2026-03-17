@@ -49,10 +49,12 @@ class ReplayManager {
 	private var frameRecords:IntMap<ReplayFrameRecord>;
 	private var replayFrameRecords:IntMap<ReplayFrameRecord>;
 	private var pendingEvents:Array<ReplayEvent>;
+	private var frameEvents:Array<ReplayEvent>;
 	private var trackedKeys:IntMap<Bool>;
 	private var recordedKeyStates:IntMap<Bool>;
 	private var shouldRecordInputs:Bool = true;
 	private var shouldRecordEvents:Bool = true;
+	private var useFramePolledInputs:Bool = false;
 
 	private var keyboardRegistered:Bool = false;
 
@@ -61,6 +63,7 @@ class ReplayManager {
 		this.frameRecords = new IntMap();
 		this.replayFrameRecords = new IntMap();
 		this.pendingEvents = [];
+		this.frameEvents = [];
 		this.trackedKeys = new IntMap();
 		this.recordedKeyStates = new IntMap();
 		this.params = defaultParams();
@@ -80,6 +83,7 @@ class ReplayManager {
 		refreshTrackedKeys();
 		this.shouldRecordInputs = this.params.recordInputs;
 		this.shouldRecordEvents = this.params.recordEvents;
+		this.useFramePolledInputs = this.shouldRecordInputs && this.params.recordedKeys.length > 0;
 	}
 
 	public function start():Void {
@@ -89,6 +93,7 @@ class ReplayManager {
 		}
 
 		pendingEvents = [];
+		frameEvents = [];
 		recordedKeyStates = new IntMap();
 		currentFrame = 0;
 
@@ -101,7 +106,7 @@ class ReplayManager {
 			frameRecords = new IntMap();
 			common_haxe_avm1.KeyboardManager.setInputLocked(false);
 
-			if (shouldRecordInputs) {
+			if (shouldRecordInputs && !useFramePolledInputs) {
 				registerKeyboardEvents();
 			}
 		}
@@ -123,24 +128,65 @@ class ReplayManager {
 		return this.isRecording;
 	}
 
-	public function update():Void {
+	public function beginFrame():Void {
 		if (!this.isRecording && !this.isPlaying) {
 			return;
 		}
 
-		if (this.isPlaying) {
-			applyFrame(currentFrame);
+		var appliedKeyboardOps = common_haxe_avm1.KeyboardManager.beginFrame();
+		var appliedMouseOps = common_haxe_avm1.MouseManager.beginFrame();
+		frameEvents = [];
+		var recordedInputCount = 0;
+		var recordedEventCount = 0;
+		var replayInputCount = 0;
+		var replayEventCount = 0;
+
+		if (this.isRecording && this.shouldRecordInputs && this.useFramePolledInputs) {
+			recordedInputCount = captureFrameInputs();
 		}
 
+		if (this.isRecording && this.shouldRecordEvents && pendingEvents.length > 0) {
+			var record = getOrCreateFrameRecord(currentFrame);
+			recordedEventCount = pendingEvents.length;
+			for (event in pendingEvents) {
+				record.events.push(event);
+			}
+			pendingEvents = [];
+		}
+
+		if (this.isPlaying) {
+			var replayRecord = replayFrameRecords.get(currentFrame);
+			if (replayRecord != null) {
+				replayInputCount = replayRecord.inputs.length;
+				replayEventCount = replayRecord.events.length;
+			}
+			applyFrame(currentFrame);
+		}
+	}
+
+	public function endFrame():Void {
+		if (!this.isRecording && !this.isPlaying) {
+			return;
+		}
 		currentFrame++;
 	}
+
+	// public inline function update():Void {
+	// 	beginFrame();
+	// 	endFrame();
+	// }
 
 	public function recordEvent(event:ReplayEvent, ?frameIndex:Int):Void {
 		if (!this.isRecording || !this.shouldRecordEvents || event == null) {
 			return;
 		}
 
-		var frame = frameIndex == null ? currentFrame : frameIndex;
+		if (frameIndex == null) {
+			pendingEvents.push(event);
+			return;
+		}
+
+		var frame = Std.int(frameIndex);
 		var record = getOrCreateFrameRecord(frame);
 		record.events.push(event);
 	}
@@ -167,12 +213,12 @@ class ReplayManager {
 	}
 
 	public function consumeEvents():Array<ReplayEvent> {
-		if (pendingEvents.length == 0) {
+		if (frameEvents.length == 0) {
 			return [];
 		}
 
-		var output = pendingEvents;
-		pendingEvents = [];
+		var output = frameEvents;
+		frameEvents = [];
 		return output;
 	}
 
@@ -249,8 +295,23 @@ class ReplayManager {
 		}
 
 		for (event in record.events) {
-			pendingEvents.push(event);
+			frameEvents.push(event);
 		}
+	}
+
+	private function captureFrameInputs():Int {
+		var count = 0;
+		for (keyCode in trackedKeys.keys()) {
+			var isDown = common_haxe_avm1.KeyboardManager.isDown(keyCode);
+			var previous = recordedKeyStates.exists(keyCode) ? recordedKeyStates.get(keyCode) : false;
+			if (previous == isDown) {
+				continue;
+			}
+
+			recordInput(keyCode, isDown, currentFrame);
+			count++;
+		}
+		return count;
 	}
 
 	private function getOrCreateFrameRecord(frameIndex:Int):ReplayFrameRecord {

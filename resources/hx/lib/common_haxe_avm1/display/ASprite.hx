@@ -251,7 +251,9 @@ class ASprite extends Sprite {
 		this.interactive = v != null;
 		if (v != null) {
 			this.removeAllListeners("pointerout");
-			this.addListener('pointerout', v);
+			this.addListener('pointerout', () -> {
+				common_haxe_avm1.MouseManager.queueInputCallback(v);
+			});
 		}
 
 		return v;
@@ -262,7 +264,9 @@ class ASprite extends Sprite {
 		this.interactive = v != null;
 		if (v != null) {
 			this.removeAllListeners("pointerover");
-			this.addListener('pointerover', v);
+			this.addListener('pointerover', () -> {
+				common_haxe_avm1.MouseManager.queueInputCallback(v);
+			});
 		}
 		return v;
 	}
@@ -272,7 +276,9 @@ class ASprite extends Sprite {
 		this.interactive = v != null;
 		if (v != null) {
 			this.removeAllListeners("pointermove");
-			this.addListener('pointermove', v);
+			this.addListener('pointermove', () -> {
+				common_haxe_avm1.MouseManager.queueInputCallback(v);
+			});
 		}
 		return v;
 		return v;
@@ -286,7 +292,7 @@ class ASprite extends Sprite {
 			this.removeAllListeners("pointerup");
 			this.addListener('pointerup', (e) -> {
 				e.stopPropagation();
-				v();
+				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
 		}
 
@@ -300,7 +306,7 @@ class ASprite extends Sprite {
 			this.removeAllListeners("pointerdown");
 			this.addListener('pointerdown', (e) -> {
 				e.stopPropagation();
-				v();
+				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
 		}
 
