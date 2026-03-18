@@ -115,7 +115,7 @@ class Wheel extends Element {
 						var base = ldm.empty(4);
 						var mask = ldm.attach("mcMask", 4);
 						mask.gotoAndStop(fr);
-						// base.setMask(mask); // FIXME: mask ?
+						base.mask = mask;
 						var bdm = new DepthManager(base);
 						var bx = Math.cos(o.a) * 50;
 						var by = Math.sin(o.a) * 50;
