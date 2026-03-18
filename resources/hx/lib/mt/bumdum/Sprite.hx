@@ -63,8 +63,6 @@ class Sprite {
 
 	public function setScale(scale:Float) {
 		this.scale = scale;
-		this.root._xscale = scale;
-		this.root._yscale = scale;
 	}
 
 	public function kill() {

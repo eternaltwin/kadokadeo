@@ -1,6 +1,7 @@
 package interwheel;
 
 import mt.Timer;
+import mt.bumdum.Phys;
 
 class McPastille extends ASprite {
 	public var pastille:ASprite;
@@ -17,8 +18,8 @@ class Spark extends Phys {
 	public var score:Int;
 
 	public function new(mc) {
-		Cs.game.sparkList.push(this);
-		super(mc);
+        Cs.game.sparkList.push(this);
+        super(mc);
 		frict = 0.9;
 		coef = 0.01;
 
@@ -38,9 +39,9 @@ class Spark extends Phys {
 		coefLimit += 0.001 * Timer.tmod;
 
 		coef = Math.min(coef + 0.005 * Timer.tmod, coefLimit);
-		speedToward(Cs.game.blob, coef, distLimit);
+		towardSpeed(cast {x: Cs.game.blob.x, y: Cs.game.blob.y }, coef, distLimit);
 
-		if (getDist(Cs.game.blob) < Blob.RAY + 8) {
+		if (getDist(cast {x: Cs.game.blob.x, y: Cs.game.blob.y }) < Blob.RAY + 8 * Cs.NEW_GEN_SCALE) {
 			blast();
 			Cs.game.kkm.addScore(score);
 			kill();

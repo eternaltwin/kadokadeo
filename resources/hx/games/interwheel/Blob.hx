@@ -2,6 +2,7 @@ package interwheel;
 
 import common_haxe_avm1.KeyboardManager;
 import mt.Timer;
+import mt.bumdum.Phys;
 
 class Blob extends Phys {
 	public static var GROUND_SPEED = 15 * Cs.NEW_GEN_SCALE;
@@ -34,7 +35,7 @@ class Blob extends Phys {
 	public function new(mc:ASprite) {
 		super(mc);
 		mc.stopOnFrame = [19, 44, 59, 173];
-		Cs.game.focus = this;
+		Cs.game.focus = cast {x: this.x, y: this.y};
 		flRelease = true;
 		flMouseRelease = true;
 		flWater = false;
@@ -56,7 +57,7 @@ class Blob extends Phys {
 				vy = 0;
 			case 2:
 				root._rotation = 0;
-				Cs.game.focus = this;
+				Cs.game.focus = cast {x: this.x, y: this.y};
 				vvx = 0;
 				vvy = 0;
 		}
@@ -74,14 +75,18 @@ class Blob extends Phys {
 				wa = Cs.hMod(cw.a - ba, 3.14);
 				root.gotoAndPlay(45);
 				inst = 0;
-				Cs.game.focus = {x: Cs.mcw / 2, y: cw.y - Cs.VIEW_WHEEL}; // upcast(cw)
+				Cs.game.focus = cast {x: Cs.mcw / 2, y: cw.y - Cs.VIEW_WHEEL}; // upcast(cw)
 				ox = x;
 				oy = y;
 			case 3:
 				root.gotoAndPlay(20);
 			case 4:
+                var tmpX = x;
+                var tmpY = y;
 				root.removeMovieClip();
 				root = Cs.game.dm.attach("mcBlob", Game.DP_PART);
+                x = tmpX;
+                y = tmpY;
 				root.gotoAndPlay(103);
 				frict = 0.8;
 				weight = WEIGHT;
@@ -173,6 +178,11 @@ class Blob extends Phys {
 				}
 			case 4:
 				wet -= 0.02;
+		}
+		if (step == 2) {
+			Cs.game.focus = cast {x: Cs.mcw / 2, y: cw.y - Cs.VIEW_WHEEL}; // upcast(cw)
+		} else {
+			Cs.game.focus = cast {x: this.x, y: this.y};
 		}
 		super.update();
 		if (!(KeyboardManager.isDown(KeyboardManager.SPACE)))

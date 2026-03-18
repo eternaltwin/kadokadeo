@@ -32,7 +32,7 @@ class Phys extends Sprite {
 	}
 
 	public override function update() {
-		root.updateState();
+		// root.updateState();
 		if (sleep != null) {
 			sleep--;
 			if (sleep < 0) {

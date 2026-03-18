@@ -1,5 +1,6 @@
 package interwheel;
 
+import pixi.core.math.Point;
 import pixi.core.text.Text;
 import haxe.io.UInt16Array;
 import mt.Timer;
@@ -7,15 +8,11 @@ import common_haxe_avm1.KeyboardManager;
 import mt.DepthManager;
 import pixi.core.textures.RenderTexture;
 import common_haxe_avm1.KKApi;
+import mt.bumdum.Sprite;
 
 class McPanel extends ASprite {
 	public var panel:ASprite;
 	public var txt:Text;
-}
-
-typedef FocusTarget = {
-	var x:Float;
-	var y:Float;
 }
 
 @:expose('GameInterwheel')
@@ -49,9 +46,8 @@ class Game implements kado.GameInterface {
 	public var step:Int;
 	public var dm:DepthManager;
 	public var gdm:DepthManager;
-	public var focus:FocusTarget;
+	public var focus:Point;
 	public var eList:Array<{s:Int, e:Int, list:Array<Element>}>;
-	public var sList:Array<Sprite>;
 	public var sparkList:Array<Spark>;
 	public var water:ASprite;
 	public var map:ASprite;
@@ -98,7 +94,6 @@ class Game implements kado.GameInterface {
 		// bg = gdm.attach("mcBg",0)
 		// bgs = gdm.attach("mcBackground",0)
 
-		sList = new Array();
 		eList = new Array();
 		sparkList = new Array();
 
@@ -114,7 +109,7 @@ class Game implements kado.GameInterface {
 		};
 
 		maxHeight = 0;
-		focus = {x: Cs.mcw, y: 0};
+		focus = cast {x: Cs.mcw, y: 0};
 
 		initStep(1);
 	}
@@ -316,7 +311,7 @@ class Game implements kado.GameInterface {
 				genStep = 0;
 			case 9: // ENDGAME
 				timer = 30;
-				focus = {x: blob.x, y: blob.y};
+				focus = cast {x: blob.x, y: blob.y};
 		}
 	}
 
@@ -354,6 +349,7 @@ class Game implements kado.GameInterface {
 				if (genStep == 5)
 					initStep(0);
 			case 9:
+				focus = cast {x: blob.x, y: blob.y};
 				if (timer < 0) {
 					kkm.gameOver(stats);
 					initStep(10);
@@ -367,10 +363,10 @@ class Game implements kado.GameInterface {
 			var n = i + 1;
 			while (n < sparkList.length) {
 				var p1 = sparkList[n];
-				var dif = 16 - p0.getDist(p1);
+				var dif = 16 - p0.getDist(cast p1);
 
 				if (dif > 0) {
-					var a = p0.getAng(p1);
+					var a = p0.getAng(cast p1);
 					var cx = Math.cos(a) * dif * 0.5;
 					var cy = Math.sin(a) * dif * 0.5;
 					p0.x -= cx;
@@ -386,7 +382,7 @@ class Game implements kado.GameInterface {
 		scrollMap();
 
 		// SPRITES
-		var list = sList.copy();
+		var list = Sprite.spriteList.copy();
 		for (e in list) {
 			e.update();
 		}
