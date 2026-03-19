@@ -636,7 +636,7 @@ class ASprite extends Sprite {
 			this.isPlaying = false;
 			showFrame();
 		} else {
-			js.Browser.window.console.trace('FIXME: Trying to go to frame name $frame');
+			// js.Browser.window.console.trace('FIXME: Trying to go to frame name $frame');
 		}
 	}
 

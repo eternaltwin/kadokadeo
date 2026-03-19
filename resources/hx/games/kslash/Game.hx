@@ -1,5 +1,9 @@
 package kslash;
 
+import pixi.core.math.Matrix;
+import pixi.core.textures.RenderTexture;
+import pixi.core.Pixi.BlendModes;
+import pixi.core.graphics.Graphics;
 import pixi.core.text.Text;
 import mt.DepthManager;
 import mt.Timer;
@@ -9,8 +13,8 @@ class Inter extends ASprite {
 }
 
 class PlatMc extends ASprite {
-	public var _mask:ASprite;
-	public var _corner:ASprite;
+	public var __mask:ASprite;
+	public var __corner:ASprite;
 }
 
 @:expose('GameKSlash')
@@ -154,6 +158,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function initPlat() {
+		var rt = RenderTexture.create(Cs.SIZE * XMAX, Cs.SIZE * YMAX);
 		platList = [
 			{
 				x: 0,
@@ -180,15 +185,33 @@ class Game implements kado.GameInterface {
 		}
 
 		for (o in platList) {
-			var mc:PlatMc = cast mdm.attach("mcPlat", DP_DECOR);
-			mc.getGraphics().beginFill(0xFF0000, 0).drawRect(o.x, o.y, Cs.SIZE * o.w, Cs.SIZE);
-			mc._mask = mc.createEmptyMovieClip("mask");
-			mc._mask.getGraphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 60);
-			mc._corner = mc.attachMovie("corner", "corner");
+			// var mc:PlatMc = cast mdm.attach("mcPlat", DP_DECOR);
+			var mc:PlatMc = cast mdm.empty(DP_DECOR);
+			mc.getGraphics().beginFill(0xFF0000).drawRect(0, 0, Cs.SIZE * o.w, Cs.SIZE);
+			mc.attachMovie("mcPlat");
+			// var m = mc.createEmptyMovieClip("mask")
+			// 	.getGraphics()
+			// 	.beginFill(0xFFFFFF)
+			// 	.drawRect(Cs.SIZE * (o.w - 1), Cs.SIZE - 20, 3000, Cs.SIZE + 2);
+			// m.blendMode = untyped BlendModes.ERASE;
+			// mc.mask = m;
+			// mc.__mask.getGraphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 60);
+			// mc._corner = mc.attachMovie("corner", "corner");
+			// mc._corner = mc.createEmptyMovieClip("corner");
 			o.mc = mc;
+			mc.gotoAndStop(flNight ? 2 : 1);
+			mc._x = Cs.SIZE * o.x;
+			mc._y = Cs.SIZE * o.y;
+
+			var m = new Matrix();
+			m.translate(Cs.SIZE * o.y, Cs.SIZE * o.y);
+			rt.draw(mc, m);
+			mc.removeMovieClip();
 
 			setPlat(o);
 		}
+		var b = mdm.empty(DP_DECOR);
+		b.attachBitmap(rt, 1);
 	}
 
 	public function setPlat(o:{
@@ -200,11 +223,9 @@ class Game implements kado.GameInterface {
 		var c = 19;
 		var mc = o.mc;
 
-		mc.gotoAndStop(flNight ? 2 : 1);
-		mc._x = Cs.SIZE * o.x;
-		mc._y = Cs.SIZE * o.y;
-		mc._mask._xscale = (o.w * Cs.SIZE) - 2 * c;
-		mc._corner._x = mc._mask._xscale + c;
+		// mc.__mask._xscale = (o.w * Cs.SIZE) - 2 * c;
+		// mc._corner._x = mc.__mask._xscale + c;
+		trace("setPlat(" + o.x + "," + o.y + "," + o.w + ") mcX,Y=" + mc._x + "," + mc._y);
 
 		for (n in 0...o.w) {
 			if (o.x + n < XMAX && o.y < YMAX) {

@@ -57,7 +57,7 @@ class Hero extends Ent {
 		rootSprite.bfx2 = rootSprite.attachMovie("heroBfx2", "bfx2");
 		x = Std.int(Game.XMAX * 0.5);
 		y = 1;
-		weight = 0.7;
+		weight = 0.7 * Cs.NEW_GEN_SCALE;
 		flMoving = false;
 		cooldown = 0;
 		star = 0;

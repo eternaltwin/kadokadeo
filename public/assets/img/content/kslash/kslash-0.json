@@ -25,7 +25,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":10,"w":1500,"h":95},
 	"sourceSize": {"w":1500,"h":105},
-	"anchor": {"x":0.5,"y":0.5}
+	"anchor": {"x":0,"y":0}
 },
 "bgFront/1.png":
 {
@@ -34,7 +34,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":1841,"w":1951,"h":123},
 	"sourceSize": {"w":3000,"h":3000},
-	"anchor": {"x":0.5,"y":0.5}
+	"anchor": {"x":0,"y":-0.348}
 },
 "bgFront/2.png":
 {
@@ -43,7 +43,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":0,"w":2101,"h":1922},
 	"sourceSize": {"w":3000,"h":3000},
-	"anchor": {"x":0.5,"y":0.5}
+	"anchor": {"x":0,"y":0}
 },
 "bgFront/3.png":
 {
@@ -52,7 +52,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":2797,"w":3000,"h":203},
 	"sourceSize": {"w":3000,"h":3000},
-	"anchor": {"x":0.5,"y":0.5}
+	"anchor": {"x":0,"y":0}
 },
 "heroBfx1/1.png":
 {
@@ -821,6 +821,6 @@
 	"size": {"w":3072,"h":3071},
 	"scale": "1",
 	"related_multi_packs": [ "kslash-1.json" ],
-	"smartupdate": "$TexturePacker:SmartUpdate:ecb653d749862cdd365950ed597c0614:9b6391b6f8fd116d25b6a91208258c35:86cfdd65a69ae1d149823fb53f313bf2$"
+	"smartupdate": "$TexturePacker:SmartUpdate:686b52b1b89821531cb186834fcba091:9b6391b6f8fd116d25b6a91208258c35:86cfdd65a69ae1d149823fb53f313bf2$"
 }
 }
