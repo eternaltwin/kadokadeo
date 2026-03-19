@@ -1,13 +1,14 @@
+package xianxiang;
+
 class Card {
+	var id:CardID;
+	var mc:MovieClip;
+	var game:Game;
+	var x:int;
+	var y:int;
+	var color:Color;
 
-	var id : CardID;
-	var mc : MovieClip;
-	var game : Game;
-	var x : int;
-	var y : int;
-	var color : Color;
-
-	function new(g,id,x,y) {
+	function new(g, id, x, y) {
 		this.id = id;
 		this.game = g;
 		this.x = x;
@@ -16,18 +17,21 @@ class Card {
 	}
 
 	function initCard() {
-		mc = game.dmanager.attach("card",Const.PLAN_CARD);
+		mc = game.dmanager.attach("card", Const.PLAN_CARD);
 		color = new Color(mc);
-		mc._x = Const.BASE_X + x * Const.CARD_WIDTH ;
-		mc._y = Const.BASE_Y + y * Const.CARD_HEIGHT ;
-		downcast(mc).symbol.gotoAndStop(string(id.symbol+1));
-		downcast(mc).socle.gotoAndStop(string(id.socle+1));
+		mc._x = Const.BASE_X + x * Const.CARD_WIDTH;
+		mc._y = Const.BASE_Y + y * Const.CARD_HEIGHT;
+		downcast(mc).symbol.gotoAndStop(string(id.symbol + 1));
+		downcast(mc).socle.gotoAndStop(string(id.socle + 1));
 
 		var c = Const.COLORS[id.color];
-		downcast(mc).socle.color.gotoAndStop( string(id.color+1)) ;
+		downcast(mc).socle.color.gotoAndStop(string(id.color + 1));
 
 		var me = this;
-		mc.onPress = fun() { me.game.cardSelect(me) };
+		mc.onPress = fun()
+		{
+			me.game.cardSelect(me)
+		};
 		KKApi.registerButton(mc);
 	}
 
@@ -38,5 +42,4 @@ class Card {
 	function destroy() {
 		mc.removeMovieClip();
 	}
-
 }
