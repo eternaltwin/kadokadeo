@@ -233,7 +233,7 @@
             <key type="filename">src/bonus/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0.516129,0.47861</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -248,7 +248,7 @@
             <key type="filename">src/corner.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>0.0833333,0.047619</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -264,13 +264,27 @@
             <key type="filename">src/heroBfx1/2.png</key>
             <key type="filename">src/heroBfx1/3.png</key>
             <key type="filename">src/heroBfx1/4.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.391892,0.22963</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>37,34,74,67</rect>
+                <key>scale9Paddings</key>
+                <rect>37,34,74,67</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">src/heroBfx2/1.png</key>
             <key type="filename">src/heroBfx2/2.png</key>
             <key type="filename">src/heroBfx2/3.png</key>
             <key type="filename">src/heroBfx2/4.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0.5</point_f>
+                <point_f>0.472973,0.5</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -285,7 +299,7 @@
             <key type="filename">src/heroKunai.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>1.09211,0.740741</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -300,7 +314,7 @@
             <key type="filename">src/inter.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>-0.145833,-0.166667</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -364,7 +378,7 @@
             <key type="filename">src/mcFlyer/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.583569,0.390698</point_f>
+                <point_f>0.583569,0.427907</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -507,7 +521,7 @@
             <key type="filename">src/mcHero/99.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.60076,0.567416</point_f>
+                <point_f>0.596958,0.617978</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -520,11 +534,25 @@
                 <false/>
             </struct>
             <key type="filename">src/mcIcon/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>1.04839,0.0151515</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>16,17,31,33</rect>
+                <key>scale9Paddings</key>
+                <rect>16,17,31,33</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">src/mcIcon/2.png</key>
             <key type="filename">src/mcIcon/3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>1.04839,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -539,7 +567,7 @@
             <key type="filename">src/mcKunai.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>0.340909,0.5</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -951,7 +979,7 @@
             <key type="filename">src/mcMonster3/99.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.498934,0.565934</point_f>
+                <point_f>0.49467,0.482143</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -1021,7 +1049,7 @@
             <key type="filename">src/mcPlat/2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>0.0036,0.047619</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -1124,7 +1152,7 @@
             <key type="filename">src/mcTanker/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.512136,0.627586</point_f>
+                <point_f>0.495146,0.544828</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -1204,7 +1232,7 @@
             <key type="filename">src/partSmoke/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0.577778,0.660422</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
