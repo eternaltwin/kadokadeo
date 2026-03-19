@@ -17,6 +17,9 @@ kaskade2.Game
 --next
 -js ./resources/js/games/interwheel.js
 interwheel.Game
+--next
+-js ./resources/js/games/kslash.js
+kslash.Game
 # --next
 # -js ./resources/js/games/kanjigaiden.js
 # kanjigaiden.Game

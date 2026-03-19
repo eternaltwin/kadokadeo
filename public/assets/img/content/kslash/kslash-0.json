@@ -1,0 +1,826 @@
+{"frames": {
+
+"bg/1.png":
+{
+	"frame": {"x":1,"y":1925,"w":1020,"h":1020},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1020,"h":1020},
+	"sourceSize": {"w":1020,"h":1020},
+	"anchor": {"x":0,"y":0}
+},
+"bg/2.png":
+{
+	"frame": {"x":1023,"y":1925,"w":1020,"h":1020},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1020,"h":1020},
+	"sourceSize": {"w":1020,"h":1020},
+	"anchor": {"x":0,"y":0}
+},
+"bgBack.png":
+{
+	"frame": {"x":2373,"y":1,"w":1500,"h":95},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":10,"w":1500,"h":95},
+	"sourceSize": {"w":1500,"h":105},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"bgFront/1.png":
+{
+	"frame": {"x":2502,"y":1,"w":1951,"h":123},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1841,"w":1951,"h":123},
+	"sourceSize": {"w":3000,"h":3000},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"bgFront/2.png":
+{
+	"frame": {"x":1,"y":1,"w":2101,"h":1922},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":2101,"h":1922},
+	"sourceSize": {"w":3000,"h":3000},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"bgFront/3.png":
+{
+	"frame": {"x":2104,"y":1,"w":3000,"h":203},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2797,"w":3000,"h":203},
+	"sourceSize": {"w":3000,"h":3000},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"heroBfx1/1.png":
+{
+	"frame": {"x":1,"y":3067,"w":3,"h":3},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":3},
+	"sourceSize": {"w":148,"h":135},
+	"anchor": {"x":0,"y":0.5}
+},
+"heroBfx2/1.png":
+{
+	"frame": {"x":1,"y":3067,"w":3,"h":3},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":3},
+	"sourceSize": {"w":148,"h":135},
+	"anchor": {"x":0,"y":0.5}
+},
+"heroKunai.png":
+{
+	"frame": {"x":2470,"y":1,"w":76,"h":27},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":27},
+	"sourceSize": {"w":76,"h":27},
+	"anchor": {"x":0,"y":0}
+},
+"mcFlyer/5.png":
+{
+	"frame": {"x":125,"y":2947,"w":117,"h":54},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":128,"y":49,"w":117,"h":54},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/6.png":
+{
+	"frame": {"x":1,"y":2947,"w":122,"h":54},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":122,"y":50,"w":122,"h":54},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/14.png":
+{
+	"frame": {"x":244,"y":2947,"w":119,"h":53},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":122,"y":48,"w":119,"h":53},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/22.png":
+{
+	"frame": {"x":921,"y":2947,"w":109,"h":49},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":128,"y":49,"w":109,"h":49},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/23.png":
+{
+	"frame": {"x":365,"y":2947,"w":118,"h":52},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":122,"y":47,"w":118,"h":52},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/30.png":
+{
+	"frame": {"x":485,"y":2947,"w":111,"h":54},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":127,"y":45,"w":111,"h":54},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/35.png":
+{
+	"frame": {"x":2309,"y":2892,"w":185,"h":108},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":86,"y":31,"w":185,"h":108},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/36.png":
+{
+	"frame": {"x":2373,"y":1719,"w":215,"h":121},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":70,"y":24,"w":215,"h":121},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/41.png":
+{
+	"frame": {"x":2627,"y":1008,"w":239,"h":184},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":69,"y":4,"w":239,"h":184},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/42.png":
+{
+	"frame": {"x":2627,"y":530,"w":226,"h":200},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":68,"y":3,"w":226,"h":200},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/45.png":
+{
+	"frame": {"x":2373,"y":1503,"w":214,"h":124},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":70,"y":46,"w":214,"h":124},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/49.png":
+{
+	"frame": {"x":2470,"y":374,"w":20,"h":37},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":209,"y":80,"w":20,"h":37},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcFlyer/50.png":
+{
+	"frame": {"x":1,"y":3067,"w":3,"h":3},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":3},
+	"sourceSize": {"w":353,"h":215},
+	"anchor": {"x":0.583569,"y":0.390698}
+},
+"mcHero/90.png":
+{
+	"frame": {"x":2981,"y":1564,"w":88,"h":143},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":110,"y":9,"w":88,"h":143},
+	"sourceSize": {"w":263,"h":178},
+	"anchor": {"x":0.60076,"y":0.567416}
+},
+"mcHero/91.png":
+{
+	"frame": {"x":2981,"y":1417,"w":88,"h":145},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":110,"y":7,"w":88,"h":145},
+	"sourceSize": {"w":263,"h":178},
+	"anchor": {"x":0.60076,"y":0.567416}
+},
+"mcIcon/3.png":
+{
+	"frame": {"x":2045,"y":2873,"w":57,"h":64},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":2,"w":57,"h":64},
+	"sourceSize": {"w":62,"h":66},
+	"anchor": {"x":0,"y":0}
+},
+"mcKunai.png":
+{
+	"frame": {"x":2470,"y":79,"w":88,"h":23},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":23},
+	"sourceSize": {"w":88,"h":23},
+	"anchor": {"x":0,"y":0}
+},
+"mcMonster1/41.png":
+{
+	"frame": {"x":598,"y":2947,"w":104,"h":54},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":181,"y":162,"w":104,"h":54},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/42.png":
+{
+	"frame": {"x":812,"y":2947,"w":107,"h":51},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":180,"y":165,"w":107,"h":51},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/43.png":
+{
+	"frame": {"x":1032,"y":2947,"w":108,"h":49},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":167,"w":108,"h":49},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/44.png":
+{
+	"frame": {"x":1254,"y":2947,"w":109,"h":48},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":168,"w":109,"h":48},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/45.png":
+{
+	"frame": {"x":1365,"y":2947,"w":109,"h":48},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":168,"w":109,"h":48},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/46.png":
+{
+	"frame": {"x":1476,"y":2947,"w":109,"h":48},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":168,"w":109,"h":48},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/47.png":
+{
+	"frame": {"x":1587,"y":2947,"w":109,"h":48},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":168,"w":109,"h":48},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/48.png":
+{
+	"frame": {"x":1142,"y":2947,"w":110,"h":48},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":168,"w":110,"h":48},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/49.png":
+{
+	"frame": {"x":704,"y":2947,"w":106,"h":52},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":180,"y":163,"w":106,"h":52},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/103.png":
+{
+	"frame": {"x":2862,"y":2857,"w":212,"h":203},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":131,"y":55,"w":212,"h":203},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/105.png":
+{
+	"frame": {"x":2842,"y":1132,"w":283,"h":222},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":100,"y":49,"w":283,"h":222},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/108.png":
+{
+	"frame": {"x":2842,"y":1,"w":375,"h":223},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":54,"y":68,"w":375,"h":223},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/110.png":
+{
+	"frame": {"x":2373,"y":2229,"w":381,"h":263},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":25,"y":49,"w":381,"h":263},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster1/118.png":
+{
+	"frame": {"x":2488,"y":441,"w":13,"h":10},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":263,"y":189,"w":13,"h":10},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster2/43.png":
+{
+	"frame": {"x":2045,"y":2209,"w":108,"h":57},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":159,"w":108,"h":57},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster2/44.png":
+{
+	"frame": {"x":2045,"y":2429,"w":109,"h":56},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":160,"w":109,"h":56},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster2/45.png":
+{
+	"frame": {"x":2045,"y":2540,"w":109,"h":56},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":160,"w":109,"h":56},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster2/46.png":
+{
+	"frame": {"x":2045,"y":2651,"w":109,"h":56},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":160,"w":109,"h":56},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster2/108.png":
+{
+	"frame": {"x":2842,"y":378,"w":375,"h":223},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":54,"y":68,"w":375,"h":223},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster2/110.png":
+{
+	"frame": {"x":2459,"y":1954,"w":381,"h":263},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":25,"y":49,"w":381,"h":263},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster2/118.png":
+{
+	"frame": {"x":2488,"y":456,"w":13,"h":10},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":263,"y":189,"w":13,"h":10},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster2/134.png":
+{
+	"frame": {"x":2045,"y":1925,"w":140,"h":56},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":189,"y":156,"w":140,"h":56},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster3/43.png":
+{
+	"frame": {"x":2045,"y":2319,"w":108,"h":57},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":159,"w":108,"h":57},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster3/44.png":
+{
+	"frame": {"x":2045,"y":2762,"w":109,"h":56},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":179,"y":160,"w":109,"h":56},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster3/108.png":
+{
+	"frame": {"x":2842,"y":755,"w":375,"h":223},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":54,"y":68,"w":375,"h":223},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster3/118.png":
+{
+	"frame": {"x":2488,"y":471,"w":13,"h":10},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":263,"y":189,"w":13,"h":10},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcMonster3/134.png":
+{
+	"frame": {"x":2045,"y":2067,"w":140,"h":56},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":189,"y":156,"w":140,"h":56},
+	"sourceSize": {"w":469,"h":364},
+	"anchor": {"x":0.498934,"y":0.565934}
+},
+"mcNinjaShot1/4.png":
+{
+	"frame": {"x":2987,"y":2802,"w":51,"h":51},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":15,"y":15,"w":51,"h":51},
+	"sourceSize": {"w":81,"h":81},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"mcNinjaShot1/9.png":
+{
+	"frame": {"x":1879,"y":2947,"w":54,"h":54},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":14,"y":14,"w":54,"h":54},
+	"sourceSize": {"w":81,"h":81},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"mcNinjaShot1/12.png":
+{
+	"frame": {"x":1935,"y":2947,"w":53,"h":53},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":14,"y":14,"w":53,"h":53},
+	"sourceSize": {"w":81,"h":81},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"mcNinjaShot2/4.png":
+{
+	"frame": {"x":1990,"y":2947,"w":55,"h":51},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":15,"y":15,"w":55,"h":51},
+	"sourceSize": {"w":81,"h":81},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"mcNinjaShot2/8.png":
+{
+	"frame": {"x":2981,"y":1709,"w":54,"h":46},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":18,"y":18,"w":54,"h":46},
+	"sourceSize": {"w":81,"h":81},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"mcNinjaShot2/9.png":
+{
+	"frame": {"x":1698,"y":2947,"w":58,"h":54},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":14,"w":58,"h":54},
+	"sourceSize": {"w":81,"h":81},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"mcNinjaShot2/12.png":
+{
+	"frame": {"x":2047,"y":2939,"w":60,"h":55},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":12,"y":12,"w":60,"h":55},
+	"sourceSize": {"w":81,"h":81},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"mcNinjaShot2/13.png":
+{
+	"frame": {"x":1817,"y":2947,"w":60,"h":51},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":13,"w":60,"h":51},
+	"sourceSize": {"w":81,"h":81},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"mcPlat/1.png":
+{
+	"frame": {"x":1,"y":3003,"w":2499,"h":62},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":2499,"h":62},
+	"sourceSize": {"w":2500,"h":63},
+	"anchor": {"x":0,"y":0}
+},
+"mcPlat/2.png":
+{
+	"frame": {"x":2309,"y":1,"w":2499,"h":62},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":2499,"h":62},
+	"sourceSize": {"w":2500,"h":63},
+	"anchor": {"x":0,"y":0}
+},
+"mcTanker/35.png":
+{
+	"frame": {"x":2944,"y":1758,"w":175,"h":127},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":124,"y":152,"w":175,"h":127},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/73.png":
+{
+	"frame": {"x":2627,"y":758,"w":248,"h":180},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":72,"y":116,"w":248,"h":180},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/74.png":
+{
+	"frame": {"x":2842,"y":1939,"w":269,"h":213},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":60,"y":98,"w":269,"h":213},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/77.png":
+{
+	"frame": {"x":2756,"y":2219,"w":304,"h":272},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":68,"y":67,"w":304,"h":272},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/80.png":
+{
+	"frame": {"x":2309,"y":2502,"w":388,"h":342},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":24,"y":38,"w":388,"h":342},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/81.png":
+{
+	"frame": {"x":2653,"y":2494,"w":332,"h":361},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":34,"w":332,"h":361},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/82.png":
+{
+	"frame": {"x":2627,"y":1417,"w":352,"h":339},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":71,"w":352,"h":339},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/86.png":
+{
+	"frame": {"x":2470,"y":169,"w":27,"h":56},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":229,"y":208,"w":27,"h":56},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/87.png":
+{
+	"frame": {"x":2470,"y":227,"w":25,"h":56},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":231,"y":209,"w":25,"h":56},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/88.png":
+{
+	"frame": {"x":2470,"y":285,"w":25,"h":55},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":231,"y":210,"w":25,"h":55},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"mcTanker/89.png":
+{
+	"frame": {"x":1,"y":3067,"w":3,"h":3},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":3},
+	"sourceSize": {"w":412,"h":435},
+	"anchor": {"x":0.512136,"y":0.627586}
+},
+"partDust/1.png":
+{
+	"frame": {"x":2470,"y":441,"w":16,"h":14},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":14},
+	"sourceSize": {"w":16,"h":14},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partDust/2.png":
+{
+	"frame": {"x":2470,"y":457,"w":16,"h":14},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":14},
+	"sourceSize": {"w":16,"h":14},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partLight/1.png":
+{
+	"frame": {"x":2470,"y":413,"w":26,"h":26},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":26,"h":26},
+	"sourceSize": {"w":30,"h":30},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partLight/2.png":
+{
+	"frame": {"x":2470,"y":342,"w":30,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":30},
+	"sourceSize": {"w":30,"h":30},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/1.png":
+{
+	"frame": {"x":1758,"y":2947,"w":57,"h":54},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":153,"y":255,"w":57,"h":54},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/7.png":
+{
+	"frame": {"x":2627,"y":1249,"w":151,"h":211},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":118,"y":167,"w":151,"h":211},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/8.png":
+{
+	"frame": {"x":2627,"y":259,"w":172,"h":269},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":106,"y":127,"w":172,"h":269},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/9.png":
+{
+	"frame": {"x":2627,"y":1758,"w":179,"h":315},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":106,"y":94,"w":179,"h":315},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/10.png":
+{
+	"frame": {"x":2502,"y":2892,"w":178,"h":358},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":108,"y":69,"w":178,"h":358},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/11.png":
+{
+	"frame": {"x":2627,"y":1,"w":184,"h":256},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":108,"y":42,"w":184,"h":256},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/16.png":
+{
+	"frame": {"x":2373,"y":1936,"w":291,"h":84},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":146,"w":291,"h":84},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/17.png":
+{
+	"frame": {"x":2987,"y":2493,"w":307,"h":67},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":160,"w":307,"h":67},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/18.png":
+{
+	"frame": {"x":2470,"y":473,"w":11,"h":11},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":304,"y":215,"w":11,"h":11},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"partSmoke/19.png":
+{
+	"frame": {"x":1,"y":3067,"w":3,"h":3},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":3},
+	"sourceSize": {"w":315,"h":427},
+	"anchor": {"x":0.5,"y":0.5}
+}},
+"animations": {
+	"bg": ["bg/1.png","bg/2.png"],
+	"bgFront": ["bgFront/1.png","bgFront/2.png","bgFront/3.png"],
+	"bonus": ["bonus/1.png","bonus/2.png","bonus/3.png","bonus/4.png","bonus/5.png","bonus/6.png","bonus/7.png","bonus/8.png","bonus/9.png","bonus/10.png"],
+	"heroBfx1": ["heroBfx1/1.png","heroBfx1/2.png","heroBfx1/3.png","heroBfx1/4.png"],
+	"heroBfx2": ["heroBfx2/1.png","heroBfx2/2.png","heroBfx2/3.png","heroBfx2/4.png"],
+	"mcFlyer": ["mcFlyer/1.png","mcFlyer/2.png","mcFlyer/3.png","mcFlyer/4.png","mcFlyer/5.png","mcFlyer/6.png","mcFlyer/7.png","mcFlyer/8.png","mcFlyer/9.png","mcFlyer/10.png","mcFlyer/11.png","mcFlyer/12.png","mcFlyer/13.png","mcFlyer/14.png","mcFlyer/15.png","mcFlyer/16.png","mcFlyer/17.png","mcFlyer/18.png","mcFlyer/19.png","mcFlyer/20.png","mcFlyer/21.png","mcFlyer/22.png","mcFlyer/23.png","mcFlyer/24.png","mcFlyer/25.png","mcFlyer/26.png","mcFlyer/27.png","mcFlyer/28.png","mcFlyer/29.png","mcFlyer/30.png","mcFlyer/31.png","mcFlyer/32.png","mcFlyer/33.png","mcFlyer/34.png","mcFlyer/35.png","mcFlyer/36.png","mcFlyer/37.png","mcFlyer/38.png","mcFlyer/39.png","mcFlyer/40.png","mcFlyer/41.png","mcFlyer/42.png","mcFlyer/43.png","mcFlyer/44.png","mcFlyer/45.png","mcFlyer/46.png","mcFlyer/47.png","mcFlyer/48.png","mcFlyer/49.png","mcFlyer/50.png"],
+	"mcHero": ["mcHero/1.png","mcHero/2.png","mcHero/3.png","mcHero/4.png","mcHero/5.png","mcHero/6.png","mcHero/7.png","mcHero/8.png","mcHero/9.png","mcHero/10.png","mcHero/11.png","mcHero/12.png","mcHero/13.png","mcHero/14.png","mcHero/15.png","mcHero/16.png","mcHero/17.png","mcHero/18.png","mcHero/19.png","mcHero/20.png","mcHero/21.png","mcHero/22.png","mcHero/23.png","mcHero/24.png","mcHero/25.png","mcHero/26.png","mcHero/27.png","mcHero/28.png","mcHero/29.png","mcHero/30.png","mcHero/31.png","mcHero/32.png","mcHero/33.png","mcHero/34.png","mcHero/35.png","mcHero/36.png","mcHero/37.png","mcHero/38.png","mcHero/39.png","mcHero/40.png","mcHero/41.png","mcHero/42.png","mcHero/43.png","mcHero/44.png","mcHero/45.png","mcHero/46.png","mcHero/47.png","mcHero/48.png","mcHero/49.png","mcHero/50.png","mcHero/51.png","mcHero/52.png","mcHero/53.png","mcHero/54.png","mcHero/55.png","mcHero/56.png","mcHero/57.png","mcHero/58.png","mcHero/59.png","mcHero/60.png","mcHero/61.png","mcHero/62.png","mcHero/63.png","mcHero/64.png","mcHero/65.png","mcHero/66.png","mcHero/67.png","mcHero/68.png","mcHero/69.png","mcHero/70.png","mcHero/71.png","mcHero/72.png","mcHero/73.png","mcHero/74.png","mcHero/75.png","mcHero/76.png","mcHero/77.png","mcHero/78.png","mcHero/79.png","mcHero/80.png","mcHero/81.png","mcHero/82.png","mcHero/83.png","mcHero/84.png","mcHero/85.png","mcHero/86.png","mcHero/87.png","mcHero/88.png","mcHero/89.png","mcHero/90.png","mcHero/91.png","mcHero/92.png","mcHero/93.png","mcHero/94.png","mcHero/95.png","mcHero/96.png","mcHero/97.png","mcHero/98.png","mcHero/99.png","mcHero/100.png","mcHero/101.png","mcHero/102.png","mcHero/103.png","mcHero/104.png","mcHero/116.png","mcHero/117.png","mcHero/118.png","mcHero/119.png","mcHero/120.png","mcHero/121.png","mcHero/122.png","mcHero/123.png","mcHero/124.png","mcHero/125.png","mcHero/126.png","mcHero/127.png","mcHero/128.png","mcHero/129.png","mcHero/130.png","mcHero/131.png","mcHero/132.png","mcHero/133.png","mcHero/134.png","mcHero/135.png","mcHero/136.png","mcHero/137.png","mcHero/138.png","mcHero/139.png","mcHero/142.png"],
+	"mcIcon": ["mcIcon/1.png","mcIcon/2.png","mcIcon/3.png"],
+	"mcMonster1": ["mcMonster1/1.png","mcMonster1/2.png","mcMonster1/3.png","mcMonster1/4.png","mcMonster1/5.png","mcMonster1/6.png","mcMonster1/7.png","mcMonster1/8.png","mcMonster1/9.png","mcMonster1/10.png","mcMonster1/11.png","mcMonster1/12.png","mcMonster1/13.png","mcMonster1/14.png","mcMonster1/15.png","mcMonster1/16.png","mcMonster1/17.png","mcMonster1/18.png","mcMonster1/19.png","mcMonster1/20.png","mcMonster1/21.png","mcMonster1/22.png","mcMonster1/23.png","mcMonster1/24.png","mcMonster1/25.png","mcMonster1/26.png","mcMonster1/27.png","mcMonster1/28.png","mcMonster1/29.png","mcMonster1/30.png","mcMonster1/31.png","mcMonster1/32.png","mcMonster1/33.png","mcMonster1/34.png","mcMonster1/35.png","mcMonster1/36.png","mcMonster1/37.png","mcMonster1/38.png","mcMonster1/39.png","mcMonster1/40.png","mcMonster1/41.png","mcMonster1/42.png","mcMonster1/43.png","mcMonster1/44.png","mcMonster1/45.png","mcMonster1/46.png","mcMonster1/47.png","mcMonster1/48.png","mcMonster1/49.png","mcMonster1/50.png","mcMonster1/51.png","mcMonster1/52.png","mcMonster1/53.png","mcMonster1/54.png","mcMonster1/55.png","mcMonster1/56.png","mcMonster1/57.png","mcMonster1/58.png","mcMonster1/59.png","mcMonster1/60.png","mcMonster1/61.png","mcMonster1/62.png","mcMonster1/63.png","mcMonster1/64.png","mcMonster1/65.png","mcMonster1/66.png","mcMonster1/67.png","mcMonster1/68.png","mcMonster1/69.png","mcMonster1/70.png","mcMonster1/71.png","mcMonster1/72.png","mcMonster1/73.png","mcMonster1/74.png","mcMonster1/75.png","mcMonster1/76.png","mcMonster1/77.png","mcMonster1/78.png","mcMonster1/79.png","mcMonster1/80.png","mcMonster1/81.png","mcMonster1/82.png","mcMonster1/83.png","mcMonster1/84.png","mcMonster1/85.png","mcMonster1/86.png","mcMonster1/87.png","mcMonster1/88.png","mcMonster1/89.png","mcMonster1/90.png","mcMonster1/91.png","mcMonster1/92.png","mcMonster1/93.png","mcMonster1/94.png","mcMonster1/95.png","mcMonster1/96.png","mcMonster1/97.png","mcMonster1/98.png","mcMonster1/99.png","mcMonster1/100.png","mcMonster1/101.png","mcMonster1/102.png","mcMonster1/103.png","mcMonster1/104.png","mcMonster1/105.png","mcMonster1/106.png","mcMonster1/107.png","mcMonster1/108.png","mcMonster1/109.png","mcMonster1/110.png","mcMonster1/111.png","mcMonster1/112.png","mcMonster1/113.png","mcMonster1/114.png","mcMonster1/115.png","mcMonster1/116.png","mcMonster1/117.png","mcMonster1/118.png"],
+	"mcMonster2": ["mcMonster2/1.png","mcMonster2/2.png","mcMonster2/3.png","mcMonster2/4.png","mcMonster2/5.png","mcMonster2/6.png","mcMonster2/7.png","mcMonster2/8.png","mcMonster2/9.png","mcMonster2/10.png","mcMonster2/11.png","mcMonster2/12.png","mcMonster2/13.png","mcMonster2/14.png","mcMonster2/15.png","mcMonster2/16.png","mcMonster2/17.png","mcMonster2/18.png","mcMonster2/19.png","mcMonster2/20.png","mcMonster2/21.png","mcMonster2/22.png","mcMonster2/23.png","mcMonster2/24.png","mcMonster2/25.png","mcMonster2/26.png","mcMonster2/27.png","mcMonster2/28.png","mcMonster2/29.png","mcMonster2/30.png","mcMonster2/31.png","mcMonster2/32.png","mcMonster2/33.png","mcMonster2/34.png","mcMonster2/35.png","mcMonster2/36.png","mcMonster2/37.png","mcMonster2/38.png","mcMonster2/39.png","mcMonster2/40.png","mcMonster2/41.png","mcMonster2/42.png","mcMonster2/43.png","mcMonster2/44.png","mcMonster2/45.png","mcMonster2/46.png","mcMonster2/47.png","mcMonster2/48.png","mcMonster2/49.png","mcMonster2/50.png","mcMonster2/51.png","mcMonster2/52.png","mcMonster2/53.png","mcMonster2/54.png","mcMonster2/55.png","mcMonster2/56.png","mcMonster2/57.png","mcMonster2/58.png","mcMonster2/59.png","mcMonster2/60.png","mcMonster2/61.png","mcMonster2/62.png","mcMonster2/63.png","mcMonster2/64.png","mcMonster2/65.png","mcMonster2/66.png","mcMonster2/67.png","mcMonster2/68.png","mcMonster2/69.png","mcMonster2/70.png","mcMonster2/71.png","mcMonster2/72.png","mcMonster2/73.png","mcMonster2/74.png","mcMonster2/75.png","mcMonster2/76.png","mcMonster2/77.png","mcMonster2/78.png","mcMonster2/79.png","mcMonster2/80.png","mcMonster2/81.png","mcMonster2/82.png","mcMonster2/83.png","mcMonster2/84.png","mcMonster2/85.png","mcMonster2/86.png","mcMonster2/87.png","mcMonster2/88.png","mcMonster2/89.png","mcMonster2/90.png","mcMonster2/91.png","mcMonster2/92.png","mcMonster2/93.png","mcMonster2/94.png","mcMonster2/95.png","mcMonster2/96.png","mcMonster2/97.png","mcMonster2/98.png","mcMonster2/99.png","mcMonster2/100.png","mcMonster2/101.png","mcMonster2/102.png","mcMonster2/103.png","mcMonster2/104.png","mcMonster2/105.png","mcMonster2/106.png","mcMonster2/107.png","mcMonster2/108.png","mcMonster2/109.png","mcMonster2/110.png","mcMonster2/111.png","mcMonster2/112.png","mcMonster2/113.png","mcMonster2/114.png","mcMonster2/115.png","mcMonster2/116.png","mcMonster2/117.png","mcMonster2/118.png","mcMonster2/119.png","mcMonster2/120.png","mcMonster2/121.png","mcMonster2/122.png","mcMonster2/123.png","mcMonster2/124.png","mcMonster2/125.png","mcMonster2/126.png","mcMonster2/127.png","mcMonster2/128.png","mcMonster2/129.png","mcMonster2/130.png","mcMonster2/131.png","mcMonster2/132.png","mcMonster2/133.png","mcMonster2/134.png","mcMonster2/135.png","mcMonster2/136.png","mcMonster2/137.png","mcMonster2/138.png","mcMonster2/139.png","mcMonster2/140.png"],
+	"mcMonster3": ["mcMonster3/1.png","mcMonster3/2.png","mcMonster3/3.png","mcMonster3/4.png","mcMonster3/5.png","mcMonster3/6.png","mcMonster3/7.png","mcMonster3/8.png","mcMonster3/9.png","mcMonster3/10.png","mcMonster3/11.png","mcMonster3/12.png","mcMonster3/13.png","mcMonster3/14.png","mcMonster3/15.png","mcMonster3/16.png","mcMonster3/17.png","mcMonster3/18.png","mcMonster3/19.png","mcMonster3/20.png","mcMonster3/21.png","mcMonster3/22.png","mcMonster3/23.png","mcMonster3/24.png","mcMonster3/25.png","mcMonster3/26.png","mcMonster3/27.png","mcMonster3/28.png","mcMonster3/29.png","mcMonster3/30.png","mcMonster3/31.png","mcMonster3/32.png","mcMonster3/33.png","mcMonster3/34.png","mcMonster3/35.png","mcMonster3/36.png","mcMonster3/37.png","mcMonster3/38.png","mcMonster3/39.png","mcMonster3/40.png","mcMonster3/41.png","mcMonster3/42.png","mcMonster3/43.png","mcMonster3/44.png","mcMonster3/45.png","mcMonster3/46.png","mcMonster3/47.png","mcMonster3/48.png","mcMonster3/49.png","mcMonster3/50.png","mcMonster3/51.png","mcMonster3/52.png","mcMonster3/53.png","mcMonster3/54.png","mcMonster3/55.png","mcMonster3/56.png","mcMonster3/57.png","mcMonster3/58.png","mcMonster3/59.png","mcMonster3/60.png","mcMonster3/61.png","mcMonster3/62.png","mcMonster3/63.png","mcMonster3/64.png","mcMonster3/65.png","mcMonster3/66.png","mcMonster3/67.png","mcMonster3/68.png","mcMonster3/69.png","mcMonster3/70.png","mcMonster3/71.png","mcMonster3/72.png","mcMonster3/73.png","mcMonster3/74.png","mcMonster3/75.png","mcMonster3/76.png","mcMonster3/77.png","mcMonster3/78.png","mcMonster3/79.png","mcMonster3/80.png","mcMonster3/81.png","mcMonster3/82.png","mcMonster3/83.png","mcMonster3/84.png","mcMonster3/85.png","mcMonster3/86.png","mcMonster3/87.png","mcMonster3/88.png","mcMonster3/89.png","mcMonster3/90.png","mcMonster3/91.png","mcMonster3/92.png","mcMonster3/93.png","mcMonster3/94.png","mcMonster3/95.png","mcMonster3/96.png","mcMonster3/97.png","mcMonster3/98.png","mcMonster3/99.png","mcMonster3/100.png","mcMonster3/101.png","mcMonster3/102.png","mcMonster3/103.png","mcMonster3/104.png","mcMonster3/105.png","mcMonster3/106.png","mcMonster3/107.png","mcMonster3/108.png","mcMonster3/109.png","mcMonster3/110.png","mcMonster3/111.png","mcMonster3/112.png","mcMonster3/113.png","mcMonster3/114.png","mcMonster3/115.png","mcMonster3/116.png","mcMonster3/117.png","mcMonster3/118.png","mcMonster3/119.png","mcMonster3/120.png","mcMonster3/121.png","mcMonster3/122.png","mcMonster3/123.png","mcMonster3/124.png","mcMonster3/125.png","mcMonster3/126.png","mcMonster3/127.png","mcMonster3/128.png","mcMonster3/129.png","mcMonster3/130.png","mcMonster3/131.png","mcMonster3/132.png","mcMonster3/133.png","mcMonster3/134.png","mcMonster3/135.png","mcMonster3/136.png","mcMonster3/137.png","mcMonster3/138.png","mcMonster3/139.png","mcMonster3/140.png"],
+	"mcNinjaShot1": ["mcNinjaShot1/1.png","mcNinjaShot1/2.png","mcNinjaShot1/3.png","mcNinjaShot1/4.png","mcNinjaShot1/5.png","mcNinjaShot1/6.png","mcNinjaShot1/7.png","mcNinjaShot1/8.png","mcNinjaShot1/9.png","mcNinjaShot1/10.png","mcNinjaShot1/11.png","mcNinjaShot1/12.png","mcNinjaShot1/13.png","mcNinjaShot1/14.png","mcNinjaShot1/15.png","mcNinjaShot1/16.png","mcNinjaShot1/17.png","mcNinjaShot1/18.png","mcNinjaShot1/19.png","mcNinjaShot1/20.png"],
+	"mcNinjaShot2": ["mcNinjaShot2/1.png","mcNinjaShot2/2.png","mcNinjaShot2/3.png","mcNinjaShot2/4.png","mcNinjaShot2/5.png","mcNinjaShot2/6.png","mcNinjaShot2/7.png","mcNinjaShot2/8.png","mcNinjaShot2/9.png","mcNinjaShot2/10.png","mcNinjaShot2/11.png","mcNinjaShot2/12.png","mcNinjaShot2/13.png","mcNinjaShot2/14.png","mcNinjaShot2/15.png","mcNinjaShot2/16.png","mcNinjaShot2/17.png","mcNinjaShot2/18.png","mcNinjaShot2/19.png","mcNinjaShot2/20.png"],
+	"mcPlat": ["mcPlat/1.png","mcPlat/2.png"],
+	"mcTanker": ["mcTanker/1.png","mcTanker/2.png","mcTanker/3.png","mcTanker/4.png","mcTanker/5.png","mcTanker/6.png","mcTanker/7.png","mcTanker/8.png","mcTanker/9.png","mcTanker/10.png","mcTanker/11.png","mcTanker/12.png","mcTanker/13.png","mcTanker/14.png","mcTanker/15.png","mcTanker/16.png","mcTanker/17.png","mcTanker/18.png","mcTanker/19.png","mcTanker/20.png","mcTanker/21.png","mcTanker/22.png","mcTanker/23.png","mcTanker/24.png","mcTanker/25.png","mcTanker/26.png","mcTanker/27.png","mcTanker/28.png","mcTanker/29.png","mcTanker/30.png","mcTanker/31.png","mcTanker/32.png","mcTanker/33.png","mcTanker/34.png","mcTanker/35.png","mcTanker/36.png","mcTanker/37.png","mcTanker/38.png","mcTanker/39.png","mcTanker/40.png","mcTanker/41.png","mcTanker/42.png","mcTanker/43.png","mcTanker/44.png","mcTanker/45.png","mcTanker/46.png","mcTanker/47.png","mcTanker/48.png","mcTanker/49.png","mcTanker/50.png","mcTanker/51.png","mcTanker/52.png","mcTanker/53.png","mcTanker/54.png","mcTanker/55.png","mcTanker/56.png","mcTanker/57.png","mcTanker/58.png","mcTanker/59.png","mcTanker/60.png","mcTanker/61.png","mcTanker/62.png","mcTanker/63.png","mcTanker/64.png","mcTanker/65.png","mcTanker/66.png","mcTanker/67.png","mcTanker/68.png","mcTanker/69.png","mcTanker/70.png","mcTanker/71.png","mcTanker/72.png","mcTanker/73.png","mcTanker/74.png","mcTanker/75.png","mcTanker/76.png","mcTanker/77.png","mcTanker/78.png","mcTanker/79.png","mcTanker/80.png","mcTanker/81.png","mcTanker/82.png","mcTanker/83.png","mcTanker/84.png","mcTanker/85.png","mcTanker/86.png","mcTanker/87.png","mcTanker/88.png","mcTanker/89.png"],
+	"partDust": ["partDust/1.png","partDust/2.png"],
+	"partLight": ["partLight/1.png","partLight/2.png"],
+	"partSmoke": ["partSmoke/1.png","partSmoke/2.png","partSmoke/3.png","partSmoke/4.png","partSmoke/5.png","partSmoke/6.png","partSmoke/7.png","partSmoke/8.png","partSmoke/9.png","partSmoke/10.png","partSmoke/11.png","partSmoke/12.png","partSmoke/13.png","partSmoke/14.png","partSmoke/15.png","partSmoke/16.png","partSmoke/17.png","partSmoke/18.png","partSmoke/19.png"],
+	"partSpark": ["partSpark/1.png","partSpark/2.png","partSpark/3.png","partSpark/4.png","partSpark/5.png","partSpark/6.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "kslash-0.png",
+	"format": "RGBA8888",
+	"size": {"w":3072,"h":3071},
+	"scale": "1",
+	"related_multi_packs": [ "kslash-1.json" ],
+	"smartupdate": "$TexturePacker:SmartUpdate:ecb653d749862cdd365950ed597c0614:9b6391b6f8fd116d25b6a91208258c35:86cfdd65a69ae1d149823fb53f313bf2$"
+}
+}

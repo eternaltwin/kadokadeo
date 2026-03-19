@@ -93,7 +93,7 @@ export function useGame(game) {
     const gameClass = window[config.global]
     if (typeof window.KadoKadeo !== 'function' || typeof gameClass !== 'function') {
       unloadScript(config.src, config.global)
-      throw new Error(`Game globals are missing for ${config.src}`)
+      throw new Error(`Game globals are missing for ${config.src} - ${config.global}`)
     }
 
     activeScript = config

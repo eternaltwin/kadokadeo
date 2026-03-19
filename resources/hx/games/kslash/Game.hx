@@ -1,0 +1,417 @@
+package kslash;
+
+import pixi.core.text.Text;
+import mt.DepthManager;
+import mt.Timer;
+
+class Inter extends ASprite {
+	public var fieldStar:Text;
+}
+
+class PlatMc extends ASprite {
+	public var _mask:ASprite;
+	public var _corner:ASprite;
+}
+
+@:expose('GameKSlash')
+class Game implements kado.GameInterface {
+	public var kkm:kado.KadoKadeoManager;
+
+	public static var DP_BG = 1;
+	public static var DP_BACK = 2;
+	public static var DP_MAP = 3;
+	public static var DP_FRONT = 4;
+	public static var DP_INTER = 5;
+
+	public static var DP_MAPBG = 1;
+	public static var DP_DECOR = 2;
+	public static var DP_SHADE = 3;
+	public static var DP_BONUS = 4;
+	public static var DP_MONSTER = 5;
+	public static var DP_HERO = 7;
+	public static var DP_SHOOT = 10;
+	public static var DP_PARTS = 12;
+
+	public static var XMAX = 25;
+	public static var YMAX = 25;
+
+	public var flNight:Bool;
+	public var monsterLevel:Int;
+	public var monsterLevelMax:Float;
+	public var dif:Float;
+
+	var cheatTimer:Float;
+
+	public var pList:Array<Part>;
+	public var platList:Array<{
+		x:Int,
+		y:Int,
+		w:Int,
+		mc:PlatMc
+	}>;
+	public var mList:Array<Monster>;
+	public var sList:Array<Shoot>;
+	public var nsList:Array<Shoot>;
+	public var bList:Array<Bonus>;
+	public var iconList:Array<ASprite>;
+	public var planList:Array<{mc:ASprite, c:Float}>;
+	public var optList:Array<Bool>;
+
+	public var stats:{opt:Array<Int>, bads:Array<Int>, dif:Int};
+
+	public var dm:DepthManager;
+	public var mdm:DepthManager;
+
+	public var hero:Hero;
+
+	var root:ASprite;
+	var bg:ASprite;
+	var map:ASprite;
+
+	public var inter:Inter;
+
+	public var grid:Array<Array<{block:Bool, list:Array<Monster>}>>;
+
+	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
+		this.kkm = kkm;
+		Cs.game = this;
+		dm = new DepthManager(root);
+		this.root = root;
+		bg = dm.attach("bg", DP_BG);
+		bg.stop();
+		inter = cast dm.attach("inter", DP_INTER);
+		inter.initTextField("fieldStar", {
+			font: "Arial",
+			size: 14,
+			color: 0xFFFFFF,
+			align: "center"
+		});
+
+		mList = new Array();
+		sList = new Array();
+		bList = new Array();
+		pList = new Array();
+		nsList = new Array();
+		iconList = new Array();
+		planList = new Array();
+
+		stats = {
+			opt: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			bads: [0, 0, 0, 0, 0],
+			dif: null
+		};
+
+		map = dm.empty(DP_MAP);
+		mdm = new DepthManager(map);
+
+		planList.push({mc: bg, c: 0.13});
+		planList.push({mc: map, c: 1});
+
+		for (n in 0...2) {
+			for (i in 0...10) {
+				var m = null;
+				if (n == 0) {
+					m = dm.attach("bgFront", DP_FRONT);
+				} else {
+					m = dm.attach("bgBack", DP_BACK);
+				}
+				m.gotoAndStop(i + 1);
+				var c = (m._width - Cs.mcw) / Cs.mcw;
+				planList.push({mc: m, c: c});
+				if (i + 1 == m._totalframes)
+					break;
+			}
+		}
+
+		hero = new Hero(mdm.empty(DP_HERO));
+
+		initGrid();
+		initPlat();
+
+		monsterLevelMax = 2;
+		monsterLevel = 0;
+
+		dif = 0;
+
+		optList = [false, false, false];
+		updateIcons();
+
+		flNight = false;
+		if (Math.random() * 500 < 1)
+			setNight();
+
+		cheatTimer = 0;
+	}
+
+	public function initGrid() {
+		grid = new Array();
+		for (x in 0...XMAX) {
+			grid[x] = new Array();
+			for (y in 0...YMAX) {
+				grid[x][y] = {block: false, list: []};
+			}
+		}
+	}
+
+	public function initPlat() {
+		platList = [
+			{
+				x: 0,
+				y: YMAX - 1,
+				w: XMAX,
+				mc: null
+			}
+		];
+		var y = YMAX - 1;
+
+		while (y > 8) {
+			y -= Cs.PLAT_ECART;
+			var x = Std.random(4);
+			while (x < XMAX) {
+				var w = 2 + Std.random(8);
+				platList.push({
+					x: x,
+					y: y,
+					w: w,
+					mc: null
+				});
+				x += w + 2 + Std.int(Std.random(8) * (1 - (y / YMAX)));
+			}
+		}
+
+		for (o in platList) {
+			var mc:PlatMc = cast mdm.attach("mcPlat", DP_DECOR);
+			mc.getGraphics().beginFill(0xFF0000, 0).drawRect(o.x, o.y, Cs.SIZE * o.w, Cs.SIZE);
+			mc._mask = mc.createEmptyMovieClip("mask");
+			mc._mask.getGraphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 60);
+			mc._corner = mc.attachMovie("corner", "corner");
+			o.mc = mc;
+
+			setPlat(o);
+		}
+	}
+
+	public function setPlat(o:{
+		x:Int,
+		y:Int,
+		w:Int,
+		mc:PlatMc
+	}) {
+		var c = 19;
+		var mc = o.mc;
+
+		mc.gotoAndStop(flNight ? 2 : 1);
+		mc._x = Cs.SIZE * o.x;
+		mc._y = Cs.SIZE * o.y;
+		mc._mask._xscale = (o.w * Cs.SIZE) - 2 * c;
+		mc._corner._x = mc._mask._xscale + c;
+
+		for (n in 0...o.w) {
+			if (o.x + n < XMAX && o.y < YMAX) {
+				grid[o.x + n][o.y].block = true;
+			}
+		}
+	}
+
+	public function update(delta:Float) {
+		this.root.update();
+		/*
+			Log.print(int(monsterLevel))
+			Log.print("-")
+			Log.print(int(monsterLevelMax))
+		 */
+		hero.update();
+		for (m in mList) {
+			m.update();
+		}
+		for (s in sList) {
+			s.update();
+		}
+		for (b in bList) {
+			b.update();
+		}
+		updateScroll();
+		updateParts();
+
+		if (monsterLevel < monsterLevelMax) {
+			addMonster();
+		}
+
+		monsterLevelMax += 0.0025 * Timer.tmod;
+		dif += 1.5 * Timer.tmod;
+		// monsterLevelMax += 0.025*Timer.tmod;
+		// dif+=15*Timer.tmod;
+
+		// cheat();
+	}
+
+	public function updateScroll() {
+		for (info in planList) {
+			var mx = 0; // Cs.SIZE * info.c * 0.25;
+			var tx = Math.min(Math.max(2 * mx - (XMAX) * Cs.SIZE * 0.5, (Cs.mcw * 0.5 - hero.root._x)), -mx);
+			var ty = Math.min(Math.max(-YMAX * Cs.SIZE * 0.5, (Cs.mch * 0.5 - hero.root._y)), 0);
+			info.mc._x = tx * info.c;
+			info.mc._y = ty * info.c;
+		}
+	}
+
+	public function addMonster() {
+		// newMonster(4)
+		// return;
+
+		// TANKER
+		if (dif > 4000 && Std.random(4) == 0) {
+			newMonster(4);
+		}
+		// FLIER
+		if (dif > 1800 && Std.random(4) == 0) {
+			newMonster(3);
+		}
+		//*/
+		// RUNNER
+		newMonster(Std.random(Std.int(Math.min(Math.ceil(dif / 1300), 3))));
+	}
+
+	public function newMonster(id) {
+		Cs.game.stats.bads[id]++;
+		var sens = (hero.x < XMAX * 0.5) ? 1 : 0;
+		var m:Monster = null;
+		switch (id) {
+			case 0 | 1 | 2:
+				m = new Soldier(mdm.attach("mcMonster" + (id + 1), DP_MONSTER));
+				m.x = sens * XMAX;
+				m.y = YMAX - (2 + (Std.random(6)) * Cs.PLAT_ECART);
+				m.dx = Math.random() * 10;
+				m.setSens(-(sens * 2 - 1));
+				untyped m.setLevel(id + 1);
+			case 3:
+				m = new Flyer(mdm.attach("mcFlyer", DP_MONSTER));
+				m.x = Std.random(XMAX);
+				m.y = 0;
+			case 4:
+				m = new Tanker(mdm.attach("mcTanker", DP_MONSTER));
+				m.x = sens * XMAX;
+				m.y = YMAX - (2 + (Std.random(6)) * Cs.PLAT_ECART);
+		}
+
+		monsterLevel += m.stLevel;
+		return m;
+	}
+
+	public function spawnBonus(x, y, id) {
+		if (id == 0)
+			return;
+		if (id >= 6 && id < 9) {
+			if (optList[id - 6])
+				id = 1;
+		}
+		var b = new Bonus(mdm.attach("bonus", DP_BONUS));
+		b.root._x = x; // (x+0.5)*Cs.SIZE;
+		b.root._y = y; // (y+0.5)*Cs.SIZE;
+		b.setId(id);
+		bList.push(b);
+	}
+
+	public function updateIcons() {
+		while (iconList.length > 0)
+			iconList.pop().removeMovieClip();
+		var x = Cs.mcw;
+		for (i in 0...optList.length) {
+			if (optList[i]) {
+				var mc = dm.attach("mcIcon", DP_INTER);
+				mc.gotoAndStop(i + 1);
+				mc._x = x;
+				x -= 20;
+				iconList.push(mc);
+			}
+		}
+	}
+
+	public function checkFree(x, y) {
+		if (x < 0 || x >= XMAX || y < 0 || y >= YMAX) {
+			return false;
+		}
+		return !grid[x][y].block;
+	}
+
+	public function getClosestMonsters():Array<{m:Monster, d:Float}> {
+		var list = new Array<{m:Monster, d:Float}>();
+
+		for (m in mList) {
+			var d = Math.max(Math.abs(m.x - hero.x), Math.abs(m.y - hero.y));
+			var n = 0;
+			do {
+				if (list[n].d > d)
+					break;
+				n++;
+			} while (n < list.length);
+			list.insert(n, {m: m, d: d});
+		}
+		return list;
+	}
+
+	public function setNight() {
+		if (!flNight) {
+			flNight = true;
+			var c = 19;
+			for (plat in platList)
+				setPlat(plat);
+			bg.gotoAndStop(2);
+
+			for (o in planList) {
+				if (o.c != 1 && o.c > 0.5)
+					Cs.setPercentColor(o.mc, 40, 0x000044);
+			}
+		}
+	}
+
+	// PARTS
+	public function updateParts() {
+		for (p in pList) {
+			p.update();
+		}
+	}
+
+	public function newPart(link):Part {
+		var p = new Part(mdm.attach(link, DP_PARTS));
+		p.vx = 0;
+		p.vy = 0;
+		p.frict = 0.95;
+		p.scale = 100;
+		pList.push(p);
+		return p;
+	}
+	/*/ DEBUG
+		function logGrid(){
+			var str = ""
+			var max = 18
+			for( var y=0; y<max; y++ ){
+				for( var x=0; x<max; x++ ){
+					var o = grid[x][y]
+					str +=o.list.length
+				}
+				str+="\n"
+			}
+			Log.print(str)
+		}
+
+		function cheat(){
+			if(cheatTimer>0){
+				cheatTimer-=Timer.tmod
+
+			}else{
+				if(Key.isDown(Key.ENTER) && !hero.flInvicible ){
+					hero.flInvicible = true
+
+				}
+				for(var i=0; i<10; i++ ){
+					if( Key.isDown(96+i) ){
+						newMonster(i)
+						cheatTimer = 10
+					}
+				}
+			}
+		}
+		// */
+	// {
+}

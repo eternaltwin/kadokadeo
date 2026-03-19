@@ -34,7 +34,7 @@ class Game extends Model
 
     public function getPascalNameAttribute(): string
     {
-        return Str::of('Game'.$this->name)->pascal()->toString();
+        return Str::of('Game'.$this->name)->pascal()->replaceMatches('/[^a-zA-Z0-9]/', '')->toString();
     }
 
     public function getGameKeyAttribute(): string

@@ -14,6 +14,7 @@ class KeyboardManager {
 	static public inline var ARROW_RIGHT = 39;
 	static public inline var SPACE = 32;
 	static public inline var ESCAPE = 27;
+	static public inline var CONTROL = 17;
 
 	static private var keyState:IntMap<Bool>;
 	static private var isInitialized:Bool = false;
