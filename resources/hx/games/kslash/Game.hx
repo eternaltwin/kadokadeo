@@ -184,7 +184,7 @@ class Game implements kado.GameInterface {
 			rt.draw(mc, m);
 			mc.removeMovieClip();
 
-			var g = (new Graphics()).beginFill(0xFFFFFF).drawRect(0, 0, 3000, Cs.SIZE);
+			var g = (new Graphics()).beginFill(0xFFFFFF).drawRect(0, -5, 3000, Cs.SIZE + 10);
 			g.blendMode = untyped BlendModes.ERASE;
 			m = new Matrix();
 			m.translate(Cs.SIZE * (o.x + o.w) - 19 * Cs.NEW_GEN_SCALE, Cs.SIZE * o.y);
@@ -343,7 +343,7 @@ class Game implements kado.GameInterface {
 			var d = Math.max(Math.abs(m.x - hero.x), Math.abs(m.y - hero.y));
 			var n = 0;
 			do {
-				if (list[n].d > d)
+				if (list[n] == null || list[n].d > d)
 					break;
 				n++;
 			} while (n < list.length);

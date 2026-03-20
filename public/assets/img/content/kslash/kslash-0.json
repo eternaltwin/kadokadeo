@@ -61,7 +61,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":3},
 	"sourceSize": {"w":148,"h":135},
-	"anchor": {"x":0.391892,"y":0.22963}
+	"anchor": {"x":0.277027,"y":0.474074}
 },
 "heroBfx2/1.png":
 {
@@ -70,7 +70,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":3},
 	"sourceSize": {"w":148,"h":135},
-	"anchor": {"x":0.472973,"y":0.5}
+	"anchor": {"x":0.277027,"y":0.474074}
 },
 "heroKunai.png":
 {
@@ -822,6 +822,6 @@
 	"size": {"w":3072,"h":3071},
 	"scale": "1",
 	"related_multi_packs": [ "kslash-1.json" ],
-	"smartupdate": "$TexturePacker:SmartUpdate:8594903bbe23dc7ddfe03558c21d5512:3ad8ee9d644a1d39d32af88f0c254fb4:86cfdd65a69ae1d149823fb53f313bf2$"
+	"smartupdate": "$TexturePacker:SmartUpdate:951bf0226960cb005d64d31ef318e82d:3ad8ee9d644a1d39d32af88f0c254fb4:86cfdd65a69ae1d149823fb53f313bf2$"
 }
 }

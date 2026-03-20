@@ -9,8 +9,8 @@ class Tanker extends Runner {
 		stClimbWait = 12; // 16
 		stTossClimb = 6; // 12
 		stTossSmart = 2;
-		stClimb = 36;
-		speed = 4;
+		stClimb = 36 * Cs.NEW_GEN_SCALE;
+		speed = 4 * Cs.NEW_GEN_SCALE;
 		stDrop.push({w: 40, id: 1});
 		stDrop.push({w: 10, id: 2});
 		stDrop.push({w: 30, id: 5});
@@ -26,10 +26,10 @@ class Tanker extends Runner {
 				p.y = shot.root._y;
 				p.root.loop = true;
 				p.root.play();
-				p.vx = -shot.vx * 0.75;
-				p.vy = shot.vy - 3;
+				p.vx = -shot.vx * 0.75 * Cs.NEW_GEN_SCALE;
+				p.vy = shot.vy - 3 * Cs.NEW_GEN_SCALE;
 				p.timer = 20 + Math.random() * 10;
-				p.weight = 0.4;
+				p.weight = 0.4 * Cs.NEW_GEN_SCALE;
 				return;
 			}
 		}
@@ -40,7 +40,7 @@ class Tanker extends Runner {
 		if ((Cs.game.hero.x - x) * sens < 0) {
 			super.cut(n);
 		} else {
-			throwMonster(1.57 - (1.57 * Cs.game.hero.sens), 12);
+			throwMonster(1.57 - (1.57 * Cs.game.hero.sens), 12 * Cs.NEW_GEN_SCALE);
 		}
 	}
 

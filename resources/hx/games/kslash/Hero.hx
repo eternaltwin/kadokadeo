@@ -50,6 +50,7 @@ class Hero extends Ent {
 
 	public function new(mc) {
 		super(mc);
+		// mc.getGraphics().beginFill(0x0000FF, 0.5).drawRect(-Cs.SIZE / 2, -Cs.SIZE / 2, Cs.SIZE, Cs.SIZE);
 		mc.stopOnFrame = [32, 70, 75, 91, 104, 128];
 		mc.onFrame.set(26, () -> mc.gotoAndPlay(1));
 		mc.onFrame.set(36, () -> mc.gotoAndPlay(33));
@@ -103,8 +104,8 @@ class Hero extends Ent {
 				flUp = true;
 				flGround = false;
 			case Cs.ST_DEATH:
-				nextAnim = "death";
-				vy = -8;
+				root.gotoAndStop(animFrame.get("death"));
+				vy = -8 * Cs.NEW_GEN_SCALE;
 				vx *= 0.5;
 				flCol = false;
 				flInvicible = true;
@@ -133,7 +134,7 @@ class Hero extends Ent {
 						nextAnim = "fly_down";
 				}
 			case Cs.ST_DEATH:
-				var yLim = (Cs.mch * 2) - 18;
+				var yLim = (Cs.mch * 2) - 18 * Cs.NEW_GEN_SCALE;
 				if (root._y > yLim) {
 					vy *= -1.25;
 					if (!flGameOver) {
@@ -186,19 +187,19 @@ class Hero extends Ent {
 				for (m in list) {
 					var dist = getDist(m);
 
-					if (dist < 24) {
+					if (dist < 24 * Cs.NEW_GEN_SCALE) {
 						if (sTimer == null) {
 							if (step == Cs.ST_FLY && !m.flSpike) {
 								var da = Math.abs(1.57 - getAng(m));
 								if (da < 1.3) {
 									if (vy > 0) {
-										vy = -8;
+										vy = -8 * Cs.NEW_GEN_SCALE;
 										m.harm(21);
 									}
 									return;
 								}
 							}
-							if (dist < 18) {
+							if (dist < 18 * Cs.NEW_GEN_SCALE) {
 								initStep(Cs.ST_DEATH);
 							}
 						} else {
@@ -212,7 +213,7 @@ class Hero extends Ent {
 
 	public function checkBonus() {
 		for (b in Cs.game.bList) {
-			if (getDist(cast b) < 24) {
+			if (getDist(cast b) < 24 * Cs.NEW_GEN_SCALE) {
 				b.take();
 			}
 		}
@@ -375,7 +376,7 @@ class Hero extends Ent {
 		var dx = trg.root._x - root._x;
 		var dy = (trg.root._y - root._y) * 1.5;
 		var dist = Math.sqrt(dx * dx + dy * dy);
-		var flNear = dist < (Cs.game.optList[Cs.OPT_KATANA] ? 72 : 48); // BLADE_SIZE
+		var flNear = dist < (Cs.game.optList[Cs.OPT_KATANA] ? 72 * Cs.NEW_GEN_SCALE : 48 * Cs.NEW_GEN_SCALE); // BLADE_SIZE
 		if (flNear || star == 0) {
 			slash(trg, flNear);
 			return;
@@ -388,8 +389,8 @@ class Hero extends Ent {
 
 		for (i in 0...max) {
 			var o = list[i];
-			if (o.d > 8)
-				break;
+			if (o == null || o.d > 8)
+				continue;
 			throwStar(o.m);
 		}
 	}
@@ -437,8 +438,9 @@ class Hero extends Ent {
 			Cs.game.optList[Cs.OPT_SCROLL] = false;
 			Cs.game.updateIcons();
 			setSens(1);
-			root.gotoAndPlay("tronc");
+			root.gotoAndStop(animFrame.get("tronc"));
 			rootSprite.kunai._rotation = s.root._rotation;
+			rootSprite.kunai._visible = true;
 			smoke();
 			flFreezeAnim = true;
 			flInvicible = true;
@@ -468,6 +470,7 @@ class Hero extends Ent {
 		flFreezeAnim = false;
 		fall();
 		smoke();
+		rootSprite.kunai._visible = false;
 	}
 
 	public function smoke() {
@@ -479,7 +482,7 @@ class Hero extends Ent {
 	public function initSupa() {
 		sTimer = 500;
 		blink = 0;
-		SPEED = 9;
+		SPEED = 9 * Cs.NEW_GEN_SCALE;
 	}
 
 	public function updateSupa() {

@@ -46,7 +46,7 @@ class Ent {
 		cy = 0;
 		vx = 0;
 		vy = 0;
-		weight = 1;
+		weight = 1 * Cs.NEW_GEN_SCALE;
 		friction = 0.95;
 	}
 

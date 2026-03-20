@@ -249,7 +249,7 @@
             <key type="filename">src/corner/2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>0,0.047619</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -265,27 +265,13 @@
             <key type="filename">src/heroBfx1/2.png</key>
             <key type="filename">src/heroBfx1/3.png</key>
             <key type="filename">src/heroBfx1/4.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.391892,0.22963</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>37,34,74,67</rect>
-                <key>scale9Paddings</key>
-                <rect>37,34,74,67</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
             <key type="filename">src/heroBfx2/1.png</key>
             <key type="filename">src/heroBfx2/2.png</key>
             <key type="filename">src/heroBfx2/3.png</key>
             <key type="filename">src/heroBfx2/4.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.472973,0.5</point_f>
+                <point_f>0.277027,0.474074</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>

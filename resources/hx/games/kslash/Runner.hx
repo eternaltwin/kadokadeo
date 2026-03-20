@@ -10,6 +10,21 @@ class Runner extends Monster {
 
 	public function new(mc) {
 		super(mc);
+		mc.stopOnFrame = [36, 65, 72, 86, 95, 132];
+		mc.removeOnFrame = 118;
+		mc.onFrame.set(17, () -> mc.gotoAndPlay(5));
+		mc.onFrame.set(140, () -> mc.gotoAndPlay(5));
+		animFrame.set("walk", 1);
+		animFrame.set("walk_loop", 5);
+		animFrame.set("climb", 20);
+		animFrame.set("climbEnd", 37);
+		animFrame.set("fly_up", 53);
+		animFrame.set("fly_down", 66);
+		animFrame.set("fly_straight_up", 75);
+		animFrame.set("fly_straight_down", 87);
+		animFrame.set("death", 99);
+		animFrame.set("shootWait", 119);
+		animFrame.set("shoot", 133);
 
 		setSens(Std.random(2) * 2 - 1);
 
@@ -67,7 +82,7 @@ class Runner extends Monster {
 
 	public override function throwMonster(a, p) {
 		if (flGround && hp > 0) {
-			root.gotoAndStop("walk_loop");
+			root.gotoAndStop(animFrame.get("walk_loop"));
 		}
 		super.throwMonster(a, p);
 	}
@@ -76,7 +91,7 @@ class Runner extends Monster {
 
 	public override function climb() {
 		super.climb();
-		root.gotoAndStop("fly_up");
+		root.gotoAndStop(animFrame.get("fly_up"));
 		flFlyUp = true;
 		flWalk = false;
 	}
@@ -88,7 +103,7 @@ class Runner extends Monster {
 
 	public override function death() {
 		// Cs.game.spawnBonus(x,y)
-		root.gotoAndPlay("death");
+		root.gotoAndPlay(animFrame.get("death"));
 		super.death();
 	}
 }

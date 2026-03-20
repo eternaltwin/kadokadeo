@@ -78,7 +78,7 @@ class Flyer extends Monster {
 	}
 
 	public override function death() {
-		root.gotoAndPlay("death");
+		root.gotoAndPlay(animFrame.get("death"));
 		super.death();
 	}
 }

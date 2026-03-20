@@ -19,7 +19,7 @@ class Soldier extends Runner {
 				stTossClimb = 12;
 				stTossSmart = 4;
 				stTossShoot = null;
-				speed = 2;
+				speed = 2 * Cs.NEW_GEN_SCALE;
 				noSpikes();
 				stDrop.push({w: 70, id: 4});
 			// stDrop.push({w:500,id:10});
@@ -30,7 +30,7 @@ class Soldier extends Runner {
 				stTossSmart = 3;
 				stTossShoot = 10;
 				stMaxShot = 3;
-				speed = 3;
+				speed = 3 * Cs.NEW_GEN_SCALE;
 				noSpikes();
 				stDrop.push({w: 50, id: 4});
 				stDrop.push({w: 30, id: 5});
@@ -44,7 +44,7 @@ class Soldier extends Runner {
 				stTossShoot = 4;
 				stMaxShot = 1;
 				stShootWait = 12;
-				speed = 5;
+				speed = 5 * Cs.NEW_GEN_SCALE;
 				flSpike = true;
 				stDrop.push({w: 40, id: 5});
 				stDrop.push({w: 20, id: 6});
@@ -101,7 +101,7 @@ class Soldier extends Runner {
 	public override function shoot() {
 		var d = getDist(Cs.game.hero);
 		var a = getAng(Cs.game.hero);
-		var speed = 3;
+		var speed = 3 * Cs.NEW_GEN_SCALE;
 		var max = stMaxShot;
 		for (i in 0...max) {
 			var da = (i / (max - 1) - 0.5) * 0.4;
@@ -122,7 +122,7 @@ class Soldier extends Runner {
 	}
 
 	function noSpikes() {
-		trace('FIXME: noSpikes()');
+		// trace('FIXME: noSpikes()');
 		// 	var mc = root;
 		// 	mc.b3.gotoAndStop(2);
 		// 	mc.b4.gotoAndStop(2);

@@ -27,6 +27,7 @@ class Monster extends Ent {
 	public function new(mc) {
 		super(mc);
 		Cs.game.mList.push(this);
+		// mc.getGraphics().beginFill(0x00AADD, 0.5).drawRect(-Cs.SIZE / 2, -Cs.SIZE / 2, Cs.SIZE, Cs.SIZE);
 
 		stTossSmart = 10;
 		flSpike = false;
@@ -35,7 +36,7 @@ class Monster extends Ent {
 
 		hp = 10;
 		score = Cs.C0;
-		stClimb = 21;
+		stClimb = 21 * Cs.NEW_GEN_SCALE;
 
 		initStep(Cs.ST_FLY);
 	}
@@ -64,7 +65,7 @@ class Monster extends Ent {
 				if (waitTimer < 15) {
 					if (!flClimbAnim) {
 						flClimbAnim = true;
-						root.gotoAndPlay("climbEnd");
+						root.gotoAndPlay(animFrame.get("climbEnd"));
 					}
 					if (waitTimer < 0) {
 						climb();
@@ -175,8 +176,8 @@ class Monster extends Ent {
 
 	public function jumpFront(dist) {
 		initStep(Cs.ST_FLY);
-		vy = -10;
-		vx = Math.pow(dist * 24, 0.5) * sens;
+		vy = -10 * Cs.NEW_GEN_SCALE;
+		vx = Math.pow(dist * 24 * Cs.NEW_GEN_SCALE, 0.5) * sens;
 	}
 
 	// ON
