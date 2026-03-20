@@ -50,8 +50,27 @@ class Hero extends Ent {
 
 	public function new(mc) {
 		super(mc);
+		mc.stopOnFrame = [32, 70, 75, 91, 104, 128];
+		mc.onFrame.set(26, () -> mc.gotoAndPlay(1));
+		mc.onFrame.set(36, () -> mc.gotoAndPlay(33));
+		mc.onFrame.set(103, () -> mc.gotoAndPlay(1));
+		mc.onFrame.set(115, () -> mc.gotoAndPlay(106));
+		mc.onFrame.set(127, () -> mc.gotoAndPlay(117));
+		animFrame.set("wait", 1);
+		animFrame.set("run", 29);
+		animFrame.set("run_loop", 33);
+		animFrame.set("fly_up", 60);
+		animFrame.set("fly_down", 71);
+		animFrame.set("fall", 76);
+		animFrame.set("land", 92);
+		animFrame.set("death", 104);
+		animFrame.set("ball", 105);
+		animFrame.set("walk", 116);
+		animFrame.set("walk_loop", 117);
+		animFrame.set("tronc", 128);
 		rootSprite = cast mc;
 		rootSprite.kunai = rootSprite.attachMovie("heroKunai", "kunai");
+		rootSprite.kunai._visible = false;
 		// rootSprite.shade = rootSprite.attachMovie("hero_shade", "shade");
 		rootSprite.bfx1 = rootSprite.attachMovie("heroBfx1", "bfx1");
 		rootSprite.bfx2 = rootSprite.attachMovie("heroBfx2", "bfx2");

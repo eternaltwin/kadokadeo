@@ -245,10 +245,11 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/corner.png</key>
+            <key type="filename">src/corner/1.png</key>
+            <key type="filename">src/corner/2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.0833333,0.047619</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -412,20 +413,8 @@
             <key type="filename">src/mcHero/126.png</key>
             <key type="filename">src/mcHero/127.png</key>
             <key type="filename">src/mcHero/128.png</key>
-            <key type="filename">src/mcHero/129.png</key>
             <key type="filename">src/mcHero/13.png</key>
-            <key type="filename">src/mcHero/130.png</key>
-            <key type="filename">src/mcHero/131.png</key>
-            <key type="filename">src/mcHero/132.png</key>
-            <key type="filename">src/mcHero/133.png</key>
-            <key type="filename">src/mcHero/134.png</key>
-            <key type="filename">src/mcHero/135.png</key>
-            <key type="filename">src/mcHero/136.png</key>
-            <key type="filename">src/mcHero/137.png</key>
-            <key type="filename">src/mcHero/138.png</key>
-            <key type="filename">src/mcHero/139.png</key>
             <key type="filename">src/mcHero/14.png</key>
-            <key type="filename">src/mcHero/142.png</key>
             <key type="filename">src/mcHero/15.png</key>
             <key type="filename">src/mcHero/16.png</key>
             <key type="filename">src/mcHero/17.png</key>
@@ -522,6 +511,31 @@
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.596958,0.617978</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>66,45,131,89</rect>
+                <key>scale9Paddings</key>
+                <rect>66,45,131,89</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcHero/105.png</key>
+            <key type="filename">src/mcHero/106.png</key>
+            <key type="filename">src/mcHero/107.png</key>
+            <key type="filename">src/mcHero/108.png</key>
+            <key type="filename">src/mcHero/109.png</key>
+            <key type="filename">src/mcHero/110.png</key>
+            <key type="filename">src/mcHero/111.png</key>
+            <key type="filename">src/mcHero/112.png</key>
+            <key type="filename">src/mcHero/113.png</key>
+            <key type="filename">src/mcHero/114.png</key>
+            <key type="filename">src/mcHero/115.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>

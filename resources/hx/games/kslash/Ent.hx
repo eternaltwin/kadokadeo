@@ -29,6 +29,7 @@ class Ent {
 	public var friction:Float;
 
 	public var nextAnim:String;
+	public var animFrame:Map<String, Int> = new Map();
 
 	public function new(mc) {
 		dm = new DepthManager(mc);
@@ -73,7 +74,12 @@ class Ent {
 		root._y = (y + 0.25 + (cy * 0.5)) * Cs.SIZE + dy;
 
 		if (nextAnim != null && !flFreezeAnim) {
-			root.gotoAndPlay(nextAnim);
+			if (animFrame.exists(nextAnim)) {
+				var anim = animFrame.get(nextAnim);
+				root.gotoAndPlay(anim);
+			} else {
+				root.gotoAndPlay(nextAnim);
+			}
 			nextAnim = null;
 		}
 	}

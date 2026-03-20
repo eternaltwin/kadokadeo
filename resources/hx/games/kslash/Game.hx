@@ -12,11 +12,6 @@ class Inter extends ASprite {
 	public var fieldStar:Text;
 }
 
-class PlatMc extends ASprite {
-	public var __mask:ASprite;
-	public var __corner:ASprite;
-}
-
 @:expose('GameKSlash')
 class Game implements kado.GameInterface {
 	public var kkm:kado.KadoKadeoManager;
@@ -51,7 +46,6 @@ class Game implements kado.GameInterface {
 		x:Int,
 		y:Int,
 		w:Int,
-		mc:PlatMc
 	}>;
 	public var mList:Array<Monster>;
 	public var sList:Array<Shoot>;
@@ -127,8 +121,11 @@ class Game implements kado.GameInterface {
 			}
 		}
 
-		hero = new Hero(mdm.empty(DP_HERO));
+		hero = new Hero(mdm.attach("mcHero", DP_HERO));
 
+		flNight = false;
+		if (Math.random() * 500 < 1)
+			setNight();
 		initGrid();
 		initPlat();
 
@@ -139,10 +136,6 @@ class Game implements kado.GameInterface {
 
 		optList = [false, false, false];
 		updateIcons();
-
-		flNight = false;
-		if (Math.random() * 500 < 1)
-			setNight();
 
 		cheatTimer = 0;
 	}
@@ -164,7 +157,6 @@ class Game implements kado.GameInterface {
 				x: 0,
 				y: YMAX - 1,
 				w: XMAX,
-				mc: null
 			}
 		];
 		var y = YMAX - 1;
@@ -178,35 +170,32 @@ class Game implements kado.GameInterface {
 					x: x,
 					y: y,
 					w: w,
-					mc: null
 				});
 				x += w + 2 + Std.int(Std.random(8) * (1 - (y / YMAX)));
 			}
 		}
 
 		for (o in platList) {
-			// var mc:PlatMc = cast mdm.attach("mcPlat", DP_DECOR);
-			var mc:PlatMc = cast mdm.empty(DP_DECOR);
-			mc.getGraphics().beginFill(0xFF0000).drawRect(0, 0, Cs.SIZE * o.w, Cs.SIZE);
-			mc.attachMovie("mcPlat");
-			// var m = mc.createEmptyMovieClip("mask")
-			// 	.getGraphics()
-			// 	.beginFill(0xFFFFFF)
-			// 	.drawRect(Cs.SIZE * (o.w - 1), Cs.SIZE - 20, 3000, Cs.SIZE + 2);
-			// m.blendMode = untyped BlendModes.ERASE;
-			// mc.mask = m;
-			// mc.__mask.getGraphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 60);
-			// mc._corner = mc.attachMovie("corner", "corner");
-			// mc._corner = mc.createEmptyMovieClip("corner");
-			o.mc = mc;
+			var mc = mdm.attach("mcPlat", DP_DECOR);
 			mc.gotoAndStop(flNight ? 2 : 1);
-			mc._x = Cs.SIZE * o.x;
-			mc._y = Cs.SIZE * o.y;
 
 			var m = new Matrix();
-			m.translate(Cs.SIZE * o.y, Cs.SIZE * o.y);
+			m.translate(Cs.SIZE * o.x, Cs.SIZE * o.y);
 			rt.draw(mc, m);
 			mc.removeMovieClip();
+
+			var g = (new Graphics()).beginFill(0xFFFFFF).drawRect(0, 0, 3000, Cs.SIZE);
+			g.blendMode = untyped BlendModes.ERASE;
+			m = new Matrix();
+			m.translate(Cs.SIZE * (o.x + o.w) - 19 * Cs.NEW_GEN_SCALE, Cs.SIZE * o.y);
+			rt.draw(g, m);
+
+			var c = new ASprite("corner");
+			c.gotoAndStop(flNight ? 2 : 1);
+			m = new Matrix();
+			m.translate(Cs.SIZE * (o.x + o.w) - 20 * Cs.NEW_GEN_SCALE, Cs.SIZE * o.y);
+			rt.draw(c, m);
+			c.removeMovieClip();
 
 			setPlat(o);
 		}
@@ -218,15 +207,7 @@ class Game implements kado.GameInterface {
 		x:Int,
 		y:Int,
 		w:Int,
-		mc:PlatMc
 	}) {
-		var c = 19;
-		var mc = o.mc;
-
-		// mc.__mask._xscale = (o.w * Cs.SIZE) - 2 * c;
-		// mc._corner._x = mc.__mask._xscale + c;
-		trace("setPlat(" + o.x + "," + o.y + "," + o.w + ") mcX,Y=" + mc._x + "," + mc._y);
-
 		for (n in 0...o.w) {
 			if (o.x + n < XMAX && o.y < YMAX) {
 				grid[o.x + n][o.y].block = true;
@@ -374,9 +355,6 @@ class Game implements kado.GameInterface {
 	public function setNight() {
 		if (!flNight) {
 			flNight = true;
-			var c = 19;
-			for (plat in platList)
-				setPlat(plat);
 			bg.gotoAndStop(2);
 
 			for (o in planList) {
