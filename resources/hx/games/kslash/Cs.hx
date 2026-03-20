@@ -36,6 +36,16 @@ class Cs {
 	public static var C5000 = KKApi.const(5000);
 	public static var C8000 = KKApi.const(8000);
 
+	public static inline function rand():Float {
+		return game.kkm.seed.rand();
+	}
+
+	public static inline function random(max:Int):Int {
+		if (max <= 0)
+			return 0;
+		return game.kkm.seed.random(max);
+	}
+
 	public static function setPercentColor(mc:ASprite, prc:Float, col:Int) {
 		var pct = Math.min(Math.max(prc, 0), 100);
 		var c = pct / 100;

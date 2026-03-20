@@ -322,7 +322,7 @@ class Hero extends Ent {
 	public override function land() {
 		if (woodTimer != null) {
 			if (vy > 4) {
-				vr = (Math.random() * 2 - 1) * Math.abs(vy) * 3;
+				vr = (Cs.rand() * 2 - 1) * Math.abs(vy) * 3;
 			}
 			vx *= 0.8;
 			vy *= -1;
@@ -337,11 +337,11 @@ class Hero extends Ent {
 
 		for (i in 0...3) {
 			var p = Cs.game.newPart("partDust");
-			p.x = root._x + (Math.random() * 2 - 1) * 14;
-			p.y = root._y + 12 + Math.random() * 24;
-			p.weight = 0.1 + Math.random() * 0.3;
-			p.scale = 50 + Math.random() * 70;
-			p.timer = 20 + Math.random() * 10;
+			p.x = root._x + (Cs.rand() * 2 - 1) * 14;
+			p.y = root._y + 12 + Cs.rand() * 24;
+			p.weight = 0.1 + Cs.rand() * 0.3;
+			p.scale = 50 + Cs.rand() * 70;
+			p.timer = 20 + Cs.rand() * 10;
 			p.fadeType = 0;
 			if (Cs.game.flNight) {
 				p.root.gotoAndStop(2);
@@ -526,7 +526,7 @@ class Hero extends Ent {
 				var speed = (3 + n * 2);
 				p.vx += Math.cos(a) * speed;
 				p.vy += Math.sin(a) * speed;
-				p.timer = 26 + Math.random() * 4 - n * 10;
+				p.timer = 26 + Cs.rand() * 4 - n * 10;
 				p.frict = 0.9;
 			}
 		}

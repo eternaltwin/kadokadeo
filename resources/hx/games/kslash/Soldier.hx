@@ -79,7 +79,7 @@ class Soldier extends Runner {
 						}
 					}
 				} else {
-					var rnd = Std.random(7);
+					var rnd = Cs.random(7);
 					switch (rnd) {
 						case 1 | 2:
 							tryJumpFront();
@@ -88,7 +88,7 @@ class Soldier extends Runner {
 					}
 				}
 			} else {
-				if (stTossShoot != null && Std.random(stTossShoot) == 0) {
+				if (stTossShoot != null && Cs.random(stTossShoot) == 0) {
 					var d = getDist(Cs.game.hero);
 					if (d < 180) {
 						initStep(Cs.ST_SHOOT);

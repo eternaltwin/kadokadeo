@@ -1,5 +1,7 @@
 package kslash;
 
+import haxe.io.UInt16Array;
+import common_haxe_avm1.KeyboardManager;
 import pixi.core.math.Matrix;
 import pixi.core.textures.RenderTexture;
 import pixi.core.Pixi.BlendModes;
@@ -72,6 +74,19 @@ class Game implements kado.GameInterface {
 
 	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
 		this.kkm = kkm;
+		var replayKeys = new UInt16Array(6);
+		replayKeys[0] = KeyboardManager.ARROW_RIGHT;
+		replayKeys[1] = KeyboardManager.ARROW_DOWN;
+		replayKeys[2] = KeyboardManager.ARROW_LEFT;
+		replayKeys[3] = KeyboardManager.ARROW_UP;
+		replayKeys[4] = KeyboardManager.SPACE;
+		replayKeys[5] = KeyboardManager.CONTROL;
+		this.kkm.replay.init({
+			recordedKeys: replayKeys,
+			recordInputs: true,
+			recordEvents: false,
+		});
+
 		Cs.game = this;
 		dm = new DepthManager(root);
 		this.root = root;
@@ -124,7 +139,7 @@ class Game implements kado.GameInterface {
 		hero = new Hero(mdm.attach("mcHero", DP_HERO));
 
 		flNight = false;
-		if (Math.random() * 500 < 1)
+		if (Cs.rand() * 500 < 1)
 			setNight();
 		initGrid();
 		initPlat();
@@ -163,15 +178,15 @@ class Game implements kado.GameInterface {
 
 		while (y > 8) {
 			y -= Cs.PLAT_ECART;
-			var x = Std.random(4);
+			var x = Cs.random(4);
 			while (x < XMAX) {
-				var w = 2 + Std.random(8);
+				var w = 2 + Cs.random(8);
 				platList.push({
 					x: x,
 					y: y,
 					w: w,
 				});
-				x += w + 2 + Std.int(Std.random(8) * (1 - (y / YMAX)));
+				x += w + 2 + Std.int(Cs.random(8) * (1 - (y / YMAX)));
 			}
 		}
 
@@ -262,38 +277,38 @@ class Game implements kado.GameInterface {
 		// return;
 
 		// TANKER
-		if (dif > 4000 && Std.random(4) == 0) {
+		if (dif > 4000 && Cs.random(4) == 0) {
 			newMonster(4);
 		}
 		// FLIER
-		if (dif > 1800 && Std.random(4) == 0) {
+		if (dif > 1800 && Cs.random(4) == 0) {
 			newMonster(3);
 		}
 		//*/
 		// RUNNER
-		newMonster(Std.random(Std.int(Math.min(Math.ceil(dif / 1300), 3))));
+		newMonster(Cs.random(Std.int(Math.min(Math.ceil(dif / 1300), 3))));
 	}
 
 	public function newMonster(id) {
 		Cs.game.stats.bads[id]++;
 		var sens = (hero.x < XMAX * 0.5) ? 1 : 0;
 		var m:Monster = null;
-		switch (id) {
-			case 0 | 1 | 2:
-				m = new Soldier(mdm.attach("mcMonster" + (id + 1), DP_MONSTER));
-				m.x = sens * XMAX;
-				m.y = YMAX - (2 + (Std.random(6)) * Cs.PLAT_ECART);
-				m.dx = Math.random() * 10;
-				m.setSens(-(sens * 2 - 1));
-				untyped m.setLevel(id + 1);
-			case 3:
-				m = new Flyer(mdm.attach("mcFlyer", DP_MONSTER));
-				m.x = Std.random(XMAX);
-				m.y = 0;
-			case 4:
-				m = new Tanker(mdm.attach("mcTanker", DP_MONSTER));
-				m.x = sens * XMAX;
-				m.y = YMAX - (2 + (Std.random(6)) * Cs.PLAT_ECART);
+			switch (id) {
+				case 0 | 1 | 2:
+					m = new Soldier(mdm.attach("mcMonster" + (id + 1), DP_MONSTER));
+					m.x = sens * XMAX;
+					m.y = YMAX - (2 + (Cs.random(6)) * Cs.PLAT_ECART);
+					m.dx = Cs.rand() * 10;
+					m.setSens(-(sens * 2 - 1));
+					untyped m.setLevel(id + 1);
+				case 3:
+					m = new Flyer(mdm.attach("mcFlyer", DP_MONSTER));
+					m.x = Cs.random(XMAX);
+					m.y = 0;
+				case 4:
+					m = new Tanker(mdm.attach("mcTanker", DP_MONSTER));
+					m.x = sens * XMAX;
+					m.y = YMAX - (2 + (Cs.random(6)) * Cs.PLAT_ECART);
 		}
 
 		monsterLevel += m.stLevel;

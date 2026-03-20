@@ -139,7 +139,7 @@ class Monster extends Ent {
 		for (d in stDrop) {
 			sum += d.w;
 		}
-		var rnd = Std.random(sum);
+		var rnd = Cs.random(sum);
 		sum = 0;
 		for (d in stDrop) {
 			sum += d.w;
@@ -192,7 +192,7 @@ class Monster extends Ent {
 		var flSmart = isSmart();
 
 		// CLIMB
-		if (step == Cs.ST_NORMAL && stTossClimb != null && Math.random() * stTossClimb < 1) {
+		if (step == Cs.ST_NORMAL && stTossClimb != null && Cs.rand() * stTossClimb < 1) {
 			var flDoIt = true;
 			if (Cs.game.hero.y > y - 3 && flSmart)
 				flDoIt = false;
@@ -234,7 +234,7 @@ class Monster extends Ent {
 
 	// TOOLS
 	public function chooseWay() {
-		var sens = Std.random(2) * 2 - 1;
+		var sens = Cs.random(2) * 2 - 1;
 		if (isSmart())
 			sens = (Cs.game.hero.x < x) ? -1 : 1;
 		setSens(sens);
@@ -242,6 +242,6 @@ class Monster extends Ent {
 
 	// IS ?
 	public function isSmart() {
-		return Math.random() * stTossSmart < 1;
+		return Cs.rand() * stTossSmart < 1;
 	}
 }

@@ -26,7 +26,7 @@ class Runner extends Monster {
 		animFrame.set("shootWait", 119);
 		animFrame.set("shoot", 133);
 
-		setSens(Std.random(2) * 2 - 1);
+		setSens(Cs.random(2) * 2 - 1);
 
 		flWalk = true;
 		stClimbWait = 26;

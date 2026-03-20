@@ -64,13 +64,13 @@ class Bonus {
 			case 0:
 				for (i in 0...12) {
 					var p = Cs.game.newPart("partSpark");
-					var a = Math.random() * 6.28;
-					var d = Math.random() * (6 + 18 * (1 - (i / 24)));
+					var a = Cs.rand() * 6.28;
+					var d = Cs.rand() * (6 + 18 * (1 - (i / 24)));
 					p.x = root._x + Math.cos(a) * d;
 					p.y = root._y + Math.sin(a) * d;
-					p.timer = 10 + Math.random() * 10;
+					p.timer = 10 + Cs.rand() * 10;
 					p.sleep = Math.max(0, Math.pow(i * 30, 0.5) - 8);
-					p.scale = 30 + Math.random() * 100 - p.sleep * 2;
+					p.scale = 30 + Cs.rand() * 100 - p.sleep * 2;
 					p.fadeType = 0;
 					p.root._visible = false;
 				}
@@ -79,7 +79,7 @@ class Bonus {
 					var p = Cs.game.newPart("partCircle");
 					p.x = root._x;
 					p.y = root._y;
-					p.root._rotation = Math.random() * 360;
+					p.root._rotation = Cs.rand() * 360;
 					p.timer = 18 - i * 3;
 					p.vs = 6 + i * 8;
 					p.vr = 8 + i * 12;
@@ -95,7 +95,7 @@ class Bonus {
 						var speed = (3 + n * 2);
 						p.vx += Math.cos(a) * speed;
 						p.vy += Math.sin(a) * speed;
-						p.timer = 26 + Math.random() * 4 - n * 10;
+						p.timer = 26 + Cs.rand() * 4 - n * 10;
 						p.frict = 0.9;
 					}
 				}
