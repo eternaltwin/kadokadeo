@@ -107,13 +107,13 @@ class Monster extends Ent {
 	public function cut(n) {
 		Cs.game.kkm.addScore(Cs.C50);
 		harm(n);
-		throwMonster(1.57 - (1.57 * Cs.game.hero.sens), 10);
+		throwMonster(1.57 - (1.57 * Cs.game.hero.sens), 10 * Cs.NEW_GEN_SCALE);
 	}
 
 	public function hit(shot:Star) {
 		Cs.game.kkm.addScore(Cs.C10);
 		harm(shot.damage);
-		throwMonster(Math.atan2(shot.vy, shot.vx), 2);
+		throwMonster(Math.atan2(shot.vy, shot.vx), 2 * Cs.NEW_GEN_SCALE);
 	}
 
 	public function harm(n) {

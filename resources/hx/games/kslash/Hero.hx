@@ -251,7 +251,7 @@ class Hero extends Ent {
 				if (flGround) {
 					nextAnim = "walk";
 					for (i in 0...3) {
-						if (x - i * sens < 0 || x - i * sens >= Game.XMAX)
+						if (x - i * sens < 0 || x - i * sens >= Game.XMAX || y < 0 || y >= Game.YMAX)
 							continue;
 						if (Cs.game.grid[x - i * sens][y].list.length > 0) {
 							nextAnim = "run";

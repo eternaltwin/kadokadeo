@@ -99,7 +99,7 @@ class Game implements kado.GameInterface {
 			color: 0x000000,
 			align: "left",
 			stroke: "#FFFFFF",
-			strokeThickness: 5,
+			strokeThickness: 3,
 		});
 		txt.x = 60;
 		txt.y = 6;
@@ -352,7 +352,7 @@ class Game implements kado.GameInterface {
 
 	public function checkFree(x, y) {
 		if (x < 0 || x >= XMAX || y < 0 || y >= YMAX) {
-			return false;
+			return true;
 		}
 		return !grid[x][y].block;
 	}
