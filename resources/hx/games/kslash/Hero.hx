@@ -51,7 +51,7 @@ class Hero extends Ent {
 	public function new(mc) {
 		super(mc);
 		// mc.getGraphics().beginFill(0x0000FF, 0.5).drawRect(-Cs.SIZE / 2, -Cs.SIZE / 2, Cs.SIZE, Cs.SIZE);
-		mc.stopOnFrame = [32, 70, 75, 91, 104, 128];
+		mc.stopOnFrame = [70, 75, 91, 104, 128];
 		mc.onFrame.set(26, () -> mc.gotoAndPlay(1));
 		mc.onFrame.set(36, () -> mc.gotoAndPlay(33));
 		mc.onFrame.set(103, () -> mc.gotoAndPlay(1));
@@ -105,6 +105,7 @@ class Hero extends Ent {
 				flGround = false;
 			case Cs.ST_DEATH:
 				root.gotoAndStop(animFrame.get("death"));
+				nextAnim = null;
 				vy = -8 * Cs.NEW_GEN_SCALE;
 				vx *= 0.5;
 				flCol = false;
@@ -120,6 +121,7 @@ class Hero extends Ent {
 			queue();
 
 		super.update();
+
 		if (!flGround)
 			vx = jvx; // PATCH pour no friction en l'air
 
@@ -144,6 +146,7 @@ class Hero extends Ent {
 					}
 					root._y = yLim;
 				}
+				vr = 5;
 		}
 
 		if (woodTimer != null) {
@@ -155,8 +158,8 @@ class Hero extends Ent {
 				teleport();
 			}
 		} else {
-			if (root._rotation != 0)
-				root._rotation = 0;
+			// if (root._rotation != 0)
+			// 	root._rotation = 0;
 		}
 
 		if (boost != null) {
@@ -416,11 +419,12 @@ class Hero extends Ent {
 		var a = getAng(trg);
 		var skinName = Cs.game.optList[Cs.OPT_FLAMES] ? "mcNinjaShot2" : "mcNinjaShot1";
 		var s = new Star(Cs.game.mdm.attach(skinName, Game.DP_SHOOT));
+		s.root.play();
 		s.x = x;
 		s.y = y;
 		s.dx = dx + (cx - 1) * Cs.SIZE * 0.5;
 		s.dy = dy + (cy - 1) * Cs.SIZE * 0.5;
-		// s.vr = 13
+		// s.vr = 13;
 		s.vx = Math.cos(a) * STAR_SPEED;
 		s.vy = Math.sin(a) * STAR_SPEED;
 		if (Cs.game.optList[Cs.OPT_FLAMES]) {
@@ -507,7 +511,7 @@ class Hero extends Ent {
 		if (sTimer < 0) {
 			sTimer = null;
 			prc = 0;
-			SPEED = 5;
+			SPEED = 5 * Cs.NEW_GEN_SCALE;
 		}
 		Cs.setPercentColor(root, prc, 0xFFDDFF);
 	}

@@ -54,7 +54,7 @@ class Game implements kado.GameInterface {
 	public var nsList:Array<Shoot>;
 	public var bList:Array<Bonus>;
 	public var iconList:Array<ASprite>;
-	public var planList:Array<{mc:ASprite, c:Float}>;
+	public var planList:Array<{mc:ASprite, c:Float, y:Float}>;
 	public var optList:Array<Bool>;
 
 	public var stats:{opt:Array<Int>, bads:Array<Int>, dif:Int};
@@ -117,20 +117,22 @@ class Game implements kado.GameInterface {
 		map = dm.empty(DP_MAP);
 		mdm = new DepthManager(map);
 
-		planList.push({mc: bg, c: 0.13});
-		planList.push({mc: map, c: 1});
+		planList.push({mc: bg, c: 0.13, y: 0});
+		planList.push({mc: map, c: 1, y: 0});
 
 		for (n in 0...2) {
 			for (i in 0...10) {
 				var m = null;
+				var oy = 0;
 				if (n == 0) {
 					m = dm.attach("bgFront", DP_FRONT);
 				} else {
 					m = dm.attach("bgBack", DP_BACK);
+					oy = 1350;
 				}
 				m.gotoAndStop(i + 1);
 				var c = (m._width - Cs.mcw) / Cs.mcw;
-				planList.push({mc: m, c: c});
+				planList.push({mc: m, c: c, y: oy});
 				if (i + 1 == m._totalframes)
 					break;
 			}
@@ -268,7 +270,7 @@ class Game implements kado.GameInterface {
 			var tx = Math.min(Math.max(2 * mx - (XMAX) * Cs.SIZE * 0.5, (Cs.mcw * 0.5 - hero.root._x)), -mx);
 			var ty = Math.min(Math.max(-YMAX * Cs.SIZE * 0.5, (Cs.mch * 0.5 - hero.root._y)), 0);
 			info.mc._x = tx * info.c;
-			info.mc._y = ty * info.c;
+			info.mc._y = ty * info.c + info.y;
 		}
 	}
 
@@ -293,22 +295,22 @@ class Game implements kado.GameInterface {
 		Cs.game.stats.bads[id]++;
 		var sens = (hero.x < XMAX * 0.5) ? 1 : 0;
 		var m:Monster = null;
-			switch (id) {
-				case 0 | 1 | 2:
-					m = new Soldier(mdm.attach("mcMonster" + (id + 1), DP_MONSTER));
-					m.x = sens * XMAX;
-					m.y = YMAX - (2 + (Cs.random(6)) * Cs.PLAT_ECART);
-					m.dx = Cs.rand() * 10;
-					m.setSens(-(sens * 2 - 1));
-					untyped m.setLevel(id + 1);
-				case 3:
-					m = new Flyer(mdm.attach("mcFlyer", DP_MONSTER));
-					m.x = Cs.random(XMAX);
-					m.y = 0;
-				case 4:
-					m = new Tanker(mdm.attach("mcTanker", DP_MONSTER));
-					m.x = sens * XMAX;
-					m.y = YMAX - (2 + (Cs.random(6)) * Cs.PLAT_ECART);
+		switch (id) {
+			case 0 | 1 | 2:
+				m = new Soldier(mdm.attach("mcMonster" + (id + 1), DP_MONSTER));
+				m.x = sens * XMAX;
+				m.y = YMAX - (2 + (Cs.random(6)) * Cs.PLAT_ECART);
+				m.dx = Cs.rand() * 10;
+				m.setSens(-(sens * 2 - 1));
+				untyped m.setLevel(id + 1);
+			case 3:
+				m = new Flyer(mdm.attach("mcFlyer", DP_MONSTER));
+				m.x = Cs.random(XMAX);
+				m.y = 0;
+			case 4:
+				m = new Tanker(mdm.attach("mcTanker", DP_MONSTER));
+				m.x = sens * XMAX;
+				m.y = YMAX - (2 + (Cs.random(6)) * Cs.PLAT_ECART);
 		}
 
 		monsterLevel += m.stLevel;
@@ -338,7 +340,7 @@ class Game implements kado.GameInterface {
 				var mc = dm.attach("mcIcon", DP_INTER);
 				mc.gotoAndStop(i + 1);
 				mc._x = x;
-				x -= 20;
+				x -= 20 * Cs.NEW_GEN_SCALE;
 				iconList.push(mc);
 			}
 		}

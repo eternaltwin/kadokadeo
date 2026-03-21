@@ -3,6 +3,16 @@ package kslash;
 class Tanker extends Runner {
 	public function new(mc) {
 		super(mc);
+		mc.removeOnFrame = 79;
+		mc.stopOnFrame = [41, 65];
+		mc.onFrame.set(21, () -> mc.gotoAndPlay(5));
+		mc.onFrame.set(37, () -> mc.gotoAndPlay(29));
+		animFrame.set("walk", 1);
+		animFrame.set("walk_loop", 5);
+		animFrame.set("climb", 24);
+		animFrame.set("fly_up", 38);
+		animFrame.set("fly_down", 59);
+		animFrame.set("death", 70);
 		stLevel = 3;
 		hp = 50;
 		score = Cs.C300;
@@ -26,7 +36,7 @@ class Tanker extends Runner {
 				p.y = shot.root._y;
 				p.root.loop = true;
 				p.root.play();
-				p.vx = -shot.vx * 0.75 * Cs.NEW_GEN_SCALE;
+				p.vx = -shot.vx * 0.75;
 				p.vy = shot.vy - 3 * Cs.NEW_GEN_SCALE;
 				p.timer = 20 + Cs.rand() * 10;
 				p.weight = 0.4 * Cs.NEW_GEN_SCALE;
@@ -46,7 +56,7 @@ class Tanker extends Runner {
 
 	public override function throwMonster(a, p) {
 		if (flGround && hp > 0) {
-			root.gotoAndStop("walk_loop");
+			root.gotoAndStop(animFrame.get("walk_loop"));
 		}
 		super.throwMonster(a, p);
 	}

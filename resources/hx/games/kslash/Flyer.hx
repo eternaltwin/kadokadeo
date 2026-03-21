@@ -10,6 +10,13 @@ class Flyer extends Monster {
 
 	public function new(mc) {
 		super(mc);
+		mc.removeOnFrame = 50;
+		mc.onFrame.set(16, () -> mc.gotoAndPlay(1));
+		mc.onFrame.set(23, () -> mc.gotoAndPlay(1));
+		animFrame.set("fly", 1);
+		animFrame.set("hit", 17);
+		animFrame.set("death", 31);
+		root.play();
 		stLevel = 2;
 		score = Cs.C120;
 		setSens(Cs.random(2) * 2 - 1);

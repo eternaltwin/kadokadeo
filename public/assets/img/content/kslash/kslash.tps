@@ -265,10 +265,12 @@
             <key type="filename">src/heroBfx1/2.png</key>
             <key type="filename">src/heroBfx1/3.png</key>
             <key type="filename">src/heroBfx1/4.png</key>
+            <key type="filename">src/heroBfx1/5.png</key>
             <key type="filename">src/heroBfx2/1.png</key>
             <key type="filename">src/heroBfx2/2.png</key>
             <key type="filename">src/heroBfx2/3.png</key>
             <key type="filename">src/heroBfx2/4.png</key>
+            <key type="filename">src/heroBfx2/5.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.277027,0.474074</point_f>

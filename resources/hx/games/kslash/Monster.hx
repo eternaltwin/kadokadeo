@@ -177,7 +177,7 @@ class Monster extends Ent {
 	public function jumpFront(dist) {
 		initStep(Cs.ST_FLY);
 		vy = -10 * Cs.NEW_GEN_SCALE;
-		vx = Math.pow(dist * 24 * Cs.NEW_GEN_SCALE, 0.5) * sens;
+		vx = Math.pow(dist * 24 * Cs.NEW_GEN_SCALE, 0.6) * sens;
 	}
 
 	// ON
