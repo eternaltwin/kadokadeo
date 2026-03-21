@@ -69,7 +69,7 @@ class Bonus {
 					p.x = root._x + Math.cos(a) * d;
 					p.y = root._y + Math.sin(a) * d;
 					p.timer = 10 + Cs.rand() * 10;
-					p.sleep = Math.max(0, Math.pow(i * 30, 0.5) - 8);
+					p.sleep = Math.max(0, Math.pow(i * 30, 0.6) - 8);
 					p.scale = 30 + Cs.rand() * 100 - p.sleep * 2;
 					p.fadeType = 0;
 					p.root._visible = false;
@@ -110,12 +110,17 @@ class Bonus {
 		var p = Cs.game.newPart(null);
 		p.x = root._x;
 		p.y = root._y;
-		p.vy = -1;
+		p.vy = -1 * Cs.NEW_GEN_SCALE;
 		p.timer = 24;
-		p.field = new Text(Std.string(n), {
-			fontFamily: "Arial",
-			fill: 0xFFFFFF,
+		p.field = p.root.initTextField('field', {
+			font: "Impact",
+			size: 50,
+			color: 0xFFFFFF,
+			stroke: "#000000",
+			strokeThickness: 7,
+			align: "center",
 		});
+		p.field.text = Std.string(n);
 	}
 
 	public function kill() {

@@ -12,7 +12,7 @@ class Kunai extends Shoot {
 			var dx = root._x - Cs.game.hero.root._x;
 			var dy = root._y - Cs.game.hero.root._y;
 
-			if (Math.sqrt(dx * dx + dy * dy) < 14) {
+			if (Math.sqrt(dx * dx + dy * dy) < 14 * Cs.NEW_GEN_SCALE) {
 				Cs.game.hero.hit(this);
 				kill();
 			}

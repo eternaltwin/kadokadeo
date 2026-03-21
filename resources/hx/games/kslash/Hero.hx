@@ -481,6 +481,8 @@ class Hero extends Ent {
 		var p = Cs.game.newPart("partSmoke");
 		p.x = (x + 0.25 + (cx * 0.5)) * Cs.SIZE + dx;
 		p.y = (y + 0.25 + (cy * 0.5)) * Cs.SIZE + dy;
+		p.root.play();
+		p.timer = 20;
 	}
 
 	public function initSupa() {

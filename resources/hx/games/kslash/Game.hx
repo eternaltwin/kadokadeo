@@ -93,12 +93,16 @@ class Game implements kado.GameInterface {
 		bg = dm.attach("bg", DP_BG);
 		bg.stop();
 		inter = cast dm.attach("inter", DP_INTER);
-		inter.initTextField("fieldStar", {
-			font: "Arial",
-			size: 14,
-			color: 0xFFFFFF,
-			align: "center"
+		var txt = inter.initTextField("fieldStar", {
+			font: "Impact",
+			size: 40,
+			color: 0x000000,
+			align: "left",
+			stroke: "#FFFFFF",
+			strokeThickness: 5,
 		});
+		txt.x = 60;
+		txt.y = 6;
 
 		mList = new Array();
 		sList = new Array();

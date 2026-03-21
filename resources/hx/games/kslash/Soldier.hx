@@ -20,7 +20,6 @@ class Soldier extends Runner {
 				stTossSmart = 4;
 				stTossShoot = null;
 				speed = 2 * Cs.NEW_GEN_SCALE;
-				noSpikes();
 				stDrop.push({w: 70, id: 4});
 			// stDrop.push({w:500,id:10});
 			case 2:
@@ -31,7 +30,7 @@ class Soldier extends Runner {
 				stTossShoot = 10;
 				stMaxShot = 3;
 				speed = 3 * Cs.NEW_GEN_SCALE;
-				noSpikes();
+				flSpike = true;
 				stDrop.push({w: 50, id: 4});
 				stDrop.push({w: 30, id: 5});
 				stDrop.push({w: 20, id: 8});
@@ -119,13 +118,5 @@ class Soldier extends Runner {
 			s.dy = dy;
 		}
 		super.shoot();
-	}
-
-	function noSpikes() {
-		// trace('FIXME: noSpikes()');
-		// 	var mc = root;
-		// 	mc.b3.gotoAndStop(2);
-		// 	mc.b4.gotoAndStop(2);
-		// 	mc.b5.gotoAndStop(2);
 	}
 }
