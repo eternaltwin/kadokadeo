@@ -1,5 +1,6 @@
 package interwheel;
 
+import mt.bumdum.Lib;
 import common_haxe_avm1.KeyboardManager;
 import mt.Timer;
 import mt.bumdum.Phys;
@@ -72,7 +73,7 @@ class Blob extends Phys {
 				blop = 0.6;
 			case 2: // GRAB
 				var ba = getAng(cw) + 3.14;
-				wa = Cs.hMod(cw.a - ba, 3.14);
+				wa = Num.hMod(cw.a - ba, 3.14);
 				root.gotoAndPlay(45);
 				inst = 0;
 				Cs.game.focus = cast {x: Cs.mcw / 2, y: cw.y - Cs.VIEW_WHEEL}; // upcast(cw)
@@ -81,12 +82,12 @@ class Blob extends Phys {
 			case 3:
 				root.gotoAndPlay(20);
 			case 4:
-                var tmpX = x;
-                var tmpY = y;
+				var tmpX = x;
+				var tmpY = y;
 				root.removeMovieClip();
 				root = Cs.game.dm.attach("mcBlob", Game.DP_PART);
-                x = tmpX;
-                y = tmpY;
+				x = tmpX;
+				y = tmpY;
 				root.gotoAndPlay(103);
 				frict = 0.8;
 				weight = WEIGHT;
@@ -98,7 +99,7 @@ class Blob extends Phys {
 			case 0: //
 				var m = Cs.SIDE + RAY;
 				if (x < m || x > Cs.mcw - m) {
-					x = Cs.mm(m, x, Cs.mcw - m);
+					x = Num.mm(m, x, Cs.mcw - m);
 					vx = -vx;
 				}
 				if (checkPress()) {
@@ -113,7 +114,7 @@ class Blob extends Phys {
 
 				var m = Cs.SIDE;
 				if (x < m || x > Cs.mcw - m) {
-					x = Cs.mm(m, x, Cs.mcw - m);
+					x = Num.mm(m, x, Cs.mcw - m);
 					initStep(3); // vx *= -1
 				}
 				#if debug

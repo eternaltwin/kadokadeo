@@ -52,26 +52,6 @@ class Cs {
 		return game.kkm.seed.random(max);
 	}
 
-	public static function mm(a, b, c) {
-		return Math.min(Math.max(a, b), c);
-	}
-
-	public static function sMod(v:Float, mod:Float) {
-		while (v >= mod)
-			v -= mod;
-		while (v < 0)
-			v += mod;
-		return v;
-	}
-
-	public static function hMod(v:Float, mod:Float) {
-		while (v > mod)
-			v -= mod * 2;
-		while (v < -mod)
-			v += mod * 2;
-		return v;
-	}
-
 	public static function getDist(o:{x:Float, y:Float}, o2:{x:Float, y:Float}) {
 		var dx = o2.x - o.x;
 		var dy = o2.y - o.y;

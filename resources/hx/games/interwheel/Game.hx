@@ -1,14 +1,15 @@
 package interwheel;
 
+import common_haxe_avm1.KeyboardManager;
+import common_haxe_avm1.KKApi;
+import haxe.io.UInt16Array;
 import pixi.core.math.Point;
 import pixi.core.text.Text;
-import haxe.io.UInt16Array;
-import mt.Timer;
-import common_haxe_avm1.KeyboardManager;
-import mt.DepthManager;
 import pixi.core.textures.RenderTexture;
-import common_haxe_avm1.KKApi;
+import mt.bumdum.Lib;
 import mt.bumdum.Sprite;
+import mt.DepthManager;
+import mt.Timer;
 
 class McPanel extends ASprite {
 	public var panel:ASprite;
@@ -178,9 +179,9 @@ class Game implements kado.GameInterface {
 		list.push(ow);
 
 		for (i in 0...Cs.WMAX) {
-			var c = Cs.mm(0, (i / Cs.WMAX) + (Cs.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
-			var c2 = Cs.mm(0, (i / Cs.WMAX) + (Cs.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
-			var c3 = Cs.mm(0, (i / Cs.WMAX) + (Cs.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
+			var c = Num.mm(0, (i / Cs.WMAX) + (Cs.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
+			var c2 = Num.mm(0, (i / Cs.WMAX) + (Cs.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
+			var c3 = Num.mm(0, (i / Cs.WMAX) + (Cs.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
 
 			var w = new Wheel();
 			w.ray = Cs.WHEEL_RAY_MIN + (1 - c2) * (Cs.WHEEL_RAY_MAX - Cs.WHEEL_RAY_MIN) + Cs.rand() * Cs.WHEEL_RAY_RANDOM;

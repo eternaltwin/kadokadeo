@@ -1,5 +1,6 @@
 package interwheel;
 
+import mt.bumdum.Lib.Num;
 import mt.DepthManager;
 import mt.Timer;
 
@@ -34,7 +35,7 @@ class Wheel extends Element {
 			if (Cs.game.blob.getDist(this) < ray + Blob.RAY) {
 				for (o in mList) {
 					var ba = Cs.game.blob.getAng(this) + 3.14;
-					var da = Cs.hMod((o.a + a) - ba, 3.14);
+					var da = Num.hMod((o.a + a) - ba, 3.14);
 					if (Math.abs(da) * ray < Cs.MINE_SPACE) {
 						Cs.game.blob.explode(ba);
 						//
@@ -226,7 +227,7 @@ class Wheel extends Element {
 			var flBreak = true;
 			a = Cs.rand() * 6.28;
 			for (o in mList) {
-				var da:Float = Math.abs(Cs.hMod(o.a - a, 3.14));
+				var da:Float = Math.abs(Num.hMod(o.a - a, 3.14));
 				if (da * ray < Cs.MINE_SPACE) {
 					flBreak = false;
 					break;
