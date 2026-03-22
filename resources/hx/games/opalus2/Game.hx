@@ -153,7 +153,7 @@ class Game implements kado.GameInterface {
 						var p = new Part(gdm.attach("mcFruit", 8));
 						p.x = mc._x;
 						p.y = mc._y;
-						p.weight = 0.4 + Math.random() * 0.4;
+						p.weight = 0.4 * Cs.NEW_GEN_SCALE + Math.random() * 0.4 * Cs.NEW_GEN_SCALE;
 						p.root.gotoAndStop(mc._currentframe);
 						free(pos.x, pos.y);
 						fList.push(p);
@@ -168,7 +168,6 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(delta:Float) {
-		gdm.root_mc.update();
 		timer -= Timer.tmod;
 		switch (step) {
 			case 1: // DESTROY
@@ -189,7 +188,7 @@ class Game implements kado.GameInterface {
 						free(p.x, p.y);
 					}
 				}
-				if (timer < 0) {
+				if (timer <= 0) {
 					blob.updateSize();
 					if (list.length > 0) {
 						dList = list;
@@ -227,7 +226,7 @@ class Game implements kado.GameInterface {
 				}
 			case 9:
 				if (timer < 0 && fList.length == 0) {
-					KKApi.gameOver(stats);
+					KadoKadeoManager.kkm.gameOver(stats);
 					initStep(10);
 				}
 		}
@@ -270,7 +269,7 @@ class Game implements kado.GameInterface {
 			for (d in Cs.DIR) {
 				var nx = d[0] + p.x;
 				var ny = d[1] + p.y;
-				if (done[nx][ny] == null) {
+				if (nx >= 0 && ny >= 0 && nx < Cs.GRID_MAX && ny < Cs.GRID_MAX && done[nx][ny] == null) {
 					done[nx][ny] = true;
 					var mc = grid[nx][ny];
 					if (mc != null) {
@@ -363,10 +362,12 @@ class Game implements kado.GameInterface {
 		for (d in Cs.DIR) {
 			var nx = x + d[0];
 			var ny = y + d[1];
-			var mc = grid[nx][ny];
-			if (mc != null && base != null && mc._currentframe == base._currentframe && !mc.flDead) {
-				list.push({x: nx, y: ny});
-				mc.flDead = true;
+			if (nx >= 0 && ny >= 0 && nx < Cs.GRID_MAX && ny < Cs.GRID_MAX) {
+				var mc = grid[nx][ny];
+				if (mc != null && base != null && mc._currentframe == base._currentframe && !mc.flDead) {
+					list.push({x: nx, y: ny});
+					mc.flDead = true;
+				}
 			}
 		}
 	}
@@ -425,7 +426,7 @@ class Game implements kado.GameInterface {
 		var max = Std.int(Math.min(60 / dList.length, 12));
 		for (i in 0...max) {
 			var partB = dm.attach("partRotSpark" + base._currentframe, DP_PART);
-			partB.loop = true;
+			// partB.loop = true;
 			partB.play();
 			var p = new Part(partB);
 			var a = Math.random() * 6.28;
@@ -435,7 +436,7 @@ class Game implements kado.GameInterface {
 			p.vr = (Math.random() * 2 - 1) * 30;
 			p.timer = 10 + Math.random() * 10;
 			p.frict = 0.92;
-			var dist = Math.random() * 10;
+			var dist = Math.random() * 10 * Cs.NEW_GEN_SCALE;
 			partB._x = dist;
 			// p.root.sub._x = dist;
 			var na = Math.random() * 6.28;

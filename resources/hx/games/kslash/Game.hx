@@ -234,7 +234,6 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(delta:Float) {
-		this.root.update();
 		/*
 			Log.print(int(monsterLevel))
 			Log.print("-")

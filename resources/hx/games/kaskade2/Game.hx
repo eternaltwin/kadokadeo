@@ -165,7 +165,6 @@ class Game implements kado.GameInterface {
 			updateHoverFromMouse();
 		}
 
-		dm.root_mc.update();
 		updateSprites();
 		var p = Math.pow(0.6, Timer.tmod);
 		if (flash != null) {

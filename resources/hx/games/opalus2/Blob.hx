@@ -15,7 +15,6 @@ class PanelSprite extends ASprite {
 
 class Blob extends Phys {
 	static var RANGE = 1.6;
-	static var TURN_SPEED = 10;
 	static var EPAISSEUR = 2;
 
 	static var FL_SHADE = false;
@@ -36,6 +35,8 @@ class Blob extends Phys {
 	var shade:ASprite;
 
 	var dm:DepthManager;
+	var blobBaseWidth:Float;
+	var blobBaseHeight:Float;
 
 	public function new(mc) {
 		super(mc);
@@ -53,11 +54,21 @@ class Blob extends Phys {
 
 		dm = new DepthManager(root);
 
-		rayCoef = 0.5;
+		var sx = (root._xscale == 0) ? 100 : root._xscale;
+		var sy = (root._yscale == 0) ? 100 : root._yscale;
+		blobBaseWidth = root._width * 100 / sx;
+		blobBaseHeight = root._height * 100 / sy;
+		if (blobBaseWidth <= 0)
+			blobBaseWidth = 100;
+		if (blobBaseHeight <= 0)
+			blobBaseHeight = 100;
+
+		rayCoef = 1.5;
+		frict = 0.85;
 	}
 
 	public override function update() {
-		towardSpeed(trg, 0.1, 0.2);
+		towardSpeed(trg, 0.1, 0.2 * Cs.NEW_GEN_SCALE);
 		updateScale();
 		updatePanel();
 
@@ -71,9 +82,11 @@ class Blob extends Phys {
 	}
 
 	public function updatePanel() {
-		var bpx = x + Math.cos(panel.ta) * root._xscale * rayCoef;
-		var bpy = y + Math.sin(panel.ta) * root._yscale * rayCoef;
-		var m = 16;
+		var rayX = blobBaseWidth * rayCoef;
+		var rayY = blobBaseHeight * rayCoef;
+		var bpx = x + Math.cos(panel.ta) * rayX;
+		var bpy = y + Math.sin(panel.ta) * rayY;
+		var m = 16 * Cs.NEW_GEN_SCALE;
 
 		var rec = 1 / 0;
 		var nnta = null;
@@ -85,8 +98,8 @@ class Blob extends Phys {
 			var tr = 0;
 			while (px < m || px > Cs.mcw - m || py < m || py > Cs.mch - m) {
 				nta += 0.0314 * sens;
-				px = x + Math.cos(nta) * root._xscale * rayCoef;
-				py = y + Math.sin(nta) * root._yscale * rayCoef;
+				px = x + Math.cos(nta) * rayX;
+				py = y + Math.sin(nta) * rayY;
 				if (tr++ > 200)
 					break;
 			}
@@ -101,12 +114,12 @@ class Blob extends Phys {
 		var da = Num.hMod(panel.ta - panel.a, 3.14);
 		panel.a += da * 0.2 * Timer.tmod;
 
-		panel._x = x + Math.cos(panel.a) * root._xscale * rayCoef;
-		panel._y = y + Math.sin(panel.a) * root._yscale * rayCoef;
+		panel._x = x + Math.cos(panel.a) * rayX;
+		panel._y = y + Math.sin(panel.a) * rayY;
 	}
 
 	public function updateScale() {
-		var lim = 3;
+		var lim = 3 * Cs.NEW_GEN_SCALE;
 		var c = 0.12;
 		var dsx = tsx - root._xscale;
 		vsx += Num.mm(-lim, dsx * c, lim);
@@ -131,8 +144,8 @@ class Blob extends Phys {
 
 	public function updateSize() {
 		var o = Cs.game.zlim;
-		tsx = ((o.xmax - o.xmin) + RANGE) * Cs.SIZE;
-		tsy = ((o.ymax - o.ymin) + RANGE) * Cs.SIZE;
+		var targetWidth = ((o.xmax - o.xmin) + RANGE) * Cs.SIZE;
+		var targetHeight = ((o.ymax - o.ymin) + RANGE) * Cs.SIZE;
 
 		trg = {
 			x: (((o.xmin + o.xmax) * 0.5) + 0.5) * Cs.SIZE,
@@ -153,19 +166,22 @@ class Blob extends Phys {
 			var dist = getDist(pos);
 			var a = getAng(pos);
 
-			var dx = Math.cos(a) * tsx * 0.5;
-			var dy = Math.sin(a) * tsy * 0.5;
+			var dx = Math.cos(a) * targetWidth * 0.5;
+			var dy = Math.sin(a) * targetHeight * 0.5;
 			var lim = Math.sqrt(dx * dx + dy * dy);
 			while (dist > lim - RANGE * Cs.SIZE) {
 				// Log.trace("+++")
-				tsx += Math.abs(Math.cos(a) * boost);
-				tsy += Math.abs(Math.sin(a) * boost);
-				dx = Math.cos(a) * tsx * 0.5;
-				dy = Math.sin(a) * tsy * 0.5;
+				targetWidth += Math.abs(Math.cos(a) * boost);
+				targetHeight += Math.abs(Math.sin(a) * boost);
+				dx = Math.cos(a) * targetWidth * 0.5;
+				dy = Math.sin(a) * targetHeight * 0.5;
 				lim = Math.sqrt(dx * dx + dy * dy);
 			}
 		}
 		x = ox;
 		y = oy;
+
+		tsx = targetWidth * 100 / blobBaseWidth;
+		tsy = targetHeight * 100 / blobBaseHeight;
 	}
 }

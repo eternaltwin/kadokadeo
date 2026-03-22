@@ -318,7 +318,6 @@ class Game implements kado.GameInterface {
 			applyReplayEvent(event);
 		}
 
-		dm.root_mc.update();
 		timer -= Timer.tmod;
 		#if debug
 		if (KeyboardManager.isDown(13)) {

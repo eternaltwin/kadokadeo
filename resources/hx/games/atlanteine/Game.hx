@@ -229,7 +229,6 @@ class Game implements kado.GameInterface {
 		for (sp in list)
 			sp.update();
 
-		dm.getMC().update();
 		prec?.update();
 
 		// #if debug

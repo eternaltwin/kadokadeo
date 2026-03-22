@@ -101,7 +101,6 @@ class Game implements kado.GameInterface {
 		grid._x = 0;
 		grid._y = 0;
 		grid._alpha = 95;
-		grid.updateState();
 	}
 
 	public function isLocked() {
@@ -149,7 +148,6 @@ class Game implements kado.GameInterface {
 
 			case GameOver:
 		}
-		mcGrid.updateState();
 	}
 
 	function applyReplayEvent(event:Dynamic) {
@@ -299,7 +297,6 @@ class Game implements kado.GameInterface {
 			mc._y = Cs.LIFE_Y - lives.length * (60 + 3); // => (life_width + ecart);
 			Filt.glow(mc, 2, 3, 0xFFFFFF);
 			lives.push(mc);
-			// mc.updateState();
 		}
 	}
 
@@ -467,7 +464,6 @@ class Game implements kado.GameInterface {
 			s.vx = -72;
 			s.frict = 0.92;
 			s.timer = 60;
-			mcLevel.updateState();
 		} else {
 			if (mcLevel == null)
 				return;
