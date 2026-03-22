@@ -87,5 +87,7 @@ class Sprite {
 		return Math.atan2(point.y - this.y, point.x - this.x);
 	}
 
-	// {
+	public function isOut(m:Float, w:Float = 900, h:Float = 900) {
+		return (x < -m || x > w + m || y < -m || y > h + m);
+	}
 }
