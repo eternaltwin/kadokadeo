@@ -8,8 +8,6 @@ import mt.bumdum.Lib;
 
 @:expose('GameKaskade2')
 class Game implements kado.GameInterface {
-	public var kkm:kado.KadoKadeoManager;
-
 	// !TRICHE! Partie de fish1976 (User #799259) score annoncé : 584540
 	// static var replaySeed = 244383;
 	// static var replay =  [[5, 5], [4, 5], [4, 5], [4, 4], [5, 5], [6, 4], [7, 5], [4, 2], [2, 3], [3, 3], [3, 4], [6, 4], [7, 5], [4, 6], [6, 3], [1, 6], [0, 1], [2, 3], [3, 1], [4, 2], [3, 1], [7, 7], [5, 6], [0, 2], [0, 3], [0, 4], [1, 0], [1, 0], [2, 1], [7, 7], [7, 4], [1, 1], [1, 1], [1, 1], [1, 0], [0, 5], [4, 4], [7, 3], [4, 4], [0, 1]];
@@ -43,10 +41,9 @@ class Game implements kado.GameInterface {
 	var hoveredBille:Bille;
 	var lastHoveredCell:{x:Int, y:Int};
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
-		this.kkm = kkm;
+	public function new(root:ASprite, ?isReplay:Bool = false) {
 		this.isReplayMode = isReplay;
-		this.kkm.replay.init({
+		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: new UInt16Array(0),
 			recordInputs: false,
 			recordEvents: true,
@@ -66,7 +63,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function random(max) {
-		return kkm.seed.random(max);
+		return KadoKadeoManager.kkm.seed.random(max);
 	}
 
 	public function showCursor() {
@@ -90,7 +87,7 @@ class Game implements kado.GameInterface {
 			clicked = getBilleGridPos(curGroup[0]);
 		}
 		if (clicked != null) {
-			kkm.replay.recordEvent({k: 2, x: clicked.x, y: clicked.y});
+			KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: clicked.x, y: clicked.y});
 		}
 
 		for (x in 0...Const.LVL_WIDTH) {
@@ -109,7 +106,7 @@ class Game implements kado.GameInterface {
 		var pts = (n * (n - 1) / 2 * KKApi.val(Const.C100)).int();
 		stats.t.push(time.int());
 		stats.g.push(n);
-		kkm.addScore(KKApi.const(pts));
+		KadoKadeoManager.kkm.addScore(KKApi.const(pts));
 
 		for (b in curGroup) {
 			// for (j in 0...3) {
@@ -160,7 +157,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(ts:Float) {
-		for (event in kkm.replay.consumeEvents()) {
+		for (event in KadoKadeoManager.kkm.replay.consumeEvents()) {
 			applyReplayEvent(event);
 		}
 
@@ -221,7 +218,7 @@ class Game implements kado.GameInterface {
 
 		if (hoveredBille != null && cell != null) {
 			hoveredBille.onRollOver();
-			kkm.replay.recordEvent({k: 0, x: cell.x, y: cell.y});
+			KadoKadeoManager.kkm.replay.recordEvent({k: 0, x: cell.x, y: cell.y});
 		}
 	}
 
@@ -302,7 +299,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function gameOver() {
-		kkm.gameOver(stats);
+		KadoKadeoManager.kkm.gameOver(stats);
 	}
 
 	public function destroy() {}

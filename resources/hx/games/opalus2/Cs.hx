@@ -13,7 +13,6 @@ class Cs {
 	public static var DIR = [[0, 1], [1, 0], [0, -1], [-1, 0]];
 	// public static var PROB = [ 10, 10, 10, 10, 10, 10, 0, 3, 2, 1 ]
 	public static var PROB = [10, 10, 10, 10, 10, 10, 10];
-	// public static var SCORE:Array<KKConst>
 	public static var SCORE_FALL = KKApi.const(2500);
 	public static var SCORE_BALL = KKApi.const(750);
 	public static var SCORE_BONUS = KKApi.const(125);

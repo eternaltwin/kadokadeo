@@ -1,11 +1,6 @@
 package kslash;
 
 class Kunai extends Shoot {
-	public function new(mc) {
-		super(mc);
-		Cs.game.sList.push(this);
-	}
-
 	public override function checkCol() {
 		super.checkCol();
 		if (!Cs.game.hero.flInvicible && Cs.game.hero.sTimer == null) {
@@ -17,10 +12,5 @@ class Kunai extends Shoot {
 				kill();
 			}
 		}
-	}
-
-	public override function kill() {
-		super.kill();
-		Cs.game.sList.remove(this);
 	}
 }

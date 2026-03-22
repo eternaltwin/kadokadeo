@@ -36,8 +36,6 @@ enum Step {
 
 @:expose('GameChocoMouche')
 class Game implements kado.GameInterface {
-	public var kkm:kado.KadoKadeoManager;
-
 	public static var FL_DEBUG = true;
 
 	public static var DP_BG = 0;
@@ -74,9 +72,8 @@ class Game implements kado.GameInterface {
 
 	public var toUpdate:Array<ASprite> = [];
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
-		this.kkm = kkm;
-		this.kkm.replay.init({
+	public function new(root:ASprite) {
+		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: new UInt16Array(0),
 			recordInputs: false,
 			recordEvents: true,
@@ -112,7 +109,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(ts:Float) {
-		for (event in kkm.replay.consumeEvents()) {
+		for (event in KadoKadeoManager.kkm.replay.consumeEvents()) {
 			applyReplayEvent(event);
 		}
 
@@ -121,7 +118,7 @@ class Game implements kado.GameInterface {
 		switch (step) {
 			case Play:
 				if (flGameOver) {
-					kkm.gameOver({});
+					KadoKadeoManager.kkm.gameOver({});
 					step = GameOver;
 				}
 				updateTime();
@@ -178,7 +175,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function recordSlotClick(pos:Pos) {
-		kkm.replay.recordEvent({k: 2, x: pos.x, y: pos.y});
+		KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: pos.x, y: pos.y});
 	}
 
 	function updateSprites() {
@@ -239,8 +236,8 @@ class Game implements kado.GameInterface {
 		var b = Cs.getLevelBombs(level);
 		left = Cs.GRID_WIDTH * Cs.GRID_HEIGHT - b;
 		while (b > 0) {
-			var x = kkm.seed.random(Cs.GRID_WIDTH);
-			var y = kkm.seed.random(Cs.GRID_HEIGHT);
+			var x = KadoKadeoManager.kkm.seed.random(Cs.GRID_WIDTH);
+			var y = KadoKadeoManager.kkm.seed.random(Cs.GRID_HEIGHT);
 			if (from != null && from.x == x && from.y == y)
 				continue;
 			var s = grid[x][y];
@@ -353,7 +350,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function addScore(sc) { // pr ajouter au score du joueur
-		kkm.addScore(sc);
+		KadoKadeoManager.kkm.addScore(sc);
 	}
 
 	// TIME

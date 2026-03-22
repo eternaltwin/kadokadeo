@@ -18,8 +18,6 @@ class McPanel extends ASprite {
 
 @:expose('GameInterwheel')
 class Game implements kado.GameInterface {
-	public var kkm:kado.KadoKadeoManager;
-
 	public static var DP_BG = 1;
 	public static var DP_SHADE = 2;
 	public static var DP_OIL = 3;
@@ -73,11 +71,10 @@ class Game implements kado.GameInterface {
 		bl:Int
 	};
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
-		this.kkm = kkm;
+	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayKeys = new UInt16Array(1);
 		replayKeys[0] = KeyboardManager.SPACE;
-		this.kkm.replay.init({
+		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,
 			recordEvents: true,
@@ -317,7 +314,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(delta:Float) {
-		for (event in kkm.replay.consumeEvents()) {
+		for (event in KadoKadeoManager.kkm.replay.consumeEvents()) {
 			applyReplayEvent(event);
 		}
 
@@ -339,7 +336,7 @@ class Game implements kado.GameInterface {
 
 				var dx = -blob.y - maxHeight;
 				if (dx > 0)
-					kkm.addScore(KKApi.const(Std.int(dx)));
+					KadoKadeoManager.kkm.addScore(KKApi.const(Std.int(dx)));
 				maxHeight = Math.max(-blob.y, maxHeight);
 				var n = Std.int(maxHeight * 0.2);
 				panel.txt.text = n + "m";
@@ -352,7 +349,7 @@ class Game implements kado.GameInterface {
 			case 9:
 				focus = cast {x: blob.x, y: blob.y};
 				if (timer < 0) {
-					kkm.gameOver(stats);
+					KadoKadeoManager.kkm.gameOver(stats);
 					initStep(10);
 				}
 		}
@@ -412,14 +409,14 @@ class Game implements kado.GameInterface {
 		if (blob != null) {
 			blob.setMousePressed(true);
 		}
-		kkm.replay.recordEvent({k: REPLAY_MOUSE_DOWN});
+		KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_MOUSE_DOWN});
 	}
 
 	public function onBlobMouseUp():Void {
 		if (blob != null) {
 			blob.setMousePressed(false);
 		}
-		kkm.replay.recordEvent({k: REPLAY_MOUSE_UP});
+		KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_MOUSE_UP});
 	}
 
 	function scrollMap() {

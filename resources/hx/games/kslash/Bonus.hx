@@ -106,7 +106,7 @@ class Bonus {
 	}
 
 	public function addScore(n) {
-		Cs.game.kkm.addScore(n);
+		KadoKadeoManager.kkm.addScore(n);
 		var p = Cs.game.newPart(null);
 		p.x = root._x;
 		p.y = root._y;

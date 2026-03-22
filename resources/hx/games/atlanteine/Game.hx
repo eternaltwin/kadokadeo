@@ -69,8 +69,6 @@ enum abstract PathType(Int) from Int to Int {
 
 @:expose('GameAtlanteine')
 class Game implements kado.GameInterface {
-	public var kkm:kado.KadoKadeoManager;
-
 	public static var FL_DEBUG = false;
 	public static var FL_BONUS = false;
 	public static var FL_SIZER = false;
@@ -169,8 +167,7 @@ class Game implements kado.GameInterface {
 
 	// var dbg:Graphics;
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
-		this.kkm = kkm;
+	public function new(root:ASprite) {
 		mdm = new mt.DepthManager(root);
 		bg = cast mdm.empty(DP_BG);
 		bg.getGraphics().beginFill(BACKGROUND_COLOR);
@@ -197,7 +194,7 @@ class Game implements kado.GameInterface {
 		replayKeys[1] = common_haxe_avm1.KeyboardManager.ARROW_DOWN;
 		replayKeys[2] = common_haxe_avm1.KeyboardManager.ARROW_LEFT;
 		replayKeys[3] = common_haxe_avm1.KeyboardManager.ARROW_UP;
-		this.kkm.replay.init({
+		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,
 			recordEvents: false,
@@ -459,17 +456,17 @@ class Game implements kado.GameInterface {
 						var a = i / max * 6.28;
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
-						var speed = 1 + this.kkm.seed.rand() * 4;
+						var speed = 1 + KadoKadeoManager.kkm.seed.rand() * 4;
 						var sp = new Phys(dm.attach("partTiret", DP_PARTS));
 						sp.x = p[0] * SIZE + ca * speed * rc;
 						sp.y = p[1] * SIZE + sa * speed * rc;
 						sp.vx = ca * speed + d[0] * press;
 						sp.vy = sa * speed + d[1] * press;
-						sp.vr = (this.kkm.seed.rand() * 2 - 1) * 20;
-						sp.root._rotation = this.kkm.seed.rand() * 360;
-						// sp.weight = -(0.1+this.kkm.seed.rand()*0.2);
-						sp.setScale(50 + this.kkm.seed.rand() * 100);
-						sp.timer = 10 + this.kkm.seed.rand() * 10;
+						sp.vr = (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 20;
+						sp.root._rotation = KadoKadeoManager.kkm.seed.rand() * 360;
+						// sp.weight = -(0.1+KadoKadeoManager.kkm.seed.rand()*0.2);
+						sp.setScale(50 + KadoKadeoManager.kkm.seed.rand() * 100);
+						sp.timer = 10 + KadoKadeoManager.kkm.seed.rand() * 10;
 						sp.fadeType = 0;
 						sp.root.blendMode = BlendModes.ADD;
 						sp.frict = 0.95;
@@ -674,7 +671,7 @@ class Game implements kado.GameInterface {
 			while (ppList.length > 0) {
 				var mc:ASprite = ppList.pop();
 				var p = new Phys(mc);
-				p.timer = 10 + this.kkm.seed.rand() * 5;
+				p.timer = 10 + KadoKadeoManager.kkm.seed.rand() * 5;
 				p.updatePos();
 			}
 		}
@@ -696,7 +693,7 @@ class Game implements kado.GameInterface {
 						var max = 6;
 
 						// SCORE
-						kkm.addScore(SCORE_BLOCK);
+						KadoKadeoManager.kkm.addScore(SCORE_BLOCK);
 						var p = new Phys(dm.empty(DP_PARTS));
 						p.x = mc._x + SIZE * 0.5;
 						p.y = mc._y + SIZE * 0.5;
@@ -801,7 +798,7 @@ class Game implements kado.GameInterface {
 			var timerMod = (mt.Timer.wantedFPS * mt.Timer.deltaT);
 			var n = Math.min(levelTimer, 34 * timerMod);
 			levelTimer -= n;
-			kkm.addScore(Std.int(n) * SCORE_TIME);
+			KadoKadeoManager.kkm.addScore(Std.int(n) * SCORE_TIME);
 			updateTimerGfx();
 
 			// PARTS
@@ -878,7 +875,7 @@ class Game implements kado.GameInterface {
 			var p = getRandomPos([EMPTY, PATH], 4);
 			grid[p.x][p.y] = OUT;
 
-			nList = [{x: p.x, y: p.y, d: kkm.seed.random(4)}];
+			nList = [{x: p.x, y: p.y, d: KadoKadeoManager.kkm.seed.random(4)}];
 			flPush = FL_PUSH && level > 2;
 			getRange();
 
@@ -904,9 +901,9 @@ class Game implements kado.GameInterface {
 
 		for (i in 0...6) {
 			var m = 4;
-			var x = m + kkm.seed.random(xmax - 2 * m);
-			var y = m + kkm.seed.random(ymax - 2 * m);
-			var d = DIR[kkm.seed.random(4)];
+			var x = m + KadoKadeoManager.kkm.seed.random(xmax - 2 * m);
+			var y = m + KadoKadeoManager.kkm.seed.random(ymax - 2 * m);
+			var d = DIR[KadoKadeoManager.kkm.seed.random(4)];
 			while (true) {
 				x += d[0];
 				y += d[1];
@@ -923,9 +920,9 @@ class Game implements kado.GameInterface {
 		var max = Std.int(Math.min(dif * 0.2, 8));
 		for (i in 0...max) {
 			var m = 4;
-			var x = m + kkm.seed.random(xmax - 2 * m);
-			var y = m + kkm.seed.random(ymax - 2 * m);
-			var d = DIR[kkm.seed.random(4)];
+			var x = m + KadoKadeoManager.kkm.seed.random(xmax - 2 * m);
+			var y = m + KadoKadeoManager.kkm.seed.random(ymax - 2 * m);
+			var d = DIR[KadoKadeoManager.kkm.seed.random(4)];
 			while (true) {
 				x += d[0];
 				y += d[1];
@@ -952,8 +949,8 @@ class Game implements kado.GameInterface {
 		var max = Math.floor(dif * 0.1);
 		for (i in 0...max) {
 			var m = 1;
-			var x = m + kkm.seed.random(xmax - 2 * m);
-			var y = m + kkm.seed.random(ymax - 2 * m);
+			var x = m + KadoKadeoManager.kkm.seed.random(xmax - 2 * m);
+			var y = m + KadoKadeoManager.kkm.seed.random(ymax - 2 * m);
 			if (grid[x][y] == EMPTY)
 				grid[x][y] = ROCK;
 		}
@@ -964,7 +961,7 @@ class Game implements kado.GameInterface {
 		var flSwitch = true;
 		for (d in DIR) {
 			for (x in 0...xmax - 3) {
-				if (kkm.seed.random(6) == 0)
+				if (KadoKadeoManager.kkm.seed.random(6) == 0)
 					flSwitch = !flSwitch;
 				if (flSwitch) {
 					if (grid[px][py] == EMPTY) {
@@ -982,7 +979,7 @@ class Game implements kado.GameInterface {
 		var falseBlockCoef = Math.min((level / 20), 0.9);
 		for (x in 0...xmax) {
 			for (y in 0...xmax) {
-				if (grid[x][y] == ROCK && kkm.seed.rand() < falseBlockCoef) {
+				if (grid[x][y] == ROCK && KadoKadeoManager.kkm.seed.rand() < falseBlockCoef) {
 					if ((isFree(x - 1, y) && isFree(x + 1, y)) || (isFree(x, y - 1) && isFree(x, y + 1))) {
 						grid[x][y] = BLOCK;
 					}
@@ -1001,7 +998,7 @@ class Game implements kado.GameInterface {
 				var nx = sx + d[0] * dist;
 				var ny = sy + d[1] * dist;
 				var c = grid[nx][ny];
-				if (c == EMPTY && kkm.seed.random(3) == 0) {
+				if (c == EMPTY && KadoKadeoManager.kkm.seed.random(3) == 0) {
 					grid[nx][ny] = ROCK;
 					break;
 				}
@@ -1124,7 +1121,7 @@ class Game implements kado.GameInterface {
 								}
 							}
 
-							if (flAdd && this.kkm.seed.random(PROBA_PUSH) == 0) {
+							if (flAdd && KadoKadeoManager.kkm.seed.random(PROBA_PUSH) == 0) {
 								flPush = false;
 								var d = DIR[nd];
 								grid[bx + d[0]][by + d[1]] = BLOCK;
@@ -1183,7 +1180,7 @@ class Game implements kado.GameInterface {
 		// GROUND
 		map.mcGround = cast dm.empty(DP_GROUND);
 		map.mcGround.bmp = RenderTexture.create(mcw, mcw);
-		Col.setPercentColor(map.mcGround, this.kkm.seed.random(20), 0xff9900);
+		Col.setPercentColor(map.mcGround, KadoKadeoManager.kkm.seed.random(20), 0xff9900);
 
 		for (y in 0...ymax) {
 			for (x in 0...xmax) {
@@ -1192,11 +1189,11 @@ class Game implements kado.GameInterface {
 				switch (type) {
 					case ROCK:
 						var mc = dm.attach("baseRoche", DP_ROCK);
-						mc.gotoAndStop(kkm.seed.random(7) + 1);
+						mc.gotoAndStop(KadoKadeoManager.kkm.seed.random(7) + 1);
 						mc._x = x * SIZE - 4;
 						mc._y = y * SIZE;
 
-						Col.setPercentColor(mc, this.kkm.seed.random(20), 0xff9900);
+						Col.setPercentColor(mc, KadoKadeoManager.kkm.seed.random(20), 0xff9900);
 						elements[x][y] = mc;
 
 					case BLOCK:
@@ -1205,7 +1202,7 @@ class Game implements kado.GameInterface {
 						mc._y = y * SIZE;
 						mc.gotoAndStop(1);
 
-						Col.setPercentColor(mc, this.kkm.seed.random(20), 0xff9900);
+						Col.setPercentColor(mc, KadoKadeoManager.kkm.seed.random(20), 0xff9900);
 						elements[x][y] = mc;
 					case TELEPORT:
 						var mc = dm.attach("mcTeleport", DP_ROCK);
@@ -1246,7 +1243,7 @@ class Game implements kado.GameInterface {
 						var mcg = new ASprite("mcDalle");
 						mcg.gotoAndStop(groundFrame);
 						c.addChild(mcg);
-						var tacheFrame = this.kkm.seed.random(28) + 1;
+						var tacheFrame = KadoKadeoManager.kkm.seed.random(28) + 1;
 						if (tacheFrame < 12) {
 							var tache = new ASprite("tache");
 							tache.gotoAndStop(Math.floor(tacheFrame / 3) + 1);
@@ -1254,7 +1251,7 @@ class Game implements kado.GameInterface {
 							c.addChild(tache);
 						} else if (tacheFrame < 16) {
 							var zarbi = new ASprite("formeZarbi");
-							zarbi.gotoAndStop(this.kkm.seed.random(zarbi._totalframes) + 1);
+							zarbi.gotoAndStop(KadoKadeoManager.kkm.seed.random(zarbi._totalframes) + 1);
 							zarbi.position.set(5 * NEW_GEN_SCALE, 1.5 * NEW_GEN_SCALE);
 							zarbi.filters = [
 								new DropShadowFilter({
@@ -1309,8 +1306,8 @@ class Game implements kado.GameInterface {
 				var m = 1;
 
 				do {
-					x = m + this.kkm.seed.random(xmax - m * 2);
-					y = m + this.kkm.seed.random(ymax - m * 2);
+					x = m + KadoKadeoManager.kkm.seed.random(xmax - m * 2);
+					y = m + KadoKadeoManager.kkm.seed.random(ymax - m * 2);
 				} while (!isFree(x, y) || bonus[x][y] != null);
 				var mc = dm.attach("mcBonus", DP_ROCK);
 
@@ -1412,7 +1409,7 @@ class Game implements kado.GameInterface {
 		var sum = 0;
 		for (n in proba)
 			sum += n;
-		var rnd = this.kkm.seed.random(sum);
+		var rnd = KadoKadeoManager.kkm.seed.random(sum);
 		sum = 0;
 		for (i in 0...proba.length) {
 			sum += proba[i];
@@ -1426,11 +1423,11 @@ class Game implements kado.GameInterface {
 	function pickBonus(mc:ASprite) {
 		switch (mc._currentframe) {
 			case 1:
-				kkm.addScore(SCORE_GREEN);
+				KadoKadeoManager.kkm.addScore(SCORE_GREEN);
 			case 2:
-				kkm.addScore(SCORE_BLUE);
+				KadoKadeoManager.kkm.addScore(SCORE_BLUE);
 			case 3:
-				kkm.addScore(SCORE_PINK);
+				KadoKadeoManager.kkm.addScore(SCORE_PINK);
 		}
 		ballFlash = 255;
 		Col.setColor(ball.root, 0, Std.int(ballFlash));
@@ -1496,7 +1493,7 @@ class Game implements kado.GameInterface {
 
 		if (levelTimer <= 0) {
 			if (level > SHOW_PATH_LEVEL_LIMIT) {
-				this.kkm.gameOver(stats);
+				KadoKadeoManager.kkm.gameOver(stats);
 				step = GameOver;
 			} else {
 				if (ppList == null)
@@ -1581,8 +1578,8 @@ class Game implements kado.GameInterface {
 			m = 2;
 		var to = 0;
 		while (true) {
-			var x = m + kkm.seed.random(xmax - 2 * m);
-			var y = m + kkm.seed.random(ymax - 2 * m);
+			var x = m + KadoKadeoManager.kkm.seed.random(xmax - 2 * m);
+			var y = m + KadoKadeoManager.kkm.seed.random(ymax - 2 * m);
 			for (type in a) {
 				if (grid[x][y] == type)
 					return {x: x, y: y};
@@ -1601,7 +1598,7 @@ class Game implements kado.GameInterface {
 			pos.push(n);
 		var a = [];
 		while (pos.length > 0) {
-			var index = kkm.seed.random(pos.length);
+			var index = KadoKadeoManager.kkm.seed.random(pos.length);
 			var n = pos[index];
 			pos.splice(index, 1);
 			a.push(list[n]);

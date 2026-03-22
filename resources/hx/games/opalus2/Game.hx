@@ -12,8 +12,6 @@ class GridElem extends ASprite {
 
 @:expose('GameOpalus2')
 class Game implements kado.GameInterface {
-	public var kkm:kado.KadoKadeoManager;
-
 	public static var DP_FRUIT = 2;
 	public static var DP_PART = 3;
 
@@ -54,8 +52,7 @@ class Game implements kado.GameInterface {
 
 	var grid:Array<Array<GridElem>>;
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
-		this.kkm = kkm;
+	public function new(root:ASprite, ?isReplay:Bool = false) {
 		Cs.init();
 		Cs.game = this;
 
@@ -188,7 +185,7 @@ class Game implements kado.GameInterface {
 						addChain(p.x, p.y, list);
 						var ball = grid[p.x][p.y];
 						blast(ball);
-						kkm.addScore(KKApi.cadd(Cs.SCORE_BALL, bonus));
+						KadoKadeoManager.kkm.addScore(KKApi.cadd(Cs.SCORE_BALL, bonus));
 						free(p.x, p.y);
 					}
 				}
@@ -215,7 +212,7 @@ class Game implements kado.GameInterface {
 						}else{
 							var ball = grid[p.x][p.y]
 							blast(ball)
-							//kkm.addScore(Cs.SCORE[ball._currentframe-1])
+							//KadoKadeoManager.kkm.addScore(Cs.SCORE[ball._currentframe-1])
 							free(p.x,p.y)
 						}
 					}
@@ -247,7 +244,7 @@ class Game implements kado.GameInterface {
 			if (p.y > Cs.mch + Cs.SIZE) {
 				p.kill();
 				fList.splice(i--, 1);
-				kkm.addScore(Cs.SCORE_FALL);
+				KadoKadeoManager.kkm.addScore(Cs.SCORE_FALL);
 			}
 			i++;
 		}

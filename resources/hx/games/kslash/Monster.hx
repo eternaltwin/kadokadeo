@@ -105,13 +105,13 @@ class Monster extends Ent {
 
 	//
 	public function cut(n) {
-		Cs.game.kkm.addScore(Cs.C50);
+		KadoKadeoManager.kkm.addScore(Cs.C50);
 		harm(n);
 		throwMonster(1.57 - (1.57 * Cs.game.hero.sens), 10 * Cs.NEW_GEN_SCALE);
 	}
 
 	public function hit(shot:Star) {
-		Cs.game.kkm.addScore(Cs.C10);
+		KadoKadeoManager.kkm.addScore(Cs.C10);
 		harm(shot.damage);
 		throwMonster(Math.atan2(shot.vy, shot.vx), 2 * Cs.NEW_GEN_SCALE);
 	}
@@ -127,7 +127,7 @@ class Monster extends Ent {
 
 	public function death() {
 		Cs.setPercentColor(root, 0, 0xFFFFFF);
-		Cs.game.kkm.addScore(score);
+		KadoKadeoManager.kkm.addScore(score);
 		Cs.game.spawnBonus(root._x, root._y, getDrop());
 		Cs.game.monsterLevel -= stLevel;
 		leaveSquare();

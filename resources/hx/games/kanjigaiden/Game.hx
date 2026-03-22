@@ -18,8 +18,6 @@ class AnonSprite696460 extends ASprite {
 
 @:expose('GameKanjiGaiden')
 class Game implements kado.GameInterface {
-	public var kkm:kado.KadoKadeoManager;
-
 	public static var DP_BONUS = 17;
 	public static var DP_WARN = 16;
 	public static var DP_SC = 15;
@@ -68,9 +66,7 @@ class Game implements kado.GameInterface {
 
 	public var mcScore:AnonSprite696460;
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
-		this.kkm = kkm;
-
+	public function new(root:ASprite) {
 		dm = new mt.DepthManager(root);
 		me = this;
 

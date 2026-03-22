@@ -1,8 +1,7 @@
 package opalus2;
 
 import common_haxe_avm1.KKApi;
-import mt.bumdum.Lib.Num;
-import mt.bumdum.Lib.Point;
+import mt.bumdum.Lib;
 import mt.bumdum.Phys;
 import mt.Timer;
 import mt.DepthManager;

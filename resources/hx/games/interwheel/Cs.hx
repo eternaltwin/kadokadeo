@@ -45,11 +45,11 @@ class Cs {
 	public static function init() {}
 
 	public static inline function rand():Float {
-		return game.kkm.seed.rand();
+		return KadoKadeoManager.kkm.seed.rand();
 	}
 
 	public static inline function random(max:Int):Int {
-		return game.kkm.seed.random(max);
+		return KadoKadeoManager.kkm.seed.random(max);
 	}
 
 	public static function getDist(o:{x:Float, y:Float}, o2:{x:Float, y:Float}) {

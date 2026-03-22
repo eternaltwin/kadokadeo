@@ -141,7 +141,7 @@ class Hero extends Ent {
 					vy *= -1.25;
 					if (!flGameOver) {
 						Cs.game.stats.dif = Std.int(Cs.game.dif);
-						Cs.game.kkm.gameOver(Cs.game.stats);
+						KadoKadeoManager.kkm.gameOver(Cs.game.stats);
 						flGameOver = true;
 					}
 					root._y = yLim;

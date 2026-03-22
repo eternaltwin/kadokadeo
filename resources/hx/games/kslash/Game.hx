@@ -16,8 +16,6 @@ class Inter extends ASprite {
 
 @:expose('GameKSlash')
 class Game implements kado.GameInterface {
-	public var kkm:kado.KadoKadeoManager;
-
 	public static var DP_BG = 1;
 	public static var DP_BACK = 2;
 	public static var DP_MAP = 3;
@@ -72,8 +70,7 @@ class Game implements kado.GameInterface {
 
 	public var grid:Array<Array<{block:Bool, list:Array<Monster>}>>;
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
-		this.kkm = kkm;
+	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayKeys = new UInt16Array(6);
 		replayKeys[0] = KeyboardManager.ARROW_RIGHT;
 		replayKeys[1] = KeyboardManager.ARROW_DOWN;
@@ -81,7 +78,7 @@ class Game implements kado.GameInterface {
 		replayKeys[3] = KeyboardManager.ARROW_UP;
 		replayKeys[4] = KeyboardManager.SPACE;
 		replayKeys[5] = KeyboardManager.CONTROL;
-		this.kkm.replay.init({
+		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,
 			recordEvents: false,

@@ -2,8 +2,6 @@ package xianxiang;
 
 @:expose('GameXianXiang')
 class Game implements kado.GameInterface {
-	public var kkm:kado.KadoKadeoManager;
-
 	var dmanager:DepthManager;
 	var level:Level;
 	var bg_mc:MovieClip;
@@ -16,8 +14,7 @@ class Game implements kado.GameInterface {
 	var path:Array<ASprite>;
 	var pathTimer:float;
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite) {
-		this.kkm = kkm;
+	public function new(root:ASprite) {
 		colorTime = 0;
 		dmanager = new DepthManager(root);
 		bg_mc = dmanager.attach("bg", Const.PLAN_BG);

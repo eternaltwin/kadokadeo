@@ -27,11 +27,11 @@ class Ghost extends Phys {
 		// debug = mc.createEmptyMovieClip().getGraphics();
 		smc = mc.attachMovie("mcGhost");
 
-		angle = game.kkm.seed.rand() * 6.28;
+		angle = KadoKadeoManager.kkm.seed.rand() * 6.28;
 		va = 0;
-		speed = 1 + game.kkm.seed.rand() * 1;
-		speedFloat = 20 + game.kkm.seed.rand() * 20;
-		float = game.kkm.seed.rand() * 628;
+		speed = 1 + KadoKadeoManager.kkm.seed.rand() * 1;
+		speedFloat = 20 + KadoKadeoManager.kkm.seed.rand() * 20;
+		float = KadoKadeoManager.kkm.seed.rand() * 628;
 
 		var p = getFreePos();
 		x = (p[0] + 0.5) * Game.SIZE;
@@ -39,7 +39,7 @@ class Ghost extends Phys {
 	}
 
 	override function update() {
-		va += (game.kkm.seed.rand() * 2 - 1) * 0.05;
+		va += (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 0.05;
 		va *= Math.pow(0.92, mt.Timer.tmod);
 		angle = Num.hMod(angle + va, 3.14);
 
@@ -133,8 +133,8 @@ class Ghost extends Phys {
 		var y = null;
 		var to = 0;
 		do {
-			x = game.kkm.seed.random(game.xmax);
-			y = game.kkm.seed.random(game.ymax);
+			x = KadoKadeoManager.kkm.seed.random(game.xmax);
+			y = KadoKadeoManager.kkm.seed.random(game.ymax);
 			if (to++ > 100) {
 				trace("noFreePos!");
 				break;

@@ -21,6 +21,8 @@ typedef GameParams = {
 
 @:expose("KadoKadeo")
 class KadoKadeoManager extends Application {
+	public static var kkm:KadoKadeoManager;
+
 	public var canvas:CanvasElement;
 
 	var gameClass:Class<GameInterface>;
@@ -71,6 +73,7 @@ class KadoKadeoManager extends Application {
 		this.root = new ASprite();
 		this.dm = new DepthManager(root);
 		this.stage.addChild(root);
+		KadoKadeoManager.kkm = this;
 
 		// Pixi intro
 
@@ -122,6 +125,7 @@ class KadoKadeoManager extends Application {
 		mt.Timer.tmod = 1;
 		if (game != null) {
 			replay.beginFrame();
+			gameRoot.update();
 			game.update(dt);
 			replay.endFrame();
 			if (replayOverlay != null && replay.isPlayingReplay() && !replayPaused) {
@@ -204,7 +208,7 @@ class KadoKadeoManager extends Application {
 			}
 		}
 
-		this.game = Type.createInstance(gameClass, [this, gameRoot, isReplay]);
+		this.game = Type.createInstance(gameClass, [gameRoot, isReplay]);
 	}
 
 	public function gameOver(params:Dynamic):Void {

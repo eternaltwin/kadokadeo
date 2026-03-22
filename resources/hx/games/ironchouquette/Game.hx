@@ -79,7 +79,7 @@ class Game implements kado.GameInterface {
 	public var kidnappers:Array<Phys>;
 	public var chouquette:Phys;
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
+	public function new(root:ASprite, ?isReplay:Bool = false) {
 		Cs.game = this;
 		dm = new DepthManager(root);
 		this.root = root;
