@@ -39,6 +39,7 @@ class KadoKadeoManager extends Application {
 
 	var startScene:StartScene;
 	var gameOverScreen:GameOver = null;
+	var endScene:EndScene = null;
 	var bottomBar:BottomBar = null;
 	var replayOverlay:ReplayOverlay = null;
 
@@ -221,7 +222,14 @@ class KadoKadeoManager extends Application {
 			// TODO: show loading screen
 			makeEndRunHttpRequest().then((endRunDetails:Dto.EndRunResponseDTO) -> {
 				gameOverScreen.destroy();
-				this.stage.addChild(new EndScene(this, endRunDetails));
+				if (this.endScene != null) {
+					this.endScene.dispose();
+					if (this.endScene.parent != null) {
+						this.endScene.parent.removeChild(this.endScene);
+					}
+				}
+				this.endScene = new EndScene(this, endRunDetails);
+				this.stage.addChild(this.endScene);
 			}).catchError((_) -> {
 				// TODO: show error
 				trace(_);
@@ -235,11 +243,19 @@ class KadoKadeoManager extends Application {
 	override public function destroy(?removeView:Bool):Void {
 		this.stop();
 		this.replay.stop();
+		if (this.endScene != null) {
+			this.endScene.dispose();
+			this.endScene = null;
+		}
 		if (this.replayOverlay != null && this.replayOverlay.parent != null) {
 			this.replayOverlay.parent.removeChild(this.replayOverlay);
 		}
 		this.ticker.stop();
 		untyped Ticker.system.stop();
+		this.game = null;
+		this.gameOverScreen = null;
+		this.gameRoot = null;
+		this.root = null;
 		super.destroy(removeView);
 	}
 

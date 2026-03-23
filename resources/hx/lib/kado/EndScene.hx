@@ -1,6 +1,5 @@
 package kado;
 
-import js.Browser;
 import pixi.extras.AnimatedSprite;
 import common_haxe_avm1.pixi.DropShadowFilter;
 import pixi.core.display.Container;
@@ -11,10 +10,40 @@ import mt.bumdum.Lib;
 class EndScene extends Container {
 	var kkm:KadoKadeoManager;
 	var details:Dto.EndRunResponseDTO;
+	var disposed:Bool = false;
+	var tweens:Array<Dynamic> = [];
+	var piouWalk:AnimatedSprite;
+	var piouFloat:AnimatedSprite;
 
 	var text:Array<String>;
 
 	var fieldBest:pixi.core.text.Text;
+
+	inline function registerTween(tween:Dynamic):Dynamic {
+		tweens.push(tween);
+		return tween;
+	}
+
+	public function dispose():Void {
+		if (disposed) {
+			return;
+		}
+		disposed = true;
+		for (tween in tweens) {
+			if (tween != null) {
+				untyped tween.stop();
+				untyped tween.remove();
+				untyped tween.removeAllListeners();
+			}
+		}
+		tweens = [];
+		if (piouWalk != null) {
+			piouWalk.stop();
+		}
+		if (piouFloat != null) {
+			piouFloat.stop();
+		}
+	}
 
 	public function new(kkm:KadoKadeoManager, details:Dto.EndRunResponseDTO) {
 		super();
@@ -166,7 +195,7 @@ class EndScene extends Container {
 		fieldBest.alpha = details.is_best ? 1 : 0;
 		Filt.glow(fieldBest, 15, 2, 0xffff00);
 
-		var tweenFilterBest = pixi.core.Pixi.tweenManager.createTween(fieldBest);
+		var tweenFilterBest = registerTween(pixi.core.Pixi.tweenManager.createTween(fieldBest));
 		tweenFilterBest.time = 300;
 		tweenFilterBest.pingPong = true;
 		tweenFilterBest.easing = pixi.core.Pixi.tween.Easing.inSine();
@@ -185,7 +214,7 @@ class EndScene extends Container {
 		tweenFilterBest.loop = true;
 		tweenFilterBest.start();
 
-		var tweenY = pixi.core.Pixi.tweenManager.createTween(cont);
+		var tweenY = registerTween(pixi.core.Pixi.tweenManager.createTween(cont));
 		tweenY.time = 1500;
 		tweenY.easing = pixi.core.Pixi.tween.Easing.outExpo();
 		tweenY.delay = 500;
@@ -204,7 +233,7 @@ class EndScene extends Container {
 		var cont = new Container();
 
 		var piouCont = new Container();
-		var piouWalk = new AnimatedSprite(untyped kkm.sheet.animations["piou_walk"]);
+		piouWalk = new AnimatedSprite(untyped kkm.sheet.animations["piou_walk"]);
 		var piouShade = Sprite.from("piou_shade.png");
 		piouShade.scale.set(0.77);
 		piouCont.addChild(piouShade);
@@ -234,7 +263,7 @@ class EndScene extends Container {
 		cont.y = 500;
 
 		cont.alpha = 0;
-		var tweenAppear = pixi.core.Pixi.tweenManager.createTween(cont);
+		var tweenAppear = registerTween(pixi.core.Pixi.tweenManager.createTween(cont));
 		tweenAppear.time = 1000;
 		tweenAppear.easing = pixi.core.Pixi.tween.Easing.outExpo();
 		tweenAppear.delay = 1000;
@@ -268,32 +297,40 @@ class EndScene extends Container {
 		cont.addChild(textQual);
 		cont.addChild(textQualField);
 
-		var tweenPiouMove = pixi.core.Pixi.tweenManager.createTween(piouCont);
+		var tweenPiouMove = registerTween(pixi.core.Pixi.tweenManager.createTween(piouCont));
 		tweenPiouMove.time = 1500;
 		tweenPiouMove.delay = 2000;
 		tweenPiouMove.from({x: 50}).to({x: 705}).start();
-		Browser.window.setTimeout(() -> {
+
+		untyped tweenPiouMove.on("start", () -> {
+			if (disposed || piouWalk == null) {
+				return;
+			}
 			piouWalk.play();
-		}, 2000);
-		Browser.window.setTimeout(() -> {
+		});
+
+		untyped tweenPiouMove.on("end", () -> {
+			if (disposed || piouWalk == null) {
+				return;
+			}
 			piouWalk.gotoAndStop(0);
-			var piouFloat = new AnimatedSprite(untyped kkm.sheet.animations["piou_float"]);
+			piouFloat = new AnimatedSprite(untyped kkm.sheet.animations["piou_float"]);
 			piouFloat.animationSpeed = 0.5;
 			piouFloat.y = -50;
 			piouCont.removeChild(piouWalk);
 			piouCont.addChild(piouFloat);
 			piouFloat.play();
 
-			var tweenFloat1 = pixi.core.Pixi.tweenManager.createTween(piouFloat);
+			var tweenFloat1 = registerTween(pixi.core.Pixi.tweenManager.createTween(piouFloat));
 			tweenFloat1.time = 600;
 			tweenFloat1.pingPong = true;
 			tweenFloat1.loop = true;
 			tweenFloat1.from({y: piouFloat.y}).to({y: piouFloat.y - 20}).start();
-			var tweenFloat2 = pixi.core.Pixi.tweenManager.createTween(piouFloat);
+			var tweenFloat2 = registerTween(pixi.core.Pixi.tweenManager.createTween(piouFloat));
 			tweenFloat2.time = 800;
 			tweenFloat2.loop = true;
 			tweenFloat2.from({rotation: 0}).to({rotation: 6.28}).start();
-		}, 3500);
+		});
 
 		return cont;
 	}
@@ -311,7 +348,7 @@ class EndScene extends Container {
 		field.alpha = 0;
 		cont.addChild(field);
 
-		var tweenBlink = pixi.core.Pixi.tweenManager.createTween(field);
+		var tweenBlink = registerTween(pixi.core.Pixi.tweenManager.createTween(field));
 		tweenBlink.time = 500;
 		tweenBlink.delay = 1000;
 		tweenBlink.loop = true;
