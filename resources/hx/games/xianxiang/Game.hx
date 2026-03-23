@@ -232,10 +232,9 @@ class Game implements kado.GameInterface {
 	}
 
 	function clearPath() {
-		var i = 0;
-		while (i < path.length) {
+		var i;
+		for (i in 0...path.length) {
 			path[i].removeMovieClip();
-			i++;
 		}
 		path = new Array();
 	}

@@ -35,37 +35,31 @@ class Level {
 
 	function canBreak() {
 		var x, y;
-		for (x = 0;
-		x < Const.LVL_WIDTH;
-		x++
-	)
-		for (y = 0;
-		y < Const.LVL_HEIGHT;
-		y++
-	)
-		{
-			var c = tbl[x][y];
-			if (c != null) {
-				if (Const.NTURNS >= 1)
-					return true;
+		for (x in 0...Const.LVL_WIDTH) {
+			for (y in 0...Const.LVL_HEIGHT) {
+				var c = tbl[x][y];
+				if (c != null) {
+					if (Const.NTURNS >= 1)
+						return true;
 
-				var px, py;
-				px = x;
-				while (++px < Const.LVL_WIDTH)
-					if (tbl[px][y] != null)
-						return true;
-				py = y;
-				while (++py < Const.LVL_HEIGHT)
-					if (tbl[x][py] != null)
-						return true;
-				px = x;
-				while (--px >= 0)
-					if (tbl[px][y] != null)
-						return true;
-				py = y;
-				while (--py >= 0)
-					if (tbl[x][py] != null)
-						return true;
+					var px, py;
+					px = x;
+					while (++px < Const.LVL_WIDTH)
+						if (tbl[px][y] != null)
+							return true;
+					py = y;
+					while (++py < Const.LVL_HEIGHT)
+						if (tbl[x][py] != null)
+							return true;
+					px = x;
+					while (--px >= 0)
+						if (tbl[px][y] != null)
+							return true;
+					py = y;
+					while (--py >= 0)
+						if (tbl[x][py] != null)
+							return true;
+				}
 			}
 		}
 		return false;
@@ -76,11 +70,9 @@ class Level {
 		tbl[c2.x][c2.y] = null;
 		var m = new Array();
 		var i;
-		for (i = 0;
-		i < Const.LVL_WIDTH;
-		i++
-	)
-		m[i] = new Array();
+		for (i in 0...Const.LVL_WIDTH) {
+			m[i] = new Array();
+		}
 		genColMap(Std.cast(tbl), m, c1.x, c1.y);
 		tbl[c1.x][c1.y] = c1;
 		tbl[c2.x][c2.y] = c2;
@@ -91,11 +83,7 @@ class Level {
 	function shuffle(tbl) {
 		var l = tbl.length;
 		var i;
-		for (i = 0;
-		i < l;
-		i++
-	)
-		{
+		for (i in 0...l) {
 			var a = Std.random(l);
 			var b = Std.random(l);
 			var s = tbl[a];
@@ -148,54 +136,52 @@ class Level {
 		var h = Const.LVL_HEIGHT;
 
 		tbl = new Array();
-		for (x = 0;
-		x < w;
-		x++
-	)
-		tbl[x] = new Array();
-		for (y = 0;
-		y < h;
-		y++
-	)
-		for (x = 0;
-		x < w;
-		x++
-	)
-		tbl[x][y] = new Card(game, CardID.random(), x, y);
+		for (x in 0...w) {
+			tbl[x] = new Array();
+		}
+		for (y in 0...h) {
+			for (x in 0...w) {
+				tbl[x][y] = new Card(game, CardID.random(), x, y);
+			}
+		}
 	}
 
 	function pathLength(c1, c2) {
 		var x, y;
 		var n = 0;
 		if (c1.x < c2.x) {
-			for (x = c1.x;
-			x < c2.x;
-			x++
-		)
-			if (tbl[x][c1.y] != null)
-				n++;
+			x = c1.x;
+			while (x < c2.x) {
+				if (tbl[x][c1.y] != null) {
+					n++;
+				}
+				x++
+			}
 		} else {
-			for (x = c1.x;
-			x > c2.x;
-			x--
-		)
-			if (tbl[x][c1.y] != null)
-				n++;
+			x = c1.x;
+			while (x > c2.x) {
+				if (tbl[x][c1.y] != null) {
+					n++;
+				}
+				x--
+			}
 		}
 		if (c1.y < c2.y) {
-			for (y = c1.y;
-			y < c2.y;
-			y++
-		)
-			if (tbl[x][y] != null)
-				n++;
+			y = c1.y;
+			while (y < c2.y) {
+				if (tbl[x][y] != null) {
+					n++;
+				}
+				y++
+			}
 		} else {
-			for (y = c1.y;
-			y > c2.y;
-			y--
-		)
-			if (tbl[x][y] != null)
-				n++;
+			y = c1.y;
+			while (y > c2.y) {
+				if (tbl[x][y] != null) {
+					n++;
+				}
+				y--
+			}
 		}
 		return n - 1;
 	}
