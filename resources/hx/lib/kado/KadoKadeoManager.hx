@@ -6,6 +6,7 @@ import pixi.loaders.Loader;
 import js.lib.Promise;
 import js.Browser;
 import js.html.CanvasElement;
+import js.html.CustomEvent;
 import pixi.core.Application;
 import pixi.core.ticker.Ticker;
 
@@ -230,6 +231,7 @@ class KadoKadeoManager extends Application {
 				}
 				this.endScene = new EndScene(this, endRunDetails);
 				this.stage.addChild(this.endScene);
+				emitWindowEvent("gameFinished", endRunDetails);
 			}).catchError((_) -> {
 				// TODO: show error
 				trace(_);
@@ -278,6 +280,16 @@ class KadoKadeoManager extends Application {
 		if (bottomBar != null) {
 			bottomBar.updateScore(score);
 		}
+		emitWindowEvent("score", {score: score});
+	}
+
+	private function emitWindowEvent(eventName:String, ?detail:Dynamic):Void {
+		var win:Dynamic = Browser.window;
+		if (win == null || !Reflect.hasField(win, "evts")) {
+			return;
+		}
+		var evts:Dynamic = Reflect.field(win, "evts");
+		untyped evts.dispatchEvent(new CustomEvent(eventName, {detail: detail}));
 	}
 
 	private function makeEndRunHttpRequest():Promise<Dto.EndRunResponseDTO> {

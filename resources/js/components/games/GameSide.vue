@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 import GameControls from '@/components/games/GameControls.vue'
 import GameScoreTable from '@/components/games/GameScoreTable.vue'
@@ -19,6 +19,15 @@ const scores = ref([])
 const personalBestForPeriod = ref(null)
 const personalBest = ref(null)
 const worldsBest = ref(null)
+const currentScore = ref(0)
+const palliers = ref([
+  { score: props.game.stars[0], points: 0, img: '/gfx/iconGreenStar.gif', alt: 'Etoile verte' },
+  { score: props.game.stars[1], points: 0, img: '/gfx/iconOrangeStar.gif', alt: 'Etoile orange' },
+  { score: props.game.stars[2], points: 0, img: '/gfx/iconRedStar.gif', alt: 'Etoile rouge' },
+])
+const nextPallierIndex = computed(() => {
+  return palliers.value.findIndex((p) => Math.max(personalBest.value, currentScore.value) < p.score)
+})
 
 const refreshScores = () => {
   return get(`/games/${props.game.id}/scores`).then((data) => {
@@ -29,19 +38,21 @@ const refreshScores = () => {
   })
 }
 
-const waitAndRefresh = () => {
-  setTimeout(() => {
-    refreshScores()
-  }, 2000)
+const updateCurrentScore = (evt) => {
+  if (evt.detail?.score != null) {
+    currentScore.value = evt.detail.score
+  }
 }
 
 onMounted(() => {
   intervalId = setInterval(refreshScores, 1200000)
-  window.evts.addEventListener('gameFinished', waitAndRefresh)
+  window.evts.addEventListener('gameFinished', refreshScores)
+  window.evts.addEventListener('score', updateCurrentScore)
 })
 onUnmounted(() => {
   clearInterval(intervalId)
-  window.evts.removeEventListener('gameFinished', waitAndRefresh)
+  window.evts.removeEventListener('gameFinished', refreshScores)
+  window.evts.removeEventListener('score', updateCurrentScore)
 })
 
 refreshScores()
@@ -92,13 +103,13 @@ const selectedTab = ref('gameRules')
         <tbody>
           <tr>
             <td scope="row">
-              <Number :value="personalBestForPeriod?.score ?? 0" color="orange" />
+              <Number :value="Math.max(personalBestForPeriod?.score ?? 0, currentScore)" color="orange" />
             </td>
             <td>
-              <Number :value="personalBest?.score ?? 0" color="orange" />
+              <Number :value="Math.max(personalBest?.score ?? 0, currentScore)" color="orange" />
             </td>
             <td>
-              <Number :value="worldsBest?.score ?? 0" color="orange" />
+              <Number :value="Math.max(worldsBest?.score ?? 0, currentScore)" color="orange" />
             </td>
           </tr>
         </tbody>
@@ -114,33 +125,15 @@ const selectedTab = ref('gameRules')
           </tr>
         </thead>
         <tbody class="twoColoured">
-          <tr>
+          <tr v-for="(pallier, index) in palliers" :key="index">
             <td scope="row">
-              <img src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
+              <img v-if="nextPallierIndex === index" src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
             </td>
             <td class="textLeft">
-              <img src="/gfx/iconRedStar.gif" alt="Etoile rouge" /> <Number :value="game.stars[2]" color="orange" />
+              <img :src="pallier.img" :alt="pallier.alt" /> <Number :value="pallier.score" color="orange" />
             </td>
             <td class="textRight">
-              <Number :value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
-            </td>
-          </tr>
-          <tr>
-            <td scope="row"></td>
-            <td class="textLeft">
-              <img src="/gfx/iconOrangeStar.gif" alt="Etoile orange" /> <Number :value="game.stars[1]" color="orange" />
-            </td>
-            <td class="textRight">
-              <Number :value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
-            </td>
-          </tr>
-          <tr>
-            <td scope="row"></td>
-            <td class="textLeft">
-              <img src="/gfx/iconGreenStar.gif" alt="Etoile verte" /> <Number :value="game.stars[0]" color="orange" />
-            </td>
-            <td class="textRight">
-              <Number :value="0" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
+              <Number :value="pallier.points" color="green" /> <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
             </td>
           </tr>
         </tbody>
