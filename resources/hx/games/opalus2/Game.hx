@@ -1,5 +1,6 @@
 package opalus2;
 
+import haxe.io.UInt16Array;
 import mt.bumdum.Sprite;
 import common_haxe_avm1.KKApi;
 import mt.bumdum.Lib;
@@ -35,8 +36,10 @@ class Game implements kado.GameInterface {
 	};
 
 	public var zone:Array<{x:Int, y:Int}>;
+	public var zoneMap:Array<Array<Bool>>;
 	public var sel:Array<Array<{x:Int, y:Int}>>;
 	public var dList:Array<{x:Int, y:Int}>;
+	public var selectableMap:Array<Array<Bool>>;
 
 	public var dm:DepthManager;
 	public var gdm:DepthManager;
@@ -47,12 +50,22 @@ class Game implements kado.GameInterface {
 	var bg:ASprite;
 	var map:ASprite;
 	var blob:Blob;
+	var hoverColor:Int;
+	var isReplayMode:Bool;
+	var hoveredCell:{x:Int, y:Int};
 
 	var stats:{};
 
 	var grid:Array<Array<GridElem>>;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
+		isReplayMode = isReplay;
+		KadoKadeoManager.kkm.replay.init({
+			recordedKeys: new UInt16Array(0),
+			recordInputs: false,
+			recordEvents: true,
+		});
+
 		Cs.init();
 		Cs.game = this;
 
@@ -70,6 +83,8 @@ class Game implements kado.GameInterface {
 		zone = new Array();
 
 		glowDec = 0;
+		hoverColor = -1;
+		hoveredCell = null;
 
 		initGrid();
 		turn = Cs.TURN;
@@ -100,20 +115,31 @@ class Game implements kado.GameInterface {
 		blob.updateSize();
 
 		map.mask = blob.root;
+		map.onPress = function() {
+			onMapPress();
+		};
+		map.useHandCursor = true;
+		KKApi.registerButton(map);
 
 		initStep(0);
 	}
 
 	public function initGrid() {
 		grid = new Array();
+		zoneMap = new Array();
+		selectableMap = new Array();
 		for (x in 0...Cs.GRID_MAX) {
 			grid[x] = new Array();
+			zoneMap[x] = new Array();
+			selectableMap[x] = new Array();
 			for (y in 0...Cs.GRID_MAX) {
 				var mc:GridElem = cast dm.attach("mcFruit", DP_FRUIT);
 				mc._x = (x + 0.5) * Cs.SIZE;
 				mc._y = (y + 0.5) * Cs.SIZE;
 				mc.flDead = false;
 				grid[x][y] = mc;
+				zoneMap[x][y] = false;
+				selectableMap[x][y] = false;
 				var id = getRandomId();
 				mc.gotoAndStop(id + 1);
 				mc.cacheAsBitmap = true;
@@ -168,7 +194,14 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(delta:Float) {
+		for (event in KadoKadeoManager.kkm.replay.consumeEvents()) {
+			applyReplayEvent(event);
+		}
+
 		timer -= Timer.tmod;
+		if (!isReplayMode) {
+			updateHover();
+		}
 		switch (step) {
 			case 1: // DESTROY
 				var prc = (1 - timer / Cs.TIME_EXPLODE) * 100;
@@ -257,48 +290,54 @@ class Game implements kado.GameInterface {
 	}
 
 	public function initSel() {
-		var done = new Array();
-		for (x in 0...Cs.GRID_MAX) {
-			done[x] = new Array();
+		var colorMax = Cs.PROB.length;
+		var centerEmpty = getCenterEmptyMap();
+		var x = 0;
+		while (x < Cs.GRID_MAX) {
+			var y = 0;
+			while (y < Cs.GRID_MAX) {
+				selectableMap[x][y] = false;
+				y++;
+			}
+			x++;
 		}
+
 		sel = new Array();
-		for (i in 0...10) {
+		for (i in 0...colorMax) {
 			sel[i] = new Array();
 		}
-		for (p in zone) {
-			for (d in Cs.DIR) {
-				var nx = d[0] + p.x;
-				var ny = d[1] + p.y;
-				if (nx >= 0 && ny >= 0 && nx < Cs.GRID_MAX && ny < Cs.GRID_MAX && done[nx][ny] == null) {
-					done[nx][ny] = true;
-					var mc = grid[nx][ny];
-					if (mc != null) {
-						var id = mc._currentframe - 1;
-						sel[id].push({x: nx, y: ny});
-						var cellX = nx;
-						var cellY = ny;
-						var colorId = id;
-						mc.onPress = function() {
-							selectFromCell(cellX, cellY);
-						};
-						mc.onRollOver = function() {
-							enlight(colorId);
-						};
-						mc.onRollOut = function() {
-							delight(colorId);
-						};
-						mc.onDragOut = function() {
-							delight(colorId);
-						};
-						mc.useHandCursor = true;
+		for (x in 0...Cs.GRID_MAX) {
+			for (y in 0...Cs.GRID_MAX) {
+				if (grid[x][y] == null) {
+					continue;
+				}
+				var hasVoidNeighbor = false;
+				for (d in Cs.DIR) {
+					var nx = d[0] + x;
+					var ny = d[1] + y;
+					if (nx >= 0 && ny >= 0 && nx < Cs.GRID_MAX && ny < Cs.GRID_MAX && centerEmpty[nx][ny] == true) {
+						hasVoidNeighbor = true;
+						break;
 					}
+				}
+				if (hasVoidNeighbor) {
+					selectableMap[x][y] = true;
+					var mc = grid[x][y];
+					var id = mc._currentframe - 1;
+					sel[id].push({x: x, y: y});
 				}
 			}
 		}
+
+		hoverColor = -1;
+		delight(-1);
 	}
 
 	public function selectFromCell(x:Int, y:Int) {
 		if (x < 0 || y < 0 || x >= Cs.GRID_MAX || y >= Cs.GRID_MAX) {
+			return;
+		}
+		if (!selectableMap[x][y]) {
 			return;
 		}
 		var mc = grid[x][y];
@@ -309,18 +348,17 @@ class Game implements kado.GameInterface {
 	}
 
 	public function emptySel() {
-		while (sel.length > 0) {
-			var list = sel.pop();
-			while (list.length > 0) {
-				var p = list.pop();
-				var mc = grid[p.x][p.y];
-				mc.onPress = null;
-				mc.onRollOver = null;
-				mc.onRollOut = null;
-				mc.onDragOut = null;
-				mc.useHandCursor = false;
-				KKApi.registerButton(mc);
+		delight(-1);
+		hoverColor = -1;
+		hoveredCell = null;
+		var x = 0;
+		while (x < Cs.GRID_MAX) {
+			var y = 0;
+			while (y < Cs.GRID_MAX) {
+				selectableMap[x][y] = false;
+				y++;
 			}
+			x++;
 		}
 		sel = new Array();
 	}
@@ -356,6 +394,132 @@ class Game implements kado.GameInterface {
 		}
 	}
 
+	public function getMouseCell():{x:Int, y:Int} {
+		var mx = map._xmouse;
+		var my = map._ymouse;
+		var cx = Std.int(Math.floor(mx / Cs.SIZE));
+		var cy = Std.int(Math.floor(my / Cs.SIZE));
+		if (cx < 0 || cy < 0 || cx >= Cs.GRID_MAX || cy >= Cs.GRID_MAX) {
+			return null;
+		}
+		return {x: cx, y: cy};
+	}
+
+	public function getCenterEmptyMap():Array<Array<Bool>> {
+		var centerEmpty = new Array();
+		for (x in 0...Cs.GRID_MAX) {
+			centerEmpty[x] = new Array();
+		}
+
+		var queueX = new Array<Int>();
+		var queueY = new Array<Int>();
+		var qh = 0;
+
+		function addCenterEmpty(x:Int, y:Int) {
+			if (x < 0 || y < 0 || x >= Cs.GRID_MAX || y >= Cs.GRID_MAX) {
+				return;
+			}
+			if (centerEmpty[x][y] == true || grid[x][y] != null) {
+				return;
+			}
+			centerEmpty[x][y] = true;
+			queueX.push(x);
+			queueY.push(y);
+		}
+
+		var mid = Std.int(Cs.GRID_MAX * 0.5);
+		addCenterEmpty(mid, mid);
+		while (qh < queueX.length) {
+			var cx = queueX[qh];
+			var cy = queueY[qh];
+			qh++;
+			for (d in Cs.DIR) {
+				addCenterEmpty(cx + d[0], cy + d[1]);
+			}
+		}
+
+		return centerEmpty;
+	}
+
+	public function updateHover() {
+		updateHoverFromCell(getMouseCell(), true);
+	}
+
+	public function updateHoverFromCell(pos:{x:Int, y:Int}, ?recordEvent:Bool = false) {
+		if (step != 0) {
+			if (hoverColor != -1) {
+				delight(hoverColor);
+				hoverColor = -1;
+			}
+			hoveredCell = null;
+			return;
+		}
+
+		var id = -1;
+		if (pos != null && selectableMap[pos.x][pos.y]) {
+			var mc = grid[pos.x][pos.y];
+			if (mc != null) {
+				id = mc._currentframe - 1;
+			}
+		}
+
+		if (recordEvent && id != -1 && pos != null) {
+			if (hoveredCell == null || hoveredCell.x != pos.x || hoveredCell.y != pos.y) {
+				KadoKadeoManager.kkm.replay.recordEvent({k: 0, x: pos.x, y: pos.y});
+			}
+		}
+
+		hoveredCell = (id != -1 && pos != null) ? {x: pos.x, y: pos.y} : null;
+
+		if (id == hoverColor) {
+			return;
+		}
+
+		if (hoverColor != -1) {
+			delight(hoverColor);
+		}
+		hoverColor = id;
+		if (hoverColor != -1) {
+			enlight(hoverColor);
+		}
+	}
+
+	public function onMapPress() {
+		if (step != 0) {
+			return;
+		}
+		var pos = getMouseCell();
+		if (pos != null) {
+			if (!isReplayMode) {
+				KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: pos.x, y: pos.y});
+			}
+			selectFromCell(pos.x, pos.y);
+		}
+	}
+
+	public function applyReplayEvent(event:Dynamic) {
+		if (event == null) {
+			return;
+		}
+
+		var kind:Int = Reflect.field(event, "k");
+		var x:Null<Int> = Reflect.field(event, "x");
+		var y:Null<Int> = Reflect.field(event, "y");
+		if (kind == null || x == null || y == null) {
+			return;
+		}
+
+		switch (kind) {
+			case 0:
+				updateHoverFromCell({x: x, y: y}, false);
+			case 1:
+			case 2:
+				updateHoverFromCell({x: x, y: y}, false);
+				selectFromCell(x, y);
+			default:
+		}
+	}
+
 	//
 	public function addChain(x, y, list) {
 		var base = grid[x][y];
@@ -373,6 +537,10 @@ class Game implements kado.GameInterface {
 	}
 
 	public function free(x, y) {
+		if (zoneMap[x][y]) {
+			return;
+		}
+		zoneMap[x][y] = true;
 		zone.push({x: x, y: y});
 		zlim.xmin = Math.min(zlim.xmin, x);
 		zlim.ymin = Math.min(zlim.ymin, y);
@@ -385,7 +553,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function getRandomId() {
-		var rnd = Std.random(Cs.PROB_SUM);
+		var rnd = random(Cs.PROB_SUM);
 		var sum = 0;
 		for (i in 0...Cs.PROB.length) {
 			sum += Cs.PROB[i];
@@ -394,6 +562,10 @@ class Game implements kado.GameInterface {
 		}
 		trace("RANDOM ID ERROR");
 		return null;
+	}
+
+	public function random(max:Int):Int {
+		return KadoKadeoManager.kkm.seed.random(max);
 	}
 
 	//
@@ -451,73 +623,50 @@ class Game implements kado.GameInterface {
 		var safe = new Array();
 		for (x in 0...Cs.GRID_MAX) {
 			safe[x] = new Array();
-			for (y in 0...Cs.GRID_MAX) {
-				if (grid[x][y] != null && (x == 0 || x == Cs.GRID_MAX - 1 || y == 0 || y == Cs.GRID_MAX - 1) && grid[x][y] != null) {
-					safe[x][y] = true;
-				}
-			}
 		}
 
-		for (x in 1...Cs.GRID_MAX - 1) {
-			for (y in 1...Cs.GRID_MAX - 1) {
-				if (safe[x][y] == null) {
-					var list = [];
-					var verdict = findWay(x, y, safe, list);
-					for (p in list) {
-						safe[p.x][p.y] = verdict;
-					}
-				}
+		var queueX = new Array<Int>();
+		var queueY = new Array<Int>();
+		var qh = 0;
+
+		function addSafe(x:Int, y:Int) {
+			if (x < 0 || y < 0 || x >= Cs.GRID_MAX || y >= Cs.GRID_MAX) {
+				return;
+			}
+			if (safe[x][y] == true || grid[x][y] == null) {
+				return;
+			}
+			safe[x][y] = true;
+			queueX.push(x);
+			queueY.push(y);
+		}
+
+		for (x in 0...Cs.GRID_MAX) {
+			addSafe(x, 0);
+			addSafe(x, Cs.GRID_MAX - 1);
+		}
+		for (y in 1...Cs.GRID_MAX - 1) {
+			addSafe(0, y);
+			addSafe(Cs.GRID_MAX - 1, y);
+		}
+
+		while (qh < queueX.length) {
+			var cx = queueX[qh];
+			var cy = queueY[qh];
+			qh++;
+			for (d in Cs.DIR) {
+				addSafe(cx + d[0], cy + d[1]);
 			}
 		}
 
 		var list = [];
 		for (x in 1...Cs.GRID_MAX - 1) {
 			for (y in 1...Cs.GRID_MAX - 1) {
-				if (safe[x][y] == false)
+				if (grid[x][y] != null && safe[x][y] != true)
 					list.push({x: x, y: y});
 			}
 		}
 
 		return list;
-	}
-
-	public function findWay(x:Int, y:Int, safe:Array<Array<Bool>>, list:Array<{x:Int, y:Int}>):Bool {
-		var st = safe[x][y];
-		if (st)
-			return true;
-		if (st == false || grid[x][y] == null)
-			return false;
-		for (p in list) {
-			if (p.x == x && p.y == y)
-				return false;
-		}
-		list.push({x: x, y: y});
-		for (d in Cs.DIR) {
-			var nx = x + d[0];
-			var ny = y + d[1];
-			if (findWay(nx, ny, safe, list))
-				return true;
-		}
-		return false;
-
-		/*
-			var list = [{x:x,y:y}]
-			for( var i=0; i<Cs.DIR.length; i++ ){
-				var d = Cs.DIR[i]
-				var nx = x+d[0]
-				var ny = y+d[1]
-				if()
-				if ( grid[nx][ny]!=null && ( safe[nx][ny] || findWay(nx,ny,safe) ) ){
-					for( var n=0; n<list.length; n++){
-						var p = list[n]
-						safe[p.x][p.y] = true
-					}
-					return true
-				}
-
-			}
-
-			return false;
-		 */
 	}
 }
