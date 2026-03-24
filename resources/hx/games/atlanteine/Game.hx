@@ -688,7 +688,7 @@ class Game implements kado.GameInterface {
 		if (FL_BONUS_BLOCK && pushInfo == null) {
 			for (a in elements)
 				for (mc in a.filter(n -> n != null)) {
-					if (mc._currentframe == 11 + BLOCK) {
+					if (mc._name.startsWith("box@")) {
 						var max = 6;
 
 						// SCORE
@@ -696,12 +696,19 @@ class Game implements kado.GameInterface {
 						var p = new Phys(dm.empty(DP_PARTS));
 						p.x = mc._x + SIZE * 0.5;
 						p.y = mc._y + SIZE * 0.5;
-						p.vy = -5;
+						p.vy = -5 * NEW_GEN_SCALE;
 						p.frict = 0.7;
 						p.timer = 20;
-						p.root.updateState();
 						// p.root.gotoAndStop(Std.random(p.root._totalframes)+1);
 						var mcf:FieldMC = cast p.root;
+						mcf.field = mcf.initTextField("field", {
+							color: 0xFFFFFF,
+							align: "center",
+							font: "Impact",
+							size: 36,
+							x: 0,
+							y: -11 * NEW_GEN_SCALE
+						});
 						mcf.field.text = Std.string(KKApi.val(SCORE_BLOCK));
 						Filt.glow(p.root, 2 * NEW_GEN_SCALE, 2, 0);
 						var mcScore = p.root;
@@ -720,14 +727,13 @@ class Game implements kado.GameInterface {
 							var p = new Phys(dm.attach("partBlock", DP_PARTS));
 							p.x = mc._x + SIZE * 0.5;
 							p.y = mc._y + SIZE * 0.5;
-							p.vx = (Math.random() * 2 - 1) * 2;
-							p.vy = -(1 + Math.random() * 2);
-							p.weight = 0.1 + Math.random() * 0.1;
+							p.vx = (Math.random() * 2 - 1) * 2 * NEW_GEN_SCALE;
+							p.vy = -(1 + Math.random() * 2) * NEW_GEN_SCALE;
+							p.weight = 0.1 + Math.random() * 0.1 * NEW_GEN_SCALE;
 							p.fadeType = 0;
 							p.timer = 10 + Math.random() * 10;
-							p.vr = (Math.random() * 2 - 1) * 20;
+							p.vr = (Math.random() * 2 - 1) * 20 * NEW_GEN_SCALE;
 							p.root._rotation = Math.random() * 360;
-							p.root.updateState();
 							Filt.glow(p.root, 3 * NEW_GEN_SCALE, 2, 0);
 							if (i == max * 0.5)
 								dm.over(mcScore);
