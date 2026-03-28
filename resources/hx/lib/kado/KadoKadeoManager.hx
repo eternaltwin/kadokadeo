@@ -172,7 +172,7 @@ class KadoKadeoManager extends Application {
 		startGame();
 		return;
 		#end
-		startScene = new StartScene(this, params.gameId);
+		startScene = new StartScene(this, params.name);
 		startScene.interactive = true;
 		startScene.once("pointerdown", e -> {
 			Api.askContract({daily: params.isDaily, gameId: params.gameId}, (data:Dto.ApiResponse<Dto.RunDTO>) -> {
@@ -194,7 +194,7 @@ class KadoKadeoManager extends Application {
 		var loader:Loader = untyped PIXI.Loader.shared;
 
 		var b = dm.empty(2);
-		this.bottomBar = new BottomBar(this);
+		this.bottomBar = new BottomBar(this, runDetails);
 		b.addChild(this.bottomBar);
 		var assetName = '/assets/img/content/' + this.params.name + '/' + this.params.name + '-0.json';
 		loader.add(assetName).load(() -> {

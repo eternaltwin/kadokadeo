@@ -10,10 +10,12 @@ class BottomBar extends ASprite {
 
 	var contractText:pixi.core.text.Text;
 	var digitSprites:Array<Sprite> = [];
+	var runDetails:Dto.RunDTO;
 
-	public function new(kkm:KadoKadeoManager) {
+	public function new(kkm:KadoKadeoManager, runDetails:Dto.RunDTO) {
 		super();
 		this.kkm = kkm;
+		this.runDetails = runDetails;
 
 		this.makeBottomBar();
 		this.initDigitSprites();
@@ -26,7 +28,7 @@ class BottomBar extends ASprite {
 		bb.y = kkm.renderer.height - 68;
 		this.addChild(bb);
 
-		contractText = new pixi.core.text.Text("20", {
+		contractText = new pixi.core.text.Text(Std.string(runDetails.contract_points), {
 			fill: 0x206c7f,
 			fontFamily: 'Fredoka Bold',
 			fontSize: 40,
