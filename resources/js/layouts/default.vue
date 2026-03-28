@@ -29,7 +29,9 @@ const authStore = useAuthStore()
   </header>
 
   <Error style="width:890px;margin:20px 60px 40px 60px;font-size:0.85em;">
-    Kadokadéo est actuellement en alpha. Il se peut que vous rencontriez des bugs. N'hésitez pas à nous faire part de vos retours !
+    Kadokadéo est toujours en alpha!<br />
+    Les scores des jeux ont été réinitialisés le 1er avril 2026. Nous ne pouvons pas garantir que tous les futurs scores seront conservés.<br />
+    De nouveaux jeux seront ajoutés régulièrement, n'hésitez pas à revenir souvent pour les découvrir!<br />
   </Error>
 
   <main id="container">
