@@ -5,7 +5,6 @@ namespace App\Filament\Widgets;
 use App\Models\Game;
 use App\Models\Run;
 use Carbon\Carbon;
-use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
@@ -13,7 +12,6 @@ use Filament\Widgets\ChartWidget;
 use Filament\Widgets\ChartWidget\Concerns\HasFiltersSchema;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
-use Illuminate\Database\Eloquent\Builder;
 
 class RunsPlayedChart extends ChartWidget
 {
@@ -23,10 +21,10 @@ class RunsPlayedChart extends ChartWidget
 
     protected function getData(): array
     {
-        $startDate = $this->filters['startDate'];
-        $endDate = $this->filters['endDate'];
-        $game = $this->filters['game'] ?? null;
-        $period = $this->filters['period'] ?? null;
+        $startDate = data_get($this->filters, 'startDate');
+        $endDate = data_get($this->filters, 'endDate');
+        $game = data_get($this->filters, 'game');
+        $period = data_get($this->filters, 'period');
 
         $runQ = Run::query()->when($game, function ($query) use ($game) {
             return $query->where('game_id', $game);
