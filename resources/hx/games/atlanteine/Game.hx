@@ -32,6 +32,11 @@ private enum Step {
 	GameOver;
 }
 
+private enum DelayedAction {
+	SpawnBallAction;
+	NextLevelAction;
+}
+
 class FieldMC extends ASprite {
 	public var field:Text;
 }
@@ -122,6 +127,7 @@ class Game implements kado.GameInterface {
 
 	var levelTimer:Float;
 	var levelTimerMax:Float;
+	var delayedActions:Array<{timer:Float, action:DelayedAction}>;
 
 	public var dif:Float;
 
@@ -181,6 +187,7 @@ class Game implements kado.GameInterface {
 		level = 1;
 		clevel = 1;
 		skin = 0;
+		delayedActions = [];
 		flControl = true;
 		step = Step.WaitTimer;
 		initTimer();
@@ -275,21 +282,62 @@ class Game implements kado.GameInterface {
 		}
 
 		updateDisplay();
+		updateScheduledActions();
+	}
+
+	public inline function rand():Float {
+		return KadoKadeoManager.kkm.seed.rand();
+	}
+
+	public inline function random(max:Int):Int {
+		if (max <= 0)
+			return 0;
+		return KadoKadeoManager.kkm.seed.random(max);
+	}
+
+	public inline function randomSign():Float {
+		return rand() * 2 - 1;
+	}
+
+	function scheduleAction(action:DelayedAction, delayMs:Int) {
+		delayedActions.push({
+			timer: delayMs * mt.Timer.wantedFPS / 1000,
+			action: action,
+		});
+	}
+
+	function updateScheduledActions() {
+		var i = 0;
+		while (i < delayedActions.length) {
+			var pending = delayedActions[i];
+			pending.timer -= mt.Timer.tmod;
+			if (pending.timer <= 0) {
+				delayedActions.splice(i, 1);
+				switch (pending.action) {
+					case SpawnBallAction:
+						spawnBall();
+					case NextLevelAction:
+						nextLevel();
+				}
+			} else {
+				i++;
+			}
+		}
 	}
 
 	// ANIMS
 	function updateAnims() {
 		// PATH ANIM
 		if (ppList != null) {
-			if (Std.random(5) == 0) {
+			if (random(5) == 0) {
 				var mc:Ppath = cast dm.attach("mcPoint", DP_GROUND);
 				mc.anchor.set(0.5, 0.5);
 				mc.n = nList.length - 1;
 				mc.c = 0;
-				mc.speed = 0.1 + Math.random() * 0.2;
-				mc.dx = (Math.random() * 2 - 1) * SIZE * 0.5;
-				mc.dy = (Math.random() * 2 - 1) * SIZE * 0.5;
-				mc._xscale = mc._yscale = 50 + Math.random() * 50;
+				mc.speed = 0.1 + rand() * 0.2;
+				mc.dx = randomSign() * SIZE * 0.5;
+				mc.dy = randomSign() * SIZE * 0.5;
+				mc._xscale = mc._yscale = 50 + rand() * 50;
 				mc.blendMode = BlendModes.ADD;
 				ppList.push(mc);
 			}
@@ -540,7 +588,7 @@ class Game implements kado.GameInterface {
 
 	function killBall() {
 		step = WaitTimer;
-		haxe.Timer.delay(spawnBall, 500);
+		scheduleAction(SpawnBallAction, 500);
 	}
 
 	// ROCK
@@ -641,20 +689,20 @@ class Game implements kado.GameInterface {
 					var ray = 18 * NEW_GEN_SCALE;
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
-					var sp = 0.5 + Math.random() * 1.5;
+					var sp = 0.5 + rand() * 1.5;
 					p.x = mcw - 20 * NEW_GEN_SCALE + ca * ray;
 					p.y = mch - 20 * NEW_GEN_SCALE + sa * ray;
 					// p.weight = -(0.1+Math.random()*0.3);
 					p.vx = ca * sp;
 					p.vy = sa * sp;
-					p.timer = 10 + Math.random() * 10;
+					p.timer = 10 + rand() * 10;
 					p.fadeType = 0;
 					p.frict = 0.9;
 					p.root.blendMode = BlendModes.ADD;
 					p.setScale(200 * NEW_GEN_SCALE);
 					p.updatePos();
-					p.vr = (Math.random() * 2 - 1) * 30;
-					p.root._rotation = Math.random() * 360;
+					p.vr = randomSign() * 30;
+					p.root._rotation = rand() * 360;
 				}
 				flFill = false;
 			}
@@ -679,7 +727,7 @@ class Game implements kado.GameInterface {
 		mcBall.shadow._alpha = 0;
 		move.coef = 0;
 		step = Wait;
-		haxe.Timer.delay(nextLevel, 700);
+		scheduleAction(NextLevelAction, 700);
 
 		mcOut.gotoAndPlay(2);
 
@@ -727,13 +775,13 @@ class Game implements kado.GameInterface {
 							var p = new Phys(dm.attach("partBlock", DP_PARTS));
 							p.x = mc._x + SIZE * 0.5;
 							p.y = mc._y + SIZE * 0.5;
-							p.vx = (Math.random() * 2 - 1) * 2 * NEW_GEN_SCALE;
-							p.vy = -(1 + Math.random() * 2) * NEW_GEN_SCALE;
-							p.weight = 0.1 + Math.random() * 0.1 * NEW_GEN_SCALE;
+							p.vx = randomSign() * 2 * NEW_GEN_SCALE;
+							p.vy = -(1 + rand() * 2) * NEW_GEN_SCALE;
+							p.weight = 0.1 + rand() * 0.1 * NEW_GEN_SCALE;
 							p.fadeType = 0;
-							p.timer = 10 + Math.random() * 10;
-							p.vr = (Math.random() * 2 - 1) * 20 * NEW_GEN_SCALE;
-							p.root._rotation = Math.random() * 360;
+							p.timer = 10 + rand() * 10;
+							p.vr = randomSign() * 20 * NEW_GEN_SCALE;
+							p.root._rotation = rand() * 360;
 							Filt.glow(p.root, 3 * NEW_GEN_SCALE, 2, 0);
 							if (i == max * 0.5)
 								dm.over(mcScore);
@@ -814,9 +862,9 @@ class Game implements kado.GameInterface {
 			var ray = 16 * NEW_GEN_SCALE;
 			p.x = mcw - 20 * NEW_GEN_SCALE + Math.cos(a) * ray;
 			p.y = mch - 20 * NEW_GEN_SCALE + Math.sin(a) * ray;
-			p.weight = -(0.1 + Math.random() * 0.3);
-			p.vx = (Math.random() * 2 - 1) * 0.5;
-			p.timer = 10 + Math.random() * 10;
+			p.weight = -(0.1 + rand() * 0.3);
+			p.vx = randomSign() * 0.5;
+			p.timer = 10 + rand() * 10;
 			p.fadeType = 0;
 			p.root.blendMode = BlendModes.ADD;
 			p.setScale(150 * NEW_GEN_SCALE);
@@ -1439,11 +1487,11 @@ class Game implements kado.GameInterface {
 
 		for (i in 0...3) {
 			var p = dm.attach("partWarp", DP_PARTS);
-			p._x = mc._x + SIZE * 0.5 + (Math.random() * 2 - 1) * 6;
-			p._y = mc._y + SIZE * 0.5 + (Math.random() * 2 - 1) * 6;
+			p._x = mc._x + SIZE * 0.5 + randomSign() * 6;
+			p._y = mc._y + SIZE * 0.5 + randomSign() * 6;
 			p._xscale = p._yscale = 20;
-			p._rotation = Math.random() * 360;
-			p.gotoAndPlay(Std.random(6) + 1);
+			p._rotation = rand() * 360;
+			p.gotoAndPlay(random(6) + 1);
 			p.updateState();
 		}
 	}

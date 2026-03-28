@@ -88,7 +88,7 @@ class Ghost extends Phys {
 				}
 				var da = Num.hMod(Math.atan2(vy, vx) - angle, 3.14);
 				if (turnCol == null)
-					turnCol = Std.random(2) * 2 - 1;
+					turnCol = game.random(2) * 2 - 1;
 				va += 0.05 * turnCol * mt.Timer.tmod;
 				flCol = true;
 			}
@@ -102,7 +102,7 @@ class Ghost extends Phys {
 		var max = 12;
 		for (i in 0...max) {
 			var p = new Phys(game.dm.attach("partCloud", Game.DP_PARTS));
-			var sp = 0.2 + Math.random() * 0.5;
+			var sp = 0.2 + game.rand() * 0.5;
 			var r = sp * 10;
 			var a = i / max * 6.28;
 			var ca = Math.cos(a);
@@ -112,14 +112,14 @@ class Ghost extends Phys {
 			p.vx = ca * sp;
 			p.vy = sa * sp;
 			p.frict = 0.95;
-			p.timer = 10 + Math.random() * 20;
-			p.sleep = Math.random() * 8;
-			p.setScale(100 + Math.random() * 100);
+			p.timer = 10 + game.rand() * 20;
+			p.sleep = game.rand() * 8;
+			p.setScale(100 + game.rand() * 100);
 			p.fadeType = 0;
 			p.root.blendMode = BlendModes.ADD;
-			p.weight = -Math.random() * 0.3;
-			p.vr = (Math.random() * 2 - 1) * 10;
-			p.root._rotation = Math.random() * 360;
+			p.weight = -game.rand() * 0.3;
+			p.vr = game.randomSign() * 10;
+			p.root._rotation = game.rand() * 360;
 			// if(Std.random(2)==0)Col.setColor(p.root,0xCCCC00,-255);
 			p.root.updateState();
 		}
