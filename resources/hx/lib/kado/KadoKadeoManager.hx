@@ -334,7 +334,7 @@ class KadoKadeoManager extends Application {
 		jse.setPublicKey(kado.public_key);
 		var req = {
 			run_id: runDetails.run_id,
-			score: score + 1,
+			score: score,
 			timestamp: Std.int(Date.now().getTime() / 1000),
 			replay: replay.encodeReplayString(),
 		};
