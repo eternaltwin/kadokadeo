@@ -19,14 +19,15 @@ Go to [Install the project](#install-the-project) if you need to install the pro
 
 Here are the configuration variables:
 
-Variable | Description | Default
----------|-------------|---------
-`KADO_GAMES_PER_DAY` | Games allowed to play per user per day | 100
-`KADO_RUNS_MAX_CONCURRENCY` | Maximum amount of games a user can play in parallel before being throttled | 5
-`KADO_RSA_PRIVATE_KEY_PATH` | Private RSA key path of the server. Should be kept **private**. | `storage/app/private/privkey.pem`
-`KADO_RSA_PUBLIC_KEY_PATH` | Public key path associated with the private key | `storage/app/private/pubkey.pem`
+| Variable                    | Description                                                                | Default                           |
+| --------------------------- | -------------------------------------------------------------------------- | --------------------------------- |
+| `KADO_GAMES_PER_DAY`        | Games allowed to play per user per day                                     | 100                               |
+| `KADO_RUNS_MAX_CONCURRENCY` | Maximum amount of games a user can play in parallel before being throttled | 5                                 |
+| `KADO_RSA_PRIVATE_KEY_PATH` | Private RSA key path of the server. Should be kept **private**.            | `storage/app/private/privkey.pem` |
+| `KADO_RSA_PUBLIC_KEY_PATH`  | Public key path associated with the private key                            | `storage/app/private/pubkey.pem`  |
 
 You can generate keys with :
+
 ```bash
 openssl genrsa -out keypair.pem
 openssl rsa -in keypair.pem -pubout -out public.pem
@@ -41,25 +42,18 @@ openssl rsa -in keypair.pem -pubout -out public.pem
 >
 > Example: `docker exec -u dev -it kadokadeo_app php artisan migrate`
 
-Command | Description | Ran in CRON
---------|-------------|------
-`migrate` | Synchronises the database | ❌
-`kado:prepare-new-period` | Close current period and begin a new one. | ✅ Every week on monday, but it still makes periods of 2 weeks
-`kado:reset-daily-games` | Resets the daily games for every user to the configured value | ✅ Everyday at 00:00
+| Command                   | Description                                                   | Ran in CRON                                                    |
+| ------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------- |
+| `migrate`                 | Synchronises the database                                     | ❌                                                             |
+| `kado:prepare-new-period` | Close current period and begin a new one.                     | ✅ Every week on monday, but it still makes periods of 2 weeks |
+| `kado:reset-daily-games`  | Resets the daily games for every user to the configured value | ✅ Everyday at 00:00                                           |
 
 ## Installing / Updating games
 
-For now, each game is remade with Godot. You don't need Godot to be installed.
-
-You just need to run:
+To update/compile every game (resources/hx):
 
 ```
-make update-games
-```
-
-Or :
-```
-docker compose run --rm kadokadeo_app sh /www/update_games.sh
+make compile-games
 ```
 
 ## Installing with Docker
@@ -87,6 +81,7 @@ sudo -s
 apt update -y
 apt install build-essential curl git -y
 ```
+
 - Install Docker and Docker Compose in command line :
 
 ```bash
@@ -101,6 +96,7 @@ apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-co
 exit # Quit root mode
 cd ~ # Go back to your home directory
 ```
+
 Then, add your user to the Docker group :
 
 ```bash
@@ -110,6 +106,7 @@ newgrp docker
 ```
 
 Run `docker run hello-world` to check if Docker is correctly installed. If not :
+
 - try to run it in a new terminal ;
 - log off and log in again ;
 - restart your computer and try again.
@@ -117,9 +114,9 @@ Run `docker run hello-world` to check if Docker is correctly installed. If not :
 ### Install the project
 
 - If not done yet, generate a SSH key and add it to your GitLab profile :
-  - Generate the key : `ssh-keygen -t rsa -b 2048 -C "SSH Key for Kadokadéo repository (https://gitlab.com/eternaltwin/kadokadeo/kadokadeo)"`
-  - Display the key : `cat ~/.ssh/id_rsa.pub`
-  - Copy the key and add it to your GitLab profile here : https://gitlab.com/-/user_settings/ssh_keys/
+    - Generate the key : `ssh-keygen -t rsa -b 2048 -C "SSH Key for Kadokadéo repository (https://gitlab.com/eternaltwin/kadokadeo/kadokadeo)"`
+    - Display the key : `cat ~/.ssh/id_rsa.pub`
+    - Copy the key and add it to your GitLab profile here : https://gitlab.com/-/user_settings/ssh_keys/
 
 - Clone the repository and move to it : `git clone git@gitlab.com:eternaltwin/kadokadeo/kadokadeo.git && cd kadokadeo`
 
@@ -130,27 +127,29 @@ Run `docker run hello-world` to check if Docker is correctly installed. If not :
 Everything in one copy/paste :
 
 ```bash
-git clone git@gitlab.com:eternaltwin/kadokadeo/kadokadeo.git 
-cd kadokadeo 
-git checkout main 
+git clone git@gitlab.com:eternaltwin/kadokadeo/kadokadeo.git
+cd kadokadeo
+git checkout main
 make
 ```
 
- If everything goes well you should be able to access to :
-  -  KadoKadéo on http://kadokadeo.localhost/
-  -  Eternaltwin on http://localhost:50320
+If everything goes well you should be able to access to :
 
+- KadoKadéo on http://kadokadeo.localhost/
+- Eternaltwin on http://localhost:50320
 
 ### Troubleshooting
 
 Please contact @evian6930 on Discord if you have any issue.
 
 - `Ports are not available: listen tcp 0.0.0.0:50320: bind : An attempt was made to access a socket in a way forbidden by its access permissions.`
-Open Powershell as an administrator and run the following commands :
+  Open Powershell as an administrator and run the following commands :
+
 ```powershell
 netsh int ipv4 set dynamic tcp start=60536 num=5000
 netsh int ipv6 set dynamic tcp start=60536 num=5000
 ```
+
 Restart your computer, then try to run `make` again.
 
 ## Some useful commands
