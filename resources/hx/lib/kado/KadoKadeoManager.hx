@@ -18,6 +18,10 @@ typedef GameParams = {
 	var replayData:String;
 	var isDaily:Bool;
 	var name:String;
+	var seed:String;
+	var contractScore:Int;
+	var contractPoints:Int;
+	var gameId:Int;
 }
 
 @:expose("KadoKadeo")
@@ -150,15 +154,28 @@ class KadoKadeoManager extends Application {
 	}
 
 	public function showIntroScreen() {
+		if (params.replayData != null) {
+			runDetails = {
+				run_id: '',
+				server_time: 0,
+				contract_score: params.contractScore,
+				contract_points: params.contractPoints,
+				seed: params.seed,
+			}
+			seed = new mt.Rand(hashFNV1a(runDetails.seed));
+			startGame();
+			return;
+		}
+
 		#if debug
 		seed = new mt.Rand(hashFNV1a("123"));
 		startGame();
 		return;
 		#end
-		startScene = new StartScene(this);
+		startScene = new StartScene(this, params.gameId);
 		startScene.interactive = true;
 		startScene.once("pointerdown", e -> {
-			Api.askContract((data:Dto.ApiResponse<Dto.RunDTO>) -> {
+			Api.askContract({daily: params.isDaily, gameId: params.gameId}, (data:Dto.ApiResponse<Dto.RunDTO>) -> {
 				seed = new mt.Rand(hashFNV1a(data.data.seed));
 				startScene.showContract(data.data);
 				runDetails = data.data;
@@ -213,33 +230,49 @@ class KadoKadeoManager extends Application {
 		this.game = Type.createInstance(gameClass, [gameRoot, isReplay]);
 	}
 
+	function displayEndScene(endRunDetails:Dto.EndRunResponseDTO) {
+		gameOverScreen.destroy();
+		if (this.endScene != null) {
+			this.endScene.dispose();
+			if (this.endScene.parent != null) {
+				this.endScene.parent.removeChild(this.endScene);
+			}
+		}
+		this.endScene = new EndScene(this, endRunDetails);
+		this.stage.addChild(this.endScene);
+	}
+
 	public function gameOver(params:Dynamic):Void {
+		var wasInReplay = this.replay.isPlayingReplay();
 		this.replay.stop();
 		if (this.replayOverlay != null && this.replayOverlay.parent != null) {
 			this.replayOverlay.parent.removeChild(this.replayOverlay);
 		}
 		// this.stage.removeChildren();
 		gameOverScreen = new GameOver(() -> {
-			// TODO: show loading screen
-			makeEndRunHttpRequest().then((endRunDetails:Dto.EndRunResponseDTO) -> {
-				gameOverScreen.destroy();
-				if (this.endScene != null) {
-					this.endScene.dispose();
-					if (this.endScene.parent != null) {
-						this.endScene.parent.removeChild(this.endScene);
-					}
-				}
-				this.endScene = new EndScene(this, endRunDetails);
-				this.stage.addChild(this.endScene);
-				emitWindowEvent("gameFinished", endRunDetails);
-			}).catchError((_) -> {
-				// TODO: show error
-				trace(_);
-			});
+			if (wasInReplay) {
+				this.displayEndScene({
+					is_best: false,
+					previous_star: -1,
+					current_star: -1,
+					people_to_beat: -1,
+				});
+			} else {
+				// TODO: show loading screen
+				makeEndRunHttpRequest().then((endRunDetails:Dto.EndRunResponseDTO) -> {
+					this.displayEndScene(endRunDetails);
+					emitWindowEvent("gameFinished", endRunDetails);
+				}).catchError((_) -> {
+					// TODO: show error
+					trace(_);
+				});
+			}
 		});
 		this.stage.addChild(gameOverScreen);
-		trace('Game finished, showing end screen');
+		// trace('Game finished, showing end screen');
+		#if debug
 		trace('Replay data: ' + replay.encodeReplayString());
+		#end
 	}
 
 	override public function destroy(?removeView:Bool):Void {
@@ -314,7 +347,7 @@ class KadoKadeoManager extends Application {
 			sign: haxe.crypto.Base64.encode(crypto.getHmacSha256(haxe.io.Bytes.ofString(jsonReq))),
 		}
 		return Api.endRun(runDetails.run_id, request).then((data:Dto.ApiResponse<Dto.EndRunResponseDTO>) -> {
-			trace('Run ended successfully: ' + haxe.Json.stringify(data));
+			// trace('Run ended successfully: ' + haxe.Json.stringify(data));
 			endRunDetails = data.data;
 			return endRunDetails;
 		}).catchError((error) -> {

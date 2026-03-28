@@ -298,9 +298,15 @@ class EndScene extends Container {
 		cont.addChild(textQualField);
 
 		var tweenPiouMove = registerTween(pixi.core.Pixi.tweenManager.createTween(piouCont));
-		tweenPiouMove.time = 1500;
+		var MOVE_TIME_PER_PX = 1500 / 655;
+		var MOVE_VALUES = [705, 639.5, 574, 508.5, 443, 377.5, 312, 246.5, 181, 115.5];
+		var moveIndex = details.people_to_beat > 9 ? 9 : details.people_to_beat;
+		var moveTargetX = MOVE_VALUES[moveIndex];
+		var moveDistance = Math.abs(moveTargetX - 50);
+		tweenPiouMove.time = Std.int(moveDistance * MOVE_TIME_PER_PX);
+		// tweenPiouMove.time = 1500;
 		tweenPiouMove.delay = 2000;
-		tweenPiouMove.from({x: 50}).to({x: 705}).start();
+		tweenPiouMove.from({x: 50}).to({x: moveTargetX}).start();
 
 		untyped tweenPiouMove.on("start", () -> {
 			if (disposed || piouWalk == null) {
@@ -314,22 +320,24 @@ class EndScene extends Container {
 				return;
 			}
 			piouWalk.gotoAndStop(0);
-			piouFloat = new AnimatedSprite(untyped kkm.sheet.animations["piou_float"]);
-			piouFloat.animationSpeed = 0.5;
-			piouFloat.y = -50;
-			piouCont.removeChild(piouWalk);
-			piouCont.addChild(piouFloat);
-			piouFloat.play();
+			if (details.people_to_beat == 0) {
+				piouFloat = new AnimatedSprite(untyped kkm.sheet.animations["piou_float"]);
+				piouFloat.animationSpeed = 0.5;
+				piouFloat.y = -50;
+				piouCont.removeChild(piouWalk);
+				piouCont.addChild(piouFloat);
+				piouFloat.play();
 
-			var tweenFloat1 = registerTween(pixi.core.Pixi.tweenManager.createTween(piouFloat));
-			tweenFloat1.time = 600;
-			tweenFloat1.pingPong = true;
-			tweenFloat1.loop = true;
-			tweenFloat1.from({y: piouFloat.y}).to({y: piouFloat.y - 20}).start();
-			var tweenFloat2 = registerTween(pixi.core.Pixi.tweenManager.createTween(piouFloat));
-			tweenFloat2.time = 800;
-			tweenFloat2.loop = true;
-			tweenFloat2.from({rotation: 0}).to({rotation: 6.28}).start();
+				var tweenFloat1 = registerTween(pixi.core.Pixi.tweenManager.createTween(piouFloat));
+				tweenFloat1.time = 600;
+				tweenFloat1.pingPong = true;
+				tweenFloat1.loop = true;
+				tweenFloat1.from({y: piouFloat.y}).to({y: piouFloat.y - 20}).start();
+				var tweenFloat2 = registerTween(pixi.core.Pixi.tweenManager.createTween(piouFloat));
+				tweenFloat2.time = 800;
+				tweenFloat2.loop = true;
+				tweenFloat2.from({rotation: 0}).to({rotation: 6.28}).start();
+			}
 		});
 
 		return cont;

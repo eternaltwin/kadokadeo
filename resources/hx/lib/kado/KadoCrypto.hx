@@ -4,7 +4,6 @@ import haxe.io.Bytes;
 import haxe.crypto.Aes;
 import haxe.crypto.Hmac;
 import js.lib.Uint8Array;
-import js.Syntax;
 
 class KadoCrypto {
 	var key:Bytes;

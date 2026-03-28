@@ -101,10 +101,12 @@ class RunController extends Controller implements HasMiddleware
         $toBeatCount = $leaderBoardQuery->where('runs.score', '>', $run->score)->count();
 
         return [
-            'is_best' => $run->score > $previousBestScore,
-            'previous_star' => $run->game->getStarFromScore($previousBestScore),
-            'current_star' => $run->game->getStarFromScore($run->score),
-            'people_to_beat' => $toBeatCount,
+            'data' => [
+                'is_best' => $run->score > $previousBestScore,
+                'previous_star' => $run->game->getStarFromScore($previousBestScore),
+                'current_star' => $run->game->getStarFromScore($run->score),
+                'people_to_beat' => $toBeatCount,
+            ],
         ];
     }
 

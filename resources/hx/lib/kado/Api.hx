@@ -15,12 +15,12 @@ class Api {
 		return http;
 	}
 
-	public static function askContract(onData:Dto.ApiResponse<Dto.RunDTO>->Void, onError:Dynamic->Void) {
-		var req = {};
-		var gameId = 4;
-		var http = buildClient("/api/runs/games/" + gameId);
-		// if (arguments.has('daily')):
-		//     req.daily = true
+	public static function askContract(runParams:Dto.BeginRunParamsDTO, onData:Dto.ApiResponse<Dto.RunDTO>->Void, onError:Dynamic->Void) {
+		var req:Dynamic = {};
+		var http = buildClient("/api/runs/games/" + runParams.gameId);
+		if (runParams.daily) {
+			req.daily = true;
+		}
 		http.setPostData(haxe.Json.stringify(req));
 
 		http.onData = function(data:String) {

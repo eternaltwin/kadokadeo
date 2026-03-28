@@ -24,3 +24,8 @@ typedef EndRunResponseDTO = {
 	var current_star:Int;
 	var people_to_beat:Int;
 }
+
+typedef BeginRunParamsDTO = {
+	var daily:Bool;
+	var gameId:Int;
+}

@@ -97,7 +97,11 @@ export function useGame(game) {
     }
 
     activeScript = config
-    gameInstance = new window.KadoKadeo(canvas, gameClass, { ...args, name: currentGame.name.toLowerCase().replaceAll(/\W/g, '') })
+    gameInstance = new window.KadoKadeo(canvas, gameClass, {
+      ...args,
+      name: currentGame.name.toLowerCase().replaceAll(/\W/g, ''),
+      gameId: currentGame.id,
+    })
   }
 
   function invalidate() {

@@ -12,14 +12,15 @@ class StartScene extends Container {
 	var panel:Panel;
 	var overlay:Graphics;
 
-	public function new(kkm:KadoKadeoManager) {
+	public function new(kkm:KadoKadeoManager, gameId:Int) {
 		super();
 		this.kkm = kkm;
 		this.elapsed = 0;
 
+		this.addChild((new Graphics()).beginFill(0x6b95b4, 1).drawRect(0, 0, kkm.renderer.width, kkm.renderer.height).endFill());
 		this.makeBottomBar();
 
-		var art = Sprite.from("game_image.png");
+		var art = Sprite.from("/assets/img/gfx/artwork/" + Std.string(gameId) + ".jpg");
 		this.addChild(art);
 
 		this.overlay = new Graphics();

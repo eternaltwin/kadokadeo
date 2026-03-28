@@ -26,12 +26,12 @@ fetchRun(runId).then((data) => {
     <div class="relative" :style="{ width: '600px', height: '640px' }">
       <GameScript
         :game="run.game"
-        :args="[
-          `--replay=${run.replay}`,
-          `--seed=${run.seed}`,
-          `--contract_score=${run.contract_score}`,
-          `--contract_points=${run.contract_points}`,
-        ]"
+        :args="{
+          replayData: run.replay,
+          seed: run.seed,
+          contractScore: run.contract_score,
+          contractPoints: run.contract_points,
+        }"
         :game-width="600"
         :game-height="640"
       />
