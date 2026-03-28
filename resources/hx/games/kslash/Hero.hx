@@ -1,5 +1,6 @@
 package kslash;
 
+import mt.bumdum.Lib;
 import common_haxe_avm1.KeyboardManager;
 import mt.Timer;
 
@@ -515,7 +516,7 @@ class Hero extends Ent {
 			prc = 0;
 			SPEED = 5 * Cs.NEW_GEN_SCALE;
 		}
-		Cs.setPercentColor(root, prc, 0xFFDDFF);
+		Col.setPercentColor(root, prc, 0xFFDDFF);
 	}
 
 	public function queue() {}

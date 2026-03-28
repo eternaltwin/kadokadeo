@@ -3,6 +3,7 @@ package ironchouquette;
 import pixi.core.textures.RenderTexture;
 import pixi.core.math.Matrix;
 import common_haxe_avm1.KeyboardManager;
+import mt.bumdum.Lib;
 import mt.DepthManager;
 import mt.Timer;
 

@@ -44,7 +44,6 @@ class Game implements kado.GameInterface {
 	public var dm:DepthManager;
 	public var gdm:DepthManager;
 
-	var pList:Array<ASprite>;
 	var glow:Array<ASprite>;
 	var fList:Array<Part>;
 	var bg:ASprite;
@@ -77,7 +76,6 @@ class Game implements kado.GameInterface {
 		dm = new DepthManager(map);
 		bg = gdm.attach("mcBg", 0);
 
-		pList = new Array();
 		fList = new Array();
 		glow = new Array();
 		zone = new Array();
@@ -142,7 +140,7 @@ class Game implements kado.GameInterface {
 				selectableMap[x][y] = false;
 				var id = getRandomId();
 				mc.gotoAndStop(id + 1);
-				mc.cacheAsBitmap = true;
+				// mc.cacheAsBitmap = true;
 
 				/*
 					var bmp = new flash.display.BitmapData(Cs.SIZE,Cs.SIZE,true,0x00000000);

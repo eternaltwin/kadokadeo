@@ -45,42 +45,4 @@ class Cs {
 			return 0;
 		return KadoKadeoManager.kkm.seed.random(max);
 	}
-
-	public static function setPercentColor(mc:ASprite, prc:Float, col:Int) {
-		var pct = Math.min(Math.max(prc, 0), 100);
-		var c = pct / 100;
-		var m = 1 - c;
-
-		var r = ((col >> 16) & 0xFF) / 255;
-		var g = ((col >> 8) & 0xFF) / 255;
-		var b = (col & 0xFF) / 255;
-
-		var cm:ColorMatrixFilter = cast Reflect.field(mc, "__percentColorFilter");
-		if (cm == null) {
-			cm = new ColorMatrixFilter();
-			Reflect.setField(mc, "__percentColorFilter", cm);
-		}
-
-		cm.matrix = [
-			m, 0, 0, 0, c * r,
-			0, m, 0, 0, c * g,
-			0, 0, m, 0, c * b,
-			0, 0, 0, 1,     0
-		];
-
-		var currentFilters:Array<Dynamic> = cast mc.filters;
-		var nextFilters:Array<Dynamic> = [];
-		if (currentFilters != null) {
-			for (f in currentFilters) {
-				if (f != cm)
-					nextFilters.push(f);
-			}
-		}
-
-		if (pct > 0) {
-			nextFilters.push(cm);
-		}
-
-		mc.filters = nextFilters.length == 0 ? null : cast nextFilters;
-	}
 }

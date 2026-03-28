@@ -2,6 +2,7 @@ package ironchouquette;
 
 import common_haxe_avm1.KeyboardManager;
 import common_haxe_avm1.KKApi;
+import mt.bumdum.Lib;
 import mt.DepthManager;
 import mt.Timer;
 
@@ -295,7 +296,7 @@ class Hero extends Phys {
 				shot.damage = 50;
 				shot.flPierce = true;
 				shot.bList.push(11);
-				// shot.vr = (Math.random()*2-1)*10
+			// shot.vr = (Math.random()*2-1)*10
 			case WP_SIDER:
 				if (onde != null)
 					onde.removeMovieClip();
@@ -342,16 +343,16 @@ class Hero extends Phys {
 					}
 				}
 
-				/*
-					while( blackHole.list.length<150 ){
-						var p =  downcast(new Part(Cs.game.dm.attach("partBlackHole",Game.DP_PARTS)));
-						p.x = Math.random()*Cs.mcw;
-						p.y = Math.random()*Cs.mch;
-						p.ray2 = 14;
-						p.frict = 0.94;
-						blackHole.list.push(p);
-					}
-				 */
+			/*
+				while( blackHole.list.length<150 ){
+					var p =  downcast(new Part(Cs.game.dm.attach("partBlackHole",Game.DP_PARTS)));
+					p.x = Math.random()*Cs.mcw;
+					p.y = Math.random()*Cs.mch;
+					p.ray2 = 14;
+					p.frict = 0.94;
+					blackHole.list.push(p);
+				}
+			 */
 			case WP_SPEED:
 				if (laserRay == null) {
 					laserRay = downcast(Cs.game.dm.attach("mcBigLaser", Game.DP_UNDERPARTS));
@@ -464,7 +465,6 @@ class Hero extends Phys {
 											shot.damage = 1;
 										}
 									}
-
 							}
 							a[1] += 8;
 

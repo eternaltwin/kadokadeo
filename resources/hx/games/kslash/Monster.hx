@@ -1,5 +1,6 @@
 package kslash;
 
+import mt.bumdum.Lib;
 import mt.Timer;
 
 class Monster extends Ent {
@@ -99,7 +100,7 @@ class Monster extends Ent {
 				flash = null;
 				prc = 0;
 			}
-			Cs.setPercentColor(root, prc, 0xFFFFFF);
+			Col.setPercentColor(root, prc, 0xFFFFFF);
 		}
 	}
 
@@ -126,7 +127,7 @@ class Monster extends Ent {
 	}
 
 	public function death() {
-		Cs.setPercentColor(root, 0, 0xFFFFFF);
+		Col.setPercentColor(root, 0, 0xFFFFFF);
 		KadoKadeoManager.kkm.addScore(score);
 		Cs.game.spawnBonus(root._x, root._y, getDrop());
 		Cs.game.monsterLevel -= stLevel;

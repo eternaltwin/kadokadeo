@@ -1,5 +1,6 @@
 package mt.bumdum;
 
+import pixi.filters.colormatrix.ColorMatrixFilter;
 import pixi.core.display.DisplayObject;
 import pixi.core.display.Container;
 import pixi.filters.blur.BlurFilter;
@@ -75,23 +76,44 @@ class Col {
 		return (o.r << 24) | (o.g << 16) | (o.b << 8) | o.a;
 	}
 
-	static public function setPercentColor(mc:pixi.core.sprites.Sprite, prc:Float, col, ?inc:Float, ?alpha = 100) {
-		if (prc == 0) {
-			mc.tint = 0xFFFFFF;
-			return;
+	static public function setPercentColor(mc:ASprite, prc:Float, col:Int, ?inc:Float, ?alpha = 100) {
+		var pct = Math.min(Math.max(prc, 0), 100);
+		var c = pct / 100;
+		var m = 1 - c;
+		var i = (inc == null ? 0 : inc) / 255;
+		var a = Math.min(Math.max(alpha, 0), 100) / 100;
+
+		var r = ((col >> 16) & 0xFF) / 255;
+		var g = ((col >> 8) & 0xFF) / 255;
+		var b = (col & 0xFF) / 255;
+
+		var cm:ColorMatrixFilter = cast Reflect.field(mc, "__percentColorFilter");
+		if (cm == null) {
+			cm = new ColorMatrixFilter();
+			Reflect.setField(mc, "__percentColorFilter", cm);
 		}
 
-		if (inc == null)
-			inc = 0;
-		var color = colToObj(col);
-		var c = prc / 100;
-		var ct = {_: null};
-		var ct = {
-			r: 0xFF - Std.int(c * color.r + inc), // Not perfect
-			g: 0xFF - Std.int(c * color.g + inc),
-			b: 0xFF - Std.int(c * color.b + inc),
-		};
-		setColor(mc, objToCol(ct));
+		cm.matrix = [
+			m, 0, 0, 0, c * (r + i),
+			0, m, 0, 0, c * (g + i),
+			0, 0, m, 0, c * (b + i),
+			0, 0, 0, m + c * a,     0
+		];
+
+		var currentFilters:Array<Dynamic> = cast mc.filters;
+		var nextFilters:Array<Dynamic> = [];
+		if (currentFilters != null) {
+			for (f in currentFilters) {
+				if (f != cm)
+					nextFilters.push(f);
+			}
+		}
+
+		if (pct > 0) {
+			nextFilters.push(cm);
+		}
+
+		mc.filters = nextFilters.length == 0 ? null : cast nextFilters;
 	}
 
 	static public function setColor(mc, col:Int, ?dec) {

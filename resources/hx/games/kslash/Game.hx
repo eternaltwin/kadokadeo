@@ -9,6 +9,7 @@ import pixi.core.graphics.Graphics;
 import pixi.core.text.Text;
 import mt.DepthManager;
 import mt.Timer;
+import mt.bumdum.Lib;
 
 class Inter extends ASprite {
 	public var fieldStar:Text;
@@ -376,7 +377,7 @@ class Game implements kado.GameInterface {
 
 			for (o in planList) {
 				if (o.c != 1 && o.c > 0.5)
-					Cs.setPercentColor(o.mc, 40, 0x000044);
+					Col.setPercentColor(o.mc, 40, 0x000044);
 			}
 		}
 	}

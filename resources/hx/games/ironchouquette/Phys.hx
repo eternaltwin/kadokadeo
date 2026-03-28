@@ -1,5 +1,6 @@
 package ironchouquette;
 
+import mt.bumdum.Lib;
 import mt.bumdum.Sprite;
 import mt.Timer;
 
