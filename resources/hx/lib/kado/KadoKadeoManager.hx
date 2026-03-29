@@ -197,9 +197,13 @@ class KadoKadeoManager extends Application {
 		this.bottomBar = new BottomBar(this, runDetails);
 		b.addChild(this.bottomBar);
 		var assetName = '/assets/img/content/' + this.params.name + '/' + this.params.name + '-0.json';
-		loader.add(assetName).load(() -> {
+		if (loader.resources[assetName] != null) {
 			beginGame();
-		});
+		} else {
+			loader.add(assetName).load(() -> {
+				beginGame();
+			});
+		}
 	}
 
 	private function beginGame() {
@@ -227,19 +231,25 @@ class KadoKadeoManager extends Application {
 			}
 		}
 
+		this.score = 0;
 		this.game = Type.createInstance(gameClass, [gameRoot, isReplay]);
 	}
 
 	function displayEndScene(endRunDetails:Dto.EndRunResponseDTO) {
-		gameOverScreen.destroy();
+		gameOverScreen.destroy({children: true});
+		gameOverScreen = null;
 		if (this.endScene != null) {
-			this.endScene.dispose();
-			if (this.endScene.parent != null) {
-				this.endScene.parent.removeChild(this.endScene);
-			}
+			this.endScene.destroy({children: true});
 		}
 		this.endScene = new EndScene(this, endRunDetails);
 		this.stage.addChild(this.endScene);
+		this.endScene.once('replay', () -> {
+			this.endScene.destroy({children: true});
+			this.showIntroScreen();
+		});
+		this.gameRoot.destroy({children: true});
+		this.gameRoot = null;
+		this.game = null;
 	}
 
 	public function gameOver(params:Dynamic):Void {

@@ -80,7 +80,6 @@ class Game implements kado.GameInterface {
 			recordEvents: true,
 		});
 
-		Cs.init();
 		Cs.game = this;
 
 		gdm = new DepthManager(root);

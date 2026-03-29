@@ -120,14 +120,16 @@ class ASprite extends Sprite {
 
 	public var centerX:Bool = false;
 
-	public function new(?identifier:String) {
+	public function new(?identifier:String, ?sheet:pixi.core.textures.Spritesheet) {
 		super();
 		_curState = new TransformState(this);
 
 		if (identifier != null) {
 			var loader:Loader = untyped PIXI.Loader.shared;
-			var firstSheetName = Reflect.fields(loader.resources)[0];
-			var sheet = loader.resources[firstSheetName].spritesheet;
+			if (sheet == null) {
+				var firstSheetName = Reflect.fields(loader.resources)[0];
+				sheet = loader.resources[firstSheetName].spritesheet;
+			}
 			var animTextureIdentifiers = Reflect.field(sheet.data.animations, identifier);
 			if (animTextureIdentifiers != null) {
 				for (i in 0...animTextureIdentifiers.length) {

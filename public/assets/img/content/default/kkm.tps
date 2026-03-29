@@ -188,7 +188,10 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/default_artwork.jpg</key>
+            <key type="filename">src/contract_bar/1.png</key>
+            <key type="filename">src/contract_bar/2.png</key>
+            <key type="filename">src/contract_bar/3.png</key>
+            <key type="filename">src/contract_bar/4.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -197,9 +200,9 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>225,225,450,450</rect>
+                <rect>137,9,273,18</rect>
                 <key>scale9Paddings</key>
-                <rect>225,225,450,450</rect>
+                <rect>137,9,273,18</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -341,7 +344,9 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/progress.png</key>
+            <key type="filename">src/progress/0.png</key>
+            <key type="filename">src/progress/1.png</key>
+            <key type="filename">src/progress/2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -350,9 +355,9 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>56,20,113,41</rect>
+                <rect>56,7,113,13</rect>
                 <key>scale9Paddings</key>
-                <rect>56,20,113,41</rect>
+                <rect>56,7,113,13</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

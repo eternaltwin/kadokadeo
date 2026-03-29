@@ -1,5 +1,6 @@
 package kado;
 
+import pixi.core.graphics.Graphics;
 import common_haxe_avm1.display.ASprite;
 import pixi.core.textures.Texture;
 import pixi.core.sprites.Sprite;
@@ -11,6 +12,8 @@ class BottomBar extends ASprite {
 	var contractText:pixi.core.text.Text;
 	var digitSprites:Array<Sprite> = [];
 	var runDetails:Dto.RunDTO;
+	var contractMask:Graphics;
+	var contractBar:ASprite;
 
 	public function new(kkm:KadoKadeoManager, runDetails:Dto.RunDTO) {
 		super();
@@ -28,7 +31,7 @@ class BottomBar extends ASprite {
 		bb.y = kkm.renderer.height - 68;
 		this.addChild(bb);
 
-		contractText = new pixi.core.text.Text(Std.string(runDetails.contract_points), {
+		contractText = new pixi.core.text.Text(Std.string(runDetails != null ? runDetails.contract_points : 0), {
 			fill: 0x206c7f,
 			fontFamily: 'Fredoka Bold',
 			fontSize: 40,
@@ -38,6 +41,24 @@ class BottomBar extends ASprite {
 		contractText.x = 40;
 		contractText.y = 38;
 		bb.addChild(contractText);
+
+		var contractBarGrey = new ASprite("progress", this.kkm.sheet);
+		contractBarGrey.x = 150;
+		contractBarGrey.y = 25;
+		contractBarGrey.gotoAndStop(1);
+		bb.addChild(contractBarGrey);
+
+		contractMask = new Graphics();
+		contractMask.beginFill(0xffffff);
+		contractMask.drawRect(0, 0, 0, 30);
+
+		contractBar = new ASprite("progress", this.kkm.sheet);
+		contractBar.x = 150;
+		contractBar.y = 25;
+		contractBar.gotoAndStop(2);
+		contractBar.mask = contractMask;
+		contractBar.addChild(contractMask);
+		bb.addChild(contractBar);
 
 		var kadoIcon = Sprite.from("kado_icon.png");
 		kadoIcon.anchor.set(0.5);
@@ -58,6 +79,22 @@ class BottomBar extends ASprite {
 		for (i in 0...paddedScore.length) {
 			var sprite = digitSprites[i];
 			sprite.texture = this.textures[Std.parseInt(paddedScore.charAt(i))];
+		}
+
+		if (runDetails != null && contractMask != null) {
+			var contractProgress = score / runDetails.contract_score;
+			contractMask.clear();
+			contractMask.beginFill(0xffffff);
+			contractMask.drawRect(0, 0, contractBar._width * Math.min(contractProgress, 1), contractBar._height);
+			if (contractProgress >= 1) {
+				contractBar.gotoAndStop(3);
+				contractBar.mask = null;
+				contractMask.destroy();
+				contractMask = null;
+			}
+		} else {
+			contractBar.gotoAndStop(3);
+			contractBar.mask = null;
 		}
 	}
 

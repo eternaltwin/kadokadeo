@@ -21,6 +21,16 @@ class EndScene extends Container {
 
 	inline function registerTween(tween:Dynamic):Dynamic {
 		tweens.push(tween);
+
+		tween.on("end", () -> {
+			var index = tweens.indexOf(tween);
+			if (index >= 0) {
+				tweens.splice(index, 1);
+				untyped tween.stop();
+				untyped tween.remove();
+				untyped tween.removeAllListeners();
+			}
+		});
 		return tween;
 	}
 
@@ -150,6 +160,21 @@ class EndScene extends Container {
 		this.addChild(makePanScore());
 		this.addChild(makePiouTrack());
 		this.addChild(clickToReplay());
+
+		this.interactive = true;
+		this.on("pointerdown", () -> {
+			if (tweens.filter(t -> t != null && !t.loop).length == 0) {
+				this.interactive = false;
+				emit('replay');
+			}
+			for (tween in tweens) {
+				if (tween != null && !tween.loop) {
+					untyped tween._elapsedTime = tween.time - 1;
+					untyped tween.delay = 0;
+					tween.update(1, 1);
+				}
+			}
+		});
 	}
 
 	public function makePanScore():Container {
@@ -378,5 +403,10 @@ class EndScene extends Container {
 			return "Du hast noch " + n + " Spieler vor dir!";
 		}
 		return "Il y a encore " + n + " joueurs à dépasser !";
+	}
+
+	public override function destroy(?options:Null<haxe.extern.EitherType<Bool, pixi.core.display.DisplayObject.DestroyOptions>>) {
+		this.dispose();
+		super.destroy(options);
 	}
 }

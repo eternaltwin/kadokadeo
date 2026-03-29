@@ -42,8 +42,6 @@ class Cs {
 
 	public static var game:Game;
 
-	public static function init() {}
-
 	public static inline function rand():Float {
 		return KadoKadeoManager.kkm.seed.rand();
 	}
