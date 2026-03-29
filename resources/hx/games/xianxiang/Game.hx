@@ -239,7 +239,7 @@ class Game implements kado.GameInterface {
 		path = new Array();
 	}
 
-	function destroy() {
+	public function destroy():Void {
 		dmanager.destroy();
 	}
 }

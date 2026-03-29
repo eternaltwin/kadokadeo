@@ -279,4 +279,9 @@ class ReplayOverlay extends ASprite {
 		var secTxt = seconds < 10 ? "0" + seconds : Std.string(seconds);
 		return minTxt + ":" + secTxt;
 	}
+
+	override public function destroy(?options:Null<haxe.extern.EitherType<Bool, pixi.core.display.DisplayObject.DestroyOptions>>) {
+		Browser.window.removeEventListener("keydown", onKeyDown);
+		super.destroy(options);
+	}
 }

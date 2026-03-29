@@ -28,10 +28,18 @@ class Cs {
 	public static var C1000 = KKApi.const(1000);
 
 	public static var game:Game;
+	static var DEFAULT_PROB:Array<Int> = [10, 10, 10, 10, 10, 10, 10];
 
 	public static function init() {
+		PROB_SUM = 0;
 		for (s in PROB)
 			PROB_SUM += s;
 		// SCORE = KKApi.aconst([ 100, 100, 100, 100, 100, 100, 500, 1000, 5000 ])
+	}
+
+	public static function reset():Void {
+		game = null;
+		PROB = DEFAULT_PROB.copy();
+		PROB_SUM = 0;
 	}
 }

@@ -667,4 +667,8 @@ class Game implements kado.GameInterface {
 
 		return list;
 	}
+
+	public function destroy():Void {
+		Cs.reset();
+	}
 }

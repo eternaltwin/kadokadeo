@@ -190,7 +190,13 @@ class KadoKadeoManager extends Application {
 	}
 
 	function startGame() {
-		this.stage.removeChild(startScene);
+		if (startScene != null) {
+			if (startScene.parent != null) {
+				startScene.parent.removeChild(startScene);
+			}
+			startScene.destroy({children: true});
+			startScene = null;
+		}
 		var loader:Loader = untyped PIXI.Loader.shared;
 
 		var b = dm.empty(2);
@@ -236,20 +242,80 @@ class KadoKadeoManager extends Application {
 	}
 
 	function displayEndScene(endRunDetails:Dto.EndRunResponseDTO) {
-		gameOverScreen.destroy({children: true});
-		gameOverScreen = null;
-		if (this.endScene != null) {
-			this.endScene.destroy({children: true});
-		}
+		reset(true);
 		this.endScene = new EndScene(this, endRunDetails);
 		this.stage.addChild(this.endScene);
 		this.endScene.once('replay', () -> {
-			this.endScene.destroy({children: true});
+			reset();
 			this.showIntroScreen();
 		});
-		this.gameRoot.destroy({children: true});
-		this.gameRoot = null;
-		this.game = null;
+	}
+
+	public function reset(?preserveScore:Bool = false):Void {
+		replay.stop();
+		replayElapsedMs = 0;
+		replayPaused = false;
+		replaySpeed = 1;
+		if (!preserveScore) {
+			score = 0;
+		}
+		common_haxe_avm1.KeyboardManager.clearState();
+
+		if (game != null) {
+			game.destroy();
+			game = null;
+		}
+
+		if (startScene != null) {
+			if (startScene.parent != null) {
+				startScene.parent.removeChild(startScene);
+			}
+			startScene.destroy({children: true});
+			startScene = null;
+		}
+
+		if (gameOverScreen != null) {
+			if (gameOverScreen.parent != null) {
+				gameOverScreen.parent.removeChild(gameOverScreen);
+			}
+			gameOverScreen.destroy({children: true});
+			gameOverScreen = null;
+		}
+
+		if (endScene != null) {
+			if (endScene.parent != null) {
+				endScene.parent.removeChild(endScene);
+			}
+			endScene.dispose();
+			endScene.destroy({children: true});
+			endScene = null;
+		}
+
+		if (bottomBar != null) {
+			if (bottomBar.parent != null) {
+				bottomBar.parent.removeChild(bottomBar);
+			}
+			bottomBar.destroy({children: true});
+			bottomBar = null;
+		}
+
+		if (replayOverlay != null) {
+			if (replayOverlay.parent != null) {
+				replayOverlay.parent.removeChild(replayOverlay);
+			}
+			replayOverlay.destroy({children: true});
+			replayOverlay = null;
+		}
+
+		if (gameRoot != null) {
+			if (gameRoot.parent != null) {
+				gameRoot.parent.removeChild(gameRoot);
+			}
+			gameRoot.destroy({children: true});
+			gameRoot = null;
+		}
+
+		mt.bumdum.Sprite.spriteList = [];
 	}
 
 	public function gameOver(params:Dynamic):Void {
@@ -287,19 +353,9 @@ class KadoKadeoManager extends Application {
 
 	override public function destroy(?removeView:Bool):Void {
 		this.stop();
-		this.replay.stop();
-		if (this.endScene != null) {
-			this.endScene.dispose();
-			this.endScene = null;
-		}
-		if (this.replayOverlay != null && this.replayOverlay.parent != null) {
-			this.replayOverlay.parent.removeChild(this.replayOverlay);
-		}
+		reset();
 		this.ticker.stop();
 		untyped Ticker.system.stop();
-		this.game = null;
-		this.gameOverScreen = null;
-		this.gameRoot = null;
 		this.root = null;
 		super.destroy(removeView);
 	}

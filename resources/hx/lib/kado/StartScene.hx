@@ -67,6 +67,11 @@ class StartScene extends Container {
 		clicToStartText.visible = (Math.floor(elapsed / 30) % 2 == 0);
 	}
 
+	override public function destroy(?options:Null<haxe.extern.EitherType<Bool, pixi.core.display.DisplayObject.DestroyOptions>>) {
+		kkm.ticker.remove(this.update);
+		super.destroy(options);
+	}
+
 	public function disable():Void {
 		kkm.ticker.remove(this.update);
 		this.clicToStartText.visible = false;

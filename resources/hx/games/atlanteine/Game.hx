@@ -1709,4 +1709,6 @@ class Game implements kado.GameInterface {
 			}
 		}
 	}
+
+	public function destroy():Void {}
 }

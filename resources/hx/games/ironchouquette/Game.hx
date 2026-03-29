@@ -466,4 +466,8 @@ class Game implements kado.GameInterface {
 			hero.sacrifice(null);
 		}
 	}
+
+	public function destroy():Void {
+		Cs.game = null;
+	}
 }

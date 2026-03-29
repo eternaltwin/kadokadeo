@@ -471,4 +471,8 @@ class Game implements kado.GameInterface {
 			mcLevel = null;
 		}
 	}
+
+	public function destroy():Void {
+		Game.me = null;
+	}
 }
