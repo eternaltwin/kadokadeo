@@ -1,8 +1,6 @@
 package kslash;
 
 import common_haxe_avm1.KKApi;
-import common_haxe_avm1.display.ASprite;
-import pixi.filters.colormatrix.ColorMatrixFilter;
 
 class Cs {
 	public static var NEW_GEN_SCALE = 3;

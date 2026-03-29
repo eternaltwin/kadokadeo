@@ -59,7 +59,7 @@ class Game implements kado.GameInterface {
 		bg = dm.attach("bg", Const.PLAN_BG);
 		timebar = dm.attach("timebar", Const.PLAN_OVER);
 		bg.useHandCursor = false;
-		root.onRelease = onClick;
+		root.onPress = onClick;
 	}
 
 	public function random(max) {
