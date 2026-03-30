@@ -1,9 +1,9 @@
 package xianxiang;
 
 class CardID {
-	var color:int;
-	var symbol:int;
-	var socle:int;
+	var color:Int;
+	var symbol:Int;
+	var socle:Int;
 
 	static function random():CardID {
 		return new CardID(Std.random(3), Std.random(4), Std.random(5));

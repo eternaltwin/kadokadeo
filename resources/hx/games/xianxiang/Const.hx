@@ -1,28 +1,28 @@
 package xianxiang;
 
 class Const {
-	static var LVL_WIDTH = 6;
-	static var LVL_HEIGHT = 7;
+	public static var LVL_WIDTH = 6;
+	public static var LVL_HEIGHT = 7;
 
-	static var BASE_X = 23;
-	static var BASE_Y = 20;
-	static var CARD_WIDTH = 43;
-	static var CARD_HEIGHT = 34;
+	public static var BASE_X = 23;
+	public static var BASE_Y = 20;
+	public static var CARD_WIDTH = 43;
+	public static var CARD_HEIGHT = 34;
 
-	static var auto = 0;
-	static var PLAN_BG = auto++;
-	static var PLAN_CARD = auto++;
-	static var PLAN_PATH = auto++;
-	static var PLAN_MATCH = auto++;
-	static var PLAN_FX = auto++;
+	public static var auto = 0;
+	public static var PLAN_BG = auto++;
+	public static var PLAN_CARD = auto++;
+	public static var PLAN_PATH = auto++;
+	public static var PLAN_MATCH = auto++;
+	public static var PLAN_FX = auto++;
 
-	static var NTURNS = 1;
+	public static var NTURNS = 1;
 
-	static var COLOR_ALPHA = 100;
+	public static var COLOR_ALPHA = 100;
 
-	static var POINTS_ENCODE = KKApi.aconst([1, 50, 300, 1000]);
+	public static var POINTS_ENCODE = KKApi.aconst([1, 50, 300, 1000]);
 
-	static var COLORS = [
+	public static var COLORS = [
 		{
 			r: 100,
 			g: 50,

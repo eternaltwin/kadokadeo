@@ -1,20 +1,24 @@
 package xianxiang;
 
+import mt.Timer;
+import mt.DepthManager;
+
 @:expose('GameXianXiang')
 class Game implements kado.GameInterface {
 	var dmanager:DepthManager;
 	var level:Level;
-	var bg_mc:MovieClip;
-	var mlist:Array<{mc:MatchSprite, t:float}>;
+	var bg_mc:ASprite;
+	var mlist:Array<{mc:MatchSprite, t:Float}>;
 
 	var current:Card;
-	var colorTime:float;
+	var colorTime:Float;
 	var breaks:Array<Card>;
 
 	var path:Array<ASprite>;
-	var pathTimer:float;
 
-	public function new(root:ASprite) {
+	// var pathTimer:Float;
+
+	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
 		colorTime = 0;
 		dmanager = new DepthManager(root);
 		bg_mc = dmanager.attach("bg", Const.PLAN_BG);
@@ -23,7 +27,7 @@ class Game implements kado.GameInterface {
 		level = new Level(this);
 		mlist = new Array();
 		breaks = new Array();
-		pathTimer = 0;
+		// pathTimer = 0;
 	}
 
 	function spawn(c, v) {
@@ -49,16 +53,13 @@ class Game implements kado.GameInterface {
 			i++;
 		}
 
-		for (var p
-		in path
-	)
-		{
-			//			p._alpha = 30+50*Math.abs(Math.sin(pathTimer)) ;
-		}
-		pathTimer += 0.3
+		/*for (p in path) {
+				//			p._alpha = 30+50*Math.abs(Math.sin(pathTimer)) ;
+			}
+			pathTimer += 0.3 */
 
 		colorTime += Timer.tmod / 5;
-		var c = int((Math.sin(colorTime) + 1) * 25);
+		var c = Std.int((Math.sin(colorTime) + 1) * 25);
 		current.color.setTransform({
 			ra: 100,
 			rb: c,
@@ -128,8 +129,8 @@ class Game implements kado.GameInterface {
 			activePath(null);
 			return;
 		}
-		var x = int(xm / Const.CARD_WIDTH);
-		var y = int(ym / Const.CARD_HEIGHT);
+		var x = Std.int(xm / Const.CARD_WIDTH);
+		var y = Std.int(ym / Const.CARD_HEIGHT);
 		if (x >= Const.LVL_WIDTH || y >= Const.LVL_HEIGHT) {
 			activePath(null);
 			return;
@@ -157,7 +158,7 @@ class Game implements kado.GameInterface {
 	function attachPath(x, y, t) {
 		var s = (level.tbl[x][y] == null) || t >= 3;
 		var p = dmanager.attach("link", Const.PLAN_PATH);
-		p.gotoAndStop(string(t + 1));
+		p.gotoAndStop(Std.string(t + 1));
 		p._x = Const.BASE_X + (x + 0.5) * Const.CARD_WIDTH;
 		p._y = Const.BASE_Y + (y + 0.5) * Const.CARD_HEIGHT;
 		var c = new Color(p);
@@ -232,7 +233,6 @@ class Game implements kado.GameInterface {
 	}
 
 	function clearPath() {
-		var i;
 		for (i in 0...path.length) {
 			path[i].removeMovieClip();
 		}

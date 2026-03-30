@@ -3,10 +3,10 @@ package xianxiang;
 class Level {
 	var game:Game;
 	var tbl:Array<Array<Card>>;
-	var dx:int;
-	var dy:int;
+	var dx:Int;
+	var dy:Int;
 
-	var combis:Array<int>;
+	var combis:Array<Int>;
 
 	function new(g) {
 		this.game = g;
@@ -34,7 +34,6 @@ class Level {
 	}
 
 	function canBreak() {
-		var x, y;
 		for (x in 0...Const.LVL_WIDTH) {
 			for (y in 0...Const.LVL_HEIGHT) {
 				var c = tbl[x][y];
@@ -69,7 +68,6 @@ class Level {
 		tbl[c1.x][c1.y] = null;
 		tbl[c2.x][c2.y] = null;
 		var m = new Array();
-		var i;
 		for (i in 0...Const.LVL_WIDTH) {
 			m[i] = new Array();
 		}
@@ -82,7 +80,6 @@ class Level {
 	/****** GENERATION *******/
 	function shuffle(tbl) {
 		var l = tbl.length;
-		var i;
 		for (i in 0...l) {
 			var a = Std.random(l);
 			var b = Std.random(l);
@@ -92,7 +89,7 @@ class Level {
 		}
 	}
 
-	function fillColMapRec(tmp:Array<Array<int>>, m:Array<Array<int>>, x:int, y:int, d:int, p:int) {
+	function fillColMapRec(tmp:Array<Array<Int>>, m:Array<Array<Int>>, x:Int, y:Int, d:Int, p:Int) {
 		var k = m[x][y];
 		if (k > p || tmp[x][y] != null)
 			return;
@@ -131,7 +128,6 @@ class Level {
 	}
 
 	function initLevel() {
-		var x, y;
 		var w = Const.LVL_WIDTH;
 		var h = Const.LVL_HEIGHT;
 
@@ -186,7 +182,7 @@ class Level {
 		return n - 1;
 	}
 	/*
-		function initLevel() : bool {
+		function initLevel() : Bool {
 			var x,y;
 			var w = Const.LVL_WIDTH;
 			var h = Const.LVL_HEIGHT;
@@ -195,9 +191,8 @@ class Level {
 			for(x=0;x<w;x++)
 				tmp[x] = new Array();
 
-			var npairs = int((w - 2) * (h - 2) / 2);
+			var npairs = Std.int((w - 2) * (h - 2) / 2);
 			var ids = new Array();
-			var i;
 			for(i=0;i<npairs;i++)
 				ids.push(i%Const.NCARDS);
 			shuffle(ids);
