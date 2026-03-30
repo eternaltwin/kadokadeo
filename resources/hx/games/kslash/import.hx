@@ -1,4 +1,4 @@
-package atlanteine;
+package kslash;
 
 using Std;
 using Lambda;

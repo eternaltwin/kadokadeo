@@ -1,4 +1,4 @@
-package atlanteine;
+package interwheel;
 
 using Std;
 using Lambda;
