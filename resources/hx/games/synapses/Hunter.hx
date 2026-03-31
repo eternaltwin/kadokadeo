@@ -1,5 +1,6 @@
 package synapses;
 
+import pixi.core.text.Text;
 import mt.bumdum.Lib;
 import mt.bumdum.Sprite;
 
@@ -18,6 +19,8 @@ class Hunter extends Sprite {
 	public var first:Element;
 	public var layer:Layer;
 
+	var field:Text;
+
 	public function new(col) {
 		this.col = col;
 		var mc = Game.me.dm.attach("mcHunter", Game.DP_HUNTER);
@@ -31,6 +34,13 @@ class Hunter extends Sprite {
 		speed = 10;
 
 		initPlay();
+		field = root.initTextField("field", {
+			color: Cs.HUNTER_COLORS[col],
+			align: "center",
+			font: "Impact",
+			size: 36,
+		});
+		field.y = -20;
 	}
 
 	override function update() {
@@ -61,7 +71,7 @@ class Hunter extends Sprite {
 		var dy = trg.y - y;
 		var dist = Math.sqrt(dx * dx + dy * dy);
 
-		if (dist > 20) {
+		if (dist > 20 * Cs.NEW_GEN_SCALE) {
 			var da = Num.hMod(Math.atan2(dy, dx) - angle, 3.14);
 			var c = 0.5;
 			var lim = 0.8;
@@ -92,7 +102,7 @@ class Hunter extends Sprite {
 	}
 
 	function newTrg() {
-		var ray = 20;
+		var ray = 20 * Cs.NEW_GEN_SCALE;
 		trg = {
 			x: ray + Math.random() * (Cs.mcw - 2 * ray),
 			y: ray + Math.random() * (Cs.mch - 2 * ray)
@@ -144,12 +154,6 @@ class Hunter extends Sprite {
 
 	public function incScore(n) {
 		score += n;
-		var field = root.initTextField("field", {
-			color: 0xFFFFFF,
-			align: "center",
-			font: "Impact",
-			size: 36,
-		});
 		field.text = Std.string(score);
 	}
 
@@ -158,8 +162,10 @@ class Hunter extends Sprite {
 		var list = [];
 		for (el in Game.me.elements) {
 			if (el.col == col) {
-				layer.draw(el.branch);
-				el.branch.removeMovieClip();
+				if (el.branch != null) {
+					layer.draw(el.branch);
+					el.branch.removeMovieClip();
+				}
 				list.push(el);
 			}
 		}

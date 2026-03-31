@@ -1,5 +1,6 @@
 package synapses;
 
+import pixi.core.math.Matrix;
 import pixi.core.graphics.Graphics;
 import pixi.core.Pixi.BlendModes;
 import common_haxe_avm1.KeyboardManager;
@@ -123,7 +124,7 @@ class Game implements kado.GameInterface {
 
 		frict = Math.pow(0.97, mt.Timer.tmod);
 
-		viewGrid(grid);
+		// viewGrid(grid);
 		var list = Sprite.spriteList.copy();
 		for (sp in list)
 			sp.update();
@@ -149,14 +150,14 @@ class Game implements kado.GameInterface {
 			max = 4;
 		for (i in 0...max) {
 			var h = new Hunter(i + 1);
-			h.speed = Math.min(1 + lvl, 15);
+			h.speed = Math.min((1 + lvl) * Cs.NEW_GEN_SCALE, 15 * Cs.NEW_GEN_SCALE);
 		}
 
 		// ELEMENTS
 		var max = Cs.CEL_MAX;
 		for (i in 0...max) {
 			var el = new Element();
-			el.initMove(Math.random() * 6.28, 1);
+			el.initMove(Math.random() * 6.28, 1 * Cs.NEW_GEN_SCALE);
 		}
 
 		//
@@ -386,7 +387,7 @@ class Game implements kado.GameInterface {
 
 	// DEBUG
 	function viewGrid(grid:Array<Array<Array<Element>>>) {
-		if (!KeyboardManager.isDown(71)) { // G
+		if (!KeyboardManager.isDown(71) && bmpGrid != null) { // G
 			bmpGrid.destroy();
 			bmpGrid = null;
 			return;
@@ -411,11 +412,11 @@ class Game implements kado.GameInterface {
 				// var col = Col.objToCol({r: n, g: n, b: n});
 				// bmpGrid.setPixel(x, y, col);
 				// TODO: New code
-				// var g = new Graphics();
-				// g.beginFill(col).drawRect(0, 0, 1, 1);
-				// var m = new Matrix();
-				// m.translate(x, y);
-				// bmpGrid.draw(g, m);
+				var g = new Graphics();
+				g.beginFill(Col.objToCol({r: n, g: n, b: n})).drawRect(0, 0, 3, 3);
+				var m = new Matrix();
+				m.translate(x, y);
+				bmpGrid.draw(g, m);
 			}
 		}
 	}

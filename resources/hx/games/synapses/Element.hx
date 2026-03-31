@@ -38,13 +38,13 @@ class Element extends Phys {
 		Game.me.elements.push(this);
 		var mc = Game.me.dm.attach("mcElement", Game.DP_ELEMENTS);
 		super(mc);
-		ray = 4;
+		ray = 4 * Cs.NEW_GEN_SCALE;
 		aura = 0;
 		x = (Math.random() * Cs.mcw - 4 * ray);
 		y = (Math.random() * Cs.mch - 4 * ray);
 		updatePos();
 		root.stop();
-		root.smc.gotoAndPlay(Std.random(2) + 1);
+		// root.smc.gotoAndPlay(Std.random(2) + 1);
 
 		vr = (Math.random() * 2 - 1) * 20;
 	}
@@ -203,7 +203,9 @@ class Element extends Phys {
 	}
 
 	public function grow(inc) {
-		parent.grow(inc);
+		if (parent != null) {
+			parent.grow(inc);
+		}
 		size += inc;
 		// branch._yscale = 100+size*2;
 		// root._xscale = root._yscale = size*10;
@@ -221,7 +223,9 @@ class Element extends Phys {
 		coef = Math.min(coef + 0.25 * mt.Timer.tmod, 1);
 
 		root._xscale = root._yscale = (1 - coef) * 100;
-		branch._yscale = (1 - coef) * 100;
+		if (branch != null) {
+			branch._yscale = (1 - coef) * 100;
+		}
 
 		if (coef == 1) {
 			parent.grow(-1);
@@ -242,8 +246,14 @@ class Element extends Phys {
 	}
 
 	function insertInGrid() {
+		if (px == null || py == null)
+			return;
 		for (x in 0...3) {
+			if (px + x - 1 < 0 || px + x - 1 >= Cs.XMAX)
+				continue;
 			for (y in 0...3) {
+				if (py + y - 1 < 0 || py + y - 1 >= Cs.YMAX)
+					continue;
 				var gx = px + x - 1;
 				var gy = py + y - 1;
 				Game.me.grid[gx][gy].push(this);
@@ -252,8 +262,14 @@ class Element extends Phys {
 	}
 
 	function removeFromGrid() {
+		if (px == null || py == null)
+			return;
 		for (x in 0...3) {
+			if (px + x - 1 < 0 || px + x - 1 >= Cs.XMAX)
+				continue;
 			for (y in 0...3) {
+				if (py + y - 1 < 0 || py + y - 1 >= Cs.YMAX)
+					continue;
 				var gx = px + x - 1;
 				var gy = py + y - 1;
 				Game.me.grid[gx][gy].remove(this);

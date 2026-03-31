@@ -169,10 +169,150 @@
             <key>defaultPivotPoint</key>
             <point_f>0,0</point_f>
             <key>writePivotPoints</key>
-            <false/>
+            <true/>
         </struct>
         <key>individualSpriteSettings</key>
-        <map type="IndividualSpriteSettingsMap"/>
+        <map type="IndividualSpriteSettingsMap">
+            <key type="filename">src/mcBg.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>225,225,450,450</rect>
+                <key>scale9Paddings</key>
+                <rect>225,225,450,450</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcBranch/1.png</key>
+            <key type="filename">src/mcBranch/2.png</key>
+            <key type="filename">src/mcBranch/3.png</key>
+            <key type="filename">src/mcBranch/4.png</key>
+            <key type="filename">src/mcBranch/5.png</key>
+            <key type="filename">src/mcBranch/6.png</key>
+            <key type="filename">src/mcBranch/7.png</key>
+            <key type="filename">src/mcBranch/8.png</key>
+            <key type="filename">src/mcBranch/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>75,8,150,15</rect>
+                <key>scale9Paddings</key>
+                <rect>75,8,150,15</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcElement/1.png</key>
+            <key type="filename">src/mcElement/10.png</key>
+            <key type="filename">src/mcElement/11.png</key>
+            <key type="filename">src/mcElement/12.png</key>
+            <key type="filename">src/mcElement/2.png</key>
+            <key type="filename">src/mcElement/3.png</key>
+            <key type="filename">src/mcElement/4.png</key>
+            <key type="filename">src/mcElement/5.png</key>
+            <key type="filename">src/mcElement/6.png</key>
+            <key type="filename">src/mcElement/7.png</key>
+            <key type="filename">src/mcElement/8.png</key>
+            <key type="filename">src/mcElement/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,11,23,23</rect>
+                <key>scale9Paddings</key>
+                <rect>12,11,23,23</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcHunter/1.png</key>
+            <key type="filename">src/mcHunter/17.png</key>
+            <key type="filename">src/mcHunter/2.png</key>
+            <key type="filename">src/mcHunter/3.png</key>
+            <key type="filename">src/mcHunter/4.png</key>
+            <key type="filename">src/mcHunter/5.png</key>
+            <key type="filename">src/mcHunter/6.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>53,53,105,105</rect>
+                <key>scale9Paddings</key>
+                <rect>53,53,105,105</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcInflux/1.png</key>
+            <key type="filename">src/mcInflux/2.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>14,14,27,27</rect>
+                <key>scale9Paddings</key>
+                <rect>14,14,27,27</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcQueue/1.png</key>
+            <key type="filename">src/mcQueue/2.png</key>
+            <key type="filename">src/mcQueue/3.png</key>
+            <key type="filename">src/mcQueue/4.png</key>
+            <key type="filename">src/mcQueue/5.png</key>
+            <key type="filename">src/mcQueue/6.png</key>
+            <key type="filename">src/mcQueue/7.png</key>
+            <key type="filename">src/mcQueue/8.png</key>
+            <key type="filename">src/mcQueue/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>75,6,150,12</rect>
+                <key>scale9Paddings</key>
+                <rect>75,6,150,12</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partPix.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>2,2,3,3</rect>
+                <key>scale9Paddings</key>
+                <rect>2,2,3,3</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+        </map>
         <key>fileLists</key>
         <map type="SpriteSheetMap">
             <key>default</key>

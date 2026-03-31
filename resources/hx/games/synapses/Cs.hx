@@ -14,10 +14,12 @@ class Cs {
 	public static var SCORE_CEL_BASE = KKApi.const(50);
 	public static var SCORE_CEL_MULTI = KKApi.const(25);
 
-	public static var CEL_SPEED = 0.15;
+	public static var CEL_SPEED = 0.15 * Cs.NEW_GEN_SCALE;
 	public static var CEL_MAX = 80;
-	public static var CEL_AURA = 40;
+	public static var CEL_AURA = 40 * Cs.NEW_GEN_SCALE;
 	public static var CEL_COL = false;
+
+	public static var HUNTER_COLORS = [0xFF0000, 0x8b8ce2, 0xff9900, 0x4e9801, 0x660b7d,];
 
 	public static function init() {
 		XMAX = Math.ceil(mcw / CS);
