@@ -2,19 +2,21 @@ package xianxiang;
 
 class Level {
 	var game:Game;
-	var tbl:Array<Array<Card>>;
+
+	public var tbl:Array<Array<Card>>;
+
 	var dx:Int;
 	var dy:Int;
 
-	var combis:Array<Int>;
+	public var combis:Array<Int>;
 
-	function new(g) {
+	public function new(g) {
 		this.game = g;
 		combis = [0, 0, 0, 0];
 		initLevel();
 	}
 
-	function breakCards(c1, c2) {
+	public function breakCards(c1, c2) {
 		var matchs = c1.id.matchs(c2.id);
 		if (c1 == c2)
 			return false;
@@ -26,14 +28,15 @@ class Level {
 		combis[matchs]++;
 
 		KKApi.addScore(Const.POINTS_ENCODE[matchs]);
-		game.spawn(c1, matchs);
-		game.spawn(c2, matchs);
+		// TO DO
+		// game.spawn(c1, matchs);
+		// game.spawn(c2, matchs);
 		tbl[c1.x][c1.y] = null;
 		tbl[c2.x][c2.y] = null;
 		return true;
 	}
 
-	function canBreak() {
+	public function canBreak() {
 		for (x in 0...Const.LVL_WIDTH) {
 			for (y in 0...Const.LVL_HEIGHT) {
 				var c = tbl[x][y];
@@ -71,7 +74,10 @@ class Level {
 		for (i in 0...Const.LVL_WIDTH) {
 			m[i] = new Array();
 		}
-		genColMap(Std.cast(tbl), m, c1.x, c1.y);
+
+		// TO DO code origine
+		// genColMap(Std.cast(tbl), m, c1.x, c1.y);
+
 		tbl[c1.x][c1.y] = c1;
 		tbl[c2.x][c2.y] = c2;
 		return m;
@@ -142,7 +148,7 @@ class Level {
 		}
 	}
 
-	function pathLength(c1, c2) {
+	public function pathLength(c1, c2) {
 		var x, y;
 		var n = 0;
 		if (c1.x < c2.x) {
@@ -151,7 +157,7 @@ class Level {
 				if (tbl[x][c1.y] != null) {
 					n++;
 				}
-				x++
+				x++;
 			}
 		} else {
 			x = c1.x;
@@ -159,7 +165,7 @@ class Level {
 				if (tbl[x][c1.y] != null) {
 					n++;
 				}
-				x--
+				x--;
 			}
 		}
 		if (c1.y < c2.y) {
@@ -168,7 +174,7 @@ class Level {
 				if (tbl[x][y] != null) {
 					n++;
 				}
-				y++
+				y++;
 			}
 		} else {
 			y = c1.y;
@@ -176,7 +182,7 @@ class Level {
 				if (tbl[x][y] != null) {
 					n++;
 				}
-				y--
+				y--;
 			}
 		}
 		return n - 1;

@@ -23,6 +23,9 @@ kslash.Game
 --next
 -js ./resources/js/games/opalus2.js
 opalus2.Game
+--next
+-js ./resources/js/games/xianxiang.js
+xianxiang.Game
 # --next
 # -js ./resources/js/games/kanjigaiden.js
 # kanjigaiden.Game

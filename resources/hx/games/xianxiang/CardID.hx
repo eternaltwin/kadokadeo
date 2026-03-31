@@ -5,7 +5,7 @@ class CardID {
 	var symbol:Int;
 	var socle:Int;
 
-	static function random():CardID {
+	public static function random():CardID {
 		return new CardID(Std.random(3), Std.random(4), Std.random(5));
 	}
 
@@ -15,7 +15,7 @@ class CardID {
 		this.socle = so;
 	}
 
-	function matchs(id:CardID) {
+	public function matchs(id:CardID) {
 		return ((id.color == color) ? 1 : 0) + ((id.symbol == symbol) ? 1 : 0) + ((id.socle == socle) ? 1 : 0);
 	}
 

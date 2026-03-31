@@ -5,10 +5,11 @@ import mt.DepthManager;
 
 @:expose('GameXianXiang')
 class Game implements kado.GameInterface {
-	var dmanager:DepthManager;
+	public var dmanager:DepthManager;
+
 	var level:Level;
 	var bg_mc:ASprite;
-	var mlist:Array<{mc:MatchSprite, t:Float}>;
+	var mlist:Array<{mc:ASprite, t:Float}>;
 
 	var current:Card;
 	var colorTime:Float;
@@ -22,23 +23,25 @@ class Game implements kado.GameInterface {
 		colorTime = 0;
 		dmanager = new DepthManager(root);
 		bg_mc = dmanager.attach("bg", Const.PLAN_BG);
-		bg_mc.onMouseMove = callback(this, mouseMove);
-		bg_mc.onRelease = callback(this, release);
+		// TO DO
+		// bg_mc.onMouseMove = callback(this, mouseMove);
+		// bg_mc.onRelease = callback(this, release);
 		level = new Level(this);
 		mlist = new Array();
 		breaks = new Array();
 		// pathTimer = 0;
 	}
 
-	function spawn(c, v) {
-		var m = dmanager.attach("matchNumber" + v, Const.PLAN_MATCH);
-		m._x = c.mc._x + 17;
-		m._y = c.mc._y + 10;
-		m.play();
-		mlist.push({mc: m, t: 1});
+	public function spawn(c, v) {
+		// TO DO
+		/*var m = dmanager.attach("matchNumber" + v, Const.PLAN_MATCH);
+			m._x = c.mc._x + 17;
+			m._y = c.mc._y + 10;
+			m.play();
+			mlist.push({mc: m, t: 1}); */
 	}
 
-	function update(delta:Float) {
+	public function update(delta:Float) {
 		var i = 0;
 		while (i < mlist.length) {
 			var m = mlist[i];
@@ -60,7 +63,8 @@ class Game implements kado.GameInterface {
 
 		colorTime += Timer.tmod / 5;
 		var c = Std.int((Math.sin(colorTime) + 1) * 25);
-		current.color.setTransform({
+		// TO DO
+		/*current.color.setTransform({
 			ra: 100,
 			rb: c,
 			ba: 100,
@@ -69,7 +73,7 @@ class Game implements kado.GameInterface {
 			gb: c,
 			aa: 100,
 			ab: 0
-		});
+		});*/
 
 		var i = 0;
 		while (i < breaks.length) {
@@ -79,7 +83,7 @@ class Game implements kado.GameInterface {
 				breaks.splice(i--, 1);
 				b.destroy();
 			}
-			i++
+			i++;
 		}
 	}
 
@@ -107,7 +111,8 @@ class Game implements kado.GameInterface {
 				if (!level.canBreak())
 					KKApi.gameOver(level.combis);
 			}
-			current.color.reset();
+			// TO DO
+			// current.color.reset();
 			current = null;
 		}
 		mouseMove();
@@ -115,7 +120,8 @@ class Game implements kado.GameInterface {
 
 	function release() {
 		if (current != null) {
-			current.color.reset();
+			// TO DO
+			// current.color.reset();
 			current = null;
 			clearPath();
 			mouseMove();
@@ -123,8 +129,12 @@ class Game implements kado.GameInterface {
 	}
 
 	function mouseMove() {
-		var xm = Std.xmouse() - Const.BASE_X;
-		var ym = Std.ymouse() - Const.BASE_Y;
+		// TO DO CODE MODIFIÉ
+		var xm = 0;
+		var ym = 0;
+		// TO DO CODE ORIGINE
+		/*var xm = Std.xmouse() - Const.BASE_X;
+			var ym = Std.ymouse() - Const.BASE_Y; */
 		if (xm < 0 || ym < 0) {
 			activePath(null);
 			return;
@@ -161,9 +171,10 @@ class Game implements kado.GameInterface {
 		p.gotoAndStop(Std.string(t + 1));
 		p._x = Const.BASE_X + (x + 0.5) * Const.CARD_WIDTH;
 		p._y = Const.BASE_Y + (y + 0.5) * Const.CARD_HEIGHT;
-		var c = new Color(p);
-		if (!s)
-			c.setRGB(0xFF0000);
+		// TO DO
+		/*var c = new Color(p);
+			if (!s)
+				c.setRGB(0xFF0000); */
 		path.push(p);
 		return p;
 	}
