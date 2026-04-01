@@ -17,6 +17,7 @@ const { mount, destroy, invalidate } = useGame(() => props.game)
 async function mountGame() {
   await mount(canvas.value, {
     ...props.args,
+    // seed:'123',
     // replayData: '',
   })
 }

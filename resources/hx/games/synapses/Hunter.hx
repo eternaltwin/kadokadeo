@@ -64,7 +64,7 @@ class Hunter extends Sprite {
 
 	public function move() {
 		if (col == 0)
-			trg = {x: Game.me.bg._xmouse, y: Game.me.bg._ymouse};
+			trg = Game.me.getPlayerTarget();
 		else if (trg == null)
 			newTrg();
 

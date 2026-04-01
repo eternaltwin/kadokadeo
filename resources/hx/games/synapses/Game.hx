@@ -1,5 +1,6 @@
 package synapses;
 
+import haxe.io.UInt16Array;
 import pixi.core.math.Matrix;
 import pixi.core.graphics.Graphics;
 import pixi.core.Pixi.BlendModes;
@@ -32,6 +33,8 @@ class Game implements kado.GameInterface {
 	public static var DP_BG = 0;
 
 	public static var BG_COLOR = 0x5C0101;
+	public static inline var REPLAY_MOUSE_MOVE = 0;
+	public static inline var REPLAY_CLICK = 2;
 
 	public var lvl:Int;
 	public var coef:Float;
@@ -59,6 +62,11 @@ class Game implements kado.GameInterface {
 
 	public var bdx:Float;
 	public var bdy:Float;
+	public var isReplayMode:Bool;
+	public var playerTargetX:Int;
+	public var playerTargetY:Int;
+	var lastRecordedMouseX:Int;
+	var lastRecordedMouseY:Int;
 
 	public var sx:Float;
 	public var sy:Float;
@@ -70,11 +78,20 @@ class Game implements kado.GameInterface {
 	public var bmpGrid:RenderTexture;
 
 	public function new(mc:ASprite, ?isReplay:Bool = false) {
+		isReplayMode = isReplay;
+		KadoKadeoManager.kkm.replay.init({
+			recordedKeys: new UInt16Array(0),
+			recordInputs: false,
+			recordEvents: true,
+		});
+
 		// haxe.Log.setColor(0xFFFFFF);
 		Cs.init();
 		root = mc;
 		me = this;
 		dm = new mt.DepthManager(root);
+		playerTargetX = Std.int(Cs.mcw * 0.5);
+		playerTargetY = Std.int(Cs.mch * 0.5);
 
 		hunters = [];
 		elements = [];
@@ -83,6 +100,16 @@ class Game implements kado.GameInterface {
 
 		initBg();
 		initGrid();
+		if (!isReplayMode) {
+			setPlayerTarget(bg._xmouse, bg._ymouse);
+			KadoKadeoManager.kkm.replay.recordEvent({
+				k: REPLAY_MOUSE_MOVE,
+				x: playerTargetX,
+				y: playerTargetY,
+			}, 0);
+			lastRecordedMouseX = playerTargetX;
+			lastRecordedMouseY = playerTargetY;
+		}
 
 		lvl = 0;
 		var h = new Hunter(0);
@@ -117,6 +144,14 @@ class Game implements kado.GameInterface {
 
 	//
 	public function update(delta:Float) {
+		for (event in KadoKadeoManager.kkm.replay.consumeEvents()) {
+			applyReplayEvent(event);
+		}
+
+		if (!isReplayMode) {
+			updateMouseTargetFromLiveInput();
+		}
+
 		// haxe.Log.clear();
 		// trace("hunters:"+hunters.length);
 		// trace("elements:"+elements.length);
@@ -170,9 +205,65 @@ class Game implements kado.GameInterface {
 		if (lvl == 1)
 			timer = 500;
 		//
-		bg.onPress = initResolve;
+		bg.onPress = onResolvePress;
 		bg.useHandCursor = true;
 		KKApi.registerButton(bg);
+	}
+
+	function updateMouseTargetFromLiveInput() {
+		setPlayerTarget(bg._xmouse, bg._ymouse);
+		if (playerTargetX == lastRecordedMouseX && playerTargetY == lastRecordedMouseY) {
+			return;
+		}
+
+		lastRecordedMouseX = playerTargetX;
+		lastRecordedMouseY = playerTargetY;
+		KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_MOUSE_MOVE, x: playerTargetX, y: playerTargetY});
+	}
+
+	function applyReplayEvent(event:Dynamic) {
+		if (event == null) {
+			return;
+		}
+
+		var kind:Null<Int> = Reflect.field(event, "k");
+		if (kind == null) {
+			return;
+		}
+
+		switch (kind) {
+			case REPLAY_MOUSE_MOVE:
+				var x:Null<Int> = Reflect.field(event, "x");
+				var y:Null<Int> = Reflect.field(event, "y");
+				if (x != null && y != null) {
+					setPlayerTarget(x, y);
+				}
+			case REPLAY_CLICK:
+				onResolvePress();
+			default:
+		}
+	}
+
+	public inline function getPlayerTarget():{x:Float, y:Float} {
+		return {x: playerTargetX, y: playerTargetY};
+	}
+
+	function setPlayerTarget(x:Float, y:Float) {
+		var ix = Std.int(Math.round(x));
+		var iy = Std.int(Math.round(y));
+		playerTargetX = Std.int(Math.max(0, Math.min(ix, Cs.mcw)));
+		playerTargetY = Std.int(Math.max(0, Math.min(iy, Cs.mch)));
+	}
+
+	function onResolvePress() {
+		if (bg.onPress == null) {
+			return;
+		}
+
+		if (!isReplayMode) {
+			KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_CLICK});
+		}
+		initResolve();
 	}
 
 	public function updatePlay() {
@@ -389,7 +480,7 @@ class Game implements kado.GameInterface {
 
 	// DEBUG
 	function viewGrid(grid:Array<Array<Array<Element>>>) {
-		if (!KeyboardManager.isDown(71) && bmpGrid != null) { // G
+		if (!KeyboardManager.isDown(KeyboardManager.G) && bmpGrid != null) {
 			bmpGrid.destroy();
 			bmpGrid = null;
 			return;
