@@ -20,18 +20,20 @@ class Card {
 	}
 
 	function initCard() {
-		mc = game.dmanager.attach("card", Const.PLAN_CARD);
+		mc = game.dmanager.attach("socle", Const.PLAN_CARD);
+		mc.gotoAndStop(id.socle + 1);
 		// TO DO
-		/*color = new Color(mc);
-			mc._x = Const.BASE_X + x * Const.CARD_WIDTH;
-			mc._y = Const.BASE_Y + y * Const.CARD_HEIGHT;
-			downcast(mc).symbol.gotoAndStop(Std.string(id.symbol + 1));
-			downcast(mc).socle.gotoAndStop(Std.string(id.socle + 1));
+		// color = new Color(mc);
+		mc._x = Const.BASE_X + x * Const.CARD_WIDTH;
+		mc._y = Const.BASE_Y + y * Const.CARD_HEIGHT;
 
-			var c = Const.COLORS[id.color];
-			downcast(mc).socle.color.gotoAndStop(Std.string(id.color + 1));
+		// downcast(mc).symbol.gotoAndStop(Std.string(id.symbol + 1));
+		// downcast(mc).socle.gotoAndStop(Std.string(id.socle + 1));
 
-			var me = this; */
+		// var c = Const.COLORS[id.color];
+		// downcast(mc).socle.color.gotoAndStop(Std.string(id.color + 1));
+
+		var me = this;
 		// TO DO
 		// mc.onPress = fun() {
 		// 		me.game.cardSelect(me)

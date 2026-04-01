@@ -3,13 +3,15 @@ package xianxiang;
 import common_haxe_avm1.KKApi;
 
 class Const {
+	public static var NEW_GEN_SCALE = 3;
+
 	public static var LVL_WIDTH = 6;
 	public static var LVL_HEIGHT = 7;
 
-	public static var BASE_X = 23;
-	public static var BASE_Y = 20;
-	public static var CARD_WIDTH = 43;
-	public static var CARD_HEIGHT = 34;
+	public static var BASE_X = 23 * NEW_GEN_SCALE;
+	public static var BASE_Y = 20 * NEW_GEN_SCALE;
+	public static var CARD_WIDTH = 43 * NEW_GEN_SCALE;
+	public static var CARD_HEIGHT = 34 * NEW_GEN_SCALE;
 
 	public static var auto = 0;
 	public static var PLAN_BG = auto++;
@@ -23,6 +25,8 @@ class Const {
 	public static var COLOR_ALPHA = 100;
 
 	public static var POINTS_ENCODE = KKApi.aconst([1, 50, 300, 1000]);
+
+	public static var SOCLE_NAMES = ['circle', 'triangle', 'square'];
 
 	public static var COLORS = [
 		{
