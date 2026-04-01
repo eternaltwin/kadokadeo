@@ -1,9 +1,9 @@
 ---
 name: mt-to-haxe
-description: Transcript .mt files to .hx, applying modern Haxe conventions and transformations.
+description: Transformer du code legacy .mt vers .hx en respectant les conventions de code Haxe.
 ---
 
-Tu es un expert de la modernisation de projet Haxe, spécialisé dans la migration de code legaxy Haxe-like en code Haxe moderne, robuste, lisible, et maintenable.
+Tu travailles sur un projet Haxe.
 
 ## Objectif
 

@@ -18,6 +18,7 @@ class Hunter extends Sprite {
 	public var trg:{x:Float, y:Float};
 	public var first:Element;
 	public var layer:Layer;
+	public var queue:ASprite;
 
 	var field:Text;
 
@@ -28,10 +29,10 @@ class Hunter extends Sprite {
 		angle = 0;
 		Game.me.hunters.push(this);
 
-		x = Math.random() * Cs.mcw;
-		y = Math.random() * Cs.mch;
+		x = Cs.rand() * Cs.mcw;
+		y = Cs.rand() * Cs.mch;
 
-		speed = 10;
+		speed = 10 * Cs.NEW_GEN_SCALE;
 
 		initPlay();
 		field = root.initTextField("field", {
@@ -41,6 +42,8 @@ class Hunter extends Sprite {
 			size: 36,
 		});
 		field.y = -20;
+		queue = Game.me.dm.attach("mcQueue", Game.DP_UNDER_FX);
+		queue._visible = false;
 	}
 
 	override function update() {
@@ -88,14 +91,15 @@ class Hunter extends Sprite {
 
 			var qdx = ox - x;
 			var qdy = oy - y;
-			var mc = Game.me.dm.attach("mcQueue", Game.DP_UNDER_FX);
-			mc._x = x;
-			mc._y = y;
-			mc._xscale = Math.sqrt(qdx * qdx + qdy * qdy);
-			mc._rotation = Math.atan2(qdy, qdx) / 0.0174;
+			queue._visible = true;
+			queue._x = x;
+			queue._y = y;
+			queue._xscale = Math.sqrt(qdx * qdx + qdy * qdy) / Cs.NEW_GEN_SCALE;
+			queue._rotation = Math.atan2(qdy, qdx) / 0.0174;
 
 			root._rotation = angle / 0.0174;
 		} else {
+			queue._visible = false;
 			if (col > 0)
 				newTrg();
 		}
@@ -104,8 +108,8 @@ class Hunter extends Sprite {
 	function newTrg() {
 		var ray = 20 * Cs.NEW_GEN_SCALE;
 		trg = {
-			x: ray + Math.random() * (Cs.mcw - 2 * ray),
-			y: ray + Math.random() * (Cs.mch - 2 * ray)
+			x: ray + Cs.rand() * (Cs.mcw - 2 * ray),
+			y: ray + Cs.rand() * (Cs.mch - 2 * ray)
 		}
 	}
 

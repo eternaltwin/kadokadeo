@@ -73,8 +73,8 @@ class Layer {
 			else
 				sy = Std.random(2) * 2 - 1;
 
-			var rx = Cs.mcw * 0.5 + mc._width * 0.5 + Math.random() * 200;
-			var ry = Cs.mch * 0.5 + mc._height * 0.5 + Math.random() * 200;
+			var rx = Cs.mcw * 0.5 + mc._width * 0.5 + Math.random() * (200 * Cs.NEW_GEN_SCALE);
+			var ry = Cs.mch * 0.5 + mc._height * 0.5 + Math.random() * (200 * Cs.NEW_GEN_SCALE);
 
 			mc._x = Cs.mcw * 0.5 + rx * sx;
 			mc._y = Cs.mch * 0.5 + ry * sy;

@@ -128,7 +128,9 @@ class Game implements kado.GameInterface {
 		var list = Sprite.spriteList.copy();
 		for (sp in list)
 			sp.update();
-		action();
+		if (action != null) {
+			action();
+		}
 	}
 
 	// PLAY
@@ -137,7 +139,7 @@ class Game implements kado.GameInterface {
 			lvl = 0;
 
 		influxMax = 0;
-		influxSpeed = 1;
+		influxSpeed = 1 * Cs.NEW_GEN_SCALE;
 
 		action = updatePlay;
 
@@ -157,7 +159,7 @@ class Game implements kado.GameInterface {
 		var max = Cs.CEL_MAX;
 		for (i in 0...max) {
 			var el = new Element();
-			el.initMove(Math.random() * 6.28, 1 * Cs.NEW_GEN_SCALE);
+			el.initMove(Cs.rand() * 6.28, 1 * Cs.NEW_GEN_SCALE);
 		}
 
 		//
@@ -266,7 +268,7 @@ class Game implements kado.GameInterface {
 		if (winner.col == 0 || FL_INFINITE) {
 			winner.layer.initTunnel(-bdx, -bdy);
 
-			var margin = 50;
+			var margin = 50 * Cs.NEW_GEN_SCALE;
 			sx = bdx;
 			sy = bdy;
 
@@ -295,7 +297,7 @@ class Game implements kado.GameInterface {
 					initPlay();
 				}
 			} else {
-				KKApi.gameOver(null);
+				KadoKadeoManager.kkm.gameOver(null);
 				action = null;
 			}
 		}
@@ -314,7 +316,7 @@ class Game implements kado.GameInterface {
 		});
 		Filt.glow(field, 4 * Cs.NEW_GEN_SCALE, 6, 0xFFFFFF);
 		field.text = Std.string(n);
-		p.weight = -(0.1 + Math.random() * 0.1);
+		p.weight = -(0.1 + Math.random() * 0.1) * Cs.NEW_GEN_SCALE;
 		// p.vy = 2;
 		p.timer = 20;
 		p.fadeLimit = 5;
@@ -357,7 +359,7 @@ class Game implements kado.GameInterface {
 					list.push(e);
 			if (list.length == 0)
 				return;
-			el = list[Std.random(list.length)];
+			el = list[Cs.random(list.length)];
 		}
 
 		mc.el = el;
@@ -366,7 +368,7 @@ class Game implements kado.GameInterface {
 
 		mc.blendMode = pixi.core.Pixi.BlendModes.ADD;
 
-		Filt.blur(mc, 6, 6);
+		Filt.blur(mc, 2 * Cs.NEW_GEN_SCALE, 2 * Cs.NEW_GEN_SCALE);
 		// mc._alpha = 25;
 	}
 

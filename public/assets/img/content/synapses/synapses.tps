@@ -124,7 +124,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename></filename>
+                <filename>synapses-{n}.json</filename>
             </struct>
         </map>
         <key>multiPackMode</key>
@@ -211,6 +211,26 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">src/mcCell/1.png</key>
+            <key type="filename">src/mcCell/2.png</key>
+            <key type="filename">src/mcCell/3.png</key>
+            <key type="filename">src/mcCell/4.png</key>
+            <key type="filename">src/mcCell/5.png</key>
+            <key type="filename">src/mcCell/6.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>169,126,338,252</rect>
+                <key>scale9Paddings</key>
+                <rect>169,126,338,252</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">src/mcElement/1.png</key>
             <key type="filename">src/mcElement/10.png</key>
             <key type="filename">src/mcElement/11.png</key>
@@ -285,7 +305,7 @@
             <key type="filename">src/mcQueue/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>0,0.5</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>

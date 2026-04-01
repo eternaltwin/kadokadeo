@@ -11,8 +11,6 @@ enum State {
 }
 
 class Element extends Phys {
-	var flHereWeGo:Bool;
-
 	var action:Void->Void;
 	var aura:Float;
 
@@ -40,8 +38,8 @@ class Element extends Phys {
 		super(mc);
 		ray = 4 * Cs.NEW_GEN_SCALE;
 		aura = 0;
-		x = (Math.random() * Cs.mcw - 4 * ray);
-		y = (Math.random() * Cs.mch - 4 * ray);
+		x = (Cs.rand() * Cs.mcw - 4 * ray);
+		y = (Cs.rand() * Cs.mch - 4 * ray);
 		updatePos();
 		root.stop();
 		// root.smc.gotoAndPlay(Std.random(2) + 1);
@@ -62,7 +60,6 @@ class Element extends Phys {
 		action = updateMove;
 		vx = Math.cos(a) * speed;
 		vy = Math.sin(a) * speed;
-		flHereWeGo = true;
 
 		/*
 			var recalCoef = 5;
@@ -126,7 +123,7 @@ class Element extends Phys {
 		coef = 0;
 		lvl = 0;
 		// root._xscale = 100;
-		root.gotoAndStop(col + 11);
+		root.gotoAndStop(col + 4);
 
 		// root._xscale = root._yscale = 0;
 
@@ -175,11 +172,12 @@ class Element extends Phys {
 					var mc = layer.dm.attach("mcBranch", 0);
 					mc._x = x;
 					mc._y = y;
-					mc._xscale = dist;
+					mc._xscale = dist / Cs.NEW_GEN_SCALE;
 					mc._rotation = Math.atan2(dy, dx) / 0.0174;
 
 					//  TODO: cékoisa
 					// Reflect.setField(mc, "_endAnim", callback(layer.draw, mc));
+					layer.draw(mc);
 
 					// LINK
 					el.parent = this;
@@ -228,7 +226,9 @@ class Element extends Phys {
 		}
 
 		if (coef == 1) {
-			parent.grow(-1);
+			if (parent != null) {
+				parent.grow(-1);
+			}
 			kill();
 		}
 	}
