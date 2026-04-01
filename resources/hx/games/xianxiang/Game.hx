@@ -2,6 +2,7 @@ package xianxiang;
 
 import mt.Timer;
 import mt.DepthManager;
+import common_haxe_avm1.KKApi;
 
 @:expose('GameXianXiang')
 class Game implements kado.GameInterface {
@@ -19,7 +20,7 @@ class Game implements kado.GameInterface {
 
 	// var pathTimer:Float;
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
+	public function new(root:ASprite, ?isReplay:Bool = false) {
 		colorTime = 0;
 		dmanager = new DepthManager(root);
 		bg_mc = dmanager.attach("bg", Const.PLAN_BG);

@@ -1,5 +1,7 @@
 package xianxiang;
 
+import common_haxe_avm1.KKApi;
+
 class Const {
 	public static var LVL_WIDTH = 6;
 	public static var LVL_HEIGHT = 7;

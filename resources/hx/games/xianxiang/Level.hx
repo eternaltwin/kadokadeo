@@ -1,5 +1,7 @@
 package xianxiang;
 
+import common_haxe_avm1.KKApi;
+
 class Level {
 	var game:Game;
 
