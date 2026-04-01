@@ -42,8 +42,6 @@ class Hunter extends Sprite {
 			size: 36,
 		});
 		field.y = -20;
-		queue = Game.me.dm.attach("mcQueue", Game.DP_UNDER_FX);
-		queue._visible = false;
 	}
 
 	override function update() {
@@ -91,15 +89,16 @@ class Hunter extends Sprite {
 
 			var qdx = ox - x;
 			var qdy = oy - y;
-			queue._visible = true;
-			queue._x = x;
-			queue._y = y;
-			queue._xscale = Math.sqrt(qdx * qdx + qdy * qdy) / Cs.NEW_GEN_SCALE;
-			queue._rotation = Math.atan2(qdy, qdx) / 0.0174;
+			var mc = Game.me.dm.attach("mcQueue", Game.DP_UNDER_FX);
+			mc.removeOnFrame = 9;
+			mc._x = x;
+			mc._y = y;
+			mc._xscale = Math.sqrt(qdx * qdx + qdy * qdy) / Cs.NEW_GEN_SCALE;
+			mc._rotation = Math.atan2(qdy, qdx) / 0.0174;
+			mc.gotoAndPlay(1);
 
 			root._rotation = angle / 0.0174;
 		} else {
-			queue._visible = false;
 			if (col > 0)
 				newTrg();
 		}
@@ -116,6 +115,7 @@ class Hunter extends Sprite {
 	// RESOLVE
 	public function initResolve() {
 		action = resolve;
+		field.visible = true;
 
 		var el = new Element();
 		el.x = x;
@@ -163,6 +163,7 @@ class Hunter extends Sprite {
 
 	//
 	public function cacheShape() {
+		field.visible = false;
 		var list = [];
 		for (el in Game.me.elements) {
 			if (el.col == col) {

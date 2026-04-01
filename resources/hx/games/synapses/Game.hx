@@ -305,7 +305,7 @@ class Game implements kado.GameInterface {
 
 	// FX
 	public function fxScore(x, y, n) {
-		var p = new mt.bumdum.Phys(Game.me.dm.attach("partScore", DP_FX));
+		var p = new mt.bumdum.Phys(Game.me.dm.empty(DP_FX));
 		p.x = x;
 		p.y = y;
 		var field:Text = p.root.initTextField("field", {
