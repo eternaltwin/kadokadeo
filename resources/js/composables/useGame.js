@@ -11,7 +11,6 @@ function loadScript(url) {
 
   const script = document.createElement('script')
   script.src = url
-  script.async = true
   script.dataset.kadoGameScript = url
 
   const promise = new Promise((resolve, reject) => {
