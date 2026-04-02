@@ -20,7 +20,7 @@ class Hunter extends Sprite {
 	public var layer:Layer;
 	public var queue:ASprite;
 
-	var field:Text;
+	public var scoreField:Text;
 
 	public function new(col) {
 		this.col = col;
@@ -35,13 +35,13 @@ class Hunter extends Sprite {
 		speed = 10 * Cs.NEW_GEN_SCALE;
 
 		initPlay();
-		field = root.initTextField("field", {
+		scoreField = root.initTextField("field", {
 			color: Cs.HUNTER_COLORS[col],
 			align: "center",
 			font: "Impact",
 			size: 36,
 		});
-		field.y = -20;
+		scoreField.y = -20;
 	}
 
 	override function update() {
@@ -115,7 +115,7 @@ class Hunter extends Sprite {
 	// RESOLVE
 	public function initResolve() {
 		action = resolve;
-		field.visible = true;
+		scoreField.visible = true;
 
 		var el = new Element();
 		el.x = x;
@@ -132,9 +132,6 @@ class Hunter extends Sprite {
 	}
 
 	public function resolve() {
-		// var field:flash.TextField = (cast root).field;
-		// field.text = Std.string(first.size);
-
 		if (first.size == 0 && flExplode) {
 			var max = 36;
 			for (i in 0...max) {
@@ -158,12 +155,11 @@ class Hunter extends Sprite {
 
 	public function incScore(n) {
 		score += n;
-		field.text = Std.string(score);
+		scoreField.text = Std.string(score);
 	}
 
 	//
 	public function cacheShape() {
-		field.visible = false;
 		var list = [];
 		for (el in Game.me.elements) {
 			if (el.col == col) {

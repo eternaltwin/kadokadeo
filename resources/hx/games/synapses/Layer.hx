@@ -29,7 +29,7 @@ class Layer {
 		trg = dm.empty(10);
 		trg.attachBitmap(bmp, 1);
 
-		Filt.glow(root, 10, 1, 0xFFFFFF);
+		Filt.glow(root, 10 * Cs.NEW_GEN_SCALE, 1, 0xFFFFFF);
 		glow = cast root.filters[0];
 		// glow = new flash.filters.GlowFilter();
 		// glow.blurX = 10;
@@ -42,9 +42,10 @@ class Layer {
 
 	public function draw(mc:ASprite) {
 		var m = new Matrix();
-		m.scale(mc._xscale * 0.01, mc._yscale * 0.01);
-		m.rotate(mc._rotation * 0.0174);
-		m.translate(mc._x, mc._y);
+		// m.scale(mc._xscale * 0.01, mc._yscale * 0.01);
+		// m.rotate(mc._rotation * 0.0174);
+		// m.translate(mc._x, mc._y);
+		// trace("Drawing at " + mc._x + ", " + mc._y + " with scale " + mc.scale.x + ", " + mc.scale.y + " and rotation " + untyped mc.angle);
 		bmp.draw(mc, m);
 	}
 

@@ -176,10 +176,6 @@ class Element extends Phys {
 					mc._rotation = Math.atan2(dy, dx) / 0.0174;
 					mc.gotoAndPlay(1);
 
-					//  TODO: cékoisa
-					// Reflect.setField(mc, "_endAnim", callback(layer.draw, mc));
-					// layer.draw(mc);
-
 					// LINK
 					el.parent = this;
 					el.branch = mc;

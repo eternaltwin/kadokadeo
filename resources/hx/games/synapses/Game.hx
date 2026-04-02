@@ -1,5 +1,6 @@
 package synapses;
 
+import mt.bumdum.Phys;
 import haxe.io.UInt16Array;
 import pixi.core.math.Matrix;
 import pixi.core.graphics.Graphics;
@@ -65,6 +66,7 @@ class Game implements kado.GameInterface {
 	public var isReplayMode:Bool;
 	public var playerTargetX:Int;
 	public var playerTargetY:Int;
+
 	var lastRecordedMouseX:Int;
 	var lastRecordedMouseY:Int;
 
@@ -274,13 +276,21 @@ class Game implements kado.GameInterface {
 				counter = 4;
 			counter--;
 			timer = 30;
-			var mc = dm.attach("mcCounter", DP_INTER);
-			// mc._xscale = mc._yscale = 1200;
-			mc._x = Cs.mcw;
-			mc._alpha = 50;
-			mc.blendMode = BlendModes.ADD;
-			// TODO: numéros de countdown
-			// cast(mc)._num = counter;
+			var mc = new Phys(dm.empty(DP_INTER));
+			mc.timer = 30;
+			mc.root._x = Cs.mcw / 2;
+			mc.root._y = Cs.mch / 2;
+			mc.alpha = 50;
+			mc.root.blendMode = BlendModes.ADD;
+			var txt = mc.root.initTextField("field", {
+				color: 0xFFFFFF,
+				align: "center",
+				font: "Impact",
+				size: 172,
+			});
+			txt.text = Std.string(counter);
+			txt.y = -txt.height / 2;
+
 			if (counter == 0)
 				initResolve();
 		}
@@ -386,6 +396,7 @@ class Game implements kado.GameInterface {
 				if (coef == 1) {
 					lvl++;
 					initPlay();
+					winner.scoreField.visible = false;
 				}
 			} else {
 				KadoKadeoManager.kkm.gameOver(null);
@@ -442,6 +453,8 @@ class Game implements kado.GameInterface {
 
 	public function newInflux(?el) {
 		var mc:Influx = cast dm.attach("mcInflux", Game.DP_ELEMENTS);
+		mc.loop = true;
+		mc.play();
 
 		if (el == null) {
 			var list = [];
@@ -501,12 +514,8 @@ class Game implements kado.GameInterface {
 				var n = grid[x][y].length * 20;
 				if (n > 255)
 					n = 255;
-				// TODO: old code
-				// var col = Col.objToCol({r: n, g: n, b: n});
-				// bmpGrid.setPixel(x, y, col);
-				// TODO: New code
 				var g = new Graphics();
-				g.beginFill(Col.objToCol({r: n, g: n, b: n})).drawRect(0, 0, 3, 3);
+				g.beginFill(Col.objToCol({r: n, g: n, b: n})).drawRect(0, 0, 1, 1);
 				var m = new Matrix();
 				m.translate(x, y);
 				bmpGrid.draw(g, m);
