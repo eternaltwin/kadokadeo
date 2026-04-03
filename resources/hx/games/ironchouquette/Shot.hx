@@ -1,6 +1,8 @@
 package ironchouquette;
 
 import mt.Timer;
+import mt.bumdum.Lib;
+import pixi.core.Pixi.BlendModes;
 
 class Shot extends Phys {
 	public var flGood:Bool;
@@ -107,7 +109,7 @@ class Shot extends Phys {
 						// p.timer = 20+Math.random()*10;
 						p.root._xscale = 150;
 						p.root._yscale = p.root._xscale;
-						p.root.blendMode = BlendMode.ADD;
+						p.root.blendMode = BlendModes.ADD;
 						p.fadeType = 0;
 					}
 				case _:
@@ -132,7 +134,7 @@ class Shot extends Phys {
 				mc._xscale = getDist(op);
 				mc._x = x;
 				mc._y = y;
-				// mc.blendMode = BlendMode.ADD
+				// mc.blendMode = BlendModes.ADD;
 				if (timer != null)
 					mc._alpha = Num.mm(0, 10 * timer, 100);
 				Cs.game.plasmaDraw(mc, 0);
@@ -163,15 +165,15 @@ class Shot extends Phys {
 		trg = null;
 		for (i in 0...list.length) {
 			var b = list[i];
-			var d = getDist(b);
+			var d = getDist({x: b.x, y: b.y});
 			if (d < dist) {
-				trg = upcast(b);
+				trg = cast b;
 				dist = d;
 			}
 		}
 
 		if (list.length > 0) {
-			trg = upcast(list[Std.random(list.length)]);
+			trg = cast list[Std.random(list.length)];
 		} else {
 			trg = null;
 		}
@@ -187,7 +189,7 @@ class Shot extends Phys {
 						hit(b);
 					}
 				} else {
-					if (getDist(b) < ray + b.ray) {
+					if (getDist({x: b.x, y: b.y}) < ray + b.ray) {
 						hit(b);
 					}
 				}
@@ -196,7 +198,7 @@ class Shot extends Phys {
 			var h = Cs.game.hero;
 			if (h.invincibleTimer != null)
 				return;
-			var dist = getDist(h);
+			var dist = getDist({x: h.x, y: h.y});
 			if (dist < Cs.game.hero.ray + ray) {
 				Cs.game.hero.hit(this);
 				kill();
@@ -219,7 +221,7 @@ class Shot extends Phys {
 				mc._xscale = 50 + damage * 100;
 				mc._yscale = mc._xscale;
 				mc._rotation = Math.random() * 360;
-				mc.blendMode = BlendMode.ADD;
+				mc.blendMode = BlendModes.ADD;
 				kill();
 				return;
 			}
@@ -229,8 +231,9 @@ class Shot extends Phys {
 	public function onHit(bad) {}
 
 	public function setSkin(n, d) {
-		root = downcast(Cs.game.shots.layer[d].dm.attach("mcShot", 0));
-		root.gotoAndStop(Std.string(n));
+		// TODO: root is maybe reassigned ? memory leak ?
+		root = Cs.game.shots.layer[d].dm.attach("mcShot", 0);
+		root.gotoAndStop(n);
 		root.obj = this;
 		updatePos();
 	}

@@ -30,5 +30,5 @@ xianxiang.Game
 -js ./resources/js/games/synapses.js
 synapses.Game
 # --next
-# -js ./resources/js/games/kanjigaiden.js
-# kanjigaiden.Game
+# -js ./resources/js/games/ironchouquette.js
+# ironchouquette.Game

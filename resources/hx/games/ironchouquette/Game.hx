@@ -1,7 +1,10 @@
 package ironchouquette;
 
+import pixi.filters.blur.BlurFilter;
+import pixi.filters.colormatrix.ColorMatrixFilter;
 import pixi.core.textures.RenderTexture;
 import pixi.core.math.Matrix;
+import pixi.core.Pixi.BlendModes;
 import common_haxe_avm1.KeyboardManager;
 import mt.bumdum.Lib;
 import mt.DepthManager;
@@ -256,17 +259,20 @@ class Game implements kado.GameInterface {
 			bt = null;
 			bg.filters = [];
 		} else {
+			var fl:ColorMatrixFilter = cast Reflect.field(bg, "__percentColorFilter");
+			if (fl == null) {
+				fl = new ColorMatrixFilter();
+				Reflect.setField(bg, "__percentColorFilter", fl);
+			}
 			// if(Cs.game.root.filters.length>0)return;
-			var fl = new flash.filters.ColorMatrixFilter();
 			var c = 1 - bt.val;
 			var sat = 0.3;
 			var inc = Math.random() * 15;
 			fl.matrix = [
-				1 + c * sat,           0,           0, 0, inc + 200 * c,
-				          0, 1 + c * sat,           0, 0,  inc - 50 * c,
-				          0,           0, 1 + c * sat, 0,  inc - 50 * c,
-				          0,           0,           0, 1,             0
-
+				1 + c * sat,           0,           0, 0, (inc + 200 * c) / 255,
+				          0, 1 + c * sat,           0, 0,  (inc - 50 * c) / 255,
+				          0,           0, 1 + c * sat, 0,  (inc - 50 * c) / 255,
+				          0,           0,           0, 1,                     0
 			];
 			bg.filters = [fl];
 		}
@@ -298,19 +304,19 @@ class Game implements kado.GameInterface {
 
 	// PLASMA
 	public function initPlasma() {
-		plasma = downcast(dm.empty(DP_BG));
+		plasma = cast dm.empty(DP_BG);
 		plasma.layer = new Array();
 		var dm = new DepthManager(plasma);
 		for (i in 0...2) {
-			var mc = downcast(dm.empty(0));
-			mc.bmp = new flash.display.BitmapData(Std.int(Cs.mcw * pq), Std.int((Cs.mch + PLASMA_CACHE) * pq), true, 0x00000000);
+			var mc:PlasmaLayerSprite = cast dm.empty(0);
+			mc.bmp = RenderTexture.create(Std.int(Cs.mcw * pq), Std.int((Cs.mch + PLASMA_CACHE) * pq));
 			mc.attachBitmap(mc.bmp, 0);
 			plasma.layer.push(mc);
 			mc._y = -PLASMA_CACHE * pq;
 
 			if (i == 0)
-				mc.blendMode = BlendMode.ADD;
-			// if(i==1)mc.blendMode = BlendMode.OVERLAY;
+				mc.blendMode = BlendModes.ADD;
+			// if(i==1)mc.blendMode = BlendModes.OVERLAY;
 		}
 		plasma._xscale = 100 / pq;
 		plasma._yscale = 100 / pq;
@@ -318,7 +324,7 @@ class Game implements kado.GameInterface {
 
 	public function updatePlasma() {
 		plasmaDraw(shots.layer[0], 0);
-		var bfl = new flash.filters.BlurFilter();
+		var bfl = new BlurFilter();
 
 		for (i in 0...plasma.layer.length) {
 			if (plasma.layer[i] != null) {
@@ -352,7 +358,7 @@ class Game implements kado.GameInterface {
 		}
 	}
 
-	public function plasmaDraw(mc, n) {
+	public function plasmaDraw(mc:ASprite, n:Int) {
 		if (plasma.layer[n] == null)
 			return;
 		var bmp = plasma.layer[n].bmp;
@@ -365,7 +371,6 @@ class Game implements kado.GameInterface {
 		// Commented while converting to pixi:
 		// var ct = new flash.geom.ColorTransform(1, 1, 1, 1, 0, 0, 0, -255 + mc._alpha * 2.55);
 		// var b = mc.blendMode;
-
 		// bmp.draw(mc, m, ct, b, null, false);
 
 		/* PIXI VERSION COMMENT:
@@ -383,7 +388,6 @@ class Game implements kado.GameInterface {
 			mc.filters = [f];
 		 */
 		bmp.draw(mc, m);
-		//*/
 	}
 
 	public function plasmaPoint(x, y, color) {

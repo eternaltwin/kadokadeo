@@ -21,13 +21,13 @@ class Wave {
 		var mp = Stykades.PATH[id];
 		path = new Array();
 		for (i in 0...mp.length) {
-			path[i] = mp[i].duplicate();
+			path[i] = mp[i].copy();
 		}
 
 		// if(Std.random(2)==0)flipPath();
 
 		pl = [0];
-		var dist = 0;
+		var dist:Float = 0;
 		var x = path[0][0];
 		var y = path[0][1];
 		for (i in 1...path.length) {
@@ -52,7 +52,8 @@ class Wave {
 		for (i in 0...path.length) {
 			var a = path[i];
 			var w = Cs.mcw * 0.5;
-			a[n] = w - (a[n] - w);
+			// TODO: there was no Std.int before
+			a[n] = Std.int(w - (a[n] - w));
 		}
 	}
 

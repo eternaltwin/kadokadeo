@@ -3,6 +3,7 @@ package ironchouquette;
 import common_haxe_avm1.KKApi;
 import mt.Timer;
 import mt.bumdum.Lib;
+import pixi.core.Pixi.BlendModes;
 
 class Bads extends Phys {
 	public static var scoreDisplayLimit = 100;
@@ -114,7 +115,7 @@ class Bads extends Phys {
 		waitTimer = 200;
 	}
 
-	public function setLevel(lvl) {
+	public function setLevel(lvl:Float) {
 		if (level != null)
 			Stykades.monsterLevel -= level;
 		level = lvl;
@@ -159,7 +160,7 @@ class Bads extends Phys {
 		if (outSafeTimer > 0) {
 			outSafeTimer -= Timer.tmod;
 		} else {
-			var lim = 10;
+			var lim:Float = 10;
 			if (ray != null)
 				lim += ray;
 			if (rect != null)
@@ -184,7 +185,7 @@ class Bads extends Phys {
 		// HERO
 		{
 			var h = Cs.game.hero;
-			var flHit = getDist(h) < ray + h.ray;
+			var flHit = getDist(cast h) < ray + h.ray;
 			if (rect != null)
 				flHit = Math.abs(h.x - x) < rect.rw + h.ray && Math.abs(h.y - y) < rect.rh + h.ray;
 			if (flHit) {
@@ -214,7 +215,7 @@ class Bads extends Phys {
 						p.setScale(100 + power * 10 + Math.random() * 50);
 						p.timer = 10 + Math.random() * 10;
 						p.fadeType = 0;
-						p.root.blendMode = BlendMode.ADD;
+						p.root.blendMode = BlendModes.ADD;
 						// p.plasmaId = 1
 					}
 					damage((0.02 + power * 0.05) * Timer.tmod);
@@ -239,7 +240,7 @@ class Bads extends Phys {
 				mc._xscale = 100 + c * 100;
 				mc._yscale = mc._xscale;
 				mc._rotation = Math.random() * 360;
-				mc.blendMode = BlendMode.ADD;
+				mc.blendMode = BlendModes.ADD;
 			}
 		}
 	}
@@ -257,10 +258,10 @@ class Bads extends Phys {
 		for (i in 0...Cs.game.badsList.length) {
 			var b = Cs.game.badsList[i];
 			if (b != this && b.bounceId == bounceId) {
-				var dist = getDist(b);
+				var dist = getDist(cast b);
 				var dif = (ray + b.ray) - dist;
 				if (dif > 0) {
-					var a = getAng(b);
+					var a = getAng(cast b);
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
 					x -= ca * dif * 0.5;
@@ -398,9 +399,9 @@ class Bads extends Phys {
 				case 7: // FLAMER
 
 					var pa = 0.3;
-					var da = Num.hMod(getAng(Cs.game.hero) - 1.57, 3.14);
+					var da = Num.hMod(getAng(cast Cs.game.hero) - 1.57, 3.14);
 
-					if (Math.abs(da) < pa && getDist(Cs.game.hero) < 100) {
+					if (Math.abs(da) < pa && getDist(cast Cs.game.hero) < 100) {
 						flameTimer = 8;
 					}
 					if (flameTimer > 0) {
@@ -418,7 +419,7 @@ class Bads extends Phys {
 						shot.ray = 8;
 						shot.timer = 10 + Math.random() * 10;
 						shot.vr = (Math.random() * 2 - 1) * 20;
-						shot.root.blendMode = BlendMode.ADD;
+						shot.root.blendMode = BlendModes.ADD;
 						shot.plasmaId = 1;
 						shot.updatePos();
 					}
@@ -429,7 +430,7 @@ class Bads extends Phys {
 						bList.splice(i, 1);
 						i--;
 						bList.push(3);
-						trg = upcast(Cs.game.hero);
+						trg = cast Cs.game.hero;
 						hp = 2;
 						root.smc.play();
 						score = score2;
@@ -453,7 +454,7 @@ class Bads extends Phys {
 					for (k in 0...Cs.game.shotList.length) {
 						var shot = Cs.game.shotList[k];
 						if (shot.flGood && shot.root._currentframe != 14) {
-							var dist = getDist(shot);
+							var dist = getDist(cast shot);
 							if (dist < shieldLim) {
 								var d = shieldLim - dist;
 								shot.x += Math.cos(a) * d;
@@ -548,7 +549,7 @@ class Bads extends Phys {
 		damage(shot.damage);
 	}
 
-	public function damage(n) {
+	public function damage(n:Float) {
 		flash = 100;
 		hp -= n;
 		if (hp <= 0) {
@@ -566,8 +567,9 @@ class Bads extends Phys {
 				var p = new Part(Cs.game.dm.attach("partScore", Game.DP_PARTS));
 				p.x = x;
 				p.y = y;
-				downcast(p.root).compt = 10;
-				downcast(p.root).score = v;
+				// TODO: uncomment both lines below
+				// downcast(p.root).compt = 10;
+				// downcast(p.root).score = v;
 				Filt.glow(p.root, 6, 5, 0x0000FF);
 			}
 
@@ -605,7 +607,7 @@ class Bads extends Phys {
 			p.vy = sa * sp + Game.SCROLL_SPEED * (0.6 + Math.random() * 0.4);
 			p.plasmaId = 1;
 			p.timer = 10 + Math.random() * 10;
-			p.root.blendMode = BlendMode.ADD;
+			p.root.blendMode = BlendModes.ADD;
 			p.root._rotation = Math.random() * 360;
 		}
 
@@ -617,7 +619,7 @@ class Bads extends Phys {
 			mc._xscale = 100 + Math.random() * 100;
 			mc._yscale = mc._xscale;
 			mc._rotation = Math.random() * 360;
-			mc.blendMode = BlendMode.ADD;
+			mc.blendMode = BlendModes.ADD;
 
 			Cs.game.plasmaDraw(mc, 1);
 
@@ -686,9 +688,9 @@ class Bads extends Phys {
 	}
 
 	// ON
-	public function onTargetReach() {}
+	public dynamic function onTargetReach() {}
 
-	public function onDeath() {}
+	public dynamic function onDeath() {}
 
 	public override function kill() {
 		var i = 0;

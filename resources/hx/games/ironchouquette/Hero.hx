@@ -5,14 +5,42 @@ import common_haxe_avm1.KKApi;
 import mt.bumdum.Lib;
 import mt.DepthManager;
 import mt.Timer;
+import pixi.core.Pixi.BlendModes;
+
+class OndeSprite extends ASprite {
+	public var list:Array<Bads>;
+}
+
+class LaserRayListSprite extends ASprite {
+	public var vr:Float;
+	public var t:Float;
+}
+
+class LaserRaySprite extends ASprite {
+	public var t:Float;
+	public var ray:ASprite;
+	public var dm:DepthManager;
+	public var list:Array<LaserRayListSprite>;
+}
+
+class BlackHoleSpritePart extends Part {
+	public var black:Float;
+	public var mask:ASprite;
+}
+
+class BlackHoleSprite extends ASprite {
+	public var vr:Float;
+	public var step:Int;
+	public var list:Array<BlackHoleSpritePart>;
+}
 
 class Hero extends Phys {
-	public static var WP_PLASMA = 0;
-	public static var WP_SIDER = 1;
-	public static var WP_LASER = 2;
-	public static var WP_SPEED = 3;
-	public static var WP_VOID = 4;
-	public static var WP_MISSILE = 5;
+	public inline static var WP_PLASMA = 0;
+	public inline static var WP_SIDER = 1;
+	public inline static var WP_LASER = 2;
+	public inline static var WP_SPEED = 3;
+	public inline static var WP_VOID = 4;
+	public inline static var WP_MISSILE = 5;
 
 	public static var RAY = 8;
 	public static var INVINCIBLE_RAY = 32;
@@ -39,16 +67,16 @@ class Hero extends Phys {
 	}
 	public var laserFlip:Int;
 	public var laserList:Array<Array<Float>>;
-	public var laserRay:{ > ASprite, t:Float, ray:ASprite, dm:DepthManager, list:Array<{ > ASprite, vr:Float, t:Float}>}
+	public var laserRay:LaserRaySprite;
 
 	// SONIC BOOM
-	public var onde:{ > ASprite, list:Array<Bads>};
-	public var blackHole:{ > ASprite, vr:Float, step:Int, list:Array<{ > Part, mask:ASprite, black:Float}>};
+	public var onde:OndeSprite;
+	public var blackHole:BlackHoleSprite;
 
 	public var boxes:Array<ASprite>;
 	public var slots:Array<Int>;
 	public var cslots:Array<Int>;
-	public var weapons:Array<Array<Int>>;
+	public var weapons:Array<Array<Dynamic>>;
 	public var cweapons:Array<Array<Int>>;
 
 	public var lastLaser:ASprite;
@@ -118,8 +146,10 @@ class Hero extends Phys {
 			if (slots[i] != cslots[i])
 				KKApi.flagCheater();
 		}
-		if (boxes.getCheat())
-			KKApi.flagCheater();
+
+		// TODO: getCheat does not exist
+		// if (boxes.getCheat())
+		// 	KKApi.flagCheater();
 	}
 
 	public function updateInvincible() {
@@ -143,7 +173,7 @@ class Hero extends Phys {
 		p.plasmaId = 1;
 		p.timer = 10;
 		p.fadeType = 0;
-		p.root.blendMode = BlendMode.ADD;
+		p.root.blendMode = BlendModes.ADD;
 		p.setScale((150 + Math.random() * 100) * size);
 
 		if (invincibleTimer < 0) {
@@ -167,8 +197,8 @@ class Hero extends Phys {
 		var sp = Math.min(speed + boost * 1.6, 10) * Timer.tmod;
 
 		// MOVE
-		var mx = 0;
-		var my = 0;
+		var mx:Float = 0;
+		var my:Float = 0;
 		var bent = 0.25;
 		if (KeyboardManager.isDown(KeyboardManager.LEFT)) {
 			mx -= sp;
@@ -205,7 +235,7 @@ class Hero extends Phys {
 				//
 				mc._yscale = mc._xscale;
 				mc.gotoAndStop(Std.string(boost));
-				// mc.blendMode = BlendMode.ADD
+				// mc.blendMode = BlendModes.ADD
 				Cs.game.plasmaDraw(mc, 0);
 
 				for (i in 0...3) {
@@ -228,7 +258,8 @@ class Hero extends Phys {
 				p.y = y + (Math.random() * 2 - 1) * r;
 				p.setScale(10 + Math.random() * (15 + boost * 5));
 				p.root.gotoAndPlay(Std.string(Std.random(p.root._totalframes) + 1));
-				downcast(p.root).compt = 100;
+				// TODO: uncomment
+				// downcast(p.root).compt = 100;
 				p.vy = Game.SCROLL_SPEED;
 				p.timer = 20 + Math.random() * 10;
 			}
@@ -287,9 +318,9 @@ class Hero extends Phys {
 		cslots.splice(n, 1);
 		updateBoxes();
 
-		Cs.game.stats.b.push([Stykades.dif, 100 + id]);
+		Cs.game.stats.b.push([Std.int(Stykades.dif), 100 + id]);
 		switch (id) {
-			case WP_PLASMA:
+			case Hero.WP_PLASMA:
 				var shot = newShot(0, 14);
 				shot.setSkin(18, 1);
 				shot.ray = 50;
@@ -297,18 +328,18 @@ class Hero extends Phys {
 				shot.flPierce = true;
 				shot.bList.push(11);
 			// shot.vr = (Math.random()*2-1)*10
-			case WP_SIDER:
+			case Hero.WP_SIDER:
 				if (onde != null)
 					onde.removeMovieClip();
-				onde = downcast(Cs.game.dm.attach("mcSonicBoom", Game.DP_UNDERPARTS));
+				onde = cast Cs.game.dm.attach("mcSonicBoom", Game.DP_UNDERPARTS);
 				onde.list = new Array();
 				onde._x = x;
 				onde._y = y;
 				onde._xscale = 80;
 				onde._yscale = onde._xscale;
-			case WP_VOID:
+			case Hero.WP_VOID:
 				if (blackHole == null) {
-					blackHole = downcast(Cs.game.dm.attach("mcBlackHole", Game.DP_UNDERPARTS));
+					blackHole = cast Cs.game.dm.attach("mcBlackHole", Game.DP_UNDERPARTS);
 					blackHole.list = new Array();
 					blackHole._x = x;
 					blackHole._y = y;
@@ -329,7 +360,7 @@ class Hero extends Phys {
 							b.flash = 0;
 							b.updateFlash();
 						}
-						var p = downcast(new Part(b.root));
+						var p = new BlackHoleSpritePart(b.root);
 						p.x = b.x;
 						p.y = b.y;
 						p.vx = b.vx;
@@ -353,31 +384,31 @@ class Hero extends Phys {
 					blackHole.list.push(p);
 				}
 			 */
-			case WP_SPEED:
+			case Hero.WP_SPEED:
 				if (laserRay == null) {
-					laserRay = downcast(Cs.game.dm.attach("mcBigLaser", Game.DP_UNDERPARTS));
-					laserRay.blendMode = BlendMode.ADD;
+					laserRay = cast Cs.game.dm.attach("mcBigLaser", Game.DP_UNDERPARTS);
+					laserRay.blendMode = BlendModes.ADD;
 					laserRay.ray._xscale = 0;
 					laserRay.dm = new DepthManager(laserRay);
 					laserRay.list = new Array();
 					for (i in 0...12) {
-						var mc = downcast(laserRay.dm.attach("mcLaserRay", 0));
+						var mc:LaserRayListSprite = cast laserRay.dm.attach("mcLaserRay", 0);
 						mc._rotation = Math.random() * 360;
 						mc._xscale = 100 + Math.random() * 100;
 						mc._yscale = 100 + Math.random() * 500;
 						mc.t = 10 + Math.random() * 50;
-						mc.blendMode = BlendMode.ADD;
+						mc.blendMode = BlendModes.ADD;
 						mc.vr = (Math.random() * 2 - 1) * 5;
 						laserRay.list.push(mc);
 					}
 					laserRay.t = 80;
 				}
 
-			case WP_LASER:
+			case Hero.WP_LASER:
 				invincibleTimer = 300;
 				ray = INVINCIBLE_RAY; // ADD;
 
-			case WP_MISSILE:
+			case Hero.WP_MISSILE:
 				var max = 12;
 				for (i in 0...max) {
 					var shot = newMissile(6.28 * i / max);
@@ -389,7 +420,7 @@ class Hero extends Phys {
 			case _:
 		}
 		// CLEAN SHOOT
-		var list = Cs.game.shotList.duplicate();
+		var list = Cs.game.shotList.copy();
 		for (i in 0...list.length) {
 			var shot = list[i];
 			if (shot.flGood != true)
@@ -411,7 +442,7 @@ class Hero extends Phys {
 			var a = weapons[i];
 			if (a[0] > 0) {
 				if (a[1] > 0)
-					a[1] = a[1] - Timer.tmod;
+					a[1] = Std.int(a[1] - Timer.tmod);
 				while (flFire && a[1] <= 0 && blackHole == null && laserRay == null) {
 					switch (i) {
 						case 0: // PLASMA
@@ -457,7 +488,7 @@ class Hero extends Phys {
 									}
 									for (n in 0...2) {
 										var sens = n * 2 - 1;
-										for (k in 0...a[0] * 0.5) {
+										for (k in 0...Std.int(a[0] * 0.5)) {
 											var shot = newShot(sens * (0.15 + k * 0.15), 12 - (k * 1.5));
 											shot.setSkin(14, 1);
 											shot.ray = 8;
@@ -484,7 +515,7 @@ class Hero extends Phys {
 
 						case 1: // SIDER
 							for (n in 0...2) {
-								var max = Math.min(a[0], 6);
+								var max = Std.int(Math.min(a[0], 6));
 								for (k in 0...max) {
 									var sens = n * 2 - 1;
 
@@ -528,9 +559,9 @@ class Hero extends Phys {
 								};
 								for (n in 0...Cs.game.badsList.length) {
 									var b = Cs.game.badsList[n];
-									var d = getDist(b);
+									var d = getDist(cast b);
 									if (d < dist) {
-										laserTrg = upcast(b);
+										laserTrg = cast b;
 										dist = d;
 									}
 								}
@@ -556,9 +587,10 @@ class Hero extends Phys {
 								var nx = op[0] + Math.cos(angle) * sp;
 								var ny = op[1] + Math.sin(angle) * sp;
 								if (laserTrg.shieldLim != null) {
-									var dist = Cs.getDist(laserTrg, {x: nx, y: ny});
+									var dist = Cs.getDist({x: Std.int(laserTrg.x), y: Std.int(laserTrg.y)}, {x: Std.int(nx), y: Std.int(ny)});
 									if (dist < laserTrg.shieldLim) {
-										angle = Cs.getAng({x: nx, y: ny}, laserTrg) + laserStartAngle * 0.2;
+										angle = Cs.getAng({x: Std.int(nx), y: Std.int(ny)}, {x: Std.int(laserTrg.x), y: Std.int(laserTrg.y)})
+											+ laserStartAngle * 0.2;
 										ca = 0.5;
 										va = 10;
 									}
@@ -623,7 +655,7 @@ class Hero extends Phys {
 
 							//*
 							if (Cs.game.gfxMode >= 1) {
-								mc.blendMode = BlendMode.ADD;
+								mc.blendMode = BlendModes.ADD;
 								Cs.game.plasmaDraw(mc, 1);
 								mc.removeMovieClip();
 							} else {
@@ -708,12 +740,12 @@ class Hero extends Phys {
 		}
 
 		while (laserRay.list.length < Math.min(12, laserRay.t * 0.5)) {
-			var mc = downcast(laserRay.dm.attach("mcLaserRay", 0));
+			var mc:LaserRayListSprite = cast laserRay.dm.attach("mcLaserRay", 0);
 			mc._rotation = Math.random() * 360;
 			mc._xscale = 100 + Math.random() * 100;
 			mc._yscale = 100 + Math.random() * 1000;
 			mc.t = 10 + Math.random() * 60;
-			mc.blendMode = BlendMode.ADD;
+			mc.blendMode = BlendModes.ADD;
 			mc.vr = (Math.random() * 2 - 1) * 5;
 			laserRay.list.push(mc);
 		}
@@ -796,7 +828,7 @@ class Hero extends Phys {
 					p.mask._y = bh.y;
 					p.mask._xscale = blackHole._xscale;
 					p.mask._yscale = blackHole._yscale;
-					p.root.setMask(p.mask);
+					p.root.mask = p.mask;
 				}
 			}
 			i++;
@@ -834,7 +866,7 @@ class Hero extends Phys {
 	}
 
 	//
-	public function newShot(a, speed) {
+	public function newShot(a:Float, speed:Float) {
 		a -= 1.57;
 		var shot = new Shot(null);
 		shot.a = a;
@@ -886,7 +918,7 @@ class Hero extends Phys {
 			p.plasmaId = 1;
 			p.timer = 10 + Math.random() * 30;
 			p.frict = 0.96;
-			p.root.blendMode = BlendMode.ADD;
+			p.root.blendMode = BlendModes.ADD;
 			p.root._rotation = Math.random() * 360;
 		}
 		// TRACE
@@ -897,9 +929,10 @@ class Hero extends Phys {
 			mc._xscale = 150 + Math.random() * 150;
 			mc._yscale = mc._xscale;
 			mc._rotation = Math.random() * 360;
-			mc.blendMode = BlendMode.ADD;
-			downcast(mc).obj = Cs.game;
-			mc.gotoAndPlay(Std.string(Std.random(3) + 1));
+			mc.blendMode = BlendModes.ADD;
+			// TODO: was uncommented
+			// mc.obj = Cs.game;
+			mc.gotoAndPlay(Std.random(3) + 1);
 		}
 		// ONDE
 		var mc = Cs.game.dm.attach("mcOnde", Game.DP_UNDERPARTS);
@@ -912,9 +945,10 @@ class Hero extends Phys {
 	}
 
 	public override function kill() {
-		Cs.game.hero = downcast({x: x, y: y});
+		Cs.game.hero = cast {x: x, y: y};
 		KKApi.gameOver(Cs.game.stats);
-		downcast(Cs.game.root)._quality = "$HIGH".substring(1);
+		// TODO: does this have any effect ?
+		// downcast(Cs.game.root)._quality = "$HIGH".substring(1);
 		lastLaser.removeMovieClip();
 		onde.removeMovieClip();
 		laserRay.removeMovieClip();
@@ -933,6 +967,7 @@ class Hero extends Phys {
 		}
 	}
 }
+
 // LE RAYON d'INVICIBILITE A ETE CORRIGE
 // FREQUENCE DE TIR ORANGE DIMINUE
 // DEGAT DU TIR ORANGE AUGMENTE

@@ -2,7 +2,7 @@ package ironchouquette;
 
 import common_haxe_avm1.KKApi;
 import mt.DepthManager;
-import mt.Timer;
+import mt.bumdum.Lib;
 
 class Bonus extends Phys {
 	public static var ID_MAX = 4;
@@ -106,7 +106,7 @@ class Bonus extends Phys {
 			case 6:
 				Cs.game.hero.addBox();
 		}
-		Cs.game.stats.b.push([Stykades.dif, id]);
+		Cs.game.stats.b.push([Std.int(Stykades.dif), id]);
 		kill();
 	}
 

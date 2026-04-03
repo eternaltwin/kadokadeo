@@ -56,37 +56,37 @@ class Rafale {
 		}
 	}
 
-	public function shot(type, a) {
+	public function shot(type, a:Array<Dynamic>) {
 		var shot = null;
-			switch (type) {
-				case 0: // FRONT (  speed, skin, ray )
-					shot = newShot();
-					shot.vy = a[0];
+		switch (type) {
+			case 0: // FRONT (  speed, skin, ray )
+				shot = newShot();
+				shot.vy = a[0];
+				shot.setSkin(a[1], 1);
+				if (a[2] != null)
+					shot.ray = a[2];
+
+			case 1: // STANDARD (  speed, acc )
+				shot = newAimedShot(a[0], a[1]);
+				shot.setSkin(13, 1);
+
+			case 2: // CIBLE (  speed, skin )
+				shot = newAimedShot(a[0], 0);
+				shot.setSkin(a[1], 1);
+				shot.orient();
+
+			case 3: // MULTI (  speed, skin, nb, pa )
+				for (i in 0...a[2]) {
+					var c = (i / (a[2] - 1)) * 2 - 1;
+					shot = newAngledShot(a[0], 1.57 + c * a[3]);
 					shot.setSkin(a[1], 1);
-					if (a[2] != null)
-						shot.ray = a[2];
-
-				case 1: // STANDARD (  speed, acc )
-					shot = newAimedShot(a[0], a[1]);
-					shot.setSkin(13, 1);
-
-				case 2: // CIBLE (  speed, skin )
-					shot = newAimedShot(a[0], 0);
-					shot.setSkin(a[1], 1);
-					shot.orient();
-
-				case 3: // MULTI (  speed, skin, nb, pa )
-					for (i in 0...a[2]) {
-						var c = (i / (a[2] - 1)) * 2 - 1;
-						shot = newAngledShot(a[0], 1.57 + c * a[3]);
-						shot.setSkin(a[1], 1);
-						// shot.orient();
-					}
-				case 4: // FRONT ANGLED ( speed, acc )
-					var c = Math.random() * 2 - 1;
-					shot = newAngledShot(a[0], 1.57 + c * a[1]);
-					shot.setSkin(13, 1);
-			}
+					// shot.orient();
+				}
+			case 4: // FRONT ANGLED ( speed, acc )
+				var c = Math.random() * 2 - 1;
+				shot = newAngledShot(a[0], 1.57 + c * a[1]);
+				shot.setSkin(13, 1);
+		}
 		if (cInert != null) {
 			shot.vx += cInert * b.vx;
 			shot.vy += cInert * b.vy;
@@ -98,7 +98,7 @@ class Rafale {
 		shot.x = b.x + dx;
 		shot.y = b.y + dy;
 		if (orientRay != null) {
-			var a = b.getAng(Cs.game.hero);
+			var a = b.getAng(cast Cs.game.hero);
 			shot.x += Math.cos(a) * orientRay;
 			shot.y += Math.sin(a) * orientRay;
 		}
@@ -111,7 +111,7 @@ class Rafale {
 		// shot.vx = Math.cos(a)*speed;
 		// shot.vy = Math.sin(a)*speed;
 
-		return newAngledShot(speed, b.getAng(Cs.game.hero) + (Math.random() * 2 - 1) * da);
+		return newAngledShot(speed, b.getAng(cast Cs.game.hero) + (Math.random() * 2 - 1) * da);
 	}
 
 	public function newAngledShot(speed, a) {
