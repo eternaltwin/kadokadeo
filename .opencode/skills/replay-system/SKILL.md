@@ -24,6 +24,7 @@ L'orchestration globale (start/stop/frame + envoi replay) est deja geree par `re
     - c'est `KadoKadeoManager` qui le fait deja
 - Initialiser le replay dans le constructeur du jeu avec `KadoKadeoManager.kkm.replay.init(...)`
 - Consommer les evenements replay au debut de `update()` quand `recordEvents = true`
+- Respecter la temporalite des events: `recordEvent(...)` (sans `frameIndex`) est applique a la frame suivante; ne pas appliquer immediatement en live une action qui, en replay, passera par `consumeEvents()`
 - Eviter les doubles enregistrements en mode replay (`isReplay == true`) pour les evenements souris/hover/click
 - Conserver la logique gameplay identique entre session live et session replay (memes chemins de code)
 - Pour les controles clavier, utiliser `common_haxe_avm1.KeyboardManager` (et pas la classe `Key` legacy)
@@ -95,6 +96,7 @@ for (event in KadoKadeoManager.kkm.replay.consumeEvents()) {
     - valider `event != null`
     - lire `k`, eventuellement `x`, `y`
     - rejouer l'action metier exacte (hover, select, press/release...)
+- Important: pour les actions event-driven (hover/clic), faire converger live et replay vers le meme point d'application (idealement via `applyReplayEvent` ou une fonction metier commune), afin de conserver le meme decalage d'une frame.
 
 5. Enregistrer les evenements metier
 
@@ -133,6 +135,7 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
 
 - `recordInput` enregistre des transitions de touche (down/up), pas un etat complet a chaque frame.
 - `recordEvent` sans `frameIndex` met en file d'attente pour la frame suivante (comportement normal du manager).
+- Consequence pratique: si une action est enregistree en event, eviter de l'appliquer "tout de suite" en live dans un chemin de code different, sinon live et replay peuvent diverger (timing, trajectoires, score).
 - Le format d'evenement `{k, x, y}` est un exemple et est a adapter suivant le jeu / le contexte.
 
 ## Patterns de reference (repo actuel)

@@ -150,10 +150,6 @@ class Game implements kado.GameInterface {
 			applyReplayEvent(event);
 		}
 
-		if (!isReplayMode) {
-			updateMouseTargetFromLiveInput();
-		}
-
 		// haxe.Log.clear();
 		// trace("hunters:"+hunters.length);
 		// trace("elements:"+elements.length);
@@ -208,19 +204,25 @@ class Game implements kado.GameInterface {
 			timer = 500;
 		//
 		bg.onPress = onResolvePress;
+		bg.onMouseMove = onLiveMouseMove;
 		bg.useHandCursor = true;
 		KKApi.registerButton(bg);
 	}
 
-	function updateMouseTargetFromLiveInput() {
-		setPlayerTarget(bg._xmouse, bg._ymouse);
-		if (playerTargetX == lastRecordedMouseX && playerTargetY == lastRecordedMouseY) {
+	function onLiveMouseMove() {
+		if (isReplayMode) {
 			return;
 		}
 
-		lastRecordedMouseX = playerTargetX;
-		lastRecordedMouseY = playerTargetY;
-		KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_MOUSE_MOVE, x: playerTargetX, y: playerTargetY});
+		var target = getClampedTarget(bg._xmouse, bg._ymouse);
+		setPlayerTarget(target.x, target.y);
+		if (target.x == lastRecordedMouseX && target.y == lastRecordedMouseY) {
+			return;
+		}
+
+		lastRecordedMouseX = target.x;
+		lastRecordedMouseY = target.y;
+		KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_MOUSE_MOVE, x: target.x, y: target.y});
 	}
 
 	function applyReplayEvent(event:Dynamic) {
@@ -233,17 +235,19 @@ class Game implements kado.GameInterface {
 			return;
 		}
 
-		switch (kind) {
-			case REPLAY_MOUSE_MOVE:
-				var x:Null<Int> = Reflect.field(event, "x");
-				var y:Null<Int> = Reflect.field(event, "y");
-				if (x != null && y != null) {
-					setPlayerTarget(x, y);
-				}
-			case REPLAY_CLICK:
-				onResolvePress();
-			default:
-		}
+			switch (kind) {
+				case REPLAY_MOUSE_MOVE:
+					var x:Null<Int> = Reflect.field(event, "x");
+					var y:Null<Int> = Reflect.field(event, "y");
+					if (x != null && y != null) {
+						setPlayerTarget(x, y);
+					}
+				case REPLAY_CLICK:
+					var x:Null<Int> = Reflect.field(event, "x");
+					var y:Null<Int> = Reflect.field(event, "y");
+					resolvePress(x, y, false);
+				default:
+			}
 	}
 
 	public inline function getPlayerTarget():{x:Float, y:Float} {
@@ -251,19 +255,36 @@ class Game implements kado.GameInterface {
 	}
 
 	function setPlayerTarget(x:Float, y:Float) {
+		var target = getClampedTarget(x, y);
+		playerTargetX = target.x;
+		playerTargetY = target.y;
+	}
+
+	inline function getClampedTarget(x:Float, y:Float):{x:Int, y:Int} {
 		var ix = Std.int(Math.round(x));
 		var iy = Std.int(Math.round(y));
-		playerTargetX = Std.int(Math.max(0, Math.min(ix, Cs.mcw)));
-		playerTargetY = Std.int(Math.max(0, Math.min(iy, Cs.mch)));
+		return {
+			x: Std.int(Math.max(0, Math.min(ix, Cs.mcw))),
+			y: Std.int(Math.max(0, Math.min(iy, Cs.mch))),
+		};
 	}
 
 	function onResolvePress() {
+		var target = getClampedTarget(bg._xmouse, bg._ymouse);
+		resolvePress(target.x, target.y, !isReplayMode);
+	}
+
+	function resolvePress(?x:Null<Int>, ?y:Null<Int>, shouldRecord:Bool = false) {
 		if (bg.onPress == null) {
 			return;
 		}
 
-		if (!isReplayMode) {
-			KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_CLICK});
+		if (x != null && y != null) {
+			setPlayerTarget(x, y);
+		}
+
+		if (shouldRecord) {
+			KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_CLICK, x: playerTargetX, y: playerTargetY});
 		}
 		initResolve();
 	}

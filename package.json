@@ -6,7 +6,7 @@
         "node": "^20.19.0 || >=22.12.0"
     },
     "scripts": {
-        "build": "haxe compile.hxml && node resources/js/games/build-games.mjs && vite build",
+        "build": "haxelib setup .haxelib && haxelib install --always resources/hx/install.hxml && haxe compile.hxml && node resources/js/games/build-games.mjs && vite build",
         "dev": "vite --host",
         "games:bundle": "node resources/js/games/build-games.mjs",
         "lint": "eslint ./resources/js --fix --cache",
