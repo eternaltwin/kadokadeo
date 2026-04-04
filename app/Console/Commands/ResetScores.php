@@ -12,21 +12,28 @@ class ResetScores extends Command
      *
      * @var string
      */
-    protected $signature = 'kado:reset-scores';
+    protected $signature = 'kado:reset-scores {gameId? : Optional game id to reset}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Reset all game scores';
+    protected $description = 'Reset game scores (all games or one game)';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        Run::query()->update(['replay' => null]);
-        Run::query()->delete();
+        $gameId = $this->argument('gameId');
+
+        $query = Run::query();
+        if ($gameId !== null) {
+            $query->where('game_id', $gameId);
+        }
+
+        $query->update(['replay' => null]);
+        $query->delete();
     }
 }
