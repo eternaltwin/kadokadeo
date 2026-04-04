@@ -57,8 +57,7 @@ class KeyboardManager {
 			return;
 		}
 		queueKeyOp(e.keyCode, true);
-		if (e.keyCode == SPACE || e.keyCode == ARROW_DOWN)
-			e.preventDefault();
+		e.preventDefault();
 	}
 
 	static public function setInputLocked(value:Bool):Void {
@@ -66,6 +65,20 @@ class KeyboardManager {
 		if (value) {
 			pendingOps = [];
 		}
+	}
+
+	static public function queueVirtualKeyDown(keyCode:Int):Void {
+		if (inputLocked) {
+			return;
+		}
+		queueKeyOp(keyCode, true);
+	}
+
+	static public function queueVirtualKeyUp(keyCode:Int):Void {
+		if (inputLocked) {
+			return;
+		}
+		queueKeyOp(keyCode, false);
 	}
 
 	static public function beginFrame():Int {

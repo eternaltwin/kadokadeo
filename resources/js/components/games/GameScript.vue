@@ -22,7 +22,7 @@ async function mountGame() {
   })
 }
 
-onMounted(async() => {
+onMounted(async () => {
   await mountGame()
 })
 
@@ -38,7 +38,13 @@ onBeforeUnmount(() => {
       ref="canvas"
       :width="900"
       :height="960"
-      :style="{ width: gameWidth + 'px', height: gameHeight + 'px', ...props.canvasStyle }"
+      :style="{
+        width: gameWidth + 'px',
+        height: gameHeight + 'px',
+        touchAction: 'none',
+        userSelect: 'none',
+        ...props.canvasStyle,
+      }"
     >
       <p>
         Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin
