@@ -7,6 +7,8 @@ import js.lib.Promise;
 import js.Browser;
 import js.html.CanvasElement;
 import js.html.CustomEvent;
+import kado.TouchControlsConfig.TouchControlsConfig;
+import kado.TouchControlsConfig.TouchControlsMode;
 import pixi.core.Application;
 import pixi.core.ticker.Ticker;
 
@@ -47,6 +49,7 @@ class KadoKadeoManager extends Application {
 	var endScene:EndScene = null;
 	var bottomBar:BottomBar = null;
 	var replayOverlay:ReplayOverlay = null;
+	var touchOverlay:TouchControlsOverlay = null;
 
 	var runDetails:Dto.RunDTO;
 	var endRunDetails:Dto.EndRunResponseDTO;
@@ -239,6 +242,7 @@ class KadoKadeoManager extends Application {
 
 		this.score = 0;
 		this.game = Type.createInstance(gameClass, [gameRoot, isReplay]);
+		setupTouchOverlay();
 	}
 
 	function displayEndScene(endRunDetails:Dto.EndRunResponseDTO) {
@@ -253,6 +257,7 @@ class KadoKadeoManager extends Application {
 
 	public function reset(?preserveScore:Bool = false):Void {
 		replay.stop();
+		destroyTouchOverlay();
 		replayElapsedMs = 0;
 		replayPaused = false;
 		replaySpeed = 1;
@@ -321,6 +326,7 @@ class KadoKadeoManager extends Application {
 	public function gameOver(params:Dynamic):Void {
 		var wasInReplay = this.replay.isPlayingReplay();
 		this.replay.stop();
+		destroyTouchOverlay();
 		if (this.replayOverlay != null && this.replayOverlay.parent != null) {
 			this.replayOverlay.parent.removeChild(this.replayOverlay);
 		}
@@ -427,5 +433,88 @@ class KadoKadeoManager extends Application {
 			people_to_beat: 0,
 		});
 		#end
+	}
+
+	function setupTouchOverlay():Void {
+		if (this.replay.isPlayingReplay() || !isTouchEnvironment()) {
+			return;
+		}
+
+		var config:TouchControlsConfig = getTouchControlsConfig();
+		if (config == null || config.mode == TouchControlsMode.NONE) {
+			return;
+		}
+
+		destroyTouchOverlay();
+		touchOverlay = new TouchControlsOverlay(canvas, config, {
+			onKeyDown: (keyCode:Int) -> {
+				common_haxe_avm1.KeyboardManager.queueVirtualKeyDown(keyCode);
+			},
+			onKeyUp: (keyCode:Int) -> {
+				common_haxe_avm1.KeyboardManager.queueVirtualKeyUp(keyCode);
+			},
+			onJoystick: (nx:Float, ny:Float, active:Bool) -> {
+				common_haxe_avm1.MouseManager.queueInputCallback(() -> dispatchTouchJoystick(nx, ny, active));
+			},
+			onAction: (action:String) -> {
+				common_haxe_avm1.MouseManager.queueInputCallback(() -> dispatchTouchAction(action));
+			}
+		});
+	}
+
+	function destroyTouchOverlay():Void {
+		if (touchOverlay != null) {
+			touchOverlay.destroy();
+			touchOverlay = null;
+		}
+	}
+
+	function getTouchControlsConfig():TouchControlsConfig {
+		var raw = Reflect.field(gameClass, "TOUCH_CONTROLS");
+		if (raw == null) {
+			return null;
+		}
+		return cast raw;
+	}
+
+	function dispatchTouchJoystick(nx:Float, ny:Float, active:Bool):Void {
+		if (game == null) {
+			return;
+		}
+		var fn = Reflect.field(game, "onTouchJoystick");
+		if (fn != null) {
+			Reflect.callMethod(game, fn, [nx, ny, active]);
+		}
+	}
+
+	function dispatchTouchAction(action:String):Void {
+		if (game == null) {
+			return;
+		}
+		var fn = Reflect.field(game, "onTouchAction");
+		if (fn != null) {
+			Reflect.callMethod(game, fn, [action]);
+		}
+	}
+
+	function isTouchEnvironment():Bool {
+		var nav:Dynamic = Browser.navigator;
+		if (nav != null && Reflect.hasField(nav, "maxTouchPoints")) {
+			var points:Dynamic = Reflect.field(nav, "maxTouchPoints");
+			if (points != null && points > 0) {
+				return true;
+			}
+		}
+
+		var hasTouchEvent = Reflect.hasField(Browser.window, "ontouchstart");
+		if (hasTouchEvent) {
+			return true;
+		}
+
+		var matchMedia = Browser.window.matchMedia;
+		if (matchMedia != null) {
+			return matchMedia("(pointer: coarse)").matches;
+		}
+		return false;
 	}
 }

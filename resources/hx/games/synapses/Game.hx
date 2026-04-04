@@ -8,6 +8,7 @@ import pixi.core.Pixi.BlendModes;
 import common_haxe_avm1.KeyboardManager;
 import pixi.core.text.Text;
 import common_haxe_avm1.KKApi;
+import kado.TouchControlsConfig.TouchControlsMode;
 import mt.bumdum.Lib;
 import mt.bumdum.Sprite;
 
@@ -36,6 +37,26 @@ class Game implements kado.GameInterface {
 	public static var BG_COLOR = 0x5C0101;
 	public static inline var REPLAY_MOUSE_MOVE = 0;
 	public static inline var REPLAY_CLICK = 2;
+	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
+		mode: TouchControlsMode.JOYSTICK,
+		joystick: {
+			x: 0.2,
+			y: 0.78,
+			radius: 78,
+			deadZone: 0.14,
+			dynamicCenter: false,
+		},
+		buttons: [
+			{
+				id: "confirm",
+				label: "OK",
+				x: 0.84,
+				y: 0.79,
+				size: 84,
+				action: "confirm",
+			}
+		],
+	};
 
 	public var lvl:Int;
 	public var coef:Float;
@@ -69,6 +90,9 @@ class Game implements kado.GameInterface {
 
 	var lastRecordedMouseX:Int;
 	var lastRecordedMouseY:Int;
+	var touchJoyX:Float = 0;
+	var touchJoyY:Float = 0;
+	var touchJoyActive:Bool = false;
 
 	public var sx:Float;
 	public var sy:Float;
@@ -149,6 +173,9 @@ class Game implements kado.GameInterface {
 		for (event in KadoKadeoManager.kkm.replay.consumeEvents()) {
 			applyReplayEvent(event);
 		}
+		if (!isReplayMode && touchJoyActive) {
+			updateTouchTarget();
+		}
 
 		// haxe.Log.clear();
 		// trace("hunters:"+hunters.length);
@@ -168,6 +195,7 @@ class Game implements kado.GameInterface {
 
 	// PLAY
 	public function initPlay() {
+		touchJoyActive = false;
 		if (FL_TURBO)
 			lvl = 0;
 
@@ -216,13 +244,46 @@ class Game implements kado.GameInterface {
 
 		var target = getClampedTarget(bg._xmouse, bg._ymouse);
 		setPlayerTarget(target.x, target.y);
-		if (target.x == lastRecordedMouseX && target.y == lastRecordedMouseY) {
+		recordTargetMoveIfChanged();
+	}
+
+	public function onTouchJoystick(nx:Float, ny:Float, active:Bool):Void {
+		if (isReplayMode) {
 			return;
 		}
+		touchJoyX = nx;
+		touchJoyY = ny;
+		touchJoyActive = active;
+		if (touchJoyActive) {
+			updateTouchTarget();
+		}
+	}
 
-		lastRecordedMouseX = target.x;
-		lastRecordedMouseY = target.y;
-		KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_MOUSE_MOVE, x: target.x, y: target.y});
+	public function onTouchAction(action:String):Void {
+		if (action == "confirm") {
+			resolvePress(playerTargetX, playerTargetY, !isReplayMode);
+		}
+	}
+
+	function updateTouchTarget():Void {
+		if (bg.onPress == null) {
+			return;
+		}
+		var speed = 10 * Cs.NEW_GEN_SCALE * mt.Timer.tmod;
+		setPlayerTarget(playerTargetX + touchJoyX * speed, playerTargetY + touchJoyY * speed);
+		recordTargetMoveIfChanged();
+	}
+
+	function recordTargetMoveIfChanged():Void {
+		if (bg.onPress == null) {
+			return;
+		}
+		if (playerTargetX == lastRecordedMouseX && playerTargetY == lastRecordedMouseY) {
+			return;
+		}
+		lastRecordedMouseX = playerTargetX;
+		lastRecordedMouseY = playerTargetY;
+		KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_MOUSE_MOVE, x: playerTargetX, y: playerTargetY});
 	}
 
 	function applyReplayEvent(event:Dynamic) {
@@ -235,19 +296,19 @@ class Game implements kado.GameInterface {
 			return;
 		}
 
-			switch (kind) {
-				case REPLAY_MOUSE_MOVE:
-					var x:Null<Int> = Reflect.field(event, "x");
-					var y:Null<Int> = Reflect.field(event, "y");
-					if (x != null && y != null) {
-						setPlayerTarget(x, y);
-					}
-				case REPLAY_CLICK:
-					var x:Null<Int> = Reflect.field(event, "x");
-					var y:Null<Int> = Reflect.field(event, "y");
-					resolvePress(x, y, false);
-				default:
-			}
+		switch (kind) {
+			case REPLAY_MOUSE_MOVE:
+				var x:Null<Int> = Reflect.field(event, "x");
+				var y:Null<Int> = Reflect.field(event, "y");
+				if (x != null && y != null) {
+					setPlayerTarget(x, y);
+				}
+			case REPLAY_CLICK:
+				var x:Null<Int> = Reflect.field(event, "x");
+				var y:Null<Int> = Reflect.field(event, "y");
+				resolvePress(x, y, false);
+			default:
+		}
 	}
 
 	public inline function getPlayerTarget():{x:Float, y:Float} {
@@ -326,6 +387,7 @@ class Game implements kado.GameInterface {
 
 	// RESOLVE
 	public function initResolve() {
+		touchJoyActive = false;
 		coef = null;
 		bg.onPress = null;
 		bg.useHandCursor = false;
