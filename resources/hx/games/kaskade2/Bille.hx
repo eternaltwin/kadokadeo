@@ -32,9 +32,24 @@ class Bille extends Phys {
 		mc = game.dm.attach("bille/bille_" + (id + 1), Const.PLAN_BILLE);
 		mc.gotoAndStop(id + 1);
 		activate(false);
+		mc.onRollOver = onPointerOver;
+		mc.onRollOut = onPointerOut;
+		mc.onRelease = onPointerRelease;
 		super(mc);
 		setPos(px, py);
 		this.scale = 0;
+	}
+
+	function onPointerOver() {
+		game.onBilleHover(this);
+	}
+
+	function onPointerOut() {
+		game.onBilleOut(this);
+	}
+
+	function onPointerRelease() {
+		game.onBilleClick(this);
 	}
 
 	public function onRollOver() {

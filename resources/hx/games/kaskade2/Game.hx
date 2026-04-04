@@ -59,7 +59,6 @@ class Game implements kado.GameInterface {
 		bg = dm.attach("bg", Const.PLAN_BG);
 		timebar = dm.attach("timebar", Const.PLAN_OVER);
 		bg.useHandCursor = false;
-		root.onPress = onClick;
 	}
 
 	public function random(max) {
@@ -78,18 +77,78 @@ class Game implements kado.GameInterface {
 		// Mouse.show();
 	}
 
-	public function onClick() {
-		if (lock || curGroup == null)
+	public function onBilleClick(target:Bille) {
+		var pos = getBilleGridPos(target);
+		if (pos == null) {
 			return;
-
-		var clicked = lastHoveredCell;
-		if (clicked == null && curGroup.length > 0) {
-			clicked = getBilleGridPos(curGroup[0]);
 		}
-		if (clicked != null) {
-			KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: clicked.x, y: clicked.y});
+		resolveCellAction(pos.x, pos.y, true);
+	}
+
+	public function onBilleHover(target:Bille) {
+		var pos = getBilleGridPos(target);
+		if (pos == null) {
+			return;
+		}
+		setHoveredCell(pos.x, pos.y, true);
+	}
+
+	public function onBilleOut(target:Bille) {
+		if (lock || hoveredBille == null || target != hoveredBille) {
+			return;
+		}
+		hoveredBille.onRollOut();
+		hoveredBille = null;
+		lastHoveredCell = null;
+	}
+
+	function resolveCellAction(x:Int, y:Int, recordEvent:Bool) {
+		if (lock)
+			return;
+		setHoveredCell(x, y, recordEvent);
+
+		if (curGroup == null) {
+			return;
 		}
 
+		if (recordEvent && !isReplayMode) {
+			KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: x, y: y});
+		}
+
+		destroyCurrentGroup();
+	}
+
+	function setHoveredCell(x:Int, y:Int, recordEvent:Bool) {
+		if (lock) {
+			return;
+		}
+
+		var bille = findBilleAt(x, y);
+		if (bille == hoveredBille) {
+			if (bille != null) {
+				lastHoveredCell = {x: x, y: y};
+			}
+			return;
+		}
+
+		if (hoveredBille != null) {
+			hoveredBille.onRollOut();
+		}
+
+		hoveredBille = bille;
+		if (hoveredBille == null) {
+			lastHoveredCell = null;
+			return;
+		}
+
+		lastHoveredCell = {x: x, y: y};
+		hoveredBille.onRollOver();
+		if (recordEvent && !isReplayMode) {
+			KadoKadeoManager.kkm.replay.recordEvent({k: 0, x: x, y: y});
+		}
+	}
+
+	function destroyCurrentGroup() {
 		for (x in 0...Const.LVL_WIDTH) {
 			for (y in 0...Const.LVL_HEIGHT) {
 				var b = level.billes[x][y];
@@ -161,10 +220,6 @@ class Game implements kado.GameInterface {
 			applyReplayEvent(event);
 		}
 
-		if (!isReplayMode) {
-			updateHoverFromMouse();
-		}
-
 		updateSprites();
 		var p = Math.pow(0.6, Timer.tmod);
 		if (flash != null) {
@@ -193,53 +248,6 @@ class Game implements kado.GameInterface {
 		level.update();
 	}
 
-	function updateHoverFromMouse() {
-		if (lock) {
-			return;
-		}
-
-		var cell = screenToGrid(dm.root_mc._xmouse, dm.root_mc._ymouse);
-		var bille:Bille = null;
-		if (cell != null) {
-			bille = findBilleAt(cell.x, cell.y);
-		}
-
-		if (bille == hoveredBille) {
-			return;
-		}
-
-		if (hoveredBille != null) {
-			hoveredBille.onRollOut();
-		}
-
-		hoveredBille = bille;
-		lastHoveredCell = cell;
-
-		if (hoveredBille != null && cell != null) {
-			hoveredBille.onRollOver();
-			KadoKadeoManager.kkm.replay.recordEvent({k: 0, x: cell.x, y: cell.y});
-		}
-	}
-
-	function screenToGrid(mx:Float, my:Float):{x:Int, y:Int} {
-		var dx = mx - Const.DELTA_X;
-		var dy = my - Const.DELTA_Y;
-
-		var px = dx * Bille.COS + dy * Bille.SIN;
-		var py = -dx * Bille.SIN + dy * Bille.COS;
-
-		var halfW = (Const.LVL_WIDTH * Const.BILLE_RAY) / 2;
-		var halfH = (Const.LVL_HEIGHT * Const.BILLE_RAY) / 2;
-		var gx = Std.int(Math.round((px + halfW) / Const.BILLE_RAY)) - 1;
-		var gy = Std.int(Math.round((py + halfH) / Const.BILLE_RAY));
-
-		if (gx < 0 || gy < 0 || gx >= Const.LVL_WIDTH || gy >= Const.LVL_HEIGHT) {
-			return null;
-		}
-
-		return {x: gx, y: gy};
-	}
-
 	function applyReplayEvent(event:Dynamic) {
 		if (event == null) {
 			return;
@@ -254,21 +262,10 @@ class Game implements kado.GameInterface {
 
 		switch (kind) {
 			case 0:
-				var b = findBilleAt(x, y);
-				if (b != null) {
-					hoveredBille = b;
-					lastHoveredCell = {x: x, y: y};
-					b.onRollOver();
-				}
+				setHoveredCell(x, y, false);
 			case 1:
 			case 2:
-				var b = findBilleAt(x, y);
-				if (b != null) {
-					hoveredBille = b;
-					lastHoveredCell = {x: x, y: y};
-					b.onRollOver();
-				}
-				onClick();
+				resolveCellAction(x, y, false);
 			default:
 		}
 	}
