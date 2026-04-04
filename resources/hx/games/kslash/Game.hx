@@ -329,7 +329,6 @@ class Game implements kado.GameInterface {
 		b.root._x = x; // (x+0.5)*Cs.SIZE;
 		b.root._y = y; // (y+0.5)*Cs.SIZE;
 		b.setId(id);
-		bList.push(b);
 	}
 
 	public function updateIcons() {
@@ -398,6 +397,7 @@ class Game implements kado.GameInterface {
 		pList.push(p);
 		return p;
 	}
+
 	/*/ DEBUG
 		function logGrid(){
 			var str = ""
