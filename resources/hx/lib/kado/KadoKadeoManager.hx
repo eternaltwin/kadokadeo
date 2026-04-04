@@ -83,6 +83,7 @@ class KadoKadeoManager extends Application {
 		this.dm = new DepthManager(root);
 		this.stage.addChild(root);
 		KadoKadeoManager.kkm = this;
+		Api.baseUrl = Browser.window.location.origin;
 
 		// Pixi intro
 
