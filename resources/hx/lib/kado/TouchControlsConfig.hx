@@ -9,8 +9,10 @@ enum abstract TouchControlsMode(String) from String to String {
 typedef TouchButtonConfig = {
 	var id:String;
 	var label:String;
-	var x:Float;
-	var y:Float;
+	@:optional var leftPx:Float;
+	@:optional var rightPx:Float;
+	@:optional var topPx:Float;
+	@:optional var bottomPx:Float;
 	@:optional var size:Float;
 	@:optional var keyCode:Int;
 	@:optional var action:String;

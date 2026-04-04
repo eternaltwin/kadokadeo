@@ -2,6 +2,7 @@ package kslash;
 
 import haxe.io.UInt16Array;
 import common_haxe_avm1.KeyboardManager;
+import kado.TouchControlsConfig.TouchControlsMode;
 import pixi.core.math.Matrix;
 import pixi.core.textures.RenderTexture;
 import pixi.core.Pixi.BlendModes;
@@ -17,6 +18,52 @@ class Inter extends ASprite {
 
 @:expose('GameKSlash')
 class Game implements kado.GameInterface {
+	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
+		mode: TouchControlsMode.KEYBOARD,
+		buttons: [
+			{
+				id: "left",
+				label: "<",
+				leftPx: 10,
+				bottomPx: -112,
+				size: 72,
+				keyCode: KeyboardManager.LEFT,
+			},
+			{
+				id: "right",
+				label: ">",
+				leftPx: 82,
+				bottomPx: -112,
+				size: 72,
+				keyCode: KeyboardManager.RIGHT,
+			},
+			{
+				id: "up",
+				label: "^",
+				leftPx: 184,
+				bottomPx: -82,
+				size: 60,
+				keyCode: KeyboardManager.UP,
+			},
+			{
+				id: "down",
+				label: "v",
+				leftPx: 184,
+				bottomPx: -142,
+				size: 60,
+				keyCode: KeyboardManager.DOWN,
+			},
+			{
+				id: "action",
+				label: "🏹",
+				leftPx: 250,
+				bottomPx: -112,
+				size: 72,
+				keyCode: KeyboardManager.SPACE,
+			}
+		],
+	};
+
 	public static var DP_BG = 1;
 	public static var DP_BACK = 2;
 	public static var DP_MAP = 3;

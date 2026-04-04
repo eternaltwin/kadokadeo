@@ -5,6 +5,7 @@ import js.Browser;
 import js.html.CanvasElement;
 import js.html.DivElement;
 import js.html.Element;
+import js.html.Event;
 import js.html.PointerEvent;
 import kado.TouchControlsConfig.TouchButtonConfig;
 import kado.TouchControlsConfig.TouchControlsConfig;
@@ -42,8 +43,12 @@ class TouchControlsOverlay {
 			return;
 		}
 
-		if (canvas.parentElement == null) {
+		var parent:Element = canvas.parentElement;
+		if (parent == null) {
 			return;
+		}
+		if (parent.style.position == null || parent.style.position == "") {
+			parent.style.position = "relative";
 		}
 
 		root = Browser.document.createDivElement();
@@ -56,14 +61,18 @@ class TouchControlsOverlay {
 		root.style.pointerEvents = "none";
 		root.style.zIndex = "1000";
 		root.style.touchAction = "none";
+		root.style.userSelect = "none";
+		root.style.setProperty("-webkit-user-select", "none");
+		root.style.setProperty("-webkit-touch-callout", "none");
 		root.style.setProperty("padding-left", "env(safe-area-inset-left)");
 		root.style.setProperty("padding-right", "env(safe-area-inset-right)");
 		root.style.setProperty("padding-top", "env(safe-area-inset-top)");
 		root.style.setProperty("padding-bottom", "env(safe-area-inset-bottom)");
+		preventContextMenu(root);
 
 		canvas.style.setProperty("touch-action", "none");
 
-		Browser.document.body.appendChild(root);
+		parent.appendChild(root);
 
 		switch (config.mode) {
 			case TouchControlsMode.KEYBOARD:
@@ -96,12 +105,9 @@ class TouchControlsOverlay {
 			var button = Browser.document.createDivElement();
 			button.className = "kk-touch-button kk-touch-button-" + cfg.id;
 			button.style.position = "absolute";
-			button.style.left = pct(cfg.x);
-			button.style.top = pct(cfg.y);
 			button.style.width = px(size);
 			button.style.height = px(size);
-			button.style.marginLeft = px(-size * 0.5);
-			button.style.marginTop = px(-size * 0.5);
+			applyButtonPlacement(button, cfg, size);
 			button.style.borderRadius = "999px";
 			button.style.border = "2px solid rgba(255,255,255,0.6)";
 			button.style.background = "rgba(20,35,45,0.35)";
@@ -113,8 +119,11 @@ class TouchControlsOverlay {
 			button.style.fontWeight = "700";
 			button.style.fontSize = px(Math.max(13, size * 0.27));
 			button.style.userSelect = "none";
+			button.style.setProperty("-webkit-user-select", "none");
+			button.style.setProperty("-webkit-touch-callout", "none");
 			button.style.pointerEvents = "auto";
 			button.style.touchAction = "none";
+			preventContextMenu(button);
 			button.innerText = cfg.label;
 
 			button.addEventListener("pointerdown", (evt:PointerEvent) -> {
@@ -152,6 +161,26 @@ class TouchControlsOverlay {
 		}
 	}
 
+	function applyButtonPlacement(button:DivElement, cfg:TouchButtonConfig, size:Float):Void {
+		button.style.marginLeft = "0";
+		button.style.marginTop = "0";
+		if (cfg.leftPx != null)
+			button.style.left = px(cfg.leftPx);
+		if (cfg.rightPx != null)
+			button.style.right = px(cfg.rightPx);
+		if (cfg.topPx != null)
+			button.style.top = px(cfg.topPx);
+		if (cfg.bottomPx != null)
+			button.style.bottom = px(cfg.bottomPx);
+
+		if (cfg.leftPx == null && cfg.rightPx == null && cfg.topPx == null && cfg.bottomPx == null) {
+			button.style.left = "50%";
+			button.style.top = "50%";
+			button.style.marginLeft = px(-size * 0.5);
+			button.style.marginTop = px(-size * 0.5);
+		}
+	}
+
 	function initJoystick(config:TouchJoystickConfig):Void {
 		if (config != null) {
 			joyRadius = config.radius != null ? config.radius : joyRadius;
@@ -168,6 +197,7 @@ class TouchControlsOverlay {
 		joystickZone.style.height = "58%";
 		joystickZone.style.pointerEvents = "auto";
 		joystickZone.style.touchAction = "none";
+		preventContextMenu(joystickZone);
 
 		var joyX = config != null && config.x != null ? config.x : 0.18;
 		var joyY = config != null && config.y != null ? config.y : 0.8;
@@ -184,6 +214,7 @@ class TouchControlsOverlay {
 		joystickBase.style.background = "rgba(18,30,38,0.2)";
 		joystickBase.style.left = pct(joyX);
 		joystickBase.style.top = pct(joyY);
+		preventContextMenu(joystickBase);
 
 		joystickKnob = Browser.document.createDivElement();
 		joystickKnob.className = "kk-touch-joystick-knob";
@@ -197,6 +228,7 @@ class TouchControlsOverlay {
 		joystickKnob.style.background = "rgba(78,136,166,0.48)";
 		joystickKnob.style.left = "50%";
 		joystickKnob.style.top = "50%";
+		preventContextMenu(joystickKnob);
 		joystickBase.appendChild(joystickKnob);
 
 		joystickZone.addEventListener("pointerdown", onJoystickDown);
@@ -311,6 +343,15 @@ class TouchControlsOverlay {
 			}
 		}
 		pressedKeys = new IntMap();
+	}
+
+	function preventContextMenu(el:Element):Void {
+		if (el == null) {
+			return;
+		}
+		el.addEventListener("contextmenu", (evt:Event) -> {
+			evt.preventDefault();
+		});
 	}
 
 	inline function pct(v:Float):String {
