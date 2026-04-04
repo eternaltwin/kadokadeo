@@ -250,10 +250,10 @@ class ASprite extends Sprite {
 
 	public function set_onRollOut(v:Void->Void):Void->Void {
 		this.onRollOut = v;
-		this.interactive = v != null;
+		refreshInteractiveState();
 		if (v != null) {
-			this.removeAllListeners("pointerout");
-			this.addListener('pointerout', () -> {
+			setInputListeners(["pointerout", "mouseout", "touchend", "touchcancel"], (e) -> {
+				common_haxe_avm1.MouseManager.captureInputEvent(e);
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
 		}
@@ -263,10 +263,10 @@ class ASprite extends Sprite {
 
 	public function set_onRollOver(v:Void->Void):Void->Void {
 		this.onRollOver = v;
-		this.interactive = v != null;
+		refreshInteractiveState();
 		if (v != null) {
-			this.removeAllListeners("pointerover");
-			this.addListener('pointerover', () -> {
+			setInputListeners(["pointerover", "mouseover", "touchstart"], (e) -> {
+				common_haxe_avm1.MouseManager.captureInputEvent(e);
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
 		}
@@ -275,25 +275,27 @@ class ASprite extends Sprite {
 
 	public function set_onMouseMove(v:Void->Void):Void->Void {
 		this.onMouseMove = v;
-		this.interactive = v != null;
+		refreshInteractiveState();
 		if (v != null) {
-			this.removeAllListeners("pointermove");
-			this.addListener('pointermove', () -> {
+			setInputListeners(["pointermove", "mousemove", "touchmove"], (e) -> {
+				common_haxe_avm1.MouseManager.captureInputEvent(e);
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
 		}
-		return v;
 		return v;
 	}
 
 	public function set_onRelease(v:Void->Void):Void->Void {
 		this.onRelease = v;
-		this.interactive = v != null;
+		refreshInteractiveState();
 
 		if (v != null) {
-			this.removeAllListeners("pointerup");
-			this.addListener('pointerup', (e) -> {
-				e.stopPropagation();
+			setInputListeners(["pointerup", "mouseup", "touchend", "touchcancel"], (e) -> {
+				trace('release event');
+				common_haxe_avm1.MouseManager.captureInputEvent(e);
+				if (e != null && Reflect.hasField(e, "stopPropagation")) {
+					Reflect.callMethod(e, Reflect.field(e, "stopPropagation"), []);
+				}
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
 		}
@@ -303,16 +305,29 @@ class ASprite extends Sprite {
 
 	public function set_onPress(v:Void->Void):Void->Void {
 		this.onPress = v;
-		this.interactive = v != null;
+		refreshInteractiveState();
 		if (v != null) {
-			this.removeAllListeners("pointerdown");
-			this.addListener('pointerdown', (e) -> {
-				e.stopPropagation();
+			setInputListeners(["pointerdown", "mousedown", "touchstart"], (e) -> {
+				common_haxe_avm1.MouseManager.captureInputEvent(e);
+				if (e != null && Reflect.hasField(e, "stopPropagation")) {
+					Reflect.callMethod(e, Reflect.field(e, "stopPropagation"), []);
+				}
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
 		}
 
 		return v;
+	}
+
+	private function setInputListeners(events:Array<String>, listener:Dynamic->Void):Void {
+		for (eventName in events) {
+			this.removeAllListeners(eventName);
+			this.addListener(eventName, listener);
+		}
+	}
+
+	private function refreshInteractiveState():Void {
+		this.interactive = onPress != null || onRelease != null || onRollOut != null || onRollOver != null || onMouseMove != null;
 	}
 
 	public function get__x() {

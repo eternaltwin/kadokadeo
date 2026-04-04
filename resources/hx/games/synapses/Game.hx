@@ -37,26 +37,6 @@ class Game implements kado.GameInterface {
 	public static var BG_COLOR = 0x5C0101;
 	public static inline var REPLAY_MOUSE_MOVE = 0;
 	public static inline var REPLAY_CLICK = 2;
-	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
-		mode: TouchControlsMode.JOYSTICK,
-		joystick: {
-			x: 0.2,
-			y: 0.78,
-			radius: 78,
-			deadZone: 0.14,
-			dynamicCenter: false,
-		},
-		buttons: [
-			{
-				id: "confirm",
-				label: "OK",
-				x: 0.84,
-				y: 0.79,
-				size: 84,
-				action: "confirm",
-			}
-		],
-	};
 
 	public var lvl:Int;
 	public var coef:Float;
@@ -90,9 +70,6 @@ class Game implements kado.GameInterface {
 
 	var lastRecordedMouseX:Int;
 	var lastRecordedMouseY:Int;
-	var touchJoyX:Float = 0;
-	var touchJoyY:Float = 0;
-	var touchJoyActive:Bool = false;
 
 	public var sx:Float;
 	public var sy:Float;
@@ -173,9 +150,6 @@ class Game implements kado.GameInterface {
 		for (event in KadoKadeoManager.kkm.replay.consumeEvents()) {
 			applyReplayEvent(event);
 		}
-		if (!isReplayMode && touchJoyActive) {
-			updateTouchTarget();
-		}
 
 		// haxe.Log.clear();
 		// trace("hunters:"+hunters.length);
@@ -195,7 +169,6 @@ class Game implements kado.GameInterface {
 
 	// PLAY
 	public function initPlay() {
-		touchJoyActive = false;
 		if (FL_TURBO)
 			lvl = 0;
 
@@ -231,7 +204,7 @@ class Game implements kado.GameInterface {
 		if (lvl == 1)
 			timer = 500;
 		//
-		bg.onPress = onResolvePress;
+		bg.onRelease = onResolvePress;
 		bg.onMouseMove = onLiveMouseMove;
 		bg.useHandCursor = true;
 		KKApi.registerButton(bg);
@@ -247,35 +220,8 @@ class Game implements kado.GameInterface {
 		recordTargetMoveIfChanged();
 	}
 
-	public function onTouchJoystick(nx:Float, ny:Float, active:Bool):Void {
-		if (isReplayMode) {
-			return;
-		}
-		touchJoyX = nx;
-		touchJoyY = ny;
-		touchJoyActive = active;
-		if (touchJoyActive) {
-			updateTouchTarget();
-		}
-	}
-
-	public function onTouchAction(action:String):Void {
-		if (action == "confirm") {
-			resolvePress(playerTargetX, playerTargetY, !isReplayMode);
-		}
-	}
-
-	function updateTouchTarget():Void {
-		if (bg.onPress == null) {
-			return;
-		}
-		var speed = 10 * Cs.NEW_GEN_SCALE * mt.Timer.tmod;
-		setPlayerTarget(playerTargetX + touchJoyX * speed, playerTargetY + touchJoyY * speed);
-		recordTargetMoveIfChanged();
-	}
-
 	function recordTargetMoveIfChanged():Void {
-		if (bg.onPress == null) {
+		if (bg.onRelease == null) {
 			return;
 		}
 		if (playerTargetX == lastRecordedMouseX && playerTargetY == lastRecordedMouseY) {
@@ -331,12 +277,11 @@ class Game implements kado.GameInterface {
 	}
 
 	function onResolvePress() {
-		var target = getClampedTarget(bg._xmouse, bg._ymouse);
-		resolvePress(target.x, target.y, !isReplayMode);
+		resolvePress(playerTargetX, playerTargetY, !isReplayMode);
 	}
 
 	function resolvePress(?x:Null<Int>, ?y:Null<Int>, shouldRecord:Bool = false) {
-		if (bg.onPress == null) {
+		if (bg.onRelease == null) {
 			return;
 		}
 
@@ -387,9 +332,8 @@ class Game implements kado.GameInterface {
 
 	// RESOLVE
 	public function initResolve() {
-		touchJoyActive = false;
 		coef = null;
-		bg.onPress = null;
+		bg.onRelease = null;
 		bg.useHandCursor = false;
 		action = updateResolve;
 		for (h in hunters)
