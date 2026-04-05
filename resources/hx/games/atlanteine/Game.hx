@@ -77,40 +77,14 @@ enum abstract PathType(Int) from Int to Int {
 class Game implements kado.GameInterface {
 	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
 		mode: TouchControlsMode.KEYBOARD,
-		buttons: [
-			{
-				id: "left",
-				label: "<",
-				leftPx: 90,
-				bottomPx: -112,
-				size: 72,
-				keyCode: KeyboardManager.LEFT,
-			},
-			{
-				id: "right",
-				label: ">",
-				leftPx: 178,
-				bottomPx: -112,
-				size: 72,
-				keyCode: KeyboardManager.RIGHT,
-			},
-			{
-				id: "up",
-				label: "^",
-				leftPx: 134,
-				bottomPx: -68,
-				size: 72,
-				keyCode: KeyboardManager.UP,
-			},
-			{
-				id: "down",
-				label: "v",
-				leftPx: 134,
-				bottomPx: -156,
-				size: 72,
-				keyCode: KeyboardManager.DOWN,
-			},
-		],
+		swipe: {
+			leftAction: "swipe_left",
+			rightAction: "swipe_right",
+			upAction: "swipe_up",
+			downAction: "swipe_down",
+			minDistance: 48,
+			maxDurationMs: 300,
+		},
 	};
 
 	public static var FL_DEBUG = false;
@@ -185,6 +159,7 @@ class Game implements kado.GameInterface {
 	var tc:Float;
 	var prc:Float;
 	var ballFlash:Float;
+	var pendingSwipeDir:Null<Int>;
 
 	var pushInfo:{base:Array<Int>, free:Array<Int>, flDone:Bool};
 
@@ -228,6 +203,7 @@ class Game implements kado.GameInterface {
 		skin = 0;
 		delayedActions = [];
 		flControl = true;
+		pendingSwipeDir = null;
 		step = Step.WaitTimer;
 		initTimer();
 		initMap();
@@ -427,6 +403,12 @@ class Game implements kado.GameInterface {
 		if (KeyboardManager.isDown(KeyboardManager.UP))
 			d = 3;
 
+		if (pendingSwipeDir != null) {
+			d = pendingSwipeDir;
+			pendingSwipeDir = null;
+			flControl = true;
+		}
+
 		if (!flControl && d == null)
 			flControl = true;
 
@@ -461,6 +443,16 @@ class Game implements kado.GameInterface {
 
 		updateTimer();
 		checkGhostCol();
+	}
+
+	public function onTouchAction(action:String):Void {
+		pendingSwipeDir = switch (action) {
+			case "swipe_right": 0;
+			case "swipe_down": 1;
+			case "swipe_left": 2;
+			case "swipe_up": 3;
+			default: pendingSwipeDir;
+		}
 	}
 
 	// BALL

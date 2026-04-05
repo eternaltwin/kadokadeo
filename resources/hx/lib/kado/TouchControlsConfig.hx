@@ -16,6 +16,7 @@ typedef TouchButtonConfig = {
 	@:optional var size:Float;
 	@:optional var keyCode:Int;
 	@:optional var action:String;
+	@:optional var invisible:Bool;
 }
 
 typedef TouchJoystickConfig = {
@@ -26,8 +27,18 @@ typedef TouchJoystickConfig = {
 	@:optional var dynamicCenter:Bool;
 }
 
+typedef TouchSwipeConfig = {
+	@:optional var leftAction:String;
+	@:optional var rightAction:String;
+	@:optional var upAction:String;
+	@:optional var downAction:String;
+	@:optional var minDistance:Float;
+	@:optional var maxDurationMs:Float;
+}
+
 typedef TouchControlsConfig = {
 	var mode:TouchControlsMode;
 	@:optional var buttons:Array<TouchButtonConfig>;
 	@:optional var joystick:TouchJoystickConfig;
+	@:optional var swipe:TouchSwipeConfig;
 }

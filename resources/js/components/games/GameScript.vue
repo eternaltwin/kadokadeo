@@ -22,7 +22,7 @@ async function mountGame() {
   })
 }
 
-onMounted(async () => {
+onMounted(async() => {
   await mountGame()
 })
 
@@ -33,7 +33,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="relative" :style="{ width: props.gameWidth + 'px', height: props.gameHeight + 'px' }">
+  <div class="relative" :style="{ width: props.gameWidth + 'px', height: props.gameHeight + 'px', left: '22px', top: '22px' }">
     <canvas
       ref="canvas"
       :width="900"

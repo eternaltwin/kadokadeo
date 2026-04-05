@@ -3,6 +3,7 @@ package kado;
 import haxe.ds.IntMap;
 import js.Browser;
 import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
 import js.html.DivElement;
 import js.html.Element;
 import js.html.Event;
@@ -11,6 +12,7 @@ import kado.TouchControlsConfig.TouchButtonConfig;
 import kado.TouchControlsConfig.TouchControlsConfig;
 import kado.TouchControlsConfig.TouchControlsMode;
 import kado.TouchControlsConfig.TouchJoystickConfig;
+import kado.TouchControlsConfig.TouchSwipeConfig;
 
 typedef TouchControlsCallbacks = {
 	@:optional var onKeyDown:Int->Void;
@@ -19,21 +21,72 @@ typedef TouchControlsCallbacks = {
 	@:optional var onAction:String->Void;
 }
 
+private typedef TouchButtonState = {
+	var cfg:TouchButtonConfig;
+	var size:Float;
+	var x:Float;
+	var y:Float;
+	var pressedCount:Int;
+}
+
+private typedef TouchSwipePointerState = {
+	var startX:Float;
+	var startY:Float;
+	var startMs:Float;
+}
+
+private typedef TouchPendingTapState = {
+	var keyCode:Null<Int>;
+	var action:Null<String>;
+}
+
 class TouchControlsOverlay {
 	var canvas:CanvasElement;
-	var root:DivElement;
-	var controls:Array<DivElement> = [];
+	var overlay:CanvasElement;
+	var context:CanvasRenderingContext2D;
 	var callbacks:TouchControlsCallbacks;
+
+	var viewWidth:Float = 0;
+	var viewHeight:Float = 0;
+	var safeInsetLeft:Float = 0;
+	var safeInsetRight:Float = 0;
+	var safeInsetTop:Float = 0;
+	var safeInsetBottom:Float = 0;
+	var layoutX:Float = 0;
+	var layoutY:Float = 0;
+	var layoutWidth:Float = 0;
+	var layoutHeight:Float = 0;
+	var safeAreaProbe:DivElement;
+
+	var buttonStates:Array<TouchButtonState> = [];
+	var buttonPointerById:IntMap<Int> = new IntMap();
 	var pressedKeys:IntMap<Int> = new IntMap();
+
+	var joystickEnabled:Bool = false;
 	var activeJoystickPointer:Null<Int>;
-	var joystickZone:DivElement;
-	var joystickBase:DivElement;
-	var joystickKnob:DivElement;
+	var joyZoneX:Float = 0;
+	var joyZoneY:Float = 0;
+	var joyZoneW:Float = 0;
+	var joyZoneH:Float = 0;
+	var joyBaseNormX:Float = 0.18;
+	var joyBaseNormY:Float = 0.8;
 	var joyCenterX:Float = 0;
 	var joyCenterY:Float = 0;
+	var joyKnobOffsetX:Float = 0;
+	var joyKnobOffsetY:Float = 0;
 	var joyRadius:Float = 72;
 	var joyDeadZone:Float = 0.18;
 	var joyDynamic:Bool = false;
+
+	var swipeEnabled:Bool = false;
+	var swipeLeftAction:Null<String>;
+	var swipeRightAction:Null<String>;
+	var swipeUpAction:Null<String>;
+	var swipeDownAction:Null<String>;
+	var swipeMinDistance:Float = 48;
+	var swipeMaxDurationMs:Float = 300;
+	var swipePointers:IntMap<TouchSwipePointerState> = new IntMap();
+	var pendingTapPointers:IntMap<TouchPendingTapState> = new IntMap();
 
 	public function new(canvas:CanvasElement, config:TouchControlsConfig, callbacks:TouchControlsCallbacks) {
 		this.canvas = canvas;
@@ -51,256 +104,401 @@ class TouchControlsOverlay {
 			parent.style.position = "relative";
 		}
 
-		root = Browser.document.createDivElement();
-		root.className = "kk-touch-controls";
-		root.style.position = "absolute";
-		root.style.left = "0";
-		root.style.top = "0";
-		root.style.right = "0";
-		root.style.bottom = "0";
-		root.style.pointerEvents = "none";
-		root.style.zIndex = "1000";
-		root.style.touchAction = "none";
-		root.style.userSelect = "none";
-		root.style.setProperty("-webkit-user-select", "none");
-		root.style.setProperty("-webkit-touch-callout", "none");
-		root.style.setProperty("padding-left", "env(safe-area-inset-left)");
-		root.style.setProperty("padding-right", "env(safe-area-inset-right)");
-		root.style.setProperty("padding-top", "env(safe-area-inset-top)");
-		root.style.setProperty("padding-bottom", "env(safe-area-inset-bottom)");
-		preventContextMenu(root);
+		overlay = Browser.document.createCanvasElement();
+		overlay.className = "kk-touch-controls-canvas";
+		overlay.style.position = "absolute";
+		overlay.style.left = "0";
+		overlay.style.top = "0";
+		overlay.style.width = "100%";
+		overlay.style.height = "100%";
+		overlay.style.pointerEvents = "auto";
+		overlay.style.zIndex = "1000";
+		overlay.style.touchAction = "none";
+		overlay.style.userSelect = "none";
+		overlay.style.setProperty("-webkit-user-select", "none");
+		overlay.style.setProperty("-webkit-touch-callout", "none");
+		preventContextMenu(overlay);
 
 		canvas.style.setProperty("touch-action", "none");
 
-		parent.appendChild(root);
+		parent.appendChild(overlay);
+		context = cast overlay.getContext("2d");
+		if (context == null) {
+			if (overlay.parentElement != null) {
+				overlay.parentElement.removeChild(overlay);
+			}
+			overlay = null;
+			return;
+		}
 
 		switch (config.mode) {
 			case TouchControlsMode.KEYBOARD:
 				initButtons(config.buttons);
+				initSwipe(config.swipe);
 			case TouchControlsMode.JOYSTICK:
 				initJoystick(config.joystick);
 				initButtons(config.buttons);
+				initSwipe(config.swipe);
 			case TouchControlsMode.NONE:
 		}
+
+		overlay.addEventListener("pointerdown", onPointerDown);
+		overlay.addEventListener("pointermove", onPointerMove);
+		overlay.addEventListener("pointerup", onPointerUp);
+		overlay.addEventListener("pointercancel", onPointerCancel);
+		overlay.addEventListener("pointerout", onPointerOut);
+		overlay.addEventListener("lostpointercapture", onPointerCancel);
+		Browser.window.addEventListener("resize", onResize);
+
+		refreshLayout();
+		render();
 	}
 
 	public function destroy():Void {
 		releaseAllKeys();
 		endJoystick();
-		if (root != null && root.parentElement != null) {
-			root.parentElement.removeChild(root);
+		if (overlay != null) {
+			overlay.removeEventListener("pointerdown", onPointerDown);
+			overlay.removeEventListener("pointermove", onPointerMove);
+			overlay.removeEventListener("pointerup", onPointerUp);
+			overlay.removeEventListener("pointercancel", onPointerCancel);
+			overlay.removeEventListener("pointerout", onPointerOut);
+			overlay.removeEventListener("lostpointercapture", onPointerCancel);
 		}
-		root = null;
+		Browser.window.removeEventListener("resize", onResize);
+		if (overlay != null && overlay.parentElement != null) {
+			overlay.parentElement.removeChild(overlay);
+		}
+		overlay = null;
+		context = null;
+		if (safeAreaProbe != null && safeAreaProbe.parentElement != null) {
+			safeAreaProbe.parentElement.removeChild(safeAreaProbe);
+		}
+		safeAreaProbe = null;
 		canvas = null;
-		controls = [];
+		buttonStates = [];
+		buttonPointerById = new IntMap();
+		swipePointers = new IntMap();
+		pendingTapPointers = new IntMap();
 	}
 
 	function initButtons(buttons:Array<TouchButtonConfig>):Void {
-		if (buttons == null) {
+		buttonStates = [];
+		if (buttons == null || buttons.length == 0) {
 			return;
 		}
 
 		for (cfg in buttons) {
 			var size = cfg.size != null ? cfg.size : 72;
-			var button = Browser.document.createDivElement();
-			button.className = "kk-touch-button kk-touch-button-" + cfg.id;
-			button.style.position = "absolute";
-			button.style.width = px(size);
-			button.style.height = px(size);
-			applyButtonPlacement(button, cfg, size);
-			button.style.borderRadius = "999px";
-			button.style.border = "2px solid rgba(255,255,255,0.6)";
-			button.style.background = "rgba(20,35,45,0.35)";
-			button.style.color = "#eef7ff";
-			button.style.display = "flex";
-			button.style.alignItems = "center";
-			button.style.justifyContent = "center";
-			button.style.fontFamily = "Arial";
-			button.style.fontWeight = "700";
-			button.style.fontSize = px(Math.max(13, size * 0.27));
-			button.style.userSelect = "none";
-			button.style.setProperty("-webkit-user-select", "none");
-			button.style.setProperty("-webkit-touch-callout", "none");
-			button.style.pointerEvents = "auto";
-			button.style.touchAction = "none";
-			preventContextMenu(button);
-			button.innerText = cfg.label;
-
-			button.addEventListener("pointerdown", (evt:PointerEvent) -> {
-				evt.preventDefault();
-				if (cfg.keyCode != null) {
-					pressedKeys.set(evt.pointerId, cfg.keyCode);
-					if (callbacks.onKeyDown != null) {
-						callbacks.onKeyDown(cfg.keyCode);
-					}
-				}
-				if (cfg.action != null && callbacks.onAction != null) {
-					callbacks.onAction(cfg.action);
-				}
-				button.style.background = "rgba(58,104,128,0.62)";
+			buttonStates.push({
+				cfg: cfg,
+				size: size,
+				x: 0,
+				y: 0,
+				pressedCount: 0
 			});
-
-			var release = (evt:PointerEvent) -> {
-				evt.preventDefault();
-				var keyCode = pressedKeys.get(evt.pointerId);
-				if (keyCode != null) {
-					pressedKeys.remove(evt.pointerId);
-					if (callbacks.onKeyUp != null) {
-						callbacks.onKeyUp(keyCode);
-					}
-				}
-				button.style.background = "rgba(20,35,45,0.35)";
-			};
-
-			button.addEventListener("pointerup", release);
-			button.addEventListener("pointercancel", release);
-			button.addEventListener("pointerout", release);
-
-			root.appendChild(button);
-			controls.push(button);
 		}
 	}
 
-	function applyButtonPlacement(button:DivElement, cfg:TouchButtonConfig, size:Float):Void {
-		button.style.marginLeft = "0";
-		button.style.marginTop = "0";
-		if (cfg.leftPx != null)
-			button.style.left = px(cfg.leftPx);
-		if (cfg.rightPx != null)
-			button.style.right = px(cfg.rightPx);
-		if (cfg.topPx != null)
-			button.style.top = px(cfg.topPx);
-		if (cfg.bottomPx != null)
-			button.style.bottom = px(cfg.bottomPx);
+	function layoutButtons():Void {
+		for (state in buttonStates) {
+			if (state.cfg.leftPx != null) {
+				state.x = layoutX + state.cfg.leftPx;
+			} else if (state.cfg.rightPx != null) {
+				state.x = layoutX + layoutWidth - state.cfg.rightPx - state.size;
+			} else {
+				state.x = layoutX + (layoutWidth - state.size) * 0.5;
+			}
 
-		if (cfg.leftPx == null && cfg.rightPx == null && cfg.topPx == null && cfg.bottomPx == null) {
-			button.style.left = "50%";
-			button.style.top = "50%";
-			button.style.marginLeft = px(-size * 0.5);
-			button.style.marginTop = px(-size * 0.5);
+			if (state.cfg.topPx != null) {
+				state.y = layoutY + state.cfg.topPx;
+			} else if (state.cfg.bottomPx != null) {
+				state.y = layoutY + layoutHeight - state.cfg.bottomPx - state.size;
+			} else {
+				state.y = layoutY + (layoutHeight - state.size) * 0.5;
+			}
 		}
 	}
 
 	function initJoystick(config:TouchJoystickConfig):Void {
+		joystickEnabled = true;
 		if (config != null) {
 			joyRadius = config.radius != null ? config.radius : joyRadius;
 			joyDeadZone = config.deadZone != null ? config.deadZone : joyDeadZone;
 			joyDynamic = config.dynamicCenter == true;
+			joyBaseNormX = config.x != null ? config.x : joyBaseNormX;
+			joyBaseNormY = config.y != null ? config.y : joyBaseNormY;
 		}
-
-		joystickZone = Browser.document.createDivElement();
-		joystickZone.className = "kk-touch-joystick-zone";
-		joystickZone.style.position = "absolute";
-		joystickZone.style.left = "0";
-		joystickZone.style.bottom = "0";
-		joystickZone.style.width = "58%";
-		joystickZone.style.height = "58%";
-		joystickZone.style.pointerEvents = "auto";
-		joystickZone.style.touchAction = "none";
-		preventContextMenu(joystickZone);
-
-		var joyX = config != null && config.x != null ? config.x : 0.18;
-		var joyY = config != null && config.y != null ? config.y : 0.8;
-
-		joystickBase = Browser.document.createDivElement();
-		joystickBase.className = "kk-touch-joystick-base";
-		joystickBase.style.position = "absolute";
-		joystickBase.style.width = px(joyRadius * 2);
-		joystickBase.style.height = px(joyRadius * 2);
-		joystickBase.style.marginLeft = px(-joyRadius);
-		joystickBase.style.marginTop = px(-joyRadius);
-		joystickBase.style.borderRadius = "999px";
-		joystickBase.style.border = "2px solid rgba(255,255,255,0.5)";
-		joystickBase.style.background = "rgba(18,30,38,0.2)";
-		joystickBase.style.left = pct(joyX);
-		joystickBase.style.top = pct(joyY);
-		preventContextMenu(joystickBase);
-
-		joystickKnob = Browser.document.createDivElement();
-		joystickKnob.className = "kk-touch-joystick-knob";
-		joystickKnob.style.position = "absolute";
-		joystickKnob.style.width = px(joyRadius * 0.9);
-		joystickKnob.style.height = px(joyRadius * 0.9);
-		joystickKnob.style.marginLeft = px(-(joyRadius * 0.45));
-		joystickKnob.style.marginTop = px(-(joyRadius * 0.45));
-		joystickKnob.style.borderRadius = "999px";
-		joystickKnob.style.border = "2px solid rgba(255,255,255,0.7)";
-		joystickKnob.style.background = "rgba(78,136,166,0.48)";
-		joystickKnob.style.left = "50%";
-		joystickKnob.style.top = "50%";
-		preventContextMenu(joystickKnob);
-		joystickBase.appendChild(joystickKnob);
-
-		joystickZone.addEventListener("pointerdown", onJoystickDown);
-		joystickZone.addEventListener("pointermove", onJoystickMove);
-		joystickZone.addEventListener("pointerup", onJoystickUp);
-		joystickZone.addEventListener("pointercancel", onJoystickUp);
-		joystickZone.addEventListener("pointerout", onJoystickUp);
-
-		root.appendChild(joystickZone);
-		root.appendChild(joystickBase);
-		controls.push(joystickZone);
-		controls.push(joystickBase);
 	}
 
-	function onJoystickDown(evt:PointerEvent):Void {
+	function initSwipe(config:TouchSwipeConfig):Void {
+		swipeEnabled = false;
+		swipeLeftAction = null;
+		swipeRightAction = null;
+		swipeUpAction = null;
+		swipeDownAction = null;
+		swipePointers = new IntMap();
+
+		if (joystickEnabled || config == null) {
+			return;
+		}
+
+		swipeLeftAction = config.leftAction;
+		swipeRightAction = config.rightAction;
+		swipeUpAction = config.upAction;
+		swipeDownAction = config.downAction;
+
+		var hasAnyAction = !isNullOrEmpty(swipeLeftAction) || !isNullOrEmpty(swipeRightAction) || !isNullOrEmpty(swipeUpAction)
+			|| !isNullOrEmpty(swipeDownAction);
+		if (!hasAnyAction) {
+			return;
+		}
+
+		if (config.minDistance != null && config.minDistance > 0) {
+			swipeMinDistance = config.minDistance;
+		}
+		if (config.maxDurationMs != null && config.maxDurationMs > 0) {
+			swipeMaxDurationMs = config.maxDurationMs;
+		}
+
+		swipeEnabled = true;
+	}
+
+	function layoutJoystick(resetCenter:Bool):Void {
+		joyZoneX = layoutX;
+		joyZoneW = layoutWidth * 0.58;
+		joyZoneH = layoutHeight * 0.58;
+		joyZoneY = layoutY + layoutHeight - joyZoneH;
+
+		if (resetCenter || activeJoystickPointer == null || !joyDynamic) {
+			joyCenterX = layoutX + layoutWidth * joyBaseNormX;
+			joyCenterY = layoutY + layoutHeight * joyBaseNormY;
+		}
+	}
+
+	function onPointerDown(evt:PointerEvent):Void {
+		if (overlay == null) {
+			return;
+		}
+
 		evt.preventDefault();
-		activeJoystickPointer = evt.pointerId;
-		if (joyDynamic) {
-			setJoystickCenter(evt.clientX, evt.clientY);
+		try {
+			overlay.setPointerCapture(evt.pointerId);
+		} catch (_:Dynamic) {
 		}
-		updateJoystick(evt.clientX, evt.clientY, true);
+
+		var bounds = overlay.getBoundingClientRect();
+		var x = evt.clientX - bounds.left;
+		var y = evt.clientY - bounds.top;
+
+		var buttonIdx = findButtonAt(x, y);
+		if (buttonIdx != null) {
+			var state = buttonStates[buttonIdx];
+			var deferTapForSwipe = swipeEnabled && state.cfg.invisible == true;
+			if (deferTapForSwipe) {
+				pendingTapPointers.set(evt.pointerId, {
+					keyCode: state.cfg.keyCode,
+					action: state.cfg.action
+				});
+				swipePointers.set(evt.pointerId, {
+					startX: x,
+					startY: y,
+					startMs: Date.now().getTime()
+				});
+				return;
+			}
+
+			state.pressedCount++;
+			buttonPointerById.set(evt.pointerId, buttonIdx);
+			if (state.cfg.keyCode != null) {
+				pressedKeys.set(evt.pointerId, state.cfg.keyCode);
+				if (callbacks.onKeyDown != null) {
+					callbacks.onKeyDown(state.cfg.keyCode);
+				}
+			}
+			if (state.cfg.action != null && callbacks.onAction != null) {
+				callbacks.onAction(state.cfg.action);
+			}
+			render();
+			return;
+		}
+
+		if (joystickEnabled && activeJoystickPointer == null && isInJoystickZone(x, y)) {
+			activeJoystickPointer = evt.pointerId;
+			if (joyDynamic) {
+				setJoystickCenter(x, y);
+			}
+			updateJoystick(x, y, true);
+			render();
+			return;
+		}
+
+		if (swipeEnabled) {
+			swipePointers.set(evt.pointerId, {
+				startX: x,
+				startY: y,
+				startMs: Date.now().getTime()
+			});
+		}
 	}
 
-	function onJoystickMove(evt:PointerEvent):Void {
+	function onPointerMove(evt:PointerEvent):Void {
+		if (overlay == null) {
+			return;
+		}
 		if (activeJoystickPointer == null || evt.pointerId != activeJoystickPointer) {
 			return;
 		}
 		evt.preventDefault();
-		updateJoystick(evt.clientX, evt.clientY, true);
+		var bounds = overlay.getBoundingClientRect();
+		var x = evt.clientX - bounds.left;
+		var y = evt.clientY - bounds.top;
+		updateJoystick(x, y, true);
+		render();
 	}
 
-	function onJoystickUp(evt:PointerEvent):Void {
-		if (activeJoystickPointer == null || evt.pointerId != activeJoystickPointer) {
+	function onPointerUp(evt:PointerEvent):Void {
+		if (overlay == null) {
 			return;
 		}
 		evt.preventDefault();
-		endJoystick();
+		releasePointerState(evt.pointerId, evt, true);
+	}
+
+	function onPointerCancel(evt:Event):Void {
+		var pe:PointerEvent = cast evt;
+		releasePointerState(pe.pointerId, pe, false);
+	}
+
+	function onPointerOut(evt:PointerEvent):Void {
+		if (overlay == null) {
+			return;
+		}
+		if (activeJoystickPointer == evt.pointerId) {
+			releasePointerState(evt.pointerId, evt, false);
+		}
+	}
+
+	function releasePointerState(pointerId:Int, evt:PointerEvent, allowGestureDispatch:Bool):Void {
+		var swipeState = swipePointers.get(pointerId);
+		if (swipeState != null) {
+			swipePointers.remove(pointerId);
+		}
+		var pendingTap = pendingTapPointers.get(pointerId);
+		if (pendingTap != null) {
+			pendingTapPointers.remove(pointerId);
+		}
+
+		var buttonIdx = buttonPointerById.get(pointerId);
+		if (buttonIdx != null) {
+			buttonPointerById.remove(pointerId);
+			var state = buttonStates[buttonIdx];
+			if (state != null && state.pressedCount > 0) {
+				state.pressedCount--;
+			}
+			var keyCode = pressedKeys.get(pointerId);
+			if (keyCode != null) {
+				pressedKeys.remove(pointerId);
+				if (callbacks.onKeyUp != null) {
+					callbacks.onKeyUp(keyCode);
+				}
+			}
+			render();
+		}
+
+		if (activeJoystickPointer != null && pointerId == activeJoystickPointer) {
+			endJoystick();
+			render();
+			return;
+		}
+
+		if (!allowGestureDispatch) {
+			return;
+		}
+
+		var didSwipe = false;
+		if (swipeEnabled && swipeState != null) {
+			didSwipe = handleSwipeEnd(swipeState, evt);
+		}
+
+		if (!didSwipe && pendingTap != null) {
+			if (pendingTap.keyCode != null) {
+				if (callbacks != null && callbacks.onKeyDown != null) {
+					callbacks.onKeyDown(pendingTap.keyCode);
+				}
+				if (callbacks != null && callbacks.onKeyUp != null) {
+					callbacks.onKeyUp(pendingTap.keyCode);
+				}
+			}
+			if (!isNullOrEmpty(pendingTap.action) && callbacks != null && callbacks.onAction != null) {
+				callbacks.onAction(pendingTap.action);
+			}
+		}
+	}
+
+	function handleSwipeEnd(state:TouchSwipePointerState, evt:PointerEvent):Bool {
+		if (overlay == null) {
+			return false;
+		}
+
+		var bounds = overlay.getBoundingClientRect();
+		var endX = evt.clientX - bounds.left;
+		var endY = evt.clientY - bounds.top;
+
+		var dx = endX - state.startX;
+		var dy = endY - state.startY;
+		var elapsed = Date.now().getTime() - state.startMs;
+
+		if (elapsed > swipeMaxDurationMs) {
+			return false;
+		}
+
+		var dist = Math.sqrt(dx * dx + dy * dy);
+		if (dist < swipeMinDistance) {
+			return false;
+		}
+
+		var action:Null<String> = null;
+		if (Math.abs(dx) >= Math.abs(dy)) {
+			action = dx >= 0 ? swipeRightAction : swipeLeftAction;
+		} else {
+			action = dy >= 0 ? swipeDownAction : swipeUpAction;
+		}
+
+		if (!isNullOrEmpty(action) && callbacks != null && callbacks.onAction != null) {
+			callbacks.onAction(action);
+			return true;
+		}
+		return false;
 	}
 
 	function endJoystick():Void {
 		activeJoystickPointer = null;
-		if (joystickKnob != null) {
-			joystickKnob.style.left = "50%";
-			joystickKnob.style.top = "50%";
-		}
+		joyKnobOffsetX = 0;
+		joyKnobOffsetY = 0;
 		if (callbacks != null && callbacks.onJoystick != null) {
 			callbacks.onJoystick(0, 0, false);
 		}
 	}
 
-	function setJoystickCenter(clientX:Float, clientY:Float):Void {
-		var bounds = root.getBoundingClientRect();
-		if (bounds == null || bounds.width <= 0 || bounds.height <= 0) {
-			return;
+	function setJoystickCenter(x:Float, y:Float):Void {
+		joyCenterX = clamp(x, layoutX + joyRadius, layoutX + layoutWidth - joyRadius);
+		joyCenterY = clamp(y, layoutY + joyRadius, layoutY + layoutHeight - joyRadius);
+		if (layoutWidth > 0) {
+			joyBaseNormX = (joyCenterX - layoutX) / layoutWidth;
 		}
-		var x = ((clientX - bounds.left) / bounds.width) * 100;
-		var y = ((clientY - bounds.top) / bounds.height) * 100;
-		joystickBase.style.left = pct(x / 100);
-		joystickBase.style.top = pct(y / 100);
+		if (layoutHeight > 0) {
+			joyBaseNormY = (joyCenterY - layoutY) / layoutHeight;
+		}
 	}
 
-	function updateJoystick(clientX:Float, clientY:Float, active:Bool):Void {
-		var bounds = joystickBase.getBoundingClientRect();
-		if (bounds == null) {
+	function updateJoystick(x:Float, y:Float, active:Bool):Void {
+		if (!joystickEnabled) {
 			return;
 		}
 
-		joyCenterX = bounds.left + bounds.width * 0.5;
-		joyCenterY = bounds.top + bounds.height * 0.5;
-
-		var dx = clientX - joyCenterX;
-		var dy = clientY - joyCenterY;
+		var dx = x - joyCenterX;
+		var dy = y - joyCenterY;
 		var dist = Math.sqrt(dx * dx + dy * dy);
 		var clamped = Math.min(dist, joyRadius);
 		var nx = 0.0;
@@ -319,10 +517,11 @@ class TouchControlsOverlay {
 		ny = Math.max(-1, Math.min(1, ny));
 
 		if (dist > 0) {
-			var knobX = (dx / dist) * clamped;
-			var knobY = (dy / dist) * clamped;
-			joystickKnob.style.left = "calc(50% + " + px(knobX) + ")";
-			joystickKnob.style.top = "calc(50% + " + px(knobY) + ")";
+			joyKnobOffsetX = (dx / dist) * clamped;
+			joyKnobOffsetY = (dy / dist) * clamped;
+		} else {
+			joyKnobOffsetX = 0;
+			joyKnobOffsetY = 0;
 		}
 
 		if (callbacks != null && callbacks.onJoystick != null) {
@@ -330,9 +529,117 @@ class TouchControlsOverlay {
 		}
 	}
 
+	function refreshLayout(?resetJoystickCenter:Bool = false):Void {
+		if (overlay == null || context == null) {
+			return;
+		}
+
+		var bounds = overlay.getBoundingClientRect();
+		if (bounds == null || bounds.width <= 0 || bounds.height <= 0) {
+			return;
+		}
+
+		viewWidth = bounds.width;
+		viewHeight = bounds.height;
+		updateSafeAreaInsets();
+		layoutX = safeInsetLeft;
+		layoutY = safeInsetTop;
+		layoutWidth = Math.max(0, viewWidth - safeInsetLeft - safeInsetRight);
+		layoutHeight = Math.max(0, viewHeight - safeInsetTop - safeInsetBottom);
+
+		var dpr = Browser.window.devicePixelRatio;
+		if (dpr == null || dpr <= 0) {
+			dpr = 1;
+		}
+
+		overlay.width = Std.int(Math.round(viewWidth * dpr));
+		overlay.height = Std.int(Math.round(viewHeight * dpr));
+		context.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+		layoutButtons();
+		if (joystickEnabled) {
+			layoutJoystick(resetJoystickCenter);
+		}
+	}
+
+	function render():Void {
+		if (context == null || viewWidth <= 0 || viewHeight <= 0) {
+			return;
+		}
+
+		context.clearRect(0, 0, viewWidth, viewHeight);
+
+		for (state in buttonStates) {
+			if (state.cfg.invisible == true) {
+				continue;
+			}
+
+			var r = state.size * 0.5;
+			var cx = state.x + r;
+			var cy = state.y + r;
+
+			context.beginPath();
+			context.arc(cx, cy, r, 0, Math.PI * 2);
+			context.fillStyle = state.pressedCount > 0 ? "rgba(58,104,128,0.62)" : "rgba(20,35,45,0.35)";
+			context.fill();
+			context.lineWidth = 2;
+			context.strokeStyle = "rgba(255,255,255,0.6)";
+			context.stroke();
+
+			if (state.cfg.label != null && state.cfg.label != "") {
+				context.fillStyle = "#eef7ff";
+				context.font = "700 " + px(Math.max(13, state.size * 0.27)) + " Arial";
+				context.textAlign = "center";
+				context.textBaseline = "middle";
+				context.fillText(state.cfg.label, cx, cy);
+			}
+		}
+
+		if (joystickEnabled) {
+			context.beginPath();
+			context.arc(joyCenterX, joyCenterY, joyRadius, 0, Math.PI * 2);
+			context.fillStyle = "rgba(18,30,38,0.2)";
+			context.fill();
+			context.lineWidth = 2;
+			context.strokeStyle = "rgba(255,255,255,0.5)";
+			context.stroke();
+
+			var knobRadius = joyRadius * 0.45;
+			context.beginPath();
+			context.arc(joyCenterX + joyKnobOffsetX, joyCenterY + joyKnobOffsetY, knobRadius, 0, Math.PI * 2);
+			context.fillStyle = "rgba(78,136,166,0.48)";
+			context.fill();
+			context.lineWidth = 2;
+			context.strokeStyle = "rgba(255,255,255,0.7)";
+			context.stroke();
+		}
+	}
+
+	function findButtonAt(x:Float, y:Float):Null<Int> {
+		var i = buttonStates.length - 1;
+		while (i >= 0) {
+			var state = buttonStates[i];
+			if (x >= state.x && x <= state.x + state.size && y >= state.y && y <= state.y + state.size) {
+				return i;
+			}
+			i--;
+		}
+		return null;
+	}
+
+	function isInJoystickZone(x:Float, y:Float):Bool {
+		return x >= joyZoneX && x <= joyZoneX + joyZoneW && y >= joyZoneY && y <= joyZoneY + joyZoneH;
+	}
+
 	function releaseAllKeys():Void {
 		if (callbacks == null || callbacks.onKeyUp == null) {
 			pressedKeys = new IntMap();
+			buttonPointerById = new IntMap();
+			swipePointers = new IntMap();
+			pendingTapPointers = new IntMap();
+			for (state in buttonStates) {
+				state.pressedCount = 0;
+			}
 			return;
 		}
 
@@ -343,6 +650,50 @@ class TouchControlsOverlay {
 			}
 		}
 		pressedKeys = new IntMap();
+		buttonPointerById = new IntMap();
+		swipePointers = new IntMap();
+		pendingTapPointers = new IntMap();
+		for (state in buttonStates) {
+			state.pressedCount = 0;
+		}
+	}
+
+	function onResize(_evt:Event):Void {
+		refreshLayout();
+		render();
+	}
+
+	function updateSafeAreaInsets():Void {
+		var body = Browser.document.body;
+		if (body == null) {
+			safeInsetLeft = 0;
+			safeInsetRight = 0;
+			safeInsetTop = 0;
+			safeInsetBottom = 0;
+			return;
+		}
+
+		if (safeAreaProbe == null) {
+			safeAreaProbe = Browser.document.createDivElement();
+			safeAreaProbe.style.position = "fixed";
+			safeAreaProbe.style.left = "0";
+			safeAreaProbe.style.top = "0";
+			safeAreaProbe.style.width = "0";
+			safeAreaProbe.style.height = "0";
+			safeAreaProbe.style.pointerEvents = "none";
+			safeAreaProbe.style.visibility = "hidden";
+			safeAreaProbe.style.paddingLeft = "env(safe-area-inset-left)";
+			safeAreaProbe.style.paddingRight = "env(safe-area-inset-right)";
+			safeAreaProbe.style.paddingTop = "env(safe-area-inset-top)";
+			safeAreaProbe.style.paddingBottom = "env(safe-area-inset-bottom)";
+			body.appendChild(safeAreaProbe);
+		}
+
+		var cs = Browser.window.getComputedStyle(safeAreaProbe);
+		safeInsetLeft = parsePx(cs.paddingLeft);
+		safeInsetRight = parsePx(cs.paddingRight);
+		safeInsetTop = parsePx(cs.paddingTop);
+		safeInsetBottom = parsePx(cs.paddingBottom);
 	}
 
 	function preventContextMenu(el:Element):Void {
@@ -354,11 +705,34 @@ class TouchControlsOverlay {
 		});
 	}
 
-	inline function pct(v:Float):String {
-		return Std.string(v * 100) + "%";
-	}
-
 	inline function px(v:Float):String {
 		return Std.string(Std.int(Math.round(v))) + "px";
+	}
+
+	function parsePx(value:String):Float {
+		if (value == null || value == "") {
+			return 0;
+		}
+		var parsed = Std.parseFloat(value);
+		if (Math.isNaN(parsed)) {
+			return 0;
+		}
+		return parsed;
+	}
+
+	inline function clamp(v:Float, min:Float, max:Float):Float {
+		var low = Math.min(min, max);
+		var high = Math.max(min, max);
+		if (v < low) {
+			return low;
+		}
+		if (v > high) {
+			return high;
+		}
+		return v;
+	}
+
+	inline function isNullOrEmpty(value:Null<String>):Bool {
+		return value == null || value == "";
 	}
 }

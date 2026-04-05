@@ -22,10 +22,17 @@ class Game implements kado.GameInterface {
 		mode: TouchControlsMode.KEYBOARD,
 		buttons: [
 			{
+				id: "action",
+				label: "",
+				size: 4000,
+				action: "tap_action",
+				invisible: true,
+			},
+			{
 				id: "left",
 				label: "<",
 				leftPx: 10,
-				bottomPx: -112,
+				bottomPx: 10,
 				size: 72,
 				keyCode: KeyboardManager.LEFT,
 			},
@@ -33,34 +40,26 @@ class Game implements kado.GameInterface {
 				id: "right",
 				label: ">",
 				leftPx: 82,
-				bottomPx: -112,
+				bottomPx: 10,
 				size: 72,
 				keyCode: KeyboardManager.RIGHT,
 			},
 			{
-				id: "up",
-				label: "^",
-				leftPx: 184,
-				bottomPx: -82,
-				size: 60,
+				id: 'up',
+				label: '^',
+				rightPx: 10,
+				bottomPx: 82,
+				size: 72,
 				keyCode: KeyboardManager.UP,
 			},
 			{
-				id: "down",
-				label: "v",
-				leftPx: 184,
-				bottomPx: -142,
-				size: 60,
+				id: 'down',
+				label: 'v',
+				rightPx: 10,
+				bottomPx: 10,
+				size: 72,
 				keyCode: KeyboardManager.DOWN,
 			},
-			{
-				id: "action",
-				label: "🏹",
-				leftPx: 250,
-				bottomPx: -112,
-				size: 72,
-				keyCode: KeyboardManager.SPACE,
-			}
 		],
 	};
 
@@ -88,6 +87,7 @@ class Game implements kado.GameInterface {
 	public var dif:Float;
 
 	var cheatTimer:Float;
+	var pendingVirtualKeyUps:Array<{keyCode:Int, framesLeft:Int}>;
 
 	public var pList:Array<Part>;
 	public var platList:Array<{
@@ -204,6 +204,7 @@ class Game implements kado.GameInterface {
 		updateIcons();
 
 		cheatTimer = 0;
+		pendingVirtualKeyUps = [];
 	}
 
 	public function initGrid() {
@@ -306,10 +307,43 @@ class Game implements kado.GameInterface {
 
 		monsterLevelMax += 0.0025 * Timer.tmod;
 		dif += 1.5 * Timer.tmod;
+		flushPendingVirtualKeyUps();
 		// monsterLevelMax += 0.025*Timer.tmod;
 		// dif+=15*Timer.tmod;
 
 		// cheat();
+	}
+
+	public function onTouchAction(action:String):Void {
+		switch (action) {
+			case "tap_action":
+				queueVirtualTap(KeyboardManager.SPACE);
+		}
+	}
+
+	function queueVirtualTap(keyCode:Int):Void {
+		KeyboardManager.queueVirtualKeyDown(keyCode);
+		pendingVirtualKeyUps.push({
+			keyCode: keyCode,
+			framesLeft: 2
+		});
+	}
+
+	function flushPendingVirtualKeyUps():Void {
+		if (pendingVirtualKeyUps == null || pendingVirtualKeyUps.length == 0) {
+			return;
+		}
+
+		var keep:Array<{keyCode:Int, framesLeft:Int}> = [];
+		for (entry in pendingVirtualKeyUps) {
+			entry.framesLeft--;
+			if (entry.framesLeft <= 0) {
+				KeyboardManager.queueVirtualKeyUp(entry.keyCode);
+			} else {
+				keep.push(entry);
+			}
+		}
+		pendingVirtualKeyUps = keep;
 	}
 
 	public function updateScroll() {
