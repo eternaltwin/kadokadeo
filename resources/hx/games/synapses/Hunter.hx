@@ -20,6 +20,10 @@ class Hunter extends Sprite {
 	public var layer:Layer;
 	public var queue:ASprite;
 
+	var queuePool:Array<ASprite>;
+	var queueLife:Array<Float>;
+	var queueCursor:Int;
+
 	public var scoreField:Text;
 
 	public function new(col) {
@@ -33,6 +37,7 @@ class Hunter extends Sprite {
 		y = Cs.rand() * Cs.mch;
 
 		speed = 10 * Cs.NEW_GEN_SCALE;
+		initQueuePool();
 
 		initPlay();
 		scoreField = root.initTextField("field", {
@@ -45,9 +50,46 @@ class Hunter extends Sprite {
 	}
 
 	override function update() {
+		updateQueuePool();
 		action();
 
 		super.update();
+	}
+
+	function initQueuePool() {
+		queuePool = [];
+		queueLife = [];
+		queueCursor = 0;
+		for (i in 0...9) {
+			var mc = Game.me.dm.attach("mcQueue", Game.DP_UNDER_FX);
+			mc._visible = false;
+			queuePool.push(mc);
+			queueLife.push(0);
+		}
+	}
+
+	function updateQueuePool() {
+		for (i in 0...queuePool.length) {
+			if (queueLife[i] <= 0)
+				continue;
+			queueLife[i] -= mt.Timer.tmod;
+			if (queueLife[i] <= 0)
+				queuePool[i]._visible = false;
+		}
+	}
+
+	function emitQueue(x:Float, y:Float, len:Float, rot:Float) {
+		var i = queueCursor;
+		queueCursor = (queueCursor + 1) % queuePool.length;
+		var mc = queuePool[i];
+		queueLife[i] = 9.0;
+		mc._x = x;
+		mc._y = y;
+		mc._xscale = len / Cs.NEW_GEN_SCALE;
+		mc._rotation = rot;
+		mc._visible = true;
+		mc.gotoAndPlay(1);
+		mc.updateState();
 	}
 
 	// PLAY
@@ -89,13 +131,7 @@ class Hunter extends Sprite {
 
 			var qdx = ox - x;
 			var qdy = oy - y;
-			var mc = Game.me.dm.attach("mcQueue", Game.DP_UNDER_FX);
-			mc.removeOnFrame = 9;
-			mc._x = x;
-			mc._y = y;
-			mc._xscale = Math.sqrt(qdx * qdx + qdy * qdy) / Cs.NEW_GEN_SCALE;
-			mc._rotation = Math.atan2(qdy, qdx) / 0.0174;
-			mc.gotoAndPlay(1);
+			emitQueue(x, y, Math.sqrt(qdx * qdx + qdy * qdy), Math.atan2(qdy, qdx) / 0.0174);
 
 			root._rotation = angle / 0.0174;
 		} else {
@@ -179,6 +215,9 @@ class Hunter extends Sprite {
 
 	// KILL
 	override function kill() {
+		for (mc in queuePool) {
+			mc.removeMovieClip();
+		}
 		layer.kill();
 		Game.me.hunters.remove(this);
 		super.kill();

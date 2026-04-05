@@ -113,7 +113,7 @@ class Element extends Phys {
 	// CONVERT
 	public function convert(c:Int) {
 		px = Cs.getPX(x);
-		py = Cs.getPX(y);
+		py = Cs.getPY(y);
 		vx = 0;
 		vy = 0;
 		size = 0;

@@ -458,8 +458,9 @@ class Game implements kado.GameInterface {
 	public function updateFlux() {
 		// if(coef == null && Std.random(1)==0 && mt.Timer.tmod < 1.5 && flux.length<influxMax )newInflux();
 
-		var list = flux.copy();
-		for (mc in list) {
+		var index = flux.length - 1;
+		while (index >= 0) {
+			var mc = flux[index];
 			mc.c = Math.min(mc.c + mc.sc * influxSpeed * mt.Timer.tmod, 1);
 
 			mc._x = mc.sx * (1 - mc.c) + mc.el.x * mc.c;
@@ -472,9 +473,10 @@ class Game implements kado.GameInterface {
 				} else {
 					hunters[mc.el.col].incScore(1);
 					mc.removeMovieClip();
-					flux.remove(mc);
+					flux.splice(index, 1);
 				}
 			}
+			index--;
 		}
 	}
 
