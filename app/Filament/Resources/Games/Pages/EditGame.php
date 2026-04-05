@@ -9,6 +9,7 @@ use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Throwable;
 
 class EditGame extends EditRecord
@@ -39,6 +40,27 @@ class EditGame extends EditRecord
 
                         Notification::make()
                             ->title('Unable to reset scores.')
+                            ->body('Check logs for details and try again.')
+                            ->danger()
+                            ->send();
+                    }
+                }),
+            Action::make('clearCache')
+                ->label('Clear gamedata cache')
+                ->color('warning')
+                ->action(function (): void {
+                    try {
+                        Cache::forget(sprintf('gamedata_%s', $this->record->id));
+
+                        Notification::make()
+                            ->title('Gamedata cache cleared successfully.')
+                            ->success()
+                            ->send();
+                    } catch (Throwable $exception) {
+                        report($exception);
+
+                        Notification::make()
+                            ->title('Unable to clear gamedata cache.')
                             ->body('Check logs for details and try again.')
                             ->danger()
                             ->send();
