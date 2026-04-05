@@ -252,10 +252,12 @@ class ASprite extends Sprite {
 		this.onRollOut = v;
 		refreshInteractiveState();
 		if (v != null) {
-			setInputListeners(["pointerout", "mouseout", "touchend", "touchcancel"], (e) -> {
+			configureInputListeners(["pointerout"], ["mouseout", "touchend", "touchcancel"], (e) -> {
 				common_haxe_avm1.MouseManager.captureInputEvent(e);
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
+		} else {
+			configureInputListeners(["pointerout"], ["mouseout", "touchend", "touchcancel"], null);
 		}
 
 		return v;
@@ -265,10 +267,12 @@ class ASprite extends Sprite {
 		this.onRollOver = v;
 		refreshInteractiveState();
 		if (v != null) {
-			setInputListeners(["pointerover", "mouseover", "touchstart"], (e) -> {
+			configureInputListeners(["pointerover"], ["mouseover", "touchstart"], (e) -> {
 				common_haxe_avm1.MouseManager.captureInputEvent(e);
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
+		} else {
+			configureInputListeners(["pointerover"], ["mouseover", "touchstart"], null);
 		}
 		return v;
 	}
@@ -277,10 +281,12 @@ class ASprite extends Sprite {
 		this.onMouseMove = v;
 		refreshInteractiveState();
 		if (v != null) {
-			setInputListeners(["pointermove", "mousemove", "touchmove"], (e) -> {
+			configureInputListeners(["pointermove"], ["mousemove", "touchmove"], (e) -> {
 				common_haxe_avm1.MouseManager.captureInputEvent(e);
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
+		} else {
+			configureInputListeners(["pointermove"], ["mousemove", "touchmove"], null);
 		}
 		return v;
 	}
@@ -290,14 +296,15 @@ class ASprite extends Sprite {
 		refreshInteractiveState();
 
 		if (v != null) {
-			setInputListeners(["pointerup", "mouseup", "touchend", "touchcancel"], (e) -> {
-				trace('release event');
+			configureInputListeners(["pointerup", "pointercancel"], ["mouseup", "touchend", "touchcancel"], (e) -> {
 				common_haxe_avm1.MouseManager.captureInputEvent(e);
 				if (e != null && Reflect.hasField(e, "stopPropagation")) {
 					Reflect.callMethod(e, Reflect.field(e, "stopPropagation"), []);
 				}
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
+		} else {
+			configureInputListeners(["pointerup", "pointercancel"], ["mouseup", "touchend", "touchcancel"], null);
 		}
 
 		return v;
@@ -307,23 +314,42 @@ class ASprite extends Sprite {
 		this.onPress = v;
 		refreshInteractiveState();
 		if (v != null) {
-			setInputListeners(["pointerdown", "mousedown", "touchstart"], (e) -> {
+			configureInputListeners(["pointerdown"], ["mousedown", "touchstart"], (e) -> {
 				common_haxe_avm1.MouseManager.captureInputEvent(e);
 				if (e != null && Reflect.hasField(e, "stopPropagation")) {
 					Reflect.callMethod(e, Reflect.field(e, "stopPropagation"), []);
 				}
 				common_haxe_avm1.MouseManager.queueInputCallback(v);
 			});
+		} else {
+			configureInputListeners(["pointerdown"], ["mousedown", "touchstart"], null);
 		}
 
 		return v;
 	}
 
-	private function setInputListeners(events:Array<String>, listener:Dynamic->Void):Void {
-		for (eventName in events) {
+	private function configureInputListeners(pointerEvents:Array<String>, legacyEvents:Array<String>, listener:Dynamic->Void):Void {
+		var allEvents = pointerEvents.concat(legacyEvents);
+		for (eventName in allEvents) {
 			this.removeAllListeners(eventName);
+		}
+
+		if (listener == null) {
+			return;
+		}
+
+		var activeEvents = supportsPointerEvents() ? pointerEvents : legacyEvents;
+		for (eventName in activeEvents) {
 			this.addListener(eventName, listener);
 		}
+	}
+
+	private static function supportsPointerEvents():Bool {
+		#if js
+		return js.Browser.window != null && Reflect.hasField(js.Browser.window, "PointerEvent");
+		#else
+		return false;
+		#end
 	}
 
 	private function refreshInteractiveState():Void {

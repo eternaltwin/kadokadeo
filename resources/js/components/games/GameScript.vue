@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, useAttrs } from 'vue'
 
 import { useGame } from '@/composables/useGame'
 
@@ -12,6 +12,7 @@ const props = defineProps({
 })
 
 const canvas = ref(null)
+const attrs = useAttrs()
 const { mount, destroy, invalidate } = useGame(() => props.game)
 
 async function mountGame() {
@@ -33,7 +34,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="relative" :style="{ width: props.gameWidth + 'px', height: props.gameHeight + 'px', left: '22px', top: '22px' }">
+  <div class="relative" :style="{ width: props.gameWidth + 'px', height: props.gameHeight + 'px', ...attrs.style ?? {} }">
     <canvas
       ref="canvas"
       :width="900"

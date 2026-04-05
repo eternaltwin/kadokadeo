@@ -48,6 +48,7 @@ const gameHeight = computed(() => (isZoomed.value ? 640 : 320))
           <GameScript :game="game"
                       :game-width="gameWidth"
                       :game-height="gameHeight"
+                      :style="{ left: '22px', top: '22px'}"
           />
 
           <nav id="gameUpperButtons">

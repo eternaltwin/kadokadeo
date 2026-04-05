@@ -70,7 +70,7 @@ class ReplayOverlay extends ASprite {
 	function drawBackground():Void {
 		var g = getGraphics();
 		g.clear();
-		g.beginFill(0x0D2130, 0.82);
+		g.beginFill(0x0D2130, 0.5);
 		g.drawRect(0, 0, minimized ? MINI_WIDTH : WIDTH, minimized ? MINI_HEIGHT : HEIGHT);
 		g.endFill();
 		g.lineStyle(2, 0x6AB5CF, 0.9);
