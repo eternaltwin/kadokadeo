@@ -1,5 +1,6 @@
 package atlanteine;
 
+import kado.TouchControlsConfig.TouchControlsMode;
 import haxe.io.UInt16Array;
 import common_haxe_avm1.pixi.DropShadowFilter;
 import pixi.core.Pixi.BlendModes;
@@ -74,6 +75,44 @@ enum abstract PathType(Int) from Int to Int {
 
 @:expose('GameAtlanteine')
 class Game implements kado.GameInterface {
+	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
+		mode: TouchControlsMode.KEYBOARD,
+		buttons: [
+			{
+				id: "left",
+				label: "<",
+				leftPx: 90,
+				bottomPx: -112,
+				size: 72,
+				keyCode: KeyboardManager.LEFT,
+			},
+			{
+				id: "right",
+				label: ">",
+				leftPx: 178,
+				bottomPx: -112,
+				size: 72,
+				keyCode: KeyboardManager.RIGHT,
+			},
+			{
+				id: "up",
+				label: "^",
+				leftPx: 134,
+				bottomPx: -68,
+				size: 72,
+				keyCode: KeyboardManager.UP,
+			},
+			{
+				id: "down",
+				label: "v",
+				leftPx: 134,
+				bottomPx: -156,
+				size: 72,
+				keyCode: KeyboardManager.DOWN,
+			},
+		],
+	};
+
 	public static var FL_DEBUG = false;
 	public static var FL_BONUS = false;
 	public static var FL_SIZER = false;
