@@ -158,9 +158,7 @@ class Game implements kado.GameInterface {
 		updatePlasma();
 
 		// SPRITE
-		for (sp in mt.bumdum.Sprite.spriteList.copy()) {
-			sp.update();
-		}
+		mt.bumdum.Sprite.updateAll();
 
 		//
 		switch (step) {

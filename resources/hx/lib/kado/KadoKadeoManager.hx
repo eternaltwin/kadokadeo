@@ -321,7 +321,7 @@ class KadoKadeoManager extends Application {
 			gameRoot = null;
 		}
 
-		mt.bumdum.Sprite.spriteList = [];
+		mt.bumdum.Sprite.clearAll();
 	}
 
 	public function gameOver(params:Dynamic):Void {

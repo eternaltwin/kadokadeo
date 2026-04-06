@@ -378,10 +378,7 @@ class Game implements kado.GameInterface {
 		scrollMap();
 
 		// SPRITES
-		var list = Sprite.spriteList.copy();
-		for (e in list) {
-			e.update();
-		}
+		Sprite.updateAll();
 	}
 
 	function applyReplayEvent(event:Dynamic):Void {

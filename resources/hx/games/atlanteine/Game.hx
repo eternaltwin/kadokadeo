@@ -247,9 +247,7 @@ class Game implements kado.GameInterface {
 	public function update(ts:Float) {
 		// mt.Timer.tmod *= 0.5;
 		// SPRITE
-		var list = Sprite.spriteList.copy();
-		for (sp in list)
-			sp.update();
+		Sprite.updateAll();
 
 		prec?.update();
 

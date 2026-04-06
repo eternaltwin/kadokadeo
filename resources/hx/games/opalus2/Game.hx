@@ -266,9 +266,7 @@ class Game implements kado.GameInterface {
 		}
 
 		// SPRITES
-		for (l in Sprite.spriteList.copy()) {
-			l.update();
-		}
+		Sprite.updateAll();
 
 		// FALL
 		var i = 0;

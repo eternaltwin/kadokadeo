@@ -177,9 +177,7 @@ class Game implements kado.GameInterface {
 	}
 
 	function updateSprites() {
-		var list = Sprite.spriteList.copy();
-		for (sp in list)
-			sp.update();
+		Sprite.updateAll();
 
 		for (s in toUpdate) {
 			if (s.parent != null)

@@ -8,7 +8,6 @@ import pixi.core.Pixi.BlendModes;
 import common_haxe_avm1.KeyboardManager;
 import pixi.core.text.Text;
 import common_haxe_avm1.KKApi;
-import kado.TouchControlsConfig.TouchControlsMode;
 import mt.bumdum.Lib;
 import mt.bumdum.Sprite;
 
@@ -37,6 +36,8 @@ class Game implements kado.GameInterface {
 	public static var BG_COLOR = 0x5C0101;
 	public static inline var REPLAY_MOUSE_MOVE = 0;
 	public static inline var REPLAY_CLICK = 2;
+
+	var isClickRegistered:Bool = false;
 
 	public var lvl:Int;
 	public var coef:Float;
@@ -159,9 +160,7 @@ class Game implements kado.GameInterface {
 		frict = Math.pow(0.97, mt.Timer.tmod);
 
 		// viewGrid(grid);
-		var list = Sprite.spriteList.copy();
-		for (sp in list)
-			sp.update();
+		Sprite.updateAll();
 		if (action != null) {
 			action();
 		}
@@ -204,6 +203,11 @@ class Game implements kado.GameInterface {
 		if (lvl == 1)
 			timer = 500;
 		//
+		if (!isReplayMode) {
+			bg.onPress = () -> {
+				isClickRegistered = true;
+			}
+		}
 		bg.onRelease = onResolvePress;
 		bg.onMouseMove = onLiveMouseMove;
 		bg.useHandCursor = true;
@@ -277,7 +281,10 @@ class Game implements kado.GameInterface {
 	}
 
 	function onResolvePress() {
-		resolvePress(playerTargetX, playerTargetY, !isReplayMode);
+		if (isClickRegistered) {
+			isClickRegistered = false;
+			resolvePress(playerTargetX, playerTargetY, !isReplayMode);
+		}
 	}
 
 	function resolvePress(?x:Null<Int>, ?y:Null<Int>, shouldRecord:Bool = false) {

@@ -5,6 +5,11 @@ import mt.bumdum.Lib;
 
 class Sprite {
 	static public var spriteList:Array<Sprite> = [];
+	static var updateSnapshot:Array<Sprite> = [];
+	static var updateSnapshotLen:Int = 0;
+	static var toAdd:Array<Sprite> = [];
+	static var toRemove:Array<Sprite> = [];
+	static var isIterating:Bool = false;
 
 	public var root:ASprite;
 
@@ -15,7 +20,7 @@ class Sprite {
 	public function new(root:ASprite) {
 		this.root = root;
 		root.obj = this;
-		spriteList.push(this);
+		register(this);
 
 		if (this.root._x == 0 && this.root._y == 0) {
 			this.root._x = -100;
@@ -67,7 +72,71 @@ class Sprite {
 
 	public function kill() {
 		this.root.removeMovieClip();
-		spriteList.remove(this);
+		unregister(this);
+	}
+
+	static function register(sp:Sprite):Void {
+		if (isIterating) {
+			if (toRemove.remove(sp))
+				return;
+			if (toAdd.indexOf(sp) < 0)
+				toAdd.push(sp);
+			return;
+		}
+		spriteList.push(sp);
+	}
+
+	static function unregister(sp:Sprite):Void {
+		if (isIterating) {
+			if (toAdd.remove(sp))
+				return;
+			if (toRemove.indexOf(sp) < 0)
+				toRemove.push(sp);
+			return;
+		}
+		spriteList.remove(sp);
+	}
+
+	public static function updateAll():Void {
+		isIterating = true;
+
+		var src = spriteList;
+		var count = src.length;
+		for (i in 0...count) {
+			updateSnapshot[i] = src[i];
+		}
+		for (i in count...updateSnapshotLen) {
+			updateSnapshot[i] = null;
+		}
+		updateSnapshotLen = count;
+
+		for (i in 0...count) {
+			var sp = updateSnapshot[i];
+			if (sp != null)
+				sp.update();
+		}
+
+		isIterating = false;
+
+		while (toRemove.length > 0) {
+			var removed = toRemove.pop();
+			if (removed != null)
+				spriteList.remove(removed);
+		}
+		while (toAdd.length > 0) {
+			var added = toAdd.pop();
+			if (added != null)
+				spriteList.push(added);
+		}
+	}
+
+	public static function clearAll():Void {
+		spriteList = [];
+		updateSnapshot = [];
+		updateSnapshotLen = 0;
+		toAdd = [];
+		toRemove = [];
+		isIterating = false;
 	}
 
 	public function getDist(point:Point) {
