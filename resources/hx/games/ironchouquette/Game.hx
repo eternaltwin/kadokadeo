@@ -290,11 +290,11 @@ class Game implements kado.GameInterface {
 
 	// SHOTS
 	public function initShots() {
-		shots = downcast(dm.empty(DP_SHOTS));
+		shots = cast dm.empty(DP_SHOTS);
 		shots.layer = new Array();
 		var dm = new DepthManager(shots);
 		for (i in 0...3) {
-			var mc = downcast(dm.empty(0));
+			var mc:ShotLayerSprite = cast dm.empty(0);
 			mc.dm = new DepthManager(mc);
 			shots.layer.push(mc);
 		}

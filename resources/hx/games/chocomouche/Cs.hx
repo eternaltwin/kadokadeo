@@ -1,7 +1,5 @@
 package chocomouche;
 
-import mt.bumdum.Sprite;
-
 class Cs {
 	// GAME SIZE
 	public static var mcw = 900;

@@ -1,5 +1,7 @@
 package kaskade2;
 
+import pixi.core.math.shapes.Polygon;
+import pixi.core.graphics.Graphics;
 import mt.bumdum.Phys;
 import mt.Timer;
 
@@ -31,6 +33,24 @@ class Bille extends Phys {
 			id = game.random(game.nlevels);
 		mc = game.dm.attach("bille/bille_" + (id + 1), Const.PLAN_BILLE);
 		mc.gotoAndStop(id + 1);
+		var w:Float = mc._width;
+		var h:Float = mc._height;
+		var cx:Float = w * 0.5;
+		var cy:Float = h * 0.5;
+		var hitPoints = [
+			cx,  0,
+			 w, cy,
+			cx,  h,
+			 0, cy
+		];
+		mc.hitArea = new Polygon(hitPoints);
+		// var hitboxDebug = new Graphics();
+		// hitboxDebug.lineStyle(2, 0x00FFFF, 0.9);
+		// hitboxDebug.beginFill(0x00FFFF, 0.12);
+		// hitboxDebug.drawPolygon(hitPoints);
+		// hitboxDebug.endFill();
+		// hitboxDebug.interactive = false;
+		// mc.addChild(hitboxDebug);
 		activate(false);
 		mc.onRollOver = onPointerOver;
 		mc.onRollOut = onPointerOut;

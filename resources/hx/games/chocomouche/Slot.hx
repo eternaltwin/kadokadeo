@@ -258,7 +258,6 @@ class Slot extends Phys {
 			s.vr = (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 20;
 			s.fadeType = 3;
 			s.timer = 15 + KadoKadeoManager.kkm.seed.random(6);
-			s.root.updateState();
 
 			if (Sprite.spriteList.length - 81 > 40 && i > 3)
 				break;

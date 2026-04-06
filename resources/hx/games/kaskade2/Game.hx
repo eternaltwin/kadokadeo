@@ -202,6 +202,34 @@ class Game implements kado.GameInterface {
 		}
 		curGroup = null;
 		lock = false;
+		rehoverFromMouse();
+	}
+
+	function rehoverFromMouse() {
+		var mouse = new pixi.core.math.Point(bg._xmouse, bg._ymouse);
+		var best:{x:Int, y:Int, d:Float} = null;
+		for (x in 0...Const.LVL_WIDTH) {
+			for (y in 0...Const.LVL_HEIGHT) {
+				var b = level.billes[x][y];
+				if (b == null || b.mc == null || b.mc.hitArea == null)
+					continue;
+				var local = b.mc.toLocal(mouse);
+				if (untyped b.mc.hitArea.contains(local.x, local.y)) {
+					var dx = b.x - mouse.x;
+					var dy = b.y - mouse.y;
+					var d = dx * dx + dy * dy;
+					if (best == null || d < best.d)
+						best = {x: x, y: y, d: d};
+				}
+			}
+		}
+		if (best != null)
+			setHoveredCell(best.x, best.y, false);
+		else if (hoveredBille != null) {
+			hoveredBille.onRollOut();
+			hoveredBille = null;
+			lastHoveredCell = null;
+		}
 	}
 
 	function updateSprites() {
