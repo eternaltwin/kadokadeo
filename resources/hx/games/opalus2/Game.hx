@@ -116,6 +116,12 @@ class Game implements kado.GameInterface {
 		map.onPress = function() {
 			onMapPress();
 		};
+		map.onMouseMove = function() {
+			onMapMove();
+		};
+		map.onRollOut = function() {
+			onMapOut();
+		};
 		map.useHandCursor = true;
 		KKApi.registerButton(map);
 
@@ -197,9 +203,6 @@ class Game implements kado.GameInterface {
 		}
 
 		timer -= Timer.tmod;
-		if (!isReplayMode) {
-			updateHover();
-		}
 		switch (step) {
 			case 1: // DESTROY
 				var prc = (1 - timer / Cs.TIME_EXPLODE) * 100;
@@ -383,13 +386,10 @@ class Game implements kado.GameInterface {
 	}
 
 	public function delight(id) {
-		var i = 0;
-		while (i < glow.length) {
-			var mc = glow[i];
+		for (mc in glow) {
 			Col.setPercentColor(mc, 0, 0xFFFFFF);
-			glow.splice(i--, 1);
-			i++;
 		}
+		glow = [];
 	}
 
 	public function getMouseCell():{x:Int, y:Int} {
@@ -439,8 +439,28 @@ class Game implements kado.GameInterface {
 		return centerEmpty;
 	}
 
-	public function updateHover() {
-		updateHoverFromCell(getMouseCell(), true);
+	public function onMapMove() {
+		if (isReplayMode) {
+			return;
+		}
+		var pos = getMouseCell();
+		if (hoveredCell == null && pos == null) {
+			return;
+		}
+		if (hoveredCell != null && pos != null && hoveredCell.x == pos.x && hoveredCell.y == pos.y) {
+			return;
+		}
+		updateHoverFromCell(pos, true);
+	}
+
+	public function onMapOut() {
+		if (isReplayMode) {
+			return;
+		}
+		if (hoveredCell == null && hoverColor == -1) {
+			return;
+		}
+		updateHoverFromCell(null, true);
 	}
 
 	public function updateHoverFromCell(pos:{x:Int, y:Int}, ?recordEvent:Bool = false) {

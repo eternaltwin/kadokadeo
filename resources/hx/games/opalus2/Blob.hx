@@ -44,7 +44,13 @@ class Blob extends Phys {
 		vsy = 0;
 
 		panel = cast Cs.game.gdm.attach("mcCounter", 4);
-		panel.field = panel.initTextField("field");
+		panel.field = panel.initTextField("field", {
+			font: "Arial",
+			size: 50,
+			color: 0xFFFFFF,
+			align: "center",
+			y: -30
+		});
 		panel.field.text = Std.string(KKApi.val(Cs.game.turn));
 		panel.a = -2.8; //-0.77
 		panel.ta = panel.a;

@@ -1,11 +1,9 @@
 package opalus2;
 
-import mt.Timer;
 import mt.bumdum.Phys;
 
 class Part extends Phys {
 	var rFrict:Float;
-	var deathScore:Int;
 
 	public function new(mc) {
 		super(mc);
@@ -19,11 +17,5 @@ class Part extends Phys {
 			vr *= rFrict;
 		}
 		super.update();
-	}
-
-	public override function kill() {
-		if (deathScore != null)
-			KadoKadeoManager.kkm.addScore(deathScore);
-		super.kill();
 	}
 }
