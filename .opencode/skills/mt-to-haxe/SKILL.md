@@ -548,6 +548,10 @@ stats.k++;
 Remplacer les `Key.` par l'import `common_haxe_avm1.KeyboardManager`.
 S'il existe, retirer le `Key.init()`
 
+## 🟢 Sprite.spriteList
+
+Remplacer les itérations sur `Sprite.spriteList` par un appel à `Sprite.updateAll()`.
+
 ---
 
 # ⚠️ Contraintes globales
@@ -581,8 +585,6 @@ docker exec -u dev -w /www kadokadeo_app haxe \
 1. Appliquer d’abord les règles 🟢 (safe)
 2. Puis les règles 🟡 (syntaxiques)
 3. Enfin les règles 🔴 (contextuelles, avec prudence)
-
-# Pour compiler
 
 ---
 
