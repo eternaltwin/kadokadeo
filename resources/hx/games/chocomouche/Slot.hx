@@ -1,7 +1,7 @@
 package chocomouche;
 
+import pixi.filters.extras.GlowFilter;
 import mt.bumdum.Phys;
-import mt.bumdum.Sprite;
 import mt.bumdum.Lib;
 import chocomouche.Game.Pos;
 
@@ -41,8 +41,14 @@ class Slot extends Phys {
 	public var adjNumber:Int;
 
 	var dm:mt.DepthManager;
+	var glow:GlowFilter;
 
 	public var slot:ASprite;
+
+	var partsPool:Array<PooledPart>;
+
+	static inline var PARTS_POOL_SIZE = 7;
+	static var activeParts:Int = 0;
 
 	public function new(p:Pos, isBomb:Bool) {
 		pos = p;
@@ -73,14 +79,40 @@ class Slot extends Phys {
 		mc.interactive = true;
 		common_haxe_avm1.KKApi.registerButton(mc);
 		super(mc);
+		initPartsPool();
 		// ### TO CONTINUE
+	}
+
+	function initPartsPool() {
+		partsPool = [];
+		for (i in 0...PARTS_POOL_SIZE) {
+			var partMc = Game.me.dm.attach("partSlot", Game.DP_FX);
+			partMc._xscale = 170;
+			partMc._yscale = 170;
+			var part = new PooledPart(partMc);
+			part.deactivate();
+			partsPool.push(part);
+		}
+	}
+
+	override public function kill() {
+		for (part in partsPool) {
+			part.destroy();
+		}
+		partsPool = [];
+		glow = null;
+		super.kill();
 	}
 
 	public function slotOver() {
 		if (Game.me.isLocked() || isDiscovered())
 			return;
 
-		Filt.glow(slot, 6, 3, 0xEAD989, true);
+		if (glow == null) {
+			glow = Filt.glow(slot, 6, 3, 0xEAD989, true);
+		} else {
+			slot.filters = [glow];
+		}
 	}
 
 	public function slotOut() {
@@ -232,21 +264,21 @@ class Slot extends Phys {
 	// ### PARTS
 	function launchParts() {
 		var nb = 4 + KadoKadeoManager.kkm.seed.random(4);
-		var dsx = 20;
-		var dsy = 20;
 		var px = x;
 		var py = y;
-		var vr = 0;
 
 		for (i in 0...nb) {
-			var mc = Game.me.dm.attach("partSlot", Game.DP_FX);
-			mc._xscale = 170;
-			mc._yscale = 170;
+			if (activeParts > 40 && i > 3)
+				break;
+
+			var s = getFreePart();
+			if (s == null)
+				break;
 
 			var dx = (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 18;
 			var dy = (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 18;
 
-			var s = new Phys(mc);
+			s.activate();
 			s.root.gotoAndStop(KadoKadeoManager.kkm.seed.random(4) + 1);
 			s.x = px + dx;
 			s.y = py + dy;
@@ -258,9 +290,72 @@ class Slot extends Phys {
 			s.vr = (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 20;
 			s.fadeType = 3;
 			s.timer = 15 + KadoKadeoManager.kkm.seed.random(6);
-
-			if (Sprite.spriteList.length - 81 > 40 && i > 3)
-				break;
 		}
+	}
+
+	function getFreePart():PooledPart {
+		for (part in partsPool) {
+			if (!part.active)
+				return part;
+		}
+		return null;
+	}
+
+	public static function onPartActivated() {
+		activeParts++;
+	}
+
+	public static function onPartDeactivated() {
+		if (activeParts > 0)
+			activeParts--;
+	}
+}
+
+private class PooledPart extends Phys {
+	public var active:Bool;
+
+	public function new(mc:ASprite) {
+		super(mc);
+		active = false;
+	}
+
+	override public function update() {
+		if (!active)
+			return;
+		super.update();
+	}
+
+	public function activate() {
+		if (active)
+			return;
+		active = true;
+		root._visible = true;
+		root._alpha = 100;
+		root._xscale = 170;
+		root._yscale = 170;
+		Slot.onPartActivated();
+	}
+
+	public function deactivate() {
+		if (!active) {
+			root._visible = false;
+			return;
+		}
+		active = false;
+		vx = 0;
+		vy = 0;
+		vr = 0;
+		timer = null;
+		root._visible = false;
+		Slot.onPartDeactivated();
+	}
+
+	override public function kill() {
+		deactivate();
+	}
+
+	public function destroy() {
+		deactivate();
+		super.kill();
 	}
 }

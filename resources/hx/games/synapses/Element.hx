@@ -81,12 +81,15 @@ class Element extends Phys {
 		// NEIGHBOOR;
 
 		if (Cs.CEL_COL) {
+			var rr = ray * 2;
+			var rr2 = rr * rr;
 			for (el in Game.me.grid[px][py]) {
 				if (el != this) {
 					var dx = el.x - x;
 					var dy = el.y - y;
-					var dist = ray * 2 - Math.sqrt(dx * dx + dy * dy);
-					if (dist > 0) {
+					var d2 = dx * dx + dy * dy;
+					if (d2 > 0 && d2 < rr2) {
+						var dist = rr - Math.sqrt(d2);
 						var a = Math.atan2(dy, dx);
 						var rx = Math.cos(a) * dist * 0.5;
 						var ry = Math.sin(a) * dist * 0.5;
@@ -158,13 +161,15 @@ class Element extends Phys {
 	// SEEK
 	public function seek() {
 		var list = Game.me.grid[px][py];
+		var aura2 = aura * aura;
 
 		for (el in list) {
 			if (el != this && el.state == Moving) {
 				var dx = el.x - x;
 				var dy = el.y - y;
-				var dist = Math.sqrt(dx * dx + dy * dy);
-				if (dist < aura) {
+				var d2 = dx * dx + dy * dy;
+				if (d2 < aura2) {
+					var dist = Math.sqrt(d2);
 					el.convert(col);
 
 					// BRANCH
@@ -269,9 +274,19 @@ class Element extends Phys {
 					continue;
 				var gx = px + x - 1;
 				var gy = py + y - 1;
-				Game.me.grid[gx][gy].remove(this);
+				removeUnordered(Game.me.grid[gx][gy], this);
 			}
 		}
+	}
+
+	inline function removeUnordered(list:Array<Element>, target:Element) {
+		var idx = list.indexOf(target);
+		if (idx < 0)
+			return;
+		var last = list.length - 1;
+		if (idx != last)
+			list[idx] = list[last];
+		list.pop();
 	}
 
 	// KILL

@@ -59,6 +59,11 @@ class KadoKadeoManager extends Application {
 	var replayElapsedMs:Float = 0;
 	var replaySpeed:Float = 1;
 	var replayPaused:Bool = false;
+	#if debug
+	var fpsText:pixi.core.text.Text;
+	var fpsFrames:Int = 0;
+	var fpsSampleStartMs:Float = 0;
+	#end
 
 	public var sheet:pixi.core.textures.Spritesheet;
 
@@ -102,6 +107,9 @@ class KadoKadeoManager extends Application {
 		common_haxe_avm1.MouseManager.init(this);
 
 		ff = new FixedFramerate(updatePhysics);
+		#if debug
+		initDebugFpsDisplay();
+		#end
 
 		untyped Ticker.system.add((delta:Float) -> {
 			var speed = replayPaused ? 0 : replaySpeed;
@@ -113,10 +121,53 @@ class KadoKadeoManager extends Application {
 		});
 		this.ticker.add(() -> {
 			updateGraphics(ff.alpha);
+			#if debug
+			updateDebugFpsDisplay();
+			#end
 			pixi.core.Pixi.tweenManager.update();
 		});
 		this.replay = new ReplayManager(params?.replayData);
 	}
+
+	#if debug
+	function initDebugFpsDisplay():Void {
+		fpsSampleStartMs = Browser.window.performance.now();
+		fpsText = new pixi.core.text.Text("FPS: --", {
+			fill: 0xFFFFFF,
+			fontFamily: "Arial",
+			fontSize: 16,
+			align: "left"
+		});
+		fpsText.x = 790;
+		fpsText.y = 12;
+		this.stage.addChild(fpsText);
+	}
+
+	function updateDebugFpsDisplay():Void {
+		if (fpsText == null) {
+			return;
+		}
+		fpsFrames++;
+		var now = Browser.window.performance.now();
+		var elapsed = now - fpsSampleStartMs;
+		if (elapsed >= 250) {
+			var fps = fpsFrames * 1000 / elapsed;
+			fpsText.text = "FPS: " + Std.int(fps + 0.5);
+			fpsFrames = 0;
+			fpsSampleStartMs = now;
+		}
+	}
+
+	function destroyDebugFpsDisplay():Void {
+		if (fpsText != null) {
+			if (fpsText.parent != null) {
+				fpsText.parent.removeChild(fpsText);
+			}
+			fpsText.destroy();
+			fpsText = null;
+		}
+	}
+	#end
 
 	public function updateGraphics(a:Float) {
 		if (gameRoot != null) {
@@ -361,6 +412,9 @@ class KadoKadeoManager extends Application {
 	override public function destroy(?removeView:Bool):Void {
 		this.stop();
 		reset();
+		#if debug
+		destroyDebugFpsDisplay();
+		#end
 		this.ticker.stop();
 		untyped Ticker.system.stop();
 		this.root = null;

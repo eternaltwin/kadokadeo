@@ -71,7 +71,7 @@ class Game implements kado.GameInterface {
 		gdm = new DepthManager(root);
 		map = gdm.attach("mcWallpaper", 1);
 
-		Filt.glow(map, 30 * Cs.NEW_GEN_SCALE, 1.5, 0x397BFC);
+		// Filt.glow(map, 30 * Cs.NEW_GEN_SCALE, 1.5, 0x397BFC);
 
 		dm = new DepthManager(map);
 		bg = gdm.attach("mcBg", 0);

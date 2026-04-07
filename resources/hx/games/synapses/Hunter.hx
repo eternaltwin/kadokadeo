@@ -112,9 +112,11 @@ class Hunter extends Sprite {
 
 		var dx = trg.x - x;
 		var dy = trg.y - y;
-		var dist = Math.sqrt(dx * dx + dy * dy);
+		var dist2 = dx * dx + dy * dy;
+		var minDist = 20 * Cs.NEW_GEN_SCALE;
+		var minDist2 = minDist * minDist;
 
-		if (dist > 20 * Cs.NEW_GEN_SCALE) {
+		if (dist2 > minDist2) {
 			var da = Num.hMod(Math.atan2(dy, dx) - angle, 3.14);
 			var c = 0.5;
 			var lim = 0.8;

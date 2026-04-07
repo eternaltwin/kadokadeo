@@ -94,10 +94,10 @@ class Col {
 		}
 
 		cm.matrix = [
-			m, 0, 0, 0, c * (r + i),
-			0, m, 0, 0, c * (g + i),
-			0, 0, m, 0, c * (b + i),
-			0, 0, 0, m + c * a,     0
+			m, 0, 0,         0, c * (r + i),
+			0, m, 0,         0, c * (g + i),
+			0, 0, m,         0, c * (b + i),
+			0, 0, 0, m + c * a,           0
 		];
 
 		var currentFilters:Array<Dynamic> = cast mc.filters;
@@ -266,7 +266,7 @@ class Str {
 }
 
 class Filt {
-	static public function glow(mc:DisplayObject, distance = 2, strength:Float = 1, color = 0, inner = false) {
+	static public function glow(mc:DisplayObject, distance = 2, strength:Float = 1, color = 0, inner = false):GlowFilter {
 		var f = Type.createInstance(GlowFilter, [
 			{
 				distance: distance,
@@ -277,10 +277,12 @@ class Filt {
 		]);
 		if (mc.filters == null) {
 			mc.filters = [f];
-			return;
+			return f;
 		}
 
 		mc.filters.push(f);
+
+		return f;
 	}
 
 	static public function blur(mc:DisplayObject, blurX:Float = 0, blurY:Float = 0) {
