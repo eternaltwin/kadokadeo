@@ -111,8 +111,9 @@ class Game implements kado.GameInterface {
 		blob.x = (mid + 0.5) * Cs.SIZE;
 		blob.y = (mid + 0.5) * Cs.SIZE;
 		blob.updateSize();
+		blob.root._visible = false;
 
-		map.mask = blob.root;
+		// map.mask = blob.root;
 		map.onPress = function() {
 			onMapPress();
 		};
