@@ -43,21 +43,23 @@ class KeyboardManager {
 	}
 
 	static private function onKeyUp(e:KeyboardEvent):Void {
-		if (inputLocked) {
+		if ([SPACE, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT].contains(e.keyCode)) {
 			e.preventDefault();
+		}
+		if (inputLocked) {
 			return;
 		}
 		queueKeyOp(e.keyCode, false);
-		e.preventDefault();
 	}
 
 	static private function onKeyDown(e:KeyboardEvent) {
-		if (inputLocked) {
+		if ([SPACE, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT].contains(e.keyCode)) {
 			e.preventDefault();
+		}
+		if (inputLocked) {
 			return;
 		}
 		queueKeyOp(e.keyCode, true);
-		e.preventDefault();
 	}
 
 	static public function setInputLocked(value:Bool):Void {

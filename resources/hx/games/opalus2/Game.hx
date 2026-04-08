@@ -6,9 +6,17 @@ import common_haxe_avm1.KKApi;
 import mt.bumdum.Lib;
 import mt.DepthManager;
 import mt.Timer;
+import pixi.core.math.shapes.Rectangle;
+import pixi.core.text.Text;
 
 class GridElem extends ASprite {
 	public var flDead:Bool;
+}
+
+class CounterSprite extends ASprite {
+	public var field:Text;
+	public var a:Float;
+	public var ta:Float;
 }
 
 @:expose('GameOpalus2')
@@ -19,6 +27,11 @@ class Game implements kado.GameInterface {
 	public static var BLAST_TIME = 6;
 	public static var FALL_WAIT = 20;
 	public static var HAND_SPEED_COEF = 0.3;
+	public static var CULL_MARGIN = 8;
+	public static var CULL_RANGE = 1.6;
+	public static var CULL_BOOST = 5;
+	public static var PANEL_OFFSET_X = -30;
+	public static var PANEL_OFFSET_Y = -30;
 
 	public static var FL_ENLIGHT = true;
 
@@ -47,15 +60,28 @@ class Game implements kado.GameInterface {
 	var glow:Array<ASprite>;
 	var fList:Array<Part>;
 	var bg:ASprite;
+	var bgHoleFilter:Dynamic;
 	var map:ASprite;
-	var blob:Blob;
+	var panel:CounterSprite;
 	var hoverColor:Int;
 	var isReplayMode:Bool;
 	var hoveredCell:{x:Int, y:Int};
+	var cullX:Float;
+	var cullY:Float;
+	var cullW:Float;
+	var cullH:Float;
+	var cullTargetX:Float;
+	var cullTargetY:Float;
+	var cullTargetW:Float;
+	var cullTargetH:Float;
 
 	var stats:{};
 
 	var grid:Array<Array<GridElem>>;
+	var bgHoleX:Float;
+	var bgHoleY:Float;
+	var bgHoleW:Float;
+	var bgHoleH:Float;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		isReplayMode = isReplay;
@@ -70,11 +96,22 @@ class Game implements kado.GameInterface {
 
 		gdm = new DepthManager(root);
 		map = gdm.attach("mcWallpaper", 1);
+		map.anchor.set(0, 0);
+		map._x = 0;
+		map._y = 0;
 
 		// Filt.glow(map, 30 * Cs.NEW_GEN_SCALE, 1.5, 0x397BFC);
 
 		dm = new DepthManager(map);
 		bg = gdm.attach("mcBg", 0);
+		bg.anchor.set(0, 0);
+		bg._x = 0;
+		bg._y = 0;
+		initBgHoleShader();
+		bgHoleX = 1 / 0;
+		bgHoleY = 1 / 0;
+		bgHoleW = 0;
+		bgHoleH = 0;
 
 		fList = new Array();
 		glow = new Array();
@@ -107,13 +144,34 @@ class Game implements kado.GameInterface {
 			x++;
 		}
 
-		blob = new Blob(gdm.attach("mcBlob", 3));
-		blob.x = (mid + 0.5) * Cs.SIZE;
-		blob.y = (mid + 0.5) * Cs.SIZE;
-		blob.updateSize();
-		blob.root._visible = false;
+		panel = cast gdm.attach("mcCounter", 4);
+		panel.field = panel.initTextField("field", {
+			font: "Arial",
+			size: 50,
+			color: 0xFFFFFF,
+			align: "center",
+			y: -30
+		});
+		panel.field.text = Std.string(KKApi.val(turn));
+		panel.a = -2.8;
+		panel.ta = panel.a;
 
-		// map.mask = blob.root;
+		cullX = (mid + 0.5) * Cs.SIZE;
+		cullY = (mid + 0.5) * Cs.SIZE;
+		cullW = Cs.SIZE;
+		cullH = Cs.SIZE;
+		cullTargetX = cullX;
+		cullTargetY = cullY;
+		cullTargetW = cullW;
+		cullTargetH = cullH;
+		recomputeCullTarget();
+		cullX = cullTargetX;
+		cullY = cullTargetY;
+		cullW = cullTargetW;
+		cullH = cullTargetH;
+		updatePanelPosition();
+
+		// Replaced GPU mask with logical culling.
 		map.onPress = function() {
 			onMapPress();
 		};
@@ -125,6 +183,8 @@ class Game implements kado.GameInterface {
 		};
 		map.useHandCursor = true;
 		KKApi.registerButton(map);
+		updateLogicalCulling();
+		updateBgHole();
 
 		initStep(0);
 	}
@@ -147,6 +207,7 @@ class Game implements kado.GameInterface {
 				selectableMap[x][y] = false;
 				var id = getRandomId();
 				mc.gotoAndStop(id + 1);
+				mc._visible = false;
 				// mc.cacheAsBitmap = true;
 
 				/*
@@ -193,8 +254,8 @@ class Game implements kado.GameInterface {
 
 			case 9: // ENDGAME
 				timer = 4;
-				blob.tsx = 0;
-				blob.tsy = 0;
+				cullTargetW = 0;
+				cullTargetH = 0;
 		}
 	}
 
@@ -224,7 +285,7 @@ class Game implements kado.GameInterface {
 					}
 				}
 				if (timer <= 0) {
-					blob.updateSize();
+					recomputeCullTarget();
 					if (list.length > 0) {
 						dList = list;
 						bonus = KKApi.cadd(Cs.SCORE_BONUS, bonus);
@@ -268,6 +329,10 @@ class Game implements kado.GameInterface {
 
 		// SPRITES
 		Sprite.updateAll();
+		updateCullState();
+		updatePanelPosition();
+		updateBgHole();
+		updateLogicalCulling();
 
 		// FALL
 		var i = 0;
@@ -370,8 +435,7 @@ class Game implements kado.GameInterface {
 		}
 		emptySel();
 		turn = KKApi.cadd(turn, Cs.DEC_TURN);
-		blob.panel.field.text = Std.string(KKApi.val(turn));
-		// blob.turnList.pop().removeMovieClip();;
+		panel.field.text = Std.string(KKApi.val(turn));
 		bonus = KKApi.const(0);
 		initStep(1);
 	}
@@ -399,7 +463,248 @@ class Game implements kado.GameInterface {
 		if (cx < 0 || cy < 0 || cx >= Cs.GRID_MAX || cy >= Cs.GRID_MAX) {
 			return null;
 		}
+		if (!isCellVisibleByBlob(cx, cy, 0)) {
+			return null;
+		}
 		return {x: cx, y: cy};
+	}
+
+	function recomputeCullTarget():Void {
+		var o = zlim;
+		var targetW = ((o.xmax - o.xmin) + CULL_RANGE) * Cs.SIZE;
+		var targetH = ((o.ymax - o.ymin) + CULL_RANGE) * Cs.SIZE;
+
+		cullTargetX = (((o.xmin + o.xmax) * 0.5) + 0.5) * Cs.SIZE;
+		cullTargetY = (((o.ymin + o.ymax) * 0.5) + 0.5) * Cs.SIZE;
+
+		var boost = CULL_BOOST;
+		for (p in zone) {
+			var px = p.x * Cs.SIZE;
+			var py = p.y * Cs.SIZE;
+			var dxp = px - cullTargetX;
+			var dyp = py - cullTargetY;
+			var dist = Math.sqrt(dxp * dxp + dyp * dyp);
+			var a = Math.atan2(dyp, dxp);
+
+			var dx = Math.cos(a) * targetW * 0.5;
+			var dy = Math.sin(a) * targetH * 0.5;
+			var lim = Math.sqrt(dx * dx + dy * dy);
+			while (dist > lim - CULL_RANGE * Cs.SIZE) {
+				targetW += Math.abs(Math.cos(a) * boost);
+				targetH += Math.abs(Math.sin(a) * boost);
+				dx = Math.cos(a) * targetW * 0.5;
+				dy = Math.sin(a) * targetH * 0.5;
+				lim = Math.sqrt(dx * dx + dy * dy);
+			}
+		}
+
+		cullTargetW = targetW;
+		cullTargetH = targetH;
+	}
+
+	function updateCullState():Void {
+		var moveLerp = 0.1 * Timer.tmod;
+		if (moveLerp > 1)
+			moveLerp = 1;
+		cullX += (cullTargetX - cullX) * moveLerp;
+		cullY += (cullTargetY - cullY) * moveLerp;
+
+		var sizeLerp = 0.18 * Timer.tmod;
+		if (sizeLerp > 1)
+			sizeLerp = 1;
+		cullW += (cullTargetW - cullW) * sizeLerp;
+		cullH += (cullTargetH - cullH) * sizeLerp;
+
+		if (cullW < 0)
+			cullW = 0;
+		if (cullH < 0)
+			cullH = 0;
+	}
+
+	function updatePanelPosition():Void {
+		if (panel == null) {
+			return;
+		}
+		var rayX = cullW * 0.5;
+		var rayY = cullH * 0.5;
+		var bpx = cullX + Math.cos(panel.ta) * rayX;
+		var bpy = cullY + Math.sin(panel.ta) * rayY;
+		var m = 16 * Cs.NEW_GEN_SCALE;
+
+		var rec = 1 / 0;
+		var nnta = panel.ta;
+		for (i in 0...2) {
+			var sens = i * 2 - 1;
+			var nta = panel.ta;
+			var px = bpx;
+			var py = bpy;
+			var tr = 0;
+			while (px < m || px > Cs.mcw - m || py < m || py > Cs.mch - m) {
+				nta += 0.0314 * sens;
+				px = cullX + Math.cos(nta) * rayX;
+				py = cullY + Math.sin(nta) * rayY;
+				if (tr++ > 200)
+					break;
+			}
+			if (tr < rec) {
+				rec = tr;
+				nnta = nta;
+			}
+		}
+		if (rec < 200)
+			panel.ta = nnta;
+
+		var da = Num.hMod(panel.ta - panel.a, 3.14);
+		panel.a += da * 0.2 * Timer.tmod;
+
+		panel._x = cullX + Math.cos(panel.a) * rayX + PANEL_OFFSET_X;
+		panel._y = cullY + Math.sin(panel.a) * rayY + PANEL_OFFSET_Y;
+
+		var prc = (cullW + cullH) * 0.5;
+		if (prc < 50) {
+			panel._xscale = prc * 2;
+			panel._yscale = prc * 2;
+		} else {
+			panel._xscale = 100;
+			panel._yscale = 100;
+		}
+	}
+
+	inline function isWorldPosVisibleByCull(wx:Float, wy:Float, extraMargin:Float):Bool {
+		if (cullW <= 0 || cullH <= 0) {
+			return true;
+		}
+
+		var radiusX = cullW * 0.5 + extraMargin;
+		var radiusY = cullH * 0.5 + extraMargin;
+		if (radiusX <= 0 || radiusY <= 0) {
+			return false;
+		}
+
+		var dx = wx - cullX;
+		var dy = wy - cullY;
+		var nx = dx / radiusX;
+		var ny = dy / radiusY;
+		return nx * nx + ny * ny <= 1;
+	}
+
+	inline function isCellVisibleByBlob(cx:Int, cy:Int, extraMargin:Float):Bool {
+		return isWorldPosVisibleByCull((cx + 0.5) * Cs.SIZE, (cy + 0.5) * Cs.SIZE, extraMargin);
+	}
+
+	function updateLogicalCulling():Void {
+		var margin = CULL_MARGIN * Cs.NEW_GEN_SCALE;
+		for (x in 0...Cs.GRID_MAX) {
+			for (y in 0...Cs.GRID_MAX) {
+				var mc = grid[x][y];
+				if (mc == null) {
+					continue;
+				}
+				var visible = isCellVisibleByBlob(x, y, margin);
+				if (mc._visible != visible) {
+					mc._visible = visible;
+				}
+			}
+		}
+
+		var partMargin = margin + Cs.SIZE;
+		for (p in fList) {
+			if (p != null && p.root != null) {
+				var visible = isWorldPosVisibleByCull(p.x, p.y, partMargin);
+				if (p.root._visible != visible) {
+					p.root._visible = visible;
+				}
+			}
+		}
+	}
+
+	function updateBgHole():Void {
+		if (bgHoleFilter == null) {
+			return;
+		}
+
+		var x = cullX;
+		var y = cullY;
+		var w = cullW;
+		var h = cullH;
+
+		if (Math.abs(x - bgHoleX) < 0.1 && Math.abs(y - bgHoleY) < 0.1 && Math.abs(w - bgHoleW) < 0.1 && Math.abs(h - bgHoleH) < 0.1) {
+			return;
+		}
+
+		bgHoleX = x;
+		bgHoleY = y;
+		bgHoleW = w;
+		bgHoleH = h;
+
+		var uniforms:Dynamic = Reflect.field(bgHoleFilter, "uniforms");
+		var centerPx:Array<Float> = cast Reflect.field(uniforms, "uCenterPx");
+		var radiiPx:Array<Float> = cast Reflect.field(uniforms, "uRadiiPx");
+		var resolution = getRendererResolution();
+		var framebufferH = getRendererFramebufferHeight();
+		centerPx[0] = x * resolution;
+		centerPx[1] = y * resolution;
+		radiiPx[0] = w * 0.5 * resolution;
+		radiiPx[1] = h * 0.5 * resolution;
+		Reflect.setField(uniforms, "uScreenH", framebufferH);
+	}
+
+	function initBgHoleShader():Void {
+		var resolution = getRendererResolution();
+		var framebufferH = getRendererFramebufferHeight();
+		var fragment = "precision mediump float;\n"
+			+ "varying vec2 vTextureCoord;\n"
+			+ "uniform sampler2D uSampler;\n"
+			+ "uniform vec2 uCenterPx;\n"
+			+ "uniform vec2 uRadiiPx;\n"
+			+ "uniform float uScreenH;\n"
+			+ "uniform float uSoftness;\n"
+			+ "void main(void){\n"
+			+ "  vec4 color = texture2D(uSampler, vTextureCoord);\n"
+			+ "  vec2 pos = vec2(gl_FragCoord.x, uScreenH - gl_FragCoord.y);\n"
+			+ "  vec2 rp = max(uRadiiPx, vec2(0.0001));\n"
+			+ "  vec2 p = (pos - uCenterPx) / rp;\n"
+			+ "  float d = length(p);\n"
+			+ "  float alphaMul = 1.0 - smoothstep(1.0 - uSoftness, 1.0, d);\n"
+			+ "  gl_FragColor = vec4(color.rgb * alphaMul, color.a * alphaMul);\n"
+			+ "}";
+
+		var uniforms:Dynamic = {
+			uCenterPx: [Cs.mcw * 0.5 * resolution, Cs.mch * 0.5 * resolution],
+			uRadiiPx: [Cs.mcw * 0.25 * resolution, Cs.mch * 0.25 * resolution],
+			uScreenH: framebufferH,
+			uSoftness: 0.1
+		};
+		var pixiFilter = Reflect.field(untyped PIXI, "Filter");
+		bgHoleFilter = Type.createInstance(pixiFilter, [null, fragment, uniforms]);
+		map.filters = [cast bgHoleFilter];
+		map.filterArea = new Rectangle(0, 0, Cs.mcw, Cs.mch);
+	}
+
+	function getRendererResolution():Float {
+		var renderer:Dynamic = Reflect.field(KadoKadeoManager.kkm, "renderer");
+		if (renderer != null) {
+			var res:Dynamic = Reflect.field(renderer, "resolution");
+			if (res != null) {
+				var r:Float = res;
+				if (r > 0)
+					return r;
+			}
+		}
+		return 1.0;
+	}
+
+	function getRendererFramebufferHeight():Float {
+		var renderer:Dynamic = Reflect.field(KadoKadeoManager.kkm, "renderer");
+		if (renderer != null) {
+			var h:Dynamic = Reflect.field(renderer, "height");
+			if (h != null) {
+				var fh:Float = h;
+				if (fh > 0)
+					return fh;
+			}
+		}
+		return Cs.mch * getRendererResolution();
 	}
 
 	public function getCenterEmptyMap():Array<Array<Bool>> {

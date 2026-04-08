@@ -640,9 +640,16 @@ class ASprite extends Sprite {
 	}
 
 	function showFrame() {
-		var scale = untyped this.scale.clone();
-		this.texture = textures[this._currentframe - 1];
-		this.scale.copyFrom(scale);
+		if (_totalframes <= 1)
+			return;
+		var next = textures[_currentframe - 1];
+		if (this.texture == next)
+			return;
+		var sx = this.scale.x;
+		var sy = this.scale.y;
+		this.texture = next;
+		if (this.scale.x != sx || this.scale.y != sy)
+			this.scale.set(sx, sy);
 
 		if (this.stopOnFrame.contains(this._currentframe)) {
 			stop();
