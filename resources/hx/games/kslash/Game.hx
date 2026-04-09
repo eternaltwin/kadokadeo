@@ -396,6 +396,7 @@ class Game implements kado.GameInterface {
 		}
 
 		monsterLevel += m.stLevel;
+		m.root.updateState();
 		return m;
 	}
 

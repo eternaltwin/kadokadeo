@@ -58,8 +58,8 @@ class Runner extends Monster {
 		switch (step) {
 			case Cs.ST_NORMAL:
 				var dvx = sens * speed - vx;
-				var lim = 0.5;
-				vx += Math.min(Math.max(-lim, dvx * 0.2), lim) * Timer.tmod;
+				var lim = 0.5 * Cs.NEW_GEN_SCALE;
+				vx += Math.min(Math.max(-lim, dvx * 0.2 * Cs.NEW_GEN_SCALE), lim) * Timer.tmod;
 			case Cs.ST_FLY:
 				if (flFlyUp && vy > 0) {
 					flFlyUp = false;

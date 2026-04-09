@@ -92,7 +92,7 @@ class Bonus {
 						p.x = root._x;
 						p.y = root._y;
 						var a = ((i + 0.5 * n) / max) * 6.28;
-						var speed = (3 + n * 2);
+						var speed = (3 + n * 2) * Cs.NEW_GEN_SCALE;
 						p.vx += Math.cos(a) * speed;
 						p.vy += Math.sin(a) * speed;
 						p.timer = 26 + Cs.rand() * 4 - n * 10;

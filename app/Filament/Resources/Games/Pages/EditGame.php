@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Games\Pages;
 
 use App\Filament\Resources\Games\GameResource;
+use App\Models\Game;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
@@ -40,6 +41,30 @@ class EditGame extends EditRecord
 
                         Notification::make()
                             ->title('Unable to reset scores.')
+                            ->body('Check logs for details and try again.')
+                            ->danger()
+                            ->send();
+                    }
+                }),
+            Action::make('resetReplays')
+                ->label('Reset replays')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Reset game replays')
+                ->modalDescription('This will delete all replays for this game. This action cannot be undone.')
+                ->action(function (): void {
+                    try {
+                        Game::where('id', $this->record->id)->update(['replay' => null]);
+
+                        Notification::make()
+                            ->title('Replays reset successfully.')
+                            ->success()
+                            ->send();
+                    } catch (Throwable $exception) {
+                        report($exception);
+
+                        Notification::make()
+                            ->title('Unable to reset replays.')
                             ->body('Check logs for details and try again.')
                             ->danger()
                             ->send();

@@ -211,6 +211,9 @@ class Ent {
 	public function setSens(n) {
 		sens = n;
 		root._xscale = n * 100;
+		if (root._prevState != null) {
+			root._prevState.xscale = n;
+		}
 	}
 
 	//

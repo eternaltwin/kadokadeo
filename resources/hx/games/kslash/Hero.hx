@@ -244,8 +244,8 @@ class Hero extends Ent {
 				vx = SPEED * sens;
 			} else if (flDoubleJump) {
 				var dvx = SPEED * sens - vx;
-				var lim = 0.25;
-				vx += Math.min(Math.max(-lim, dvx * 0.1), lim); // vx = SPEED*sens;
+				var lim = 0.25 * Cs.NEW_GEN_SCALE;
+				vx += Math.min(Math.max(-lim, dvx * 0.1 * Cs.NEW_GEN_SCALE), lim); // vx = SPEED*sens;
 			}
 			if (!flMoving) {
 				flMoving = true;

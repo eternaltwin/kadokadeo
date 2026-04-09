@@ -30,7 +30,6 @@ class Soldier extends Runner {
 				stTossShoot = 10;
 				stMaxShot = 3;
 				speed = 3 * Cs.NEW_GEN_SCALE;
-				flSpike = true;
 				stDrop.push({w: 50, id: 4});
 				stDrop.push({w: 30, id: 5});
 				stDrop.push({w: 20, id: 8});
@@ -100,7 +99,7 @@ class Soldier extends Runner {
 	public override function shoot() {
 		var d = getDist(Cs.game.hero);
 		var a = getAng(Cs.game.hero);
-		var speed = 3 * Cs.NEW_GEN_SCALE;
+		var speed = 6 * Cs.NEW_GEN_SCALE;
 		var max = stMaxShot;
 		for (i in 0...max) {
 			var da = (i / (max - 1) - 0.5) * 0.4;

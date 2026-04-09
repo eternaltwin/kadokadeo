@@ -153,7 +153,7 @@ class Monster extends Ent {
 
 	public function throwMonster(a, p) {
 		var vitx = Math.cos(a) * p;
-		var vity = Math.sin(a) * p - 3;
+		var vity = Math.sin(a) * p - 3 * Cs.NEW_GEN_SCALE;
 		if (flGround) {
 			vity = Math.min(0, vity);
 			if (vity < 0)
