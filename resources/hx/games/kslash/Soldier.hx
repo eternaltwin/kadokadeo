@@ -88,7 +88,7 @@ class Soldier extends Runner {
 			} else {
 				if (stTossShoot != null && Cs.random(stTossShoot) == 0) {
 					var d = getDist(Cs.game.hero);
-					if (d < 180) {
+					if (d < 180 * Cs.NEW_GEN_SCALE) {
 						initStep(Cs.ST_SHOOT);
 					}
 				}
