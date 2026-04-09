@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 
 class Game extends Model
 {
+    public const GAMES_MANIFEST_CACHE_KEY = 'gamesdata_manifest';
+
     protected $fillable = ['name', 'description', 'category_id', 'image_path', 'stars', 'is_active', 'is_official'];
 
     protected $casts = [
@@ -18,18 +20,72 @@ class Game extends Model
 
     public function getGamedataAttribute()
     {
-        $fileName = $this->game_key . '.js';
-        $filePath = public_path('gamesdata/' . $fileName);
-        if (!file_exists($filePath)) {
+        $fileName = $this->game_key.'.js';
+        $file = '/gamesdata/'.$fileName;
+        $filePath = public_path(ltrim($file, '/'));
+        if (! file_exists($filePath)) {
             return null;
         }
 
-        return Cache::remember(sprintf('gamedata_%s', $this->id), now()->addDay(), function () use ($fileName, $filePath) {
-            return [
-                'file' => '/gamesdata/' . $fileName,
-                'size' => filesize($filePath),
-            ];
-        });
+        $manifest = self::getGamesManifest();
+        $manifestEntry = $manifest[$fileName] ?? null;
+        $hash = is_array($manifestEntry) ? ($manifestEntry['hash'] ?? null) : null;
+        $size = is_array($manifestEntry) ? ($manifestEntry['size'] ?? null) : null;
+
+        if (! is_int($size)) {
+            $size = filesize($filePath);
+        }
+
+        $url = $file;
+        if (is_string($hash) && $hash !== '') {
+            $url .= '?v='.$hash;
+        }
+
+        return [
+            'file' => $file,
+            'size' => $size,
+            'hash' => $hash,
+            'url' => $url,
+        ];
+    }
+
+    private static function getGamesManifest(): array
+    {
+        $manifestPath = public_path('gamesdata/manifest.json');
+        if (! file_exists($manifestPath)) {
+            return [];
+        }
+
+        $manifestMtime = filemtime($manifestPath);
+        if ($manifestMtime === false) {
+            return [];
+        }
+
+        $cachedManifest = Cache::get(self::GAMES_MANIFEST_CACHE_KEY);
+        if (
+            is_array($cachedManifest)
+            && ($cachedManifest['mtime'] ?? null) === $manifestMtime
+            && is_array($cachedManifest['data'] ?? null)
+        ) {
+            return $cachedManifest['data'];
+        }
+
+        $manifestContent = file_get_contents($manifestPath);
+        if (! is_string($manifestContent)) {
+            return [];
+        }
+
+        $decodedManifest = json_decode($manifestContent, true);
+        if (! is_array($decodedManifest)) {
+            return [];
+        }
+
+        Cache::put(self::GAMES_MANIFEST_CACHE_KEY, [
+            'mtime' => $manifestMtime,
+            'data' => $decodedManifest,
+        ], now()->addMinutes(15));
+
+        return $decodedManifest;
     }
 
     public function getPascalNameAttribute(): string

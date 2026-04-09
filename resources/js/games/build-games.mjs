@@ -1,4 +1,5 @@
-import { mkdir, readdir, unlink } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
+import { mkdir, readdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 
 import { build } from 'esbuild'
@@ -16,6 +17,8 @@ const games = (await readdir(sourceDir))
 
 await mkdir(outputDir, { recursive: true })
 
+const manifest = {}
+
 for (const game of games) {
   await build({
     entryPoints: [game.entry],
@@ -27,10 +30,22 @@ for (const game of games) {
     sourcemap: true,
     logLevel: 'info',
   })
+
+  const outputBuffer = await readFile(game.output)
+  const hash = createHash('sha1').update(outputBuffer).digest('hex').slice(0, 12)
+
+  manifest[basename(game.output)] = {
+    hash,
+    size: outputBuffer.byteLength,
+  }
 }
 
+await writeFile(join(outputDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+
 // delete all tmp*.js
-const tmpFiles = (await readdir(sourceDir)).filter((fileName) => fileName.startsWith('tmp') && fileName.endsWith('.js'))
+const tmpFiles = (await readdir(sourceDir)).filter(
+  (fileName) => fileName.startsWith('tmp') && fileName.endsWith('.js'),
+)
 for (const tmpFile of tmpFiles) {
   await unlink(join(sourceDir, tmpFile))
 }

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Games\Pages;
 
 use App\Filament\Resources\Games\GameResource;
+use App\Models\Game;
 use App\Models\Run;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -10,7 +11,6 @@ use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
 use Throwable;
 
 class EditGame extends EditRecord
@@ -46,46 +46,25 @@ class EditGame extends EditRecord
                             ->send();
                     }
                 }),
-            Action::make('resetReplays')
-                ->label('Reset replays')
+            Action::make('deleteReplays')
+                ->label('Delete replays')
                 ->color('danger')
                 ->requiresConfirmation()
-                ->modalHeading('Reset game replays')
+                ->modalHeading('Delete game replays')
                 ->modalDescription('This will delete all replays for this game. This action cannot be undone.')
                 ->action(function (): void {
                     try {
                         Run::where('game_id', $this->record->id)->update(['replay' => null]);
 
                         Notification::make()
-                            ->title('Replays reset successfully.')
+                            ->title('Replays deleted successfully.')
                             ->success()
                             ->send();
                     } catch (Throwable $exception) {
                         report($exception);
 
                         Notification::make()
-                            ->title('Unable to reset replays.')
-                            ->body('Check logs for details and try again.')
-                            ->danger()
-                            ->send();
-                    }
-                }),
-            Action::make('clearCache')
-                ->label('Clear gamedata cache')
-                ->color('warning')
-                ->action(function (): void {
-                    try {
-                        Cache::forget(sprintf('gamedata_%s', $this->record->id));
-
-                        Notification::make()
-                            ->title('Gamedata cache cleared successfully.')
-                            ->success()
-                            ->send();
-                    } catch (Throwable $exception) {
-                        report($exception);
-
-                        Notification::make()
-                            ->title('Unable to clear gamedata cache.')
+                            ->title('Unable to delete replays.')
                             ->body('Check logs for details and try again.')
                             ->danger()
                             ->send();

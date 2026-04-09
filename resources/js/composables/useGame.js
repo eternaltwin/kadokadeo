@@ -74,7 +74,7 @@ export function useGame(game) {
 
     const currentGame = toValue(game)
     const config = {
-      src: currentGame?.gamedata?.file,
+      src: currentGame?.gamedata?.url ?? currentGame?.gamedata?.file,
       global: currentGame?.pascal_name,
     }
 
