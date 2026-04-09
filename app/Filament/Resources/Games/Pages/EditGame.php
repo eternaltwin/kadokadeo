@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Games\Pages;
 
 use App\Filament\Resources\Games\GameResource;
-use App\Models\Game;
+use App\Models\Run;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
@@ -54,7 +54,7 @@ class EditGame extends EditRecord
                 ->modalDescription('This will delete all replays for this game. This action cannot be undone.')
                 ->action(function (): void {
                     try {
-                        Game::where('id', $this->record->id)->update(['replay' => null]);
+                        Run::where('game_id', $this->record->id)->update(['replay' => null]);
 
                         Notification::make()
                             ->title('Replays reset successfully.')
