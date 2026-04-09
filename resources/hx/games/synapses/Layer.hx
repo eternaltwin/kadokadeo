@@ -1,7 +1,6 @@
 package synapses;
 
 import mt.bumdum.Lib;
-import pixi.filters.extras.GlowFilter;
 import pixi.core.math.Matrix;
 
 class Layer {
@@ -16,7 +15,6 @@ class Layer {
 	public var dy:Float;
 
 	public var bmp:RenderTexture;
-	public var glow:GlowFilter;
 
 	public var cels:Array<ASprite>;
 
@@ -33,15 +31,7 @@ class Layer {
 		trg.attachBitmap(bmp, 1);
 		trg._xscale = trg._yscale = 100 / RT_SCALE;
 
-		Filt.glow(root, 10 * Cs.NEW_GEN_SCALE, 1, 0xFFFFFF);
-		glow = cast root.filters[0];
-		// glow = new flash.filters.GlowFilter();
-		// glow.blurX = 10;
-		// glow.blurY = 10;
-		// glow.strength = 1;
-		// glow.color = 0xFFFFFF;
-		// root.filters = [glow];
-		// root.blendMode = "overlay";
+		// Filt.glow(root, 10 * Cs.NEW_GEN_SCALE, 1, 0xFFFFFF);
 	}
 
 	public function draw(mc:ASprite) {
@@ -58,7 +48,7 @@ class Layer {
 		dx = x;
 		dy = y;
 		root.filters = [];
-		trg.filters = [glow];
+		trg.filters = [];
 		Game.me.tunnel.unshift(this);
 
 		cels = [];
@@ -66,21 +56,21 @@ class Layer {
 		//
 		for (i in 0...8) {
 			var mc = dm.attach("mcCell", 0);
-			mc._xscale = mc._yscale = 50 + Math.random() * 75;
-			mc._rotation = Math.random() * 360;
-			mc.gotoAndStop(Std.random(mc._totalframes) + 1);
+			mc._xscale = mc._yscale = 50 + Cs.rand() * 75;
+			mc._rotation = Cs.rand() * 360;
+			mc.gotoAndStop(Cs.random(mc._totalframes) + 1);
 			// imc.gotoAndStop(1);
 
-			var sx = Math.random() * 2 - 1;
-			var sy = Math.random() * 2 - 1;
+			var sx = Cs.rand() * 2 - 1;
+			var sy = Cs.rand() * 2 - 1;
 
-			if (Std.random(2) == 0)
-				sx = Std.random(2) * 2 - 1;
+			if (Cs.random(2) == 0)
+				sx = Cs.random(2) * 2 - 1;
 			else
-				sy = Std.random(2) * 2 - 1;
+				sy = Cs.random(2) * 2 - 1;
 
-			var rx = Cs.mcw * 0.5 + mc._width * 0.5 + Math.random() * (200 * Cs.NEW_GEN_SCALE);
-			var ry = Cs.mch * 0.5 + mc._height * 0.5 + Math.random() * (200 * Cs.NEW_GEN_SCALE);
+			var rx = Cs.mcw * 0.5 + mc._width * 0.5 + Cs.rand() * (200 * Cs.NEW_GEN_SCALE);
+			var ry = Cs.mch * 0.5 + mc._height * 0.5 + Cs.rand() * (200 * Cs.NEW_GEN_SCALE);
 
 			mc._x = Cs.mcw * 0.5 + rx * sx;
 			mc._y = Cs.mch * 0.5 + ry * sy;

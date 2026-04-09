@@ -44,7 +44,7 @@ class Element extends Phys {
 		root.stop();
 		// root.smc.gotoAndPlay(Std.random(2) + 1);
 
-		vr = (Math.random() * 2 - 1) * 20;
+		vr = (Cs.rand() * 2 - 1) * 20;
 	}
 
 	override function update() {

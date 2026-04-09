@@ -299,6 +299,7 @@ class Game implements kado.GameInterface {
 		if (shouldRecord) {
 			KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_CLICK, x: playerTargetX, y: playerTargetY});
 		}
+
 		initResolve();
 	}
 
@@ -407,8 +408,8 @@ class Game implements kado.GameInterface {
 			sx = bdx;
 			sy = bdy;
 
-			ex = (Math.random() * 2 - 1) * margin;
-			ey = (Math.random() * 2 - 1) * margin;
+			ex = (Cs.rand() * 2 - 1) * margin;
+			ey = (Cs.rand() * 2 - 1) * margin;
 		}
 	}
 
@@ -453,12 +454,12 @@ class Game implements kado.GameInterface {
 			strokeThickness: 5,
 		});
 		field.text = Std.string(n);
-		p.weight = -(0.1 + Math.random() * 0.1) * Cs.NEW_GEN_SCALE;
+		p.weight = -(0.1 + Cs.rand() * 0.1) * Cs.NEW_GEN_SCALE;
 		// p.vy = 2;
 		p.timer = 20;
 		p.fadeLimit = 5;
 		p.fadeType = 0;
-		p.sleep = Math.random() * 2;
+		p.sleep = Cs.rand() * 2;
 		p.root.stop();
 		p.updatePos();
 	}

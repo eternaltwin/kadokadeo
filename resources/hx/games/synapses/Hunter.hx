@@ -173,7 +173,7 @@ class Hunter extends Sprite {
 		if (first.size == 0 && flExplode) {
 			var max = 36;
 			for (i in 0...max) {
-				var sp = 3 + Math.random() * 8;
+				var sp = 3 + Cs.rand() * 8;
 				var a = i / max * 6.28;
 				var cr = 4;
 				var p = new mt.bumdum.Phys(Game.me.dm.attach("partPix", Game.DP_FX));
@@ -182,7 +182,7 @@ class Hunter extends Sprite {
 				p.x = x + p.vx * cr;
 				p.y = y + p.vy * cr;
 				p.updatePos();
-				p.timer = 10 + Math.random() * 10;
+				p.timer = 10 + Cs.rand() * 10;
 				p.frict = 0.85;
 			}
 			kill();
