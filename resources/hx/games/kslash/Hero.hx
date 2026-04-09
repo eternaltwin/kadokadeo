@@ -52,7 +52,7 @@ class Hero extends Ent {
 	public function new(mc) {
 		super(mc);
 		// mc.getGraphics().beginFill(0x0000FF, 0.5).drawRect(-Cs.SIZE / 2, -Cs.SIZE / 2, Cs.SIZE, Cs.SIZE);
-		mc.stopOnFrame = [70, 75, 91, 104, 128];
+		mc.stopOnFrame = [70, 91, 104, 128];
 		mc.onFrame.set(26, () -> mc.gotoAndPlay(1));
 		mc.onFrame.set(36, () -> mc.gotoAndPlay(33));
 		mc.onFrame.set(103, () -> mc.gotoAndPlay(1));
@@ -78,7 +78,7 @@ class Hero extends Ent {
 		rootSprite.bfx2 = rootSprite.attachMovie("heroBfx2", "bfx2");
 		x = Std.int(Game.XMAX * 0.5);
 		y = 1;
-		weight = 0.7 * Cs.NEW_GEN_SCALE;
+		weight = 0.7 * Cs.NEW_GEN_SCALE + 0.2;
 		flMoving = false;
 		cooldown = 0;
 		star = 0;
