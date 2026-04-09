@@ -6,6 +6,7 @@ import pixi.core.math.Matrix;
 
 class Layer {
 	public static var DEEP = 6;
+	public static inline var RT_SCALE:Float = 0.5;
 
 	public var root:ASprite;
 	public var trg:ASprite;
@@ -23,11 +24,14 @@ class Layer {
 		root = Game.me.dm.empty(Game.DP_BRANCH);
 		dm = new mt.DepthManager(root);
 
-		bmp = RenderTexture.create(Cs.mcw, Cs.mch);
+		var rtWidth = Std.int(Math.ceil(Cs.mcw * RT_SCALE));
+		var rtHeight = Std.int(Math.ceil(Cs.mch * RT_SCALE));
+		bmp = RenderTexture.create(rtWidth, rtHeight);
 		// bmp = new flash.display.BitmapData(Cs.mcw, Cs.mch, true, 0);
 
 		trg = dm.empty(10);
 		trg.attachBitmap(bmp, 1);
+		trg._xscale = trg._yscale = 100 / RT_SCALE;
 
 		Filt.glow(root, 10 * Cs.NEW_GEN_SCALE, 1, 0xFFFFFF);
 		glow = cast root.filters[0];
@@ -42,6 +46,7 @@ class Layer {
 
 	public function draw(mc:ASprite) {
 		var m = new Matrix();
+		m.scale(RT_SCALE, RT_SCALE);
 		// m.scale(mc._xscale * 0.01, mc._yscale * 0.01);
 		// m.rotate(mc._rotation * 0.0174);
 		// m.translate(mc._x, mc._y);

@@ -449,8 +449,9 @@ class Game implements kado.GameInterface {
 			align: "center",
 			font: "Impact",
 			size: 36,
+			stroke: "#FFFFFF",
+			strokeThickness: 5,
 		});
-		Filt.glow(field, 4 * Cs.NEW_GEN_SCALE, 6, 0xFFFFFF);
 		field.text = Std.string(n);
 		p.weight = -(0.1 + Math.random() * 0.1) * Cs.NEW_GEN_SCALE;
 		// p.vy = 2;
@@ -512,7 +513,7 @@ class Game implements kado.GameInterface {
 
 		mc.blendMode = pixi.core.Pixi.BlendModes.ADD;
 
-		Filt.blur(mc, 2 * Cs.NEW_GEN_SCALE, 2 * Cs.NEW_GEN_SCALE);
+		// Filt.blur(mc, 2 * Cs.NEW_GEN_SCALE, 2 * Cs.NEW_GEN_SCALE);
 		// mc._alpha = 25;
 	}
 
