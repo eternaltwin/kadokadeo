@@ -248,6 +248,11 @@ class Game implements kado.GameInterface {
 		// mt.Timer.tmod *= 0.5;
 		// SPRITE
 		Sprite.updateAll();
+		// if (ppList != null) {
+		// 	for (mc in ppList) {
+		// 		mc.update();
+		// 	}
+		// }
 
 		prec?.update();
 
@@ -344,7 +349,6 @@ class Game implements kado.GameInterface {
 		if (ppList != null) {
 			if (random(5) == 0) {
 				var mc:Ppath = cast dm.attach("mcPoint", DP_GROUND);
-				mc.anchor.set(0.5, 0.5);
 				mc.n = nList.length - 1;
 				mc.c = 0;
 				mc.speed = 0.1 + rand() * 0.2;
@@ -353,13 +357,21 @@ class Game implements kado.GameInterface {
 				mc._xscale = mc._yscale = 50 + rand() * 50;
 				mc.blendMode = BlendModes.ADD;
 				ppList.push(mc);
+				mc.loop = true;
+				mc.play();
 			}
 
-			var i = 0;
-			while (i > ppList.length) {
+			var i = ppList.length - 1;
+			while (i >= 0) {
 				var mc = ppList[i];
 				var p0 = nList[mc.n];
 				var p1 = nList[mc.n - 1];
+
+				if (p1 == null) {
+					mc.removeMovieClip();
+					ppList.splice(i--, 1);
+					continue;
+				}
 
 				if (mc.cs == null)
 					mc.cs = 1 / mt.bumdum.Geom.getDist(cast p0, cast p1);
@@ -373,6 +385,12 @@ class Game implements kado.GameInterface {
 					p1 = nList[mc.n - 1];
 				}
 
+				if (p1 == null) {
+					mc.removeMovieClip();
+					ppList.splice(i--, 1);
+					continue;
+				}
+
 				var px = p0.x * (1 - mc.c) + p1.x * mc.c;
 				var py = p0.y * (1 - mc.c) + p1.y * mc.c;
 				mc._x = (px + 0.5) * SIZE + mc.dx;
@@ -383,8 +401,9 @@ class Game implements kado.GameInterface {
 				if (mc.n == 0) {
 					mc.removeMovieClip();
 					ppList.splice(i--, 1);
+					continue;
 				}
-				i++;
+				i--;
 			}
 		}
 	}
@@ -880,7 +899,9 @@ class Game implements kado.GameInterface {
 			var timerMod = (mt.Timer.wantedFPS * mt.Timer.deltaT);
 			var n = Math.min(levelTimer, 34 * timerMod);
 			levelTimer -= n;
-			KadoKadeoManager.kkm.addScore(Std.int(n) * SCORE_TIME);
+			if (n > 0) {
+				KadoKadeoManager.kkm.addScore(Std.int(n) * SCORE_TIME);
+			}
 			updateTimerGfx();
 
 			// PARTS
@@ -1521,7 +1542,6 @@ class Game implements kado.GameInterface {
 			p._xscale = p._yscale = 20;
 			p._rotation = rand() * 360;
 			p.gotoAndPlay(random(6) + 1);
-			p.updateState();
 		}
 	}
 

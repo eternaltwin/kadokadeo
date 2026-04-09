@@ -1861,7 +1861,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":11,"y":11,"w":28,"h":28},
 	"sourceSize": {"w":51,"h":51},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0.5,"y":0.5}
 },
 "mcPoint/1.png":
 {
@@ -1870,7 +1870,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":7,"y":7,"w":36,"h":36},
 	"sourceSize": {"w":51,"h":51},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0.5,"y":0.5}
 },
 "mcPush.png":
 {
@@ -2321,6 +2321,6 @@
 	"format": "RGBA8888",
 	"size": {"w":971,"h":1599},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:fbb61ec596c3edfd0ad621b2c9260824:0a1ccee77aac7255c2cc198aa463e19c:f2ec01943c3e7dd7c664e43057a44b9f$"
+	"smartupdate": "$TexturePacker:SmartUpdate:3e7aa6354886aa1f1f9ebc480343cc89:0a1ccee77aac7255c2cc198aa463e19c:f2ec01943c3e7dd7c664e43057a44b9f$"
 }
 }
