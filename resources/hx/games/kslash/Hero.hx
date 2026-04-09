@@ -335,8 +335,8 @@ class Hero extends Ent {
 		super.land();
 
 		initStep(Cs.ST_NORMAL);
-		if (nextAnim == null)
-			nextAnim = "land";
+		// if (nextAnim == null)
+		nextAnim = "land";
 		flDoubleJump = true;
 
 		for (i in 0...3) {
@@ -476,6 +476,7 @@ class Hero extends Ent {
 		fall();
 		smoke();
 		rootSprite.kunai._visible = false;
+		root._rotation = 0;
 	}
 
 	public function smoke() {

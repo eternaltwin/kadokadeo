@@ -14,6 +14,7 @@ class Runner extends Monster {
 		mc.removeOnFrame = 118;
 		mc.onFrame.set(17, () -> mc.gotoAndPlay(5));
 		mc.onFrame.set(140, () -> mc.gotoAndPlay(5));
+		mc.onFrame.set(132, () -> mc.gotoAndPlay(127));
 		animFrame.set("walk", 1);
 		animFrame.set("walk_loop", 5);
 		animFrame.set("climb", 20);
