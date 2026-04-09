@@ -263,7 +263,7 @@ class Slot extends Phys {
 
 	// ### PARTS
 	function launchParts() {
-		var nb = 4 + KadoKadeoManager.kkm.seed.random(4);
+		var nb = 4 + Cs.random(4);
 		var px = x;
 		var py = y;
 
@@ -275,11 +275,11 @@ class Slot extends Phys {
 			if (s == null)
 				break;
 
-			var dx = (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 18;
-			var dy = (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 18;
+			var dx = (Cs.rand() * 2 - 1) * 18;
+			var dy = (Cs.rand() * 2 - 1) * 18;
 
 			s.activate();
-			s.root.gotoAndStop(KadoKadeoManager.kkm.seed.random(4) + 1);
+			s.root.gotoAndStop(Cs.random(4) + 1);
 			s.x = px + dx;
 			s.y = py + dy;
 			// s.weight = 0.1 ;
@@ -287,9 +287,9 @@ class Slot extends Phys {
 			s.frict = 0.90;
 			s.vx = dx;
 			s.vy = dy;
-			s.vr = (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 20;
+			s.vr = (Cs.rand() * 2 - 1) * 20;
 			s.fadeType = 3;
-			s.timer = 15 + KadoKadeoManager.kkm.seed.random(6);
+			s.timer = 15 + Cs.random(6);
 		}
 	}
 
@@ -334,6 +334,7 @@ private class PooledPart extends Phys {
 		root._xscale = 170;
 		root._yscale = 170;
 		Slot.onPartActivated();
+		root.updateState();
 	}
 
 	public function deactivate() {

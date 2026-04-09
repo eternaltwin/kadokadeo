@@ -2,7 +2,6 @@ package chocomouche;
 
 import haxe.io.UInt16Array;
 import pixi.core.renderers.webgl.filters.Filter;
-import common_haxe_avm1.pixi.DropShadowFilter;
 import pixi.core.text.Text;
 import common_haxe_avm1.KKApi;
 import mt.bumdum.Sprite;
@@ -11,8 +10,8 @@ import mt.bumdum.Lib;
 
 class AnonSprite15518839 extends ASprite {
 	public var _timeLeft:ASprite;
-	public var start:Float;
-	public var max:Float;
+	public var current:Int;
+	public var max:Int;
 }
 
 class AnonSprite3854477 extends ASprite {
@@ -232,8 +231,8 @@ class Game implements kado.GameInterface {
 		var b = Cs.getLevelBombs(level);
 		left = Cs.GRID_WIDTH * Cs.GRID_HEIGHT - b;
 		while (b > 0) {
-			var x = KadoKadeoManager.kkm.seed.random(Cs.GRID_WIDTH);
-			var y = KadoKadeoManager.kkm.seed.random(Cs.GRID_HEIGHT);
+			var x = Cs.random(Cs.GRID_WIDTH);
+			var y = Cs.random(Cs.GRID_HEIGHT);
 			if (from != null && from.x == x && from.y == y)
 				continue;
 			var s = grid[x][y];
@@ -333,9 +332,9 @@ class Game implements kado.GameInterface {
 
 	// POINTS
 
-	public function getPoints(start:Float, end:Float, max:Float) {
+	public function getPoints(start:Int, end:Int, max:Int) {
 		var c = (max - (end - start)) / max;
-		var p = c * (Cs.POINTS + Cs.MULT_LEVEL * (Cs.INITIAL_TIME - max) / 1000);
+		var p = c * (Cs.POINTS + Cs.MULT_LEVEL * (Cs.INITIAL_TIME - max) / 32);
 
 		addScore(KKApi.const(Std.int(p)));
 	}
@@ -363,10 +362,10 @@ class Game implements kado.GameInterface {
 	public function resetTime(?bomb:Bool) {
 		var now = Date.now().getTime();
 		if (bomb != null && !bomb)
-			getPoints(mcTime.start, now, mcTime.max);
+			getPoints(0, mcTime.current, mcTime.max);
 
 		mcTime.update();
-		mcTime.start = now;
+		mcTime.current = 0;
 		mcTime.max = Cs.getLevelTime(level);
 
 		setWarning(false);
@@ -375,9 +374,9 @@ class Game implements kado.GameInterface {
 
 	function updateTime() { // update TimeLine && check lifeloss
 		mcTime.update();
-		var now = Date.now().getTime();
+		mcTime.current += 1;
 
-		var c = mcTime.max - (now - mcTime.start);
+		var c = mcTime.max - mcTime.current;
 		if (c > 0) {
 			mcTime._timeLeft._xscale = c / mcTime.max * 100;
 			if (mcTime._timeLeft._xscale < 40)
