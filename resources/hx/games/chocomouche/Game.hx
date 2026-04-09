@@ -270,19 +270,19 @@ class Game implements kado.GameInterface {
 
 	public function setGridGlow() {
 		mcGrid.filters = [];
-		Filt.glow(mcGrid, 1, 20, 0x232323);
+		// Filt.glow(mcGrid, 1, 20, 0x232323);
 
-		var dcf = new DropShadowFilter({
-			color: 0x000000,
-			alpha: 0.15,
-			blur: 2,
-			distance: 2.5,
-			rotation: 45,
-			pixelSize: 3,
-			quality: 100,
-		});
+		// var dcf = new DropShadowFilter({
+		// 	color: 0x000000,
+		// 	alpha: 0.15,
+		// 	blur: 2,
+		// 	distance: 2.5,
+		// 	rotation: 45,
+		// 	pixelSize: 3,
+		// 	quality: 100,
+		// });
 
-		mcGrid.filters.push(dcf);
+		// mcGrid.filters.push(dcf);
 	}
 
 	// ### LIFE
