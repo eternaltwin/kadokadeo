@@ -355,7 +355,7 @@ class Game implements kado.GameInterface {
 				mc.dx = randomSign() * SIZE * 0.5;
 				mc.dy = randomSign() * SIZE * 0.5;
 				mc._xscale = mc._yscale = 50 + rand() * 50;
-				mc.blendMode = BlendModes.ADD;
+				// mc.blendMode = BlendModes.ADD;
 				ppList.push(mc);
 				mc.loop = true;
 				mc.play();
@@ -487,8 +487,8 @@ class Game implements kado.GameInterface {
 		x = last.x;
 		y = last.y;
 
-		Filt.glow(ball.root, 2 * NEW_GEN_SCALE, 2, 0xFFFFFF);
-		Filt.glow(ball.root, 20 * NEW_GEN_SCALE, 1, 0xFFFF00);
+		// Filt.glow(ball.root, 2 * NEW_GEN_SCALE, 2, 0xFFFFFF);
+		// Filt.glow(ball.root, 20 * NEW_GEN_SCALE, 1, 0xFFFF00);
 
 		ball.x = (x + 0.5) * SIZE;
 		ball.y = (y + 0.5) * SIZE;
