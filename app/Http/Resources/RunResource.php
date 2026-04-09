@@ -25,7 +25,7 @@ class RunResource extends JsonResource
             'play_time_seconds' => $this->play_time_seconds,
             'period_id' => $this->period_id,
             'replay' => $this->replay,
-            'has_replay' => $this->replay !== null,
+            'has_replay' => $this->has_replay,
         ];
     }
 }
