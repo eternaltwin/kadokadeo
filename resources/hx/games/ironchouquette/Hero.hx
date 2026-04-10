@@ -45,6 +45,32 @@ class Hero extends Phys {
 	public static var RAY = 8;
 	public static var INVINCIBLE_RAY = 32;
 
+	var reactorPosOnFrame:Array<Array<{x:Float, y:Float}>> = [
+		[{x: 34, y: 82}, {x: 51, y: 82}],
+		[{x: 33, y: 82}, {x: 52, y: 82}],
+		[{x: 32, y: 82}, {x: 53, y: 82}],
+		[{x: 30, y: 82}, {x: 54, y: 82}],
+		[{x: 28, y: 82}, {x: 56, y: 82}],
+		[{x: 26, y: 82}, {x: 58, y: 82}],
+		[{x: 24, y: 82}, {x: 60, y: 82}],
+		[{x: 22, y: 82}, {x: 62, y: 82}],
+		[{x: 20, y: 82}, {x: 64, y: 82}],
+		[{x: 17, y: 82}, {x: 66, y: 82}],
+		[{x: 20, y: 82}, {x: 64, y: 82}],
+		[{x: 22, y: 82}, {x: 62, y: 82}],
+		[{x: 24, y: 82}, {x: 60, y: 82}],
+		[{x: 26, y: 82}, {x: 58, y: 82}],
+		[{x: 28, y: 82}, {x: 56, y: 82}],
+		[{x: 30, y: 82}, {x: 54, y: 82}],
+		[{x: 32, y: 82}, {x: 53, y: 82}],
+		[{x: 33, y: 82}, {x: 52, y: 82}],
+		[{x: 34, y: 82}, {x: 51, y: 82}],
+		[{x: 35, y: 82}, {x: 50, y: 82}],
+	];
+
+	var flame1:ASprite;
+	var flame2:ASprite;
+
 	public var flControl:Bool;
 
 	public var slotMax:Int;
@@ -83,6 +109,14 @@ class Hero extends Phys {
 
 	public function new(mc) {
 		super(mc);
+		flame1 = mc.attachMovie("mcFlame", "flame1", -1);
+		flame2 = mc.attachMovie("mcFlame", "flame2", -1);
+		flame1.loop = true;
+		flame1.play();
+		flame2.loop = true;
+		flame2.play();
+		updateFlamePos();
+
 		ray = RAY;
 		speed = 3.6;
 		frict = 0.6;
@@ -107,14 +141,24 @@ class Hero extends Phys {
 
 		dm = new DepthManager(root);
 		flControl = false;
-		root.gotoAndStop("10");
+		root.gotoAndStop(10);
 
 		x = Cs.mcw * 0.5 - 5;
 		y = Cs.mch + ray;
 	}
 
+	public function updateFlamePos() {
+		var frame = this.root._currentframe - 1;
+		var poses = reactorPosOnFrame[frame];
+		flame1._x = poses[0].x - root._width * 0.5;
+		flame1._y = poses[0].y;
+		flame2._x = poses[1].x - root._width * 0.5;
+		flame2._y = poses[1].y;
+	}
+
 	public override function update() {
 		super.update();
+		updateFlamePos();
 
 		if (flControl) {
 			control();
@@ -234,7 +278,7 @@ class Hero extends Phys {
 				mc._xscale = (120 + boost * 40) * 1.7;
 				//
 				mc._yscale = mc._xscale;
-				mc.gotoAndStop(Std.string(boost));
+				mc.gotoAndStop(boost);
 				// mc.blendMode = BlendModes.ADD
 				Cs.game.plasmaDraw(mc, 0);
 
@@ -270,7 +314,7 @@ class Hero extends Phys {
 
 		// GFX
 		var frame = 1 + Std.int(Num.mm(0, 10 + rollX, 20));
-		root.gotoAndStop(Std.string(frame));
+		root.gotoAndStop(frame);
 
 		// COL
 		checkBounds();

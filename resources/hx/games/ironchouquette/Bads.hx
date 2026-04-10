@@ -650,7 +650,7 @@ class Bads extends Phys {
 
 	// GFX
 	public function setSkin(n) {
-		root.gotoAndStop(Std.string(n));
+		root.gotoAndStop(n);
 	}
 
 	public function setSubSkin(fr) {
