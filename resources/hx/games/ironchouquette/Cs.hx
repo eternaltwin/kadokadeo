@@ -5,8 +5,9 @@ import pixi.core.textures.RenderTexture;
 import pixi.core.math.Matrix;
 
 class Cs {
-	public static var mcw = 300;
-	public static var mch = 300;
+	public static var NEW_GEN_SCALE = 3;
+	public static var mcw = 300 * Cs.NEW_GEN_SCALE;
+	public static var mch = 300 * Cs.NEW_GEN_SCALE;
 
 	// GAMEPLAY
 	public static var CDIF = 0.7; // 0.7;

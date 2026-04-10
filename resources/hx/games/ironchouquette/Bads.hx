@@ -226,7 +226,7 @@ class Bads extends Phys {
 
 		// SPEED COLOR
 		if (Cs.game.hero.weapons[Hero.WP_SPEED][0] > 0) {
-			var col = Cs.game.plasma.layer[0].bmp.getPixel32(Std.int(root._x * Cs.game.pq), Std.int((root._y + Game.PLASMA_CACHE) * Cs.game.pq));
+			var col = Cs.game.plasma.layer[0].bmp.extract().getPixel(Std.int(root._x * Cs.game.pq), Std.int((root._y + Game.PLASMA_CACHE) * Cs.game.pq));
 			var o = Cs.colToObj32(col);
 			var lim = 50;
 			var score = o.r * 1.2;
@@ -639,6 +639,8 @@ class Bads extends Phys {
 	}
 
 	public function updateParts() {
+		if (partList == null)
+			return;
 		for (i in 0...partList.length) {
 			var o = partList[i];
 			o.b.x = x + o.dx;

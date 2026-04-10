@@ -257,7 +257,7 @@ class Hero extends Phys {
 				p.x = x + (Math.random() * 2 - 1) * r;
 				p.y = y + (Math.random() * 2 - 1) * r;
 				p.setScale(10 + Math.random() * (15 + boost * 5));
-				p.root.gotoAndPlay(Std.string(Std.random(p.root._totalframes) + 1));
+				p.root.gotoAndPlay(Std.random(p.root._totalframes) + 1);
 				// TODO: uncomment
 				// downcast(p.root).compt = 100;
 				p.vy = Game.SCROLL_SPEED;
@@ -290,9 +290,9 @@ class Hero extends Phys {
 
 	public function addBox() {
 		var mc = Cs.game.dm.attach("mcSlot", Game.DP_INTER);
-		var m = 8;
+		var m = 8 * Cs.NEW_GEN_SCALE;
 		mc._x = m;
-		mc._y = Cs.mch - (m + boxes.length * (m + 6));
+		mc._y = Cs.mch - 36 - (m + boxes.length * (m + 6 * Cs.NEW_GEN_SCALE));
 		mc.stop();
 		boxes.push(mc);
 	}
@@ -302,7 +302,7 @@ class Hero extends Phys {
 			var id = slots[i];
 			if (id == null)
 				id = -1;
-			boxes[i].gotoAndStop(Std.string(id + 2));
+			boxes[i].gotoAndStop(id + 2);
 		}
 	}
 
@@ -435,7 +435,7 @@ class Hero extends Phys {
 	public function updateShoot() {
 		var flFire = KeyboardManager.isDown(KeyboardManager.SPACE) || KeyboardManager.isDown(18) || KeyboardManager.isDown(13);
 
-		if (lastLaser._visible)
+		if (lastLaser != null && lastLaser._visible)
 			lastLaser.removeMovieClip();
 
 		for (i in 0...6) {
@@ -823,11 +823,11 @@ class Hero extends Phys {
 				p.vy += Math.sin(a) * acc * Timer.tmod;
 
 				if (p.getDist(bh) < blackHole._xscale * 0.5 - p.ray) {
-					p.mask = Cs.game.dm.attach("mcRound", Game.DP_BADS);
+					// TODO: check mask performance
+					p.mask = Cs.game.dm.empty(Game.DP_BADS);
+					p.mask.getGraphics().beginFill(0xFF0000, 1).drawCircle(0, 0, blackHole._width * 0.5);
 					p.mask._x = bh.x;
 					p.mask._y = bh.y;
-					p.mask._xscale = blackHole._xscale;
-					p.mask._yscale = blackHole._yscale;
 					p.root.mask = p.mask;
 				}
 			}

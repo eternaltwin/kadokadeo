@@ -1,5 +1,7 @@
 package ironchouquette;
 
+import ironchouquette.elems.Base2;
+import ironchouquette.elems.Base1;
 import pixi.filters.blur.BlurFilter;
 import pixi.filters.colormatrix.ColorMatrixFilter;
 import pixi.core.textures.RenderTexture;
@@ -26,7 +28,7 @@ class PlasmaSprite extends ASprite {
 	public var layer:Array<PlasmaLayerSprite>;
 }
 
-@:expose('GameIronchouquette')
+@:expose('GameIronChouquette')
 class Game implements kado.GameInterface {
 	public static var FL_CHEAT = false;
 
@@ -128,8 +130,7 @@ class Game implements kado.GameInterface {
 				knTurnSpeed = 0;
 				kidnappers = new Array();
 				for (i in 0...3) {
-					var sp = new Phys(dm.attach("mcBads", DP_BADS));
-					sp.root.gotoAndStop(6);
+					var sp = new Phys(dm.attach("mcKidnapper", DP_BADS));
 					kidnappers.push(sp);
 					sp.x = -100;
 					sp.y = -100;
@@ -140,7 +141,7 @@ class Game implements kado.GameInterface {
 				var pl = dm.attach("mcPlanet", DP_BG);
 				pl._x = Cs.mcw;
 				pl._y = 160;
-				baseList = [pl, dm.attach("base2", DP_BG), dm.attach("base1", DP_PARTS)];
+				baseList = [pl, new Base2(dm.empty(DP_BG)), new Base1(dm.empty(DP_PARTS))];
 
 				//
 				pq = 0.5;
@@ -217,35 +218,10 @@ class Game implements kado.GameInterface {
 	}
 
 	public function updateGfxMode() {
-		if (Timer.tmod > 2) {
-			lagTimer += Timer.tmod;
-			if (lagTimer > 16) {
-				lagTimer = -150;
-				switch (gfxMode) {
-					case 4:
-						setPq(0.3);
-					case 3:
-						downcast(root)._quality = "$LOW".substring(1);
-						Bads.scoreDisplayLimit = 500;
-					case 2:
-						plasma.layer[0].bmp.dispose();
-						plasma.layer[0].removeMovieClip();
-						plasma.layer[0] = null;
-					case 1:
-						plasma.layer[1].bmp.dispose();
-						plasma.removeMovieClip();
-					case _:
-				}
-				gfxMode--;
-				PM *= 0.7;
-				Stykades.BADS_LIMIT = Math.max(10, Stykades.BADS_LIMIT - 2);
-			}
+		if (lagTimer > 0) {
+			lagTimer -= Timer.tmod;
 		} else {
-			if (lagTimer > 0) {
-				lagTimer -= Timer.tmod;
-			} else {
-				lagTimer += Timer.tmod;
-			}
+			lagTimer += Timer.tmod;
 		}
 	}
 
@@ -337,26 +313,31 @@ class Game implements kado.GameInterface {
 						var blp = Math.max(2 * pq * Timer.tmod, 1.5);
 						bfl.blurX = blp;
 						bfl.blurY = blp;
-						bmp.applyFilter(bmp, bmp.rectangle, new flash.geom.Point(0, 0), bfl);
+						// TODO:
+						// bmp.applyFilter(bmp, bmp.rectangle, new flash.geom.Point(0, 0), bfl);
 						var inc = -2;
-						var ct = new flash.geom.ColorTransform(1, 1, 1, 1, inc, inc, inc, 0);
-						bmp.colorTransform(bmp.rectangle, ct);
+					// TODO:
+					// var ct = new flash.geom.ColorTransform(1, 1, 1, 1, inc, inc, inc, 0);
+					// bmp.colorTransform(bmp.rectangle, ct);
 					case 1:
 						var blp = Math.max(10 * pq * Timer.tmod, 1);
 						bfl.blurX = blp;
 						bfl.blurY = blp;
-						bmp.applyFilter(bmp, bmp.rectangle, new flash.geom.Point(0, 0), bfl);
+						// TODO:
+						// bmp.applyFilter(bmp, bmp.rectangle, new flash.geom.Point(0, 0), bfl);
 
 						var inc = -10;
 						var mult = 0.8;
-						var ct = new flash.geom.ColorTransform(0.95, mult, mult, 1, inc, inc * 2, inc * 2, -10);
-						bmp.colorTransform(bmp.rectangle, ct);
+					// TODO:
+					// var ct = new flash.geom.ColorTransform(0.95, mult, mult, 1, inc, inc * 2, inc * 2, -10);
+					// bmp.colorTransform(bmp.rectangle, ct);
 
 					case _:
 				}
 
-				if (SCROLL_SPEED > 0.2)
-					bmp.scroll(0, Std.int(SCROLL_SPEED * 3 * pq));
+				// TODO:
+				// if (SCROLL_SPEED > 0.2)
+				// 	bmp.scroll(0, Std.int(SCROLL_SPEED * 3 * pq));
 			}
 		}
 	}
@@ -394,8 +375,10 @@ class Game implements kado.GameInterface {
 	}
 
 	public function plasmaPoint(x, y, color) {
-		var bmp = plasma.layer[0].bmp;
-		bmp.setPixel32(Std.int(x), Std.int(y), color);
+		trace('TODO: plasmaPoint', x, y, color);
+		// TODO:
+		// var bmp = plasma.layer[0].bmp;
+		// bmp.setPixel32(Std.int(x), Std.int(y), color);
 	}
 
 	public function setPq(n) {
