@@ -116,6 +116,11 @@ class Game implements kado.GameInterface {
 				chouquette.x = Cs.mcw * 0.5 - 5;
 				chouquette.y = Cs.mch + 10;
 				chouquette.frict = 0.92;
+				chouquette.root.loop = true;
+				chouquette.root.play();
+				untyped chouquette.zap = chouquette.root.attachMovie("mcChouquetteZap", "zap");
+				untyped chouquette.zap.loop = true;
+				untyped chouquette.zap.play();
 
 				// KIDNAPPERS
 				knTurnRay = 10;
@@ -124,7 +129,7 @@ class Game implements kado.GameInterface {
 				kidnappers = new Array();
 				for (i in 0...3) {
 					var sp = new Phys(dm.attach("mcBads", DP_BADS));
-					sp.root.gotoAndStop("6");
+					sp.root.gotoAndStop(6);
 					kidnappers.push(sp);
 					sp.x = -100;
 					sp.y = -100;
