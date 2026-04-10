@@ -35,6 +35,8 @@ class Pastille extends Element {
 	}
 
 	public override function attach() {
+		if (root != null)
+			return;
 		super.attach();
 		var o = Cs.game.eList[0];
 		for (wh in o.list) {

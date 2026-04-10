@@ -17,6 +17,8 @@ class Element {
 	public function update() {}
 
 	public function attach() {
+		if (root != null)
+			return;
 		root = Cs.game.dm.attach(skin, Game.DP_WHEEL);
 		root._x = x;
 		root._y = y;

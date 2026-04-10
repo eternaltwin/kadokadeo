@@ -170,6 +170,8 @@ class Wheel extends Element {
 	}
 
 	public override function attach() {
+		if (root != null)
+			return;
 		super.attach();
 		var dm = new DepthManager(root);
 
