@@ -41,7 +41,9 @@ class Rafale {
 			shot(si.type, si.params);
 			timer += si.cooldown;
 			index++;
-			b.fire.gotoAndPlay("2");
+			if (untyped b.fire != null) {
+				untyped b.fire.gotoAndPlay(2);
+			}
 			if (index == list.length) {
 				b.rafale = null;
 			}

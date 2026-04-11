@@ -13,7 +13,7 @@ class Wave {
 	public var path:Array<Array<Int>>;
 	public var pl:Array<Float>;
 
-	public function new(id, sp, fl) {
+	public function new(id, sp:Float, fl) {
 		flLinear = fl;
 		// var c = ( 0.3 + 0.7*Cs.game.dif/10000 );
 		// if(id==null)id = Std.random( int(Stykades.PATH.length*c) );

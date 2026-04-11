@@ -50,10 +50,6 @@ class Bads extends Phys {
 	public var weapons:Array<Rafale>;
 	public var rafale:Rafale;
 
-	public var fire:ASprite;
-	public var follow:ASprite;
-	public var turn:ASprite;
-
 	public var bList:Array<Int>;
 	public var partList:Array<{b:Bads, dx:Float, dy:Float}>;
 
@@ -143,18 +139,6 @@ class Bads extends Phys {
 		// ORIENT
 		if (flOrient)
 			root._rotation = Math.atan2(vy, vx) / 0.0174;
-
-		// TURRET
-		if (follow != null) {
-			var dx = Cs.game.hero.x - x;
-			var dy = Cs.game.hero.y - y;
-			follow._rotation = Math.atan2(dy, dx) / 0.0174 - root._rotation;
-		}
-
-		// TURN
-		if (turn != null) {
-			turn._rotation += vy * 8 * Timer.tmod;
-		}
 
 		// CHECK OUT;
 		if (outSafeTimer > 0) {
@@ -650,7 +634,7 @@ class Bads extends Phys {
 
 	// GFX
 	public function setSkin(n) {
-		root.gotoAndStop(n);
+		// root.gotoAndStop(n);
 	}
 
 	public function setSubSkin(fr) {

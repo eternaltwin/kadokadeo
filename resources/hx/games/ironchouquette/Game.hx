@@ -400,8 +400,11 @@ class Game implements kado.GameInterface {
 		}
 
 		bg._y += SCROLL_SPEED;
-		if (bg._y > 0)
-			bg._y -= 1800 * Cs.NEW_GEN_SCALE;
+		if (bg._y > 0) {
+			// bg._y -= 1800 * Cs.NEW_GEN_SCALE;
+			bg._y -= 2700;
+			bg._prevState.y = bg._y - SCROLL_SPEED; // Hack to avoid weird scroll (interpolation) when the bg is repositionned
+		}
 
 		var i = 0;
 		while (i < baseList.length) {

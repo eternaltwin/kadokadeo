@@ -80,9 +80,9 @@
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
-            <int>3096</int>
+            <int>4096</int>
             <key>height</key>
-            <int>3096</int>
+            <int>4096</int>
         </QSize>
         <key>fixedTextureSize</key>
         <QSize>
@@ -173,6 +173,24 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">src/badReactor/1.png</key>
+            <key type="filename">src/badReactor/2.png</key>
+            <key type="filename">src/badReactor/3.png</key>
+            <key type="filename">src/badReactor/4.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>1,1</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>4,12,7,25</rect>
+                <key>scale9Paddings</key>
+                <rect>4,12,7,25</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">src/base1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -393,6 +411,481 @@
                 <rect>57,39,115,78</rect>
                 <key>scale9Paddings</key>
                 <rect>57,39,115,78</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blackronBody.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>23,20,45,39</rect>
+                <key>scale9Paddings</key>
+                <rect>23,20,45,39</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blockBody.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.488599,0.533469</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>77,123,153,247</rect>
+                <key>scale9Paddings</key>
+                <rect>77,123,153,247</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blockReactor/1.png</key>
+            <key type="filename">src/blockReactor/2.png</key>
+            <key type="filename">src/blockReactor/3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>65,33,129,65</rect>
+                <key>scale9Paddings</key>
+                <rect>65,33,129,65</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blockp1/1.png</key>
+            <key type="filename">src/blockp1/2.png</key>
+            <key type="filename">src/blockp1/3.png</key>
+            <key type="filename">src/blockp1/4.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>25,6,49,13</rect>
+                <key>scale9Paddings</key>
+                <rect>25,6,49,13</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blockp2/1.png</key>
+            <key type="filename">src/blockp2/10.png</key>
+            <key type="filename">src/blockp2/11.png</key>
+            <key type="filename">src/blockp2/12.png</key>
+            <key type="filename">src/blockp2/13.png</key>
+            <key type="filename">src/blockp2/14.png</key>
+            <key type="filename">src/blockp2/15.png</key>
+            <key type="filename">src/blockp2/16.png</key>
+            <key type="filename">src/blockp2/17.png</key>
+            <key type="filename">src/blockp2/18.png</key>
+            <key type="filename">src/blockp2/19.png</key>
+            <key type="filename">src/blockp2/2.png</key>
+            <key type="filename">src/blockp2/20.png</key>
+            <key type="filename">src/blockp2/21.png</key>
+            <key type="filename">src/blockp2/22.png</key>
+            <key type="filename">src/blockp2/23.png</key>
+            <key type="filename">src/blockp2/24.png</key>
+            <key type="filename">src/blockp2/25.png</key>
+            <key type="filename">src/blockp2/26.png</key>
+            <key type="filename">src/blockp2/27.png</key>
+            <key type="filename">src/blockp2/28.png</key>
+            <key type="filename">src/blockp2/29.png</key>
+            <key type="filename">src/blockp2/3.png</key>
+            <key type="filename">src/blockp2/30.png</key>
+            <key type="filename">src/blockp2/31.png</key>
+            <key type="filename">src/blockp2/32.png</key>
+            <key type="filename">src/blockp2/33.png</key>
+            <key type="filename">src/blockp2/34.png</key>
+            <key type="filename">src/blockp2/35.png</key>
+            <key type="filename">src/blockp2/36.png</key>
+            <key type="filename">src/blockp2/4.png</key>
+            <key type="filename">src/blockp2/5.png</key>
+            <key type="filename">src/blockp2/6.png</key>
+            <key type="filename">src/blockp2/7.png</key>
+            <key type="filename">src/blockp2/8.png</key>
+            <key type="filename">src/blockp2/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>2,3,5,5</rect>
+                <key>scale9Paddings</key>
+                <rect>2,3,5,5</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blockp3/1.png</key>
+            <key type="filename">src/blockp3/10.png</key>
+            <key type="filename">src/blockp3/11.png</key>
+            <key type="filename">src/blockp3/12.png</key>
+            <key type="filename">src/blockp3/13.png</key>
+            <key type="filename">src/blockp3/14.png</key>
+            <key type="filename">src/blockp3/15.png</key>
+            <key type="filename">src/blockp3/16.png</key>
+            <key type="filename">src/blockp3/17.png</key>
+            <key type="filename">src/blockp3/18.png</key>
+            <key type="filename">src/blockp3/19.png</key>
+            <key type="filename">src/blockp3/2.png</key>
+            <key type="filename">src/blockp3/20.png</key>
+            <key type="filename">src/blockp3/21.png</key>
+            <key type="filename">src/blockp3/22.png</key>
+            <key type="filename">src/blockp3/23.png</key>
+            <key type="filename">src/blockp3/24.png</key>
+            <key type="filename">src/blockp3/25.png</key>
+            <key type="filename">src/blockp3/26.png</key>
+            <key type="filename">src/blockp3/27.png</key>
+            <key type="filename">src/blockp3/28.png</key>
+            <key type="filename">src/blockp3/29.png</key>
+            <key type="filename">src/blockp3/3.png</key>
+            <key type="filename">src/blockp3/30.png</key>
+            <key type="filename">src/blockp3/4.png</key>
+            <key type="filename">src/blockp3/5.png</key>
+            <key type="filename">src/blockp3/6.png</key>
+            <key type="filename">src/blockp3/7.png</key>
+            <key type="filename">src/blockp3/8.png</key>
+            <key type="filename">src/blockp3/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>4,8,8,16</rect>
+                <key>scale9Paddings</key>
+                <rect>4,8,8,16</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blockp4/1.png</key>
+            <key type="filename">src/blockp4/10.png</key>
+            <key type="filename">src/blockp4/11.png</key>
+            <key type="filename">src/blockp4/12.png</key>
+            <key type="filename">src/blockp4/13.png</key>
+            <key type="filename">src/blockp4/14.png</key>
+            <key type="filename">src/blockp4/15.png</key>
+            <key type="filename">src/blockp4/16.png</key>
+            <key type="filename">src/blockp4/17.png</key>
+            <key type="filename">src/blockp4/18.png</key>
+            <key type="filename">src/blockp4/19.png</key>
+            <key type="filename">src/blockp4/2.png</key>
+            <key type="filename">src/blockp4/20.png</key>
+            <key type="filename">src/blockp4/21.png</key>
+            <key type="filename">src/blockp4/22.png</key>
+            <key type="filename">src/blockp4/23.png</key>
+            <key type="filename">src/blockp4/24.png</key>
+            <key type="filename">src/blockp4/25.png</key>
+            <key type="filename">src/blockp4/26.png</key>
+            <key type="filename">src/blockp4/27.png</key>
+            <key type="filename">src/blockp4/28.png</key>
+            <key type="filename">src/blockp4/29.png</key>
+            <key type="filename">src/blockp4/3.png</key>
+            <key type="filename">src/blockp4/30.png</key>
+            <key type="filename">src/blockp4/31.png</key>
+            <key type="filename">src/blockp4/32.png</key>
+            <key type="filename">src/blockp4/33.png</key>
+            <key type="filename">src/blockp4/34.png</key>
+            <key type="filename">src/blockp4/35.png</key>
+            <key type="filename">src/blockp4/36.png</key>
+            <key type="filename">src/blockp4/37.png</key>
+            <key type="filename">src/blockp4/38.png</key>
+            <key type="filename">src/blockp4/39.png</key>
+            <key type="filename">src/blockp4/4.png</key>
+            <key type="filename">src/blockp4/40.png</key>
+            <key type="filename">src/blockp4/5.png</key>
+            <key type="filename">src/blockp4/6.png</key>
+            <key type="filename">src/blockp4/7.png</key>
+            <key type="filename">src/blockp4/8.png</key>
+            <key type="filename">src/blockp4/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>5,5,9,9</rect>
+                <key>scale9Paddings</key>
+                <rect>5,5,9,9</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blockp5/1.png</key>
+            <key type="filename">src/blockp5/10.png</key>
+            <key type="filename">src/blockp5/11.png</key>
+            <key type="filename">src/blockp5/12.png</key>
+            <key type="filename">src/blockp5/13.png</key>
+            <key type="filename">src/blockp5/14.png</key>
+            <key type="filename">src/blockp5/15.png</key>
+            <key type="filename">src/blockp5/16.png</key>
+            <key type="filename">src/blockp5/2.png</key>
+            <key type="filename">src/blockp5/3.png</key>
+            <key type="filename">src/blockp5/4.png</key>
+            <key type="filename">src/blockp5/5.png</key>
+            <key type="filename">src/blockp5/6.png</key>
+            <key type="filename">src/blockp5/7.png</key>
+            <key type="filename">src/blockp5/8.png</key>
+            <key type="filename">src/blockp5/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>11,2,23,4</rect>
+                <key>scale9Paddings</key>
+                <rect>11,2,23,4</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blockp6/1.png</key>
+            <key type="filename">src/blockp6/10.png</key>
+            <key type="filename">src/blockp6/11.png</key>
+            <key type="filename">src/blockp6/12.png</key>
+            <key type="filename">src/blockp6/13.png</key>
+            <key type="filename">src/blockp6/14.png</key>
+            <key type="filename">src/blockp6/15.png</key>
+            <key type="filename">src/blockp6/16.png</key>
+            <key type="filename">src/blockp6/17.png</key>
+            <key type="filename">src/blockp6/18.png</key>
+            <key type="filename">src/blockp6/19.png</key>
+            <key type="filename">src/blockp6/2.png</key>
+            <key type="filename">src/blockp6/20.png</key>
+            <key type="filename">src/blockp6/21.png</key>
+            <key type="filename">src/blockp6/22.png</key>
+            <key type="filename">src/blockp6/23.png</key>
+            <key type="filename">src/blockp6/24.png</key>
+            <key type="filename">src/blockp6/25.png</key>
+            <key type="filename">src/blockp6/26.png</key>
+            <key type="filename">src/blockp6/27.png</key>
+            <key type="filename">src/blockp6/28.png</key>
+            <key type="filename">src/blockp6/29.png</key>
+            <key type="filename">src/blockp6/3.png</key>
+            <key type="filename">src/blockp6/30.png</key>
+            <key type="filename">src/blockp6/31.png</key>
+            <key type="filename">src/blockp6/32.png</key>
+            <key type="filename">src/blockp6/33.png</key>
+            <key type="filename">src/blockp6/34.png</key>
+            <key type="filename">src/blockp6/35.png</key>
+            <key type="filename">src/blockp6/36.png</key>
+            <key type="filename">src/blockp6/37.png</key>
+            <key type="filename">src/blockp6/38.png</key>
+            <key type="filename">src/blockp6/39.png</key>
+            <key type="filename">src/blockp6/4.png</key>
+            <key type="filename">src/blockp6/40.png</key>
+            <key type="filename">src/blockp6/41.png</key>
+            <key type="filename">src/blockp6/42.png</key>
+            <key type="filename">src/blockp6/43.png</key>
+            <key type="filename">src/blockp6/44.png</key>
+            <key type="filename">src/blockp6/45.png</key>
+            <key type="filename">src/blockp6/46.png</key>
+            <key type="filename">src/blockp6/47.png</key>
+            <key type="filename">src/blockp6/48.png</key>
+            <key type="filename">src/blockp6/5.png</key>
+            <key type="filename">src/blockp6/6.png</key>
+            <key type="filename">src/blockp6/7.png</key>
+            <key type="filename">src/blockp6/8.png</key>
+            <key type="filename">src/blockp6/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>69,104,139,207</rect>
+                <key>scale9Paddings</key>
+                <rect>69,104,139,207</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blockp7/1.png</key>
+            <key type="filename">src/blockp7/2.png</key>
+            <key type="filename">src/blockp7/3.png</key>
+            <key type="filename">src/blockp7/4.png</key>
+            <key type="filename">src/blockp7/5.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>17,4,33,7</rect>
+                <key>scale9Paddings</key>
+                <rect>17,4,33,7</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/carrierBody.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>35,24,70,48</rect>
+                <key>scale9Paddings</key>
+                <rect>35,24,70,48</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/cuttyBody/1.png</key>
+            <key type="filename">src/cuttyBody/2.png</key>
+            <key type="filename">src/cuttyBody/3.png</key>
+            <key type="filename">src/cuttyBody/4.png</key>
+            <key type="filename">src/cuttyBody/5.png</key>
+            <key type="filename">src/cuttyBody/6.png</key>
+            <key type="filename">src/cuttyBody/7.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>19,29,37,57</rect>
+                <key>scale9Paddings</key>
+                <rect>19,29,37,57</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/furiaBody.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>24,20,48,41</rect>
+                <key>scale9Paddings</key>
+                <rect>24,20,48,41</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/gerginBody.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>77,123,153,247</rect>
+                <key>scale9Paddings</key>
+                <rect>77,123,153,247</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/gerginBodyVariant.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>32,43,64,86</rect>
+                <key>scale9Paddings</key>
+                <rect>32,43,64,86</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/gerginReactor/1.png</key>
+            <key type="filename">src/gerginReactor/2.png</key>
+            <key type="filename">src/gerginReactor/3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>33,38,65,77</rect>
+                <key>scale9Paddings</key>
+                <rect>33,38,65,77</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/gerginTurret.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>16,16,33,32</rect>
+                <key>scale9Paddings</key>
+                <rect>16,16,33,32</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/gromphBody.png</key>
+            <key type="filename">src/surgromphBody.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>77,123,153,247</rect>
+                <key>scale9Paddings</key>
+                <rect>77,123,153,247</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/gromphTurret/1.png</key>
+            <key type="filename">src/gromphTurret/2.png</key>
+            <key type="filename">src/gromphTurret/3.png</key>
+            <key type="filename">src/gromphTurret/4.png</key>
+            <key type="filename">src/gromphTurret/5.png</key>
+            <key type="filename">src/gromphTurret/6.png</key>
+            <key type="filename">src/gromphTurret/7.png</key>
+            <key type="filename">src/gromphTurret/8.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.299465,0.507246</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>47,17,93,35</rect>
+                <key>scale9Paddings</key>
+                <rect>47,17,93,35</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -734,6 +1227,169 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">src/mineBody/1.png</key>
+            <key type="filename">src/mineBody/10.png</key>
+            <key type="filename">src/mineBody/11.png</key>
+            <key type="filename">src/mineBody/12.png</key>
+            <key type="filename">src/mineBody/13.png</key>
+            <key type="filename">src/mineBody/14.png</key>
+            <key type="filename">src/mineBody/15.png</key>
+            <key type="filename">src/mineBody/16.png</key>
+            <key type="filename">src/mineBody/17.png</key>
+            <key type="filename">src/mineBody/18.png</key>
+            <key type="filename">src/mineBody/19.png</key>
+            <key type="filename">src/mineBody/2.png</key>
+            <key type="filename">src/mineBody/20.png</key>
+            <key type="filename">src/mineBody/3.png</key>
+            <key type="filename">src/mineBody/4.png</key>
+            <key type="filename">src/mineBody/5.png</key>
+            <key type="filename">src/mineBody/6.png</key>
+            <key type="filename">src/mineBody/7.png</key>
+            <key type="filename">src/mineBody/8.png</key>
+            <key type="filename">src/mineBody/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>25,25,50,50</rect>
+                <key>scale9Paddings</key>
+                <rect>25,25,50,50</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mineShell.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>25,23,50,47</rect>
+                <key>scale9Paddings</key>
+                <rect>25,23,50,47</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/nesBody.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>45,37,90,75</rect>
+                <key>scale9Paddings</key>
+                <rect>45,37,90,75</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/nesFire/1.png</key>
+            <key type="filename">src/nesFire/2.png</key>
+            <key type="filename">src/nesFire/3.png</key>
+            <key type="filename">src/nesFire/4.png</key>
+            <key type="filename">src/nesFire/5.png</key>
+            <key type="filename">src/nesFire/6.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>28,13,57,25</rect>
+                <key>scale9Paddings</key>
+                <rect>28,13,57,25</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/omegaBody.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>15,15,30,30</rect>
+                <key>scale9Paddings</key>
+                <rect>15,15,30,30</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/omegaEye/1.png</key>
+            <key type="filename">src/omegaEye/10.png</key>
+            <key type="filename">src/omegaEye/11.png</key>
+            <key type="filename">src/omegaEye/12.png</key>
+            <key type="filename">src/omegaEye/13.png</key>
+            <key type="filename">src/omegaEye/14.png</key>
+            <key type="filename">src/omegaEye/15.png</key>
+            <key type="filename">src/omegaEye/16.png</key>
+            <key type="filename">src/omegaEye/17.png</key>
+            <key type="filename">src/omegaEye/18.png</key>
+            <key type="filename">src/omegaEye/19.png</key>
+            <key type="filename">src/omegaEye/2.png</key>
+            <key type="filename">src/omegaEye/20.png</key>
+            <key type="filename">src/omegaEye/3.png</key>
+            <key type="filename">src/omegaEye/4.png</key>
+            <key type="filename">src/omegaEye/5.png</key>
+            <key type="filename">src/omegaEye/6.png</key>
+            <key type="filename">src/omegaEye/7.png</key>
+            <key type="filename">src/omegaEye/8.png</key>
+            <key type="filename">src/omegaEye/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>6,2,13,5</rect>
+                <key>scale9Paddings</key>
+                <rect>6,2,13,5</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/omegaTurn.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>28,28,55,55</rect>
+                <key>scale9Paddings</key>
+                <rect>28,28,55,55</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/orbBody.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>37,35,73,69</rect>
+                <key>scale9Paddings</key>
+                <rect>37,35,73,69</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">src/partInvincibility.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -777,6 +1433,245 @@
                 <rect>40,47,81,93</rect>
                 <key>scale9Paddings</key>
                 <rect>40,47,81,93</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/shieldBody/1.png</key>
+            <key type="filename">src/shieldBody/2.png</key>
+            <key type="filename">src/shieldBody/3.png</key>
+            <key type="filename">src/shieldBody/4.png</key>
+            <key type="filename">src/shieldBody/5.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>45,41,89,81</rect>
+                <key>scale9Paddings</key>
+                <rect>45,41,89,81</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/shieldReflect/1.png</key>
+            <key type="filename">src/shieldReflect/2.png</key>
+            <key type="filename">src/shieldReflect/3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>31,24,63,49</rect>
+                <key>scale9Paddings</key>
+                <rect>31,24,63,49</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/shieldZap/1.png</key>
+            <key type="filename">src/shieldZap/10.png</key>
+            <key type="filename">src/shieldZap/11.png</key>
+            <key type="filename">src/shieldZap/12.png</key>
+            <key type="filename">src/shieldZap/13.png</key>
+            <key type="filename">src/shieldZap/14.png</key>
+            <key type="filename">src/shieldZap/15.png</key>
+            <key type="filename">src/shieldZap/16.png</key>
+            <key type="filename">src/shieldZap/17.png</key>
+            <key type="filename">src/shieldZap/18.png</key>
+            <key type="filename">src/shieldZap/19.png</key>
+            <key type="filename">src/shieldZap/2.png</key>
+            <key type="filename">src/shieldZap/20.png</key>
+            <key type="filename">src/shieldZap/21.png</key>
+            <key type="filename">src/shieldZap/22.png</key>
+            <key type="filename">src/shieldZap/23.png</key>
+            <key type="filename">src/shieldZap/24.png</key>
+            <key type="filename">src/shieldZap/25.png</key>
+            <key type="filename">src/shieldZap/3.png</key>
+            <key type="filename">src/shieldZap/4.png</key>
+            <key type="filename">src/shieldZap/5.png</key>
+            <key type="filename">src/shieldZap/6.png</key>
+            <key type="filename">src/shieldZap/7.png</key>
+            <key type="filename">src/shieldZap/8.png</key>
+            <key type="filename">src/shieldZap/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>47,46,93,91</rect>
+                <key>scale9Paddings</key>
+                <rect>47,46,93,91</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/storm1/1.png</key>
+            <key type="filename">src/storm1/10.png</key>
+            <key type="filename">src/storm1/11.png</key>
+            <key type="filename">src/storm1/12.png</key>
+            <key type="filename">src/storm1/13.png</key>
+            <key type="filename">src/storm1/14.png</key>
+            <key type="filename">src/storm1/15.png</key>
+            <key type="filename">src/storm1/16.png</key>
+            <key type="filename">src/storm1/17.png</key>
+            <key type="filename">src/storm1/18.png</key>
+            <key type="filename">src/storm1/19.png</key>
+            <key type="filename">src/storm1/2.png</key>
+            <key type="filename">src/storm1/20.png</key>
+            <key type="filename">src/storm1/21.png</key>
+            <key type="filename">src/storm1/22.png</key>
+            <key type="filename">src/storm1/23.png</key>
+            <key type="filename">src/storm1/24.png</key>
+            <key type="filename">src/storm1/25.png</key>
+            <key type="filename">src/storm1/26.png</key>
+            <key type="filename">src/storm1/27.png</key>
+            <key type="filename">src/storm1/28.png</key>
+            <key type="filename">src/storm1/29.png</key>
+            <key type="filename">src/storm1/3.png</key>
+            <key type="filename">src/storm1/4.png</key>
+            <key type="filename">src/storm1/5.png</key>
+            <key type="filename">src/storm1/6.png</key>
+            <key type="filename">src/storm1/7.png</key>
+            <key type="filename">src/storm1/8.png</key>
+            <key type="filename">src/storm1/9.png</key>
+            <key type="filename">src/storm2/1.png</key>
+            <key type="filename">src/storm2/10.png</key>
+            <key type="filename">src/storm2/11.png</key>
+            <key type="filename">src/storm2/12.png</key>
+            <key type="filename">src/storm2/13.png</key>
+            <key type="filename">src/storm2/14.png</key>
+            <key type="filename">src/storm2/15.png</key>
+            <key type="filename">src/storm2/16.png</key>
+            <key type="filename">src/storm2/17.png</key>
+            <key type="filename">src/storm2/18.png</key>
+            <key type="filename">src/storm2/19.png</key>
+            <key type="filename">src/storm2/2.png</key>
+            <key type="filename">src/storm2/20.png</key>
+            <key type="filename">src/storm2/21.png</key>
+            <key type="filename">src/storm2/22.png</key>
+            <key type="filename">src/storm2/23.png</key>
+            <key type="filename">src/storm2/24.png</key>
+            <key type="filename">src/storm2/25.png</key>
+            <key type="filename">src/storm2/26.png</key>
+            <key type="filename">src/storm2/27.png</key>
+            <key type="filename">src/storm2/28.png</key>
+            <key type="filename">src/storm2/29.png</key>
+            <key type="filename">src/storm2/3.png</key>
+            <key type="filename">src/storm2/4.png</key>
+            <key type="filename">src/storm2/5.png</key>
+            <key type="filename">src/storm2/6.png</key>
+            <key type="filename">src/storm2/7.png</key>
+            <key type="filename">src/storm2/8.png</key>
+            <key type="filename">src/storm2/9.png</key>
+            <key type="filename">src/storm3/1.png</key>
+            <key type="filename">src/storm3/10.png</key>
+            <key type="filename">src/storm3/11.png</key>
+            <key type="filename">src/storm3/12.png</key>
+            <key type="filename">src/storm3/13.png</key>
+            <key type="filename">src/storm3/14.png</key>
+            <key type="filename">src/storm3/15.png</key>
+            <key type="filename">src/storm3/16.png</key>
+            <key type="filename">src/storm3/17.png</key>
+            <key type="filename">src/storm3/18.png</key>
+            <key type="filename">src/storm3/19.png</key>
+            <key type="filename">src/storm3/2.png</key>
+            <key type="filename">src/storm3/20.png</key>
+            <key type="filename">src/storm3/21.png</key>
+            <key type="filename">src/storm3/22.png</key>
+            <key type="filename">src/storm3/23.png</key>
+            <key type="filename">src/storm3/24.png</key>
+            <key type="filename">src/storm3/25.png</key>
+            <key type="filename">src/storm3/26.png</key>
+            <key type="filename">src/storm3/27.png</key>
+            <key type="filename">src/storm3/28.png</key>
+            <key type="filename">src/storm3/29.png</key>
+            <key type="filename">src/storm3/3.png</key>
+            <key type="filename">src/storm3/4.png</key>
+            <key type="filename">src/storm3/5.png</key>
+            <key type="filename">src/storm3/6.png</key>
+            <key type="filename">src/storm3/7.png</key>
+            <key type="filename">src/storm3/8.png</key>
+            <key type="filename">src/storm3/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>38,100,75,200</rect>
+                <key>scale9Paddings</key>
+                <rect>38,100,75,200</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/stormSide1/1.png</key>
+            <key type="filename">src/stormSide1/2.png</key>
+            <key type="filename">src/stormSide1/3.png</key>
+            <key type="filename">src/stormSide1/4.png</key>
+            <key type="filename">src/stormSide1/5.png</key>
+            <key type="filename">src/stormSide1/6.png</key>
+            <key type="filename">src/stormSide1/7.png</key>
+            <key type="filename">src/stormSide1/8.png</key>
+            <key type="filename">src/stormSide1/9.png</key>
+            <key type="filename">src/stormSide2/1.png</key>
+            <key type="filename">src/stormSide2/2.png</key>
+            <key type="filename">src/stormSide2/3.png</key>
+            <key type="filename">src/stormSide2/4.png</key>
+            <key type="filename">src/stormSide2/5.png</key>
+            <key type="filename">src/stormSide2/6.png</key>
+            <key type="filename">src/stormSide2/7.png</key>
+            <key type="filename">src/stormSide2/8.png</key>
+            <key type="filename">src/stormSide2/9.png</key>
+            <key type="filename">src/stormSide3/1.png</key>
+            <key type="filename">src/stormSide3/2.png</key>
+            <key type="filename">src/stormSide3/3.png</key>
+            <key type="filename">src/stormSide3/4.png</key>
+            <key type="filename">src/stormSide3/5.png</key>
+            <key type="filename">src/stormSide3/6.png</key>
+            <key type="filename">src/stormSide3/7.png</key>
+            <key type="filename">src/stormSide3/8.png</key>
+            <key type="filename">src/stormSide3/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>18,34,37,67</rect>
+                <key>scale9Paddings</key>
+                <rect>18,34,37,67</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/surgromphTurret/1.png</key>
+            <key type="filename">src/surgromphTurret/2.png</key>
+            <key type="filename">src/surgromphTurret/3.png</key>
+            <key type="filename">src/surgromphTurret/4.png</key>
+            <key type="filename">src/surgromphTurret/5.png</key>
+            <key type="filename">src/surgromphTurret/6.png</key>
+            <key type="filename">src/surgromphTurret/7.png</key>
+            <key type="filename">src/surgromphTurret/8.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.294118,0.507246</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>47,17,93,35</rect>
+                <key>scale9Paddings</key>
+                <rect>47,17,93,35</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
