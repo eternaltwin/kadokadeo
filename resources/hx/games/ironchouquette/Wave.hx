@@ -76,7 +76,9 @@ class Wave {
 	public function addBads(f, max) {
 		for (i in 0...max) {
 			var b = f();
-			addBad(b);
+			if (b != null) {
+				addBad(b);
+			}
 		}
 	}
 }

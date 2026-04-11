@@ -1,8 +1,6 @@
 package ironchouquette;
 
 import mt.bumdum.Lib;
-import mt.bumdum.Sprite;
-import mt.Timer;
 
 class Phys extends mt.bumdum.Phys {
 	public var ray:Float;

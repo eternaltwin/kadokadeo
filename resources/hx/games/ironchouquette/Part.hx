@@ -1,7 +1,5 @@
 package ironchouquette;
 
-import mt.Timer;
-
 class Part extends Phys {
 	public function new(mc) {
 		super(mc);
@@ -11,8 +9,9 @@ class Part extends Phys {
 	}
 
 	public function incrust(n) {
-		Cs.game.plasmaDraw(root, 1);
-		kill();
+		trace("DEAD CODE ? incrust() in Part.hx");
+		// Cs.game.plasmaDraw(root, 1);
+		// kill();
 	}
 
 	public override function kill() {

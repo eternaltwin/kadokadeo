@@ -46,26 +46,26 @@ class Hero extends Phys {
 	public static var INVINCIBLE_RAY = 32 * Cs.NEW_GEN_SCALE;
 
 	var reactorPosOnFrame:Array<Array<{x:Float, y:Float}>> = [
-		[{x: 34, y: 82}, {x: 51, y: 82}],
-		[{x: 33, y: 82}, {x: 52, y: 82}],
-		[{x: 32, y: 82}, {x: 53, y: 82}],
-		[{x: 30, y: 82}, {x: 54, y: 82}],
-		[{x: 28, y: 82}, {x: 56, y: 82}],
-		[{x: 26, y: 82}, {x: 58, y: 82}],
-		[{x: 24, y: 82}, {x: 60, y: 82}],
-		[{x: 22, y: 82}, {x: 62, y: 82}],
-		[{x: 20, y: 82}, {x: 64, y: 82}],
-		[{x: 17, y: 82}, {x: 66, y: 82}],
-		[{x: 20, y: 82}, {x: 64, y: 82}],
-		[{x: 22, y: 82}, {x: 62, y: 82}],
-		[{x: 24, y: 82}, {x: 60, y: 82}],
-		[{x: 26, y: 82}, {x: 58, y: 82}],
-		[{x: 28, y: 82}, {x: 56, y: 82}],
-		[{x: 30, y: 82}, {x: 54, y: 82}],
-		[{x: 32, y: 82}, {x: 53, y: 82}],
-		[{x: 33, y: 82}, {x: 52, y: 82}],
-		[{x: 34, y: 82}, {x: 51, y: 82}],
-		[{x: 35, y: 82}, {x: 50, y: 82}],
+		[{x: 34, y: 13}, {x: 51, y: 13}],
+		[{x: 33, y: 13}, {x: 52, y: 13}],
+		[{x: 32, y: 13}, {x: 53, y: 13}],
+		[{x: 30, y: 13}, {x: 54, y: 13}],
+		[{x: 28, y: 13}, {x: 56, y: 13}],
+		[{x: 26, y: 13}, {x: 58, y: 13}],
+		[{x: 24, y: 13}, {x: 60, y: 13}],
+		[{x: 22, y: 13}, {x: 62, y: 13}],
+		[{x: 20, y: 13}, {x: 64, y: 13}],
+		[{x: 17, y: 13}, {x: 66, y: 13}],
+		[{x: 20, y: 13}, {x: 64, y: 13}],
+		[{x: 22, y: 13}, {x: 62, y: 13}],
+		[{x: 24, y: 13}, {x: 60, y: 13}],
+		[{x: 26, y: 13}, {x: 58, y: 13}],
+		[{x: 28, y: 13}, {x: 56, y: 13}],
+		[{x: 30, y: 13}, {x: 54, y: 13}],
+		[{x: 32, y: 13}, {x: 53, y: 13}],
+		[{x: 33, y: 13}, {x: 52, y: 13}],
+		[{x: 34, y: 13}, {x: 51, y: 13}],
+		[{x: 35, y: 13}, {x: 50, y: 13}],
 	];
 
 	var flame1:ASprite;
@@ -365,8 +365,7 @@ class Hero extends Phys {
 		Cs.game.stats.b.push([Std.int(Stykades.dif), 100 + id]);
 		switch (id) {
 			case Hero.WP_PLASMA:
-				var shot = newShot(0, 14);
-				shot.setSkin(18, 1);
+				var shot = newShot(0, 14, 18);
 				shot.ray = 50 * Cs.NEW_GEN_SCALE;
 				shot.damage = 50;
 				shot.flPierce = true;
@@ -492,22 +491,19 @@ class Hero extends Phys {
 						case 0: // PLASMA
 							switch (a[0]) {
 								case 1:
-									var shot = newShot(0, 12);
-									shot.setSkin(14, 1);
+									var shot = newShot(0, 12, 14);
 									shot.ray = 6 * Cs.NEW_GEN_SCALE;
 									shot.damage = 1;
 								case 2:
 									for (n in 0...2) {
-										var shot = newShot(0, 12);
-										shot.setSkin(14, 1);
+										var shot = newShot(0, 12, 14);
 										shot.ray = 6 * Cs.NEW_GEN_SCALE;
 										shot.x = x + (n * 2 - 1) * 5 * Cs.NEW_GEN_SCALE;
 										shot.damage = 1;
 									}
 								case 3:
 									{
-										var shot = newShot(0, 15);
-										shot.setSkin(14, 1);
+										var shot = newShot(0, 15, 14);
 										shot.ray = 8 * Cs.NEW_GEN_SCALE;
 										shot.setScale(150);
 										shot.damage = 2;
@@ -515,16 +511,14 @@ class Hero extends Phys {
 									}
 									for (n in 0...2) {
 										var sens = n * 2 - 1;
-										var shot = newShot(sens * 0.15, 12);
-										shot.setSkin(14, 1);
+										var shot = newShot(sens * 0.15, 12, 14);
 										shot.ray = 8 * Cs.NEW_GEN_SCALE;
 										shot.x = x + sens * 5 * Cs.NEW_GEN_SCALE;
 										shot.damage = 1;
 									}
 								case _:
 									{
-										var shot = newShot(0, 15);
-										shot.setSkin(14, 1);
+										var shot = newShot(0, 15, 14);
 										shot.ray = (4 + a[0]) * Cs.NEW_GEN_SCALE;
 										shot.setScale(100 + a[0] * 25);
 										shot.damage = 1 + (a[0] * 0.5);
@@ -533,8 +527,7 @@ class Hero extends Phys {
 									for (n in 0...2) {
 										var sens = n * 2 - 1;
 										for (k in 0...Std.int(a[0] * 0.5)) {
-											var shot = newShot(sens * (0.15 + k * 0.15), 12 - (k * 1.5));
-											shot.setSkin(14, 1);
+											var shot = newShot(sens * (0.15 + k * 0.15), 12 - (k * 1.5), 14);
 											shot.ray = 8 * Cs.NEW_GEN_SCALE;
 											shot.x = x + sens * (5 + k * 5) * Cs.NEW_GEN_SCALE;
 											shot.damage = 1;
@@ -568,8 +561,7 @@ class Hero extends Phys {
 										c = 0;
 									var ec = 0.3 + a[0] * 0.1;
 
-									var shot = newShot(sens * (1.57 - rollY * 0.05) + ec * c, 14);
-									shot.setSkin(16, 1);
+									var shot = newShot(sens * (1.57 - rollY * 0.05) + ec * c, 14, 16);
 									shot.damage = 0.85;
 									// shot.root._xscale = sens*100
 									shot.x += sens * 14 * Cs.NEW_GEN_SCALE;
@@ -711,8 +703,7 @@ class Hero extends Phys {
 							a[1] = 0.1;
 						case 4: // VOID BALLS
 
-							var shot = newShot((Cs.rand() * 2 - 1) * (0.3 + a[0] * 0.15), 10);
-							shot.setSkin(17, 1);
+							var shot = newShot((Cs.rand() * 2 - 1) * (0.3 + a[0] * 0.15), 10, 17);
 							shot.damage = 1.2;
 							shot.orient();
 							// shot.plasmaId = 1
@@ -910,9 +901,10 @@ class Hero extends Phys {
 	}
 
 	//
-	public function newShot(a:Float, speed:Float) {
+	public function newShot(a:Float, speed:Float, skin:Int) {
 		a -= 1.57;
 		var shot = new Shot(null);
+		shot.setSkin(skin, 1);
 		shot.a = a;
 		shot.flGood = true;
 		shot.x = x;
@@ -924,9 +916,8 @@ class Hero extends Phys {
 	}
 
 	public function newMissile(a) {
-		var shot = newShot(a, 4);
+		var shot = newShot(a, 4, 15);
 		shot.y += 10 * Cs.NEW_GEN_SCALE;
-		shot.setSkin(15, 1);
 		shot.ray = 8 * Cs.NEW_GEN_SCALE;
 		shot.damage = 2;
 		shot.speed = 4 * Cs.NEW_GEN_SCALE;
@@ -964,6 +955,7 @@ class Hero extends Phys {
 			p.frict = 0.96;
 			p.root.blendMode = BlendModes.ADD;
 			p.root._rotation = Cs.rand() * 360;
+			p.root.play();
 		}
 		// TRACE
 		for (i in 0...6) {
@@ -974,8 +966,10 @@ class Hero extends Phys {
 			mc._yscale = mc._xscale;
 			mc._rotation = Cs.rand() * 360;
 			mc.blendMode = BlendModes.ADD;
-			// TODO: was uncommented
-			// mc.obj = Cs.game;
+			mc.onFrame.set(3, function() {
+				Cs.game.plasmaDraw(mc, 1);
+				mc.removeMovieClip();
+			});
 			mc.gotoAndPlay(Cs.random(3) + 1);
 		}
 		// ONDE
@@ -984,6 +978,7 @@ class Hero extends Phys {
 		mc._y = y;
 		mc._xscale = 150;
 		mc._yscale = 150;
+		mc.play();
 
 		kill();
 	}

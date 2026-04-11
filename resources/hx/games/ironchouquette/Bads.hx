@@ -593,26 +593,26 @@ class Bads extends Phys {
 			p.timer = 10 + Cs.rand() * 10;
 			p.root.blendMode = BlendModes.ADD;
 			p.root._rotation = Cs.rand() * 360;
+			p.root.play();
 		}
 
-		var mc = Cs.game.dm.attach("mcExploTrace", Game.DP_PARTS);
-		mc.gotoAndStop("3");
-		for (i in 0...3) {
-			mc._x = x + (Cs.rand() * 2 - 1) * ray;
-			mc._y = y + (Cs.rand() * 2 - 1) * ray;
-			mc._xscale = 100 + Cs.rand() * 100;
-			mc._yscale = mc._xscale;
-			mc._rotation = Cs.rand() * 360;
-			mc.blendMode = BlendModes.ADD;
+		// var mc = Cs.game.dm.attach("mcExploTrace", Game.DP_PARTS);
+		// mc.gotoAndStop(3);
+		// for (i in 0...3) {
+		// 	mc._x = x + (Cs.rand() * 2 - 1) * ray;
+		// 	mc._y = y + (Cs.rand() * 2 - 1) * ray;
+		// 	mc._xscale = 100 + Cs.rand() * 100;
+		// 	mc._yscale = mc._xscale;
+		// 	mc._rotation = Cs.rand() * 360;
+		// 	mc.blendMode = BlendModes.ADD;
+		// 	// mc.onFrame.set(3, function() {
+		// 	// 	Cs.game.plasmaDraw(mc, 1);
+		// 	// 	mc.removeMovieClip();
+		// 	// });
 
-			Cs.game.plasmaDraw(mc, 1);
-
-			/*
-				downcast(mc).obj = Cs.game;
-				mc.gotoAndPlay("3");
-			 */
-		}
-		mc.removeMovieClip();
+		// 	// Cs.game.plasmaDraw(mc, 1);
+		// }
+		// mc.removeMovieClip();
 	}
 
 	// PARTS

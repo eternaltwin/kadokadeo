@@ -1080,7 +1080,7 @@
             <key type="filename">src/mcHero/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0</point_f>
+                <point_f>0.5,0.5</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -1169,6 +1169,182 @@
                 <rect>75,5,150,9</rect>
                 <key>scale9Paddings</key>
                 <rect>75,5,150,9</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot13/1.png</key>
+            <key type="filename">src/mcShot13/2.png</key>
+            <key type="filename">src/mcShot13/3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>7,7,13,13</rect>
+                <key>scale9Paddings</key>
+                <rect>7,7,13,13</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot14/1.png</key>
+            <key type="filename">src/mcShot14/2.png</key>
+            <key type="filename">src/mcShot14/3.png</key>
+            <key type="filename">src/mcShot14/4.png</key>
+            <key type="filename">src/mcShot14/5.png</key>
+            <key type="filename">src/mcShot14/6.png</key>
+            <key type="filename">src/mcShot14/7.png</key>
+            <key type="filename">src/mcShot14/8.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.421053,0.411043</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>38,41,76,81</rect>
+                <key>scale9Paddings</key>
+                <rect>38,41,76,81</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot15.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>105,200,210,401</rect>
+                <key>scale9Paddings</key>
+                <rect>105,200,210,401</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot16/1.png</key>
+            <key type="filename">src/mcShot16/2.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>19,19,38,38</rect>
+                <key>scale9Paddings</key>
+                <rect>19,19,38,38</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot17/1.png</key>
+            <key type="filename">src/mcShot17/2.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>38,38,75,75</rect>
+                <key>scale9Paddings</key>
+                <rect>38,38,75,75</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot18.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>105,105,210,210</rect>
+                <key>scale9Paddings</key>
+                <rect>105,105,210,210</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot19/1.png</key>
+            <key type="filename">src/mcShot19/2.png</key>
+            <key type="filename">src/mcShot19/3.png</key>
+            <key type="filename">src/mcShot19/4.png</key>
+            <key type="filename">src/mcShot19/5.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.488235,0.751282</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>43,98,85,195</rect>
+                <key>scale9Paddings</key>
+                <rect>43,98,85,195</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot21/1.png</key>
+            <key type="filename">src/mcShot21/2.png</key>
+            <key type="filename">src/mcShot21/3.png</key>
+            <key type="filename">src/mcShot21/4.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>28,28,55,57</rect>
+                <key>scale9Paddings</key>
+                <rect>28,28,55,57</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot22/1.png</key>
+            <key type="filename">src/mcShot22/2.png</key>
+            <key type="filename">src/mcShot22/3.png</key>
+            <key type="filename">src/mcShot22/4.png</key>
+            <key type="filename">src/mcShot22/5.png</key>
+            <key type="filename">src/mcShot22/6.png</key>
+            <key type="filename">src/mcShot22/7.png</key>
+            <key type="filename">src/mcShot22/8.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>52,48,104,95</rect>
+                <key>scale9Paddings</key>
+                <rect>52,48,104,95</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShot23/1.png</key>
+            <key type="filename">src/mcShot23/2.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>46,37,93,74</rect>
+                <key>scale9Paddings</key>
+                <rect>46,37,93,74</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -1387,6 +1563,34 @@
                 <rect>37,35,73,69</rect>
                 <key>scale9Paddings</key>
                 <rect>37,35,73,69</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partImpact/1.png</key>
+            <key type="filename">src/partImpact/10.png</key>
+            <key type="filename">src/partImpact/11.png</key>
+            <key type="filename">src/partImpact/12.png</key>
+            <key type="filename">src/partImpact/13.png</key>
+            <key type="filename">src/partImpact/14.png</key>
+            <key type="filename">src/partImpact/2.png</key>
+            <key type="filename">src/partImpact/3.png</key>
+            <key type="filename">src/partImpact/4.png</key>
+            <key type="filename">src/partImpact/5.png</key>
+            <key type="filename">src/partImpact/6.png</key>
+            <key type="filename">src/partImpact/7.png</key>
+            <key type="filename">src/partImpact/8.png</key>
+            <key type="filename">src/partImpact/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>24,25,49,50</rect>
+                <key>scale9Paddings</key>
+                <rect>24,25,49,50</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

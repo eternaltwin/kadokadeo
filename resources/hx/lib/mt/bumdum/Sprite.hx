@@ -21,14 +21,14 @@ class Sprite {
 		this.root = root;
 		if (root != null) {
 			root.obj = this;
+			this.scale = 100;
 		}
 		register(this);
 
-		if (this.root._x == 0 && this.root._y == 0) {
+		if (this.root != null && this.root._x == 0 && this.root._y == 0) {
 			this.root._x = -100;
 			this.root._y = -100;
 		}
-		this.scale = 100;
 	}
 
 	public function get_x() {

@@ -182,8 +182,9 @@ class Shot extends Phys {
 	public function checkCols() {
 		if (flGood) {
 			var list = Cs.game.badsList;
-			for (i in 0...list.length) {
-				var b = list[i];
+			for (b in list) {
+				if (b == null)
+					continue;
 				if (b.rect != null) {
 					if (Math.abs(x - b.x) < (b.rect.rw + ray) && Math.abs(y - b.y) < (b.rect.rh + ray)) {
 						hit(b);
@@ -222,6 +223,8 @@ class Shot extends Phys {
 				mc._yscale = mc._xscale;
 				mc._rotation = Cs.rand() * 360;
 				mc.blendMode = BlendModes.ADD;
+				mc.removeOnFrame = 14;
+				mc.play();
 				kill();
 				return;
 			}
@@ -231,9 +234,28 @@ class Shot extends Phys {
 	public function onHit(bad) {}
 
 	public function setSkin(n, d) {
-		// TODO: root is maybe reassigned ? memory leak ?
-		root = Cs.game.shots.layer[d].dm.attach("mcShot", 0);
-		root.gotoAndStop(n);
+		var loop = true;
+		switch (n) {
+			case 14:
+				root = Cs.game.shots.layer[d].dm.attach("mcShot14", 0);
+				root.onFrame.set(1, () -> root._rotation = Cs.rand() * 360);
+				root.onFrame.set(8, () -> root.gotoAndPlay(5));
+			case 15 | 16 | 17 | 18 | 21:
+				root = Cs.game.shots.layer[d].dm.attach("mcShot" + n, 0);
+			case 19:
+				root = Cs.game.shots.layer[d].dm.attach("mcShot19", 0);
+				root.onFrame.set(5, () -> root.gotoAndPlay(3));
+			case 22:
+				root = Cs.game.shots.layer[d].dm.attach("mcShot22", 0);
+				root.removeObjOnFrame = 8;
+			case 23:
+				root = Cs.game.shots.layer[d].dm.attach("mcShot23", 0);
+				loop = false;
+			case 13 | _:
+				root = Cs.game.shots.layer[d].dm.attach("mcShot13", 0);
+		}
+		root.loop = loop;
+		root.play();
 		root.obj = this;
 		updatePos();
 	}

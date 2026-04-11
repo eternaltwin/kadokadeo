@@ -348,29 +348,26 @@ class Game implements kado.GameInterface {
 		var bmp = plasma.layer[n].bmp;
 
 		var m = new Matrix();
-		m.scale((mc._xscale / 100) * pq, (mc._yscale / 100) * pq);
-		m.rotate(mc._rotation * 0.0174);
-		m.translate((mc._x) * pq, (mc._y + PLASMA_CACHE) * pq);
+		// m.scale((mc._xscale / 100) * pq, (mc._yscale / 100) * pq);
+		// m.rotate(mc._rotation * 0.0174);
+		m.translate(pq, PLASMA_CACHE * pq);
 
 		// Commented while converting to pixi:
 		// var ct = new flash.geom.ColorTransform(1, 1, 1, 1, 0, 0, 0, -255 + mc._alpha * 2.55);
 		// var b = mc.blendMode;
 		// bmp.draw(mc, m, ct, b, null, false);
 
-		/* PIXI VERSION COMMENT:
-			Exemple Haxe (Pixi) pour l’équivalent de ColorTransform :
-			import pixi.filters.ColorMatrixFilter;
-			var f = new ColorMatrixFilter();
-			var a = mc.alpha; // 0..1 en Pixi
-			// Matrice identité + offset sur alpha (dernière valeur)
-			f.matrix = [
-			1, 0, 0, 0, 0,
-			0, 1, 0, 0, 0,
-			0, 0, 1, 0, 0,
+		/* PIXI VERSION COMMENT: Exemple Haxe (Pixi) pour l’équivalent de ColorTransform : */
+		var f = new pixi.filters.colormatrix.ColorMatrixFilter();
+		var a = mc.alpha; // 0..1 en Pixi
+		// Matrice identité + offset sur alpha (dernière valeur)
+		f.matrix = [
+			1, 0, 0, 0,   0,
+			0, 1, 0, 0,   0,
+			0, 0, 1, 0,   0,
 			0, 0, 0, 1, a - 1
-			];
-			mc.filters = [f];
-		 */
+		];
+		mc.filters = [f];
 		bmp.draw(mc, m);
 	}
 
