@@ -82,7 +82,7 @@ class Stykades {
 		waveTimer += Timer.tmod;
 		if (waveTimer > nextWave) {
 			waveTimer = 0;
-			nextWave = 10 + Math.random() * 20;
+			nextWave = 10 + Cs.rand() * 20;
 			checkWave();
 		}
 	}
@@ -91,7 +91,7 @@ class Stykades {
 		// BONUS
 		if (dif > nextBonus) {
 			genMonster(21);
-			nextBonus += 80 + Math.random() * (200 + dif);
+			nextBonus += 80 + Cs.rand() * (200 + dif);
 		}
 		/*
 			if( Math.random()*Math.pow(10, (1+Bonus.NB*0.5) ) < 1 ){
@@ -113,7 +113,7 @@ class Stykades {
 				}
 			}
 
-			genMonster(list[Std.random(list.length)]);
+			genMonster(list[Cs.random(list.length)]);
 			if (tr++ > 20)
 				return;
 		}
@@ -125,13 +125,13 @@ class Stykades {
 				var b = newStorm(n - 10);
 
 			case 1: // OMEGA WAVE
-				var wave = new Wave(Std.random(5), 3, true);
-				if (Std.random(2) == 0)
+				var wave = new Wave(Cs.random(5), 3, true);
+				if (Cs.random(2) == 0)
 					wave.flipPath(0);
 				wave.addBads(newOmega, 5);
 
 			case 2: // DOUBLE OMEGA WAVE
-				var wid = 5 + Std.random(3);
+				var wid = 5 + Cs.random(3);
 				for (k in 0...2) {
 					var wave = new Wave(wid, 3, true);
 					if (k == 0)
@@ -140,29 +140,29 @@ class Stykades {
 				}
 			case 3: // BLACKRON
 
-				var wid = 8 + Std.random(4);
+				var wid = 8 + Cs.random(4);
 				var wave = new Wave(wid, 4, true);
-				if (Std.random(2) == 0)
+				if (Cs.random(2) == 0)
 					wave.flipPath(0);
 				wave.addBads(newBlackron, 4);
 
 			case 4: // FURIA
-				var wid = 12 + Std.random(3);
+				var wid = 12 + Cs.random(3);
 				var wave = new Wave(wid, 6, true);
-				if (Std.random(2) == 0)
+				if (Cs.random(2) == 0)
 					wave.flipPath(0);
 				wave.addBads(newFuria, 8);
 			case 5: // GROMPH
 				var wid = 15;
 				var wave = new Wave(wid, 5.5, true);
-				if (Std.random(2) == 0)
+				if (Cs.random(2) == 0)
 					wave.flipPath(0);
 				wave.addBads(newGromph, 1);
 
 			case 6: // BACK GROMPH
-				var wid = 16 + Std.random(5);
+				var wid = 16 + Cs.random(5);
 				var wave = new Wave(wid, 5.5, true);
-				if (Std.random(2) == 0)
+				if (Cs.random(2) == 0)
 					wave.flipPath(0);
 				wave.addBads(newGromph, 1);
 
@@ -171,9 +171,9 @@ class Stykades {
 				b.vy = 2;
 
 			case 8: // SURGROMPH
-				var wid = 15 + Std.random(6);
+				var wid = 15 + Cs.random(6);
 				var wave = new Wave(wid, 5.5, true);
-				if (Std.random(2) == 0)
+				if (Cs.random(2) == 0)
 					wave.flipPath(0);
 				wave.addBads(newSurGromph, 1);
 			case 9: // BRIAROS
@@ -184,7 +184,7 @@ class Stykades {
 				}
 			case 17: // CUTTY
 				var m = 80;
-				var x = m + Math.random() * (Cs.mcw - 2 * m);
+				var x = m + Cs.rand() * (Cs.mcw - 2 * m);
 				var max = 5;
 				for (i in 0...max) {
 					var c = (i / (max - 1)) * 2 - 1;
@@ -196,7 +196,7 @@ class Stykades {
 			case 18: // NES
 				var wid = 21;
 				var wave = new Wave(wid, 4, true);
-				if (Std.random(2) == 0)
+				if (Cs.random(2) == 0)
 					wave.flipPath(0);
 				wave.addBads(newNes, 1);
 
@@ -229,7 +229,7 @@ class Stykades {
 				for (i in 0...8) {
 					var b = newBriaros();
 					var m = -15;
-					b.x = m + Std.random(2) * (Cs.mcw - 2 * m);
+					b.x = m + Cs.random(2) * (Cs.mcw - 2 * m);
 					b.y = Cs.mch * 0.5 + 20;
 					b.beeRange[0].w = 0;
 					b.beeRange[1].yMax += 20;
@@ -238,7 +238,7 @@ class Stykades {
 					var raf = b.newRafale();
 					raf.addShot(1, [3, 0.6], 10, 1);
 					b.cooldown = 10;
-					b.shootTimer = 5 + Math.random() * 10;
+					b.shootTimer = 5 + Cs.rand() * 10;
 				}
 		}
 	}
@@ -276,7 +276,7 @@ class Stykades {
 			return null;
 		var b = new Bads(null);
 		var m = 15;
-		b.x = m + Math.random() * (Cs.mcw - 2 * m);
+		b.x = m + Cs.rand() * (Cs.mcw - 2 * m);
 		// b.y = -20
 		b.vy = 3;
 		b.outSafeTimer = 100;
@@ -294,11 +294,11 @@ class Stykades {
 		b.setSkin(1);
 		var raf = b.newRafale();
 		raf.addShot(1, [3, 0.6], 100, 1);
-		b.shootTimer = 150 + Math.random() * 500;
+		b.shootTimer = 150 + Cs.rand() * 500;
 
 		// TODO: fix turn (b.root.smc.turn)
 		// b.turn = b.root.smc.turn;
-		b.turnSpeed = 2 + Math.random() * 6;
+		b.turnSpeed = 2 + Cs.rand() * 6;
 
 		return b;
 	}
@@ -323,7 +323,7 @@ class Stykades {
 		b.setSkin(3);
 		var raf = b.newRafale();
 		raf.addShot(0, [4.5, 13], 0, 1);
-		b.shootTimer = 70 + Math.random() * 30;
+		b.shootTimer = 70 + Cs.rand() * 30;
 
 		return b;
 	}
@@ -393,11 +393,11 @@ class Stykades {
 		b.hp = 6;
 		b.setSkin(6);
 
-		b.vy = -Math.random() * 5;
+		b.vy = -Cs.rand() * 5;
 
 		var raf = b.newRafale();
 		raf.addShot(1, [3, 0.6], 100, 1);
-		b.shootTimer = 150 + Math.random() * 15;
+		b.shootTimer = 150 + Cs.rand() * 15;
 
 		b.bList = [6, 7];
 		b.frict = 0.9;
@@ -431,7 +431,7 @@ class Stykades {
 		b.setScore(Cs.C_CUTTY_CLOSE);
 		b.score2 = Cs.C_CUTTY_OPEN;
 
-		b.vr = (Std.random(2) * 2 - 1) * (5 + Math.random() * 10);
+		b.vr = (Cs.random(2) * 2 - 1) * (5 + Cs.rand() * 10);
 		b.hp = 14;
 		b.setSkin(8);
 		b.va = 0.07;
@@ -463,7 +463,7 @@ class Stykades {
 		raf.dx = -5;
 		raf.dy = 24; // 20;
 
-		b.shootTimer = 50 + Math.random() * 50;
+		b.shootTimer = 50 + Cs.rand() * 50;
 		b.rect = {rw: 30, rh: 25};
 		b.fire = b.root.smc.smc.smc;
 
@@ -481,7 +481,7 @@ class Stykades {
 		b.hp = 16;
 		b.bounceId = 1;
 		b.bList = [9];
-		b.trg = {x: 0, y: 70 + Math.random() * 30}
+		b.trg = {x: 0, y: 70 + Cs.rand() * 30}
 		b.waitTimer = 100;
 
 		var raf = b.newRafale();
@@ -592,7 +592,7 @@ class Stykades {
 		b.setSkin(18);
 		b.hp = 3;
 		b.ray = 16;
-		b.vy = 1 + Math.random() * 1;
+		b.vy = 1 + Cs.rand() * 1;
 		b.bounceId = 2;
 		b.turn = b.root.smc;
 		b.onDeath = () -> {

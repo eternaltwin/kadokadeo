@@ -51,7 +51,7 @@ class Bonus extends Phys {
 		ray = 15;
 		dm = new DepthManager(root);
 		id = getRandomId();
-		var a = 0.775 + Std.random(2) * 1.57;
+		var a = 0.775 + Cs.random(2) * 1.57;
 		vx = Math.cos(a) * SPEED;
 		vy = Math.sin(a) * SPEED;
 		root.gotoAndStop(Std.string(id + 1));
@@ -62,7 +62,7 @@ class Bonus extends Phys {
 		for (i in 0...STATS.length) {
 			max += STATS[i];
 		}
-		var rnd = Std.random(max);
+		var rnd = Cs.random(max);
 		var cur = 0;
 		for (i in 0...STATS.length) {
 			cur += STATS[i];
@@ -86,13 +86,13 @@ class Bonus extends Phys {
 			for (i in 0...2) {
 				var p = new Part(dm.attach("partRay", 1));
 				p.root.gotoAndStop(Std.string(id - 14));
-				p.vr = (Math.random() * 2 - 1) * 10;
+				p.vr = (Cs.rand() * 2 - 1) * 10;
 				p.fadeType = 3;
-				p.scale = 50 + Math.random() * 100;
-				p.root._xscale = 10 + Math.random() * 20;
+				p.scale = 50 + Cs.rand() * 100;
+				p.root._xscale = 10 + Cs.rand() * 20;
 				p.root._yscale = p.scale;
-				p.root._rotation = Math.random() * 360;
-				p.timer = 10 + Math.random() * 10;
+				p.root._rotation = Cs.rand() * 360;
+				p.timer = 10 + Cs.rand() * 10;
 				p.root._x = 0;
 				p.root._y = 0;
 			}

@@ -88,8 +88,8 @@ class Shot extends Phys {
 					updateVit();
 
 				case 5: // SWARM
-					if (Math.sqrt(vx * vx + vy * vy) < 3 || Math.random() / Timer.tmod < 0.1) {
-						a = Std.random(4) * 1.57;
+					if (Math.sqrt(vx * vx + vy * vy) < 3 || Cs.rand() / Timer.tmod < 0.1) {
+						a = Cs.random(4) * 1.57;
 						vx = Math.cos(a) * speed;
 						vy = Math.sin(a) * speed;
 					}
@@ -101,11 +101,11 @@ class Shot extends Phys {
 					var max = 2 * Game.PM;
 					for (i in 0...max) {
 						var p = new Part(Cs.game.dm.attach("partPlasmaBolt", Game.DP_PARTS));
-						var a = Math.random() * 6.28;
-						var r = Math.random() * 40;
+						var a = Cs.rand() * 6.28;
+						var r = Cs.rand() * 40;
 						p.x = x + Math.cos(a) * r;
 						p.y = y + Math.sin(a) * r;
-						p.vy = -(1 + Math.random() + 6);
+						p.vy = -(1 + Cs.rand() + 6);
 						// p.timer = 20+Math.random()*10;
 						p.root._xscale = 150;
 						p.root._yscale = p.root._xscale;
@@ -173,7 +173,7 @@ class Shot extends Phys {
 		}
 
 		if (list.length > 0) {
-			trg = cast list[Std.random(list.length)];
+			trg = cast list[Cs.random(list.length)];
 		} else {
 			trg = null;
 		}
@@ -220,7 +220,7 @@ class Shot extends Phys {
 				mc._y = y;
 				mc._xscale = 50 + damage * 100;
 				mc._yscale = mc._xscale;
-				mc._rotation = Math.random() * 360;
+				mc._rotation = Cs.rand() * 360;
 				mc.blendMode = BlendModes.ADD;
 				kill();
 				return;
