@@ -106,10 +106,4 @@ class Phys extends Sprite {
 		vx += Num.mm(-lim, dx * c, lim);
 		vy += Num.mm(-lim, dy * c, lim);
 	}
-
-	public override function kill() {
-		super.kill();
-	}
-
-	// {
 }

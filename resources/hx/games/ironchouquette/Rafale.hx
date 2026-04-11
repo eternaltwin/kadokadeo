@@ -38,6 +38,9 @@ class Rafale {
 		timer -= Timer.tmod;
 		if (timer <= 0) {
 			var si = list[index];
+			if (si == null) {
+				return;
+			}
 			shot(si.type, si.params);
 			timer += si.cooldown;
 			index++;
@@ -62,32 +65,27 @@ class Rafale {
 		var shot = null;
 		switch (type) {
 			case 0: // FRONT (  speed, skin, ray )
-				shot = newShot();
+				shot = newShot(a[1]);
 				shot.vy = a[0];
-				shot.setSkin(a[1], 1);
 				if (a[2] != null)
 					shot.ray = a[2];
 
 			case 1: // STANDARD (  speed, acc )
-				shot = newAimedShot(a[0], a[1]);
-				shot.setSkin(13, 1);
+				shot = newAimedShot(13, a[0], a[1]);
 
 			case 2: // CIBLE (  speed, skin )
-				shot = newAimedShot(a[0], 0);
-				shot.setSkin(a[1], 1);
+				shot = newAimedShot(a[1], a[0], 0);
 				shot.orient();
 
 			case 3: // MULTI (  speed, skin, nb, pa )
 				for (i in 0...a[2]) {
 					var c = (i / (a[2] - 1)) * 2 - 1;
-					shot = newAngledShot(a[0], 1.57 + c * a[3]);
-					shot.setSkin(a[1], 1);
+					shot = newAngledShot(a[1], a[0], 1.57 + c * a[3]);
 					// shot.orient();
 				}
 			case 4: // FRONT ANGLED ( speed, acc )
 				var c = Cs.rand() * 2 - 1;
-				shot = newAngledShot(a[0], 1.57 + c * a[1]);
-				shot.setSkin(13, 1);
+				shot = newAngledShot(13, a[0], 1.57 + c * a[1]);
 		}
 		if (cInert != null) {
 			shot.vx += cInert * b.vx;
@@ -95,8 +93,9 @@ class Rafale {
 		}
 	}
 
-	public function newShot() {
+	public function newShot(skin) {
 		var shot = new Shot(null);
+		shot.setSkin(skin, 1);
 		shot.x = b.x + dx;
 		shot.y = b.y + dy;
 		if (orientRay != null) {
@@ -107,17 +106,17 @@ class Rafale {
 		return shot;
 	}
 
-	public function newAimedShot(speed, da) {
+	public function newAimedShot(skin, speed, da) {
 		// var shot = newShot();
 		// var a = b.getAng(Cs.game.hero) +
 		// shot.vx = Math.cos(a)*speed;
 		// shot.vy = Math.sin(a)*speed;
 
-		return newAngledShot(speed, b.getAng(cast Cs.game.hero) + (Cs.rand() * 2 - 1) * da);
+		return newAngledShot(skin, speed, b.getAng(cast Cs.game.hero) + (Cs.rand() * 2 - 1) * da);
 	}
 
-	public function newAngledShot(speed, a) {
-		var shot = newShot();
+	public function newAngledShot(skin, speed, a) {
+		var shot = newShot(skin);
 		shot.vx = Math.cos(a) * speed * Cs.NEW_GEN_SCALE;
 		shot.vy = Math.sin(a) * speed * Cs.NEW_GEN_SCALE;
 		return shot;

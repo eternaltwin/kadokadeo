@@ -83,14 +83,7 @@ class Hero extends Phys {
 
 	// LASER
 	public var laserStartAngle:Float;
-	public var laserTrg:{
-		x:Float,
-		y:Float,
-		ray:Float,
-		damage:Float->Void,
-		flDeath:Bool,
-		shieldLim:Float
-	}
+	public var laserTrg:Bads;
 	public var laserFlip:Int;
 	public var laserList:Array<Array<Float>>;
 	public var laserRay:LaserRaySprite;
@@ -238,7 +231,7 @@ class Hero extends Phys {
 
 	public function control() {
 		var boost = weapons[3][0];
-		var sp = Math.min(speed + boost * 1.6, 10) * Timer.tmod;
+		var sp = Math.min(speed + boost * 1.6 * Cs.NEW_GEN_SCALE, 10 * Cs.NEW_GEN_SCALE) * Timer.tmod;
 
 		// MOVE
 		var mx:Float = 0;
@@ -411,6 +404,7 @@ class Hero extends Phys {
 						p.frict = 0.94;
 						p.ray = b.ray;
 						p.black = 0;
+						p.root.stop();
 						b.root = null;
 						b.kill();
 						blackHole.list.push(p);
@@ -431,7 +425,7 @@ class Hero extends Phys {
 				if (laserRay == null) {
 					laserRay = cast Cs.game.dm.attach("mcBigLaser", Game.DP_UNDERPARTS);
 					laserRay.blendMode = BlendModes.ADD;
-					laserRay.ray._xscale = 0;
+					laserRay._xscale = 0;
 					laserRay.dm = new DepthManager(laserRay);
 					laserRay.list = new Array();
 					for (i in 0...12) {
@@ -585,9 +579,13 @@ class Hero extends Phys {
 							// SEEK
 							if (laserTrg == null || laserTrg.flDeath) {
 								var dist = 1 / 0;
-								laserTrg = {
-									x: x,
-									y: -20 * Cs.NEW_GEN_SCALE,
+								laserTrg = cast {
+									get_x: function() {
+										return x;
+									},
+									get_y: function() {
+										return -20 * Cs.NEW_GEN_SCALE;
+									},
 									ray: 10 * Cs.NEW_GEN_SCALE,
 									damage: null,
 									flDeath: true,
@@ -595,9 +593,9 @@ class Hero extends Phys {
 								};
 								for (n in 0...Cs.game.badsList.length) {
 									var b = Cs.game.badsList[n];
-									var d = getDist(cast b);
+									var d = getDist({x: b.x, y: b.y});
 									if (d < dist) {
-										laserTrg = cast b;
+										laserTrg = b;
 										dist = d;
 									}
 								}
@@ -649,8 +647,8 @@ class Hero extends Phys {
 							// DRAW
 							//*
 							laserFlip = (laserFlip + 1) % 2;
-							var s0 = 12 + (a[0] + laserFlip * 2) * 3;
-							var s1 = 1 + (a[0] + laserFlip) * 2.5;
+							var s0 = 12 + (a[0] + laserFlip * 2) * 3 * Cs.NEW_GEN_SCALE;
+							var s1 = 1 + (a[0] + laserFlip) * 2.5 * Cs.NEW_GEN_SCALE;
 							var mc = Cs.game.dm.empty(Game.DP_PARTS);
 
 							mc.lineStyle(s0, 0xFF0000, 30);
@@ -671,7 +669,7 @@ class Hero extends Phys {
 							//*
 							var ba = 2;
 							var br = 2;
-							var ra = 3 + s1;
+							var ra = 3 * Cs.NEW_GEN_SCALE + s1;
 							mc.lineStyle(1, 0xFFFFFF, 100);
 							for (n in 0...3) {
 								var k = 0;
@@ -731,12 +729,12 @@ class Hero extends Phys {
 		laserRay._x = x;
 		laserRay._y = y;
 		if (laserRay.t >= 10) {
-			laserRay.ray._xscale += 32 * Timer.tmod;
+			laserRay._xscale += 32 * Timer.tmod;
 		} else {
-			if (laserRay.t < 0 && laserRay.ray._currentframe == 1)
-				laserRay.ray.play();
+			if (laserRay.t < 0 && laserRay._currentframe == 1)
+				laserRay.play();
 		}
-		laserRay.ray._xscale *= Math.pow(0.9, Timer.tmod);
+		laserRay._xscale *= Math.pow(0.9, Timer.tmod);
 		laserRay.t -= Timer.tmod;
 
 		var i = 0;
@@ -785,9 +783,10 @@ class Hero extends Phys {
 			laserRay.list.push(mc);
 		}
 		if (laserRay.t > 0) {
-			for (i in 0...Cs.game.badsList.length) {
-				var b = Cs.game.badsList[i];
-				if (Math.abs(b.x - x) < (8 * Cs.NEW_GEN_SCALE * laserRay.ray._xscale / 100) + b.ray && b.y < y) {
+			for (b in Cs.game.badsList) {
+				if (b == null)
+					continue;
+				if (Math.abs(b.x - x) < (8 * Cs.NEW_GEN_SCALE * laserRay._xscale / 100) + b.ray && b.y < y) {
 					b.damage(2.5 * Timer.tmod);
 				}
 			}
@@ -844,7 +843,7 @@ class Hero extends Phys {
 				p.black = Math.min(p.black + 8 * Timer.tmod, 100);
 				Col.setPercentColor(p.root, p.black, 0);
 
-				if (p.getDist(bh) > blackHole._xscale * 0.5 + p.ray) {
+				if (p.getDist(bh) > blackHole._xscale * 0.5 * Cs.NEW_GEN_SCALE + p.ray) {
 					p.mask.removeMovieClip();
 					p.kill();
 					blackHole.list.splice(i, 1);
@@ -857,25 +856,26 @@ class Hero extends Phys {
 				p.vx += Math.cos(a) * acc * Timer.tmod;
 				p.vy += Math.sin(a) * acc * Timer.tmod;
 
-				if (p.getDist(bh) < blackHole._xscale * 0.5 - p.ray) {
-					// TODO: check mask performance
+				if (p.getDist(bh) < blackHole._xscale * 0.5 * Cs.NEW_GEN_SCALE - p.ray) {
 					p.mask = Cs.game.dm.empty(Game.DP_BADS);
-					p.mask.getGraphics().beginFill(0xFF0000, 1).drawCircle(0, 0, blackHole._width * 0.5);
+					p.mask.getGraphics().beginFill(0xFF0000, 1).drawCircle(0, 0, 50 * Cs.NEW_GEN_SCALE);
 					p.mask._x = bh.x;
 					p.mask._y = bh.y;
+					p.mask._xscale = blackHole._xscale;
+					p.mask._yscale = blackHole._yscale;
 					p.root.mask = p.mask;
 				}
 			}
 			i++;
 		}
 		// Log.setColor(0xFF0000)
-		// Log.trace(blackHole.step)
+		// trace(blackHole.step);
 		switch (blackHole.step) {
 			case 0 | 2:
 				var ts = (blackHole.step == 0) ? 150 : 0;
 				var ds = ts - blackHole._xscale;
 				blackHole._xscale += ds * 0.3;
-				if (Math.abs(ds) < 1) {
+				if (Math.abs(ds) <= 1) {
 					blackHole.step++;
 					blackHole._xscale = ts;
 				}
@@ -917,11 +917,12 @@ class Hero extends Phys {
 
 	public function newMissile(a) {
 		var shot = newShot(a, 4, 15);
+		shot.root.stop();
 		shot.y += 10 * Cs.NEW_GEN_SCALE;
 		shot.ray = 8 * Cs.NEW_GEN_SCALE;
 		shot.damage = 2;
 		shot.speed = 4 * Cs.NEW_GEN_SCALE;
-		shot.accel = {inc: 0.5, max: 16}
+		shot.accel = {inc: 0.5 * Cs.NEW_GEN_SCALE, max: 16 * Cs.NEW_GEN_SCALE}
 		shot.va = 0.2;
 		shot.ca = 0.1;
 		shot.orient();
@@ -984,13 +985,17 @@ class Hero extends Phys {
 	}
 
 	public override function kill() {
-		Cs.game.hero = cast {x: x, y: y};
-		KKApi.gameOver(Cs.game.stats);
-		// TODO: does this have any effect ?
-		// downcast(Cs.game.root)._quality = "$HIGH".substring(1);
-		lastLaser.removeMovieClip();
-		onde.removeMovieClip();
-		laserRay.removeMovieClip();
+		// Cs.game.hero = cast {x: x, y: y};
+		KadoKadeoManager.kkm.gameOver(Cs.game.stats);
+		if (lastLaser != null) {
+			lastLaser.removeMovieClip();
+		}
+		if (onde != null) {
+			onde.removeMovieClip();
+		}
+		if (laserRay != null) {
+			laserRay.removeMovieClip();
+		}
 		super.kill();
 	}
 

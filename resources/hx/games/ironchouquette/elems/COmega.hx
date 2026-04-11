@@ -23,7 +23,7 @@ class COmega extends Bads {
 
 		hp = 1;
 		var raf = newRafale();
-		raf.addShot(1, [3, 0.6], 100, 1);
+		raf.addShot(1, [3 * Cs.NEW_GEN_SCALE, 0.6], 100, 1);
 		shootTimer = 150 + Cs.rand() * 500;
 
 		turnSpeed = 2 + Cs.rand() * 6;

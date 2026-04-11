@@ -1,11 +1,12 @@
 package ironchouquette;
 
+import haxe.Json;
 import ironchouquette.elems.Base2;
 import ironchouquette.elems.Base1;
-import pixi.filters.blur.BlurFilter;
 import pixi.filters.colormatrix.ColorMatrixFilter;
 import pixi.core.textures.RenderTexture;
 import pixi.core.math.Matrix;
+import pixi.core.sprites.Sprite;
 import pixi.core.Pixi.BlendModes;
 import common_haxe_avm1.KeyboardManager;
 import mt.bumdum.Lib;
@@ -22,6 +23,9 @@ class ShotsSprite extends ASprite {
 
 class PlasmaLayerSprite extends ASprite {
 	public var bmp:RenderTexture;
+	public var backBmp:RenderTexture;
+	public var view:Sprite;
+	public var blit:Sprite;
 }
 
 class PlasmaSprite extends ASprite {
@@ -30,8 +34,6 @@ class PlasmaSprite extends ASprite {
 
 @:expose('GameIronChouquette')
 class Game implements kado.GameInterface {
-	public static var FL_CHEAT = false;
-
 	public static var DP_INTER = 12;
 	public static var DP_PARTS = 10;
 	public static var DP_SHOTS = 8;
@@ -166,6 +168,13 @@ class Game implements kado.GameInterface {
 		// SPRITE
 		mt.bumdum.Sprite.updateAll();
 
+		// trace({
+		// 	pList: pList.length,
+		// 	shotList: shotList.length,
+		// 	badsList: badsList.length,
+		// 	bonusList: bonusList.length
+		// });
+
 		//
 		switch (step) {
 			case 0:
@@ -289,7 +298,10 @@ class Game implements kado.GameInterface {
 		for (i in 0...2) {
 			var mc:PlasmaLayerSprite = cast dm.empty(0);
 			mc.bmp = RenderTexture.create(Std.int(Cs.mcw * pq), Std.int((Cs.mch + PLASMA_CACHE) * pq));
-			mc.attachBitmap(mc.bmp, 0);
+			mc.backBmp = RenderTexture.create(Std.int(Cs.mcw * pq), Std.int((Cs.mch + PLASMA_CACHE) * pq));
+			mc.view = mc.attachBitmap(mc.bmp, 0);
+			mc.blit = new Sprite(mc.bmp);
+			mc.blit.blendMode = BlendModes.NORMAL;
 			plasma.layer.push(mc);
 			mc._y = -PLASMA_CACHE * pq;
 
@@ -303,43 +315,65 @@ class Game implements kado.GameInterface {
 
 	public function updatePlasma() {
 		plasmaDraw(shots.layer[0], 0);
-		var bfl = new BlurFilter();
 
 		for (i in 0...plasma.layer.length) {
 			if (plasma.layer[i] != null) {
-				var bmp = plasma.layer[i].bmp;
+				var layer = plasma.layer[i];
+				var src = layer.bmp;
+				var dst = layer.backBmp;
 				switch (i) {
 					case 0:
 						var blp = Math.max(2 * pq * Timer.tmod, 1.5);
-						bfl.blurX = blp;
-						bfl.blurY = blp;
-						// TODO:
-						// bmp.applyFilter(bmp, bmp.rectangle, new flash.geom.Point(0, 0), bfl);
-						var inc = -2;
-					// TODO:
-					// var ct = new flash.geom.ColorTransform(1, 1, 1, 1, inc, inc, inc, 0);
-					// bmp.colorTransform(bmp.rectangle, ct);
+						processPlasmaLayer(layer, src, dst, blp, 0xFFFFFF, 0.985);
 					case 1:
 						var blp = Math.max(10 * pq * Timer.tmod, 1);
-						bfl.blurX = blp;
-						bfl.blurY = blp;
-						// TODO:
-						// bmp.applyFilter(bmp, bmp.rectangle, new flash.geom.Point(0, 0), bfl);
-
-						var inc = -10;
-						var mult = 0.8;
-					// TODO:
-					// var ct = new flash.geom.ColorTransform(0.95, mult, mult, 1, inc, inc * 2, inc * 2, -10);
-					// bmp.colorTransform(bmp.rectangle, ct);
+						processPlasmaLayer(layer, src, dst, blp, 0xF2CCCC, 0.92);
 
 					case _:
 				}
-
-				// TODO:
-				// if (SCROLL_SPEED > 0.2)
-				// 	bmp.scroll(0, Std.int(SCROLL_SPEED * 3 * pq));
 			}
 		}
+	}
+
+	function processPlasmaLayer(layer:PlasmaLayerSprite, src:RenderTexture, dst:RenderTexture, blur:Float, tint:Int, decayAlpha:Float):Void {
+		if (layer.blit == null)
+			layer.blit = new Sprite(src);
+		layer.blit.texture = src;
+		layer.blit.tint = tint;
+
+		var scrollY = SCROLL_SPEED > 0.2 ? Std.int(SCROLL_SPEED * 3 * pq) : 0;
+		var r = Math.max(1, Std.int(blur));
+
+		layer.blit.alpha = decayAlpha * 0.40;
+		var m = new Matrix();
+		m.translate(0, scrollY);
+		renderToTexture(layer.blit, dst, m, true);
+
+		layer.blit.alpha = decayAlpha * 0.15;
+		m = new Matrix();
+		m.translate(r, scrollY);
+		renderToTexture(layer.blit, dst, m, false);
+
+		m = new Matrix();
+		m.translate(-r, scrollY);
+		renderToTexture(layer.blit, dst, m, false);
+
+		m = new Matrix();
+		m.translate(0, r + scrollY);
+		renderToTexture(layer.blit, dst, m, false);
+
+		m = new Matrix();
+		m.translate(0, -r + scrollY);
+		renderToTexture(layer.blit, dst, m, false);
+
+		layer.bmp = dst;
+		layer.backBmp = src;
+		if (layer.view != null)
+			layer.view.texture = layer.bmp;
+	}
+
+	inline function renderToTexture(object:Dynamic, texture:RenderTexture, matrix:Matrix, clear:Bool):Void {
+		KadoKadeoManager.kkm.renderer.render(object, cast {renderTexture: texture, clear: clear, transform: matrix});
 	}
 
 	public function plasmaDraw(mc:ASprite, n:Int) {
@@ -348,9 +382,9 @@ class Game implements kado.GameInterface {
 		var bmp = plasma.layer[n].bmp;
 
 		var m = new Matrix();
-		// m.scale((mc._xscale / 100) * pq, (mc._yscale / 100) * pq);
-		// m.rotate(mc._rotation * 0.0174);
-		m.translate(pq, PLASMA_CACHE * pq);
+		m.scale((mc._xscale / 100) * pq, (mc._yscale / 100) * pq);
+		m.rotate(mc._rotation * 0.0174);
+		m.translate((mc._x) * pq, (mc._y + PLASMA_CACHE) * pq);
 
 		// Commented while converting to pixi:
 		// var ct = new flash.geom.ColorTransform(1, 1, 1, 1, 0, 0, 0, -255 + mc._alpha * 2.55);
@@ -434,23 +468,23 @@ class Game implements kado.GameInterface {
 		if (hero == null)
 			return;
 
-		if (FL_CHEAT) {
-			for (n in 96...107) {
-				if (isKeyJustPressed(n))
-					hero.addWeapon(n - 96);
-			}
-			for (n in 49...54) {
-				if (isKeyJustPressed(n))
-					hero.addBox();
-			}
-			for (n in 54...59) {
-				if (isKeyJustPressed(n)) {
-					var bonus = new Bonus(null);
-					bonus.x = Cs.rand() * Cs.mcw;
-					bonus.y = -bonus.ray;
-				}
+		#if debug
+		for (n in 96...107) {
+			if (isKeyJustPressed(n))
+				hero.addWeapon(n - 96);
+		}
+		for (n in 49...54) {
+			if (isKeyJustPressed(n))
+				hero.addBox();
+		}
+		for (n in 54...59) {
+			if (isKeyJustPressed(n)) {
+				var bonus = new Bonus(null);
+				bonus.x = Cs.rand() * Cs.mcw;
+				bonus.y = -bonus.ray;
 			}
 		}
+		#end
 
 		if (isKeyJustPressed(KeyboardManager.CONTROL) || isKeyJustPressed(16)) {
 			hero.sacrifice(null);

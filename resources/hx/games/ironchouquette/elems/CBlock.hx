@@ -6,7 +6,7 @@ class CBlock extends Bads {
 		var root = Cs.game.dm.attach("blockBody", Game.DP_BADS);
 		super(root);
 
-		var reactor = root.attachMovie("blockReactor");
+		var reactor = root.attachMovie("blockReactor", "react", -1);
 		reactor.loop = true;
 		reactor.play();
 		reactor._y = -66 * Cs.NEW_GEN_SCALE;

@@ -5,6 +5,7 @@ class CCarrier extends Bads {
 	public function new() {
 		var root = Cs.game.dm.attach("carrierBody", Game.DP_BADS);
 		super(root);
+		root._rotation = -90;
 
 		var reactor1 = root.attachMovie("badReactor");
 		reactor1.loop = true;

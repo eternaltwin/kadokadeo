@@ -45,6 +45,11 @@ class Shot extends Phys {
 	}
 
 	public override function update() {
+		if (this.root == null) {
+			kill();
+			return;
+		}
+
 		if (accel != null) {
 			speed = Math.min(speed + accel.inc * Timer.tmod, accel.max);
 		}

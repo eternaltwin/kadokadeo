@@ -10,7 +10,7 @@ class CFuria extends Bads {
 		setScore(Cs.C_FURIA);
 		hp = 1;
 		var raf = newRafale();
-		raf.addShot(0, [4.5, 13], 0, 1);
+		raf.addShot(0, [4.5 * Cs.NEW_GEN_SCALE, 13], 0, 1);
 		shootTimer = 70 + Cs.rand() * 30;
 	}
 }

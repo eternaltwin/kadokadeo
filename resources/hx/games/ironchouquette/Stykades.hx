@@ -652,7 +652,9 @@ class Stykades {
 
 			case 7: // BLOCK
 				var b = newBlock();
-				b.vy = 2 * Cs.NEW_GEN_SCALE;
+				if (b != null) {
+					b.vy = 2 * Cs.NEW_GEN_SCALE;
+				}
 
 			case 8: // SURGROMPH
 				var wid = 15 + Cs.random(6);
@@ -673,9 +675,11 @@ class Stykades {
 				for (i in 0...max) {
 					var c = (i / (max - 1)) * 2 - 1;
 					var b = newCutty();
-					b.x = x + c * 40 * Cs.NEW_GEN_SCALE;
-					b.vy = (4 - Math.abs(c) * 1) * Cs.NEW_GEN_SCALE;
-					b.seekerLimit = (Cs.mch * 0.5) + 10 * Cs.NEW_GEN_SCALE * c;
+					if (b != null) {
+						b.x = x + c * 40 * Cs.NEW_GEN_SCALE;
+						b.vy = (4 - Math.abs(c) * 1) * Cs.NEW_GEN_SCALE;
+						b.seekerLimit = (Cs.mch * 0.5) + 10 * Cs.NEW_GEN_SCALE * c;
+					}
 				}
 			case 18: // NES
 				var wid = 21;
@@ -720,7 +724,7 @@ class Stykades {
 
 					b.hp = 120;
 					var raf = b.newRafale();
-					raf.addShot(1, [3, 0.6], 10, 1);
+					raf.addShot(1, [3 * Cs.NEW_GEN_SCALE, 0.6], 10, 1);
 					b.cooldown = 10;
 					b.shootTimer = 5 + Cs.rand() * 10;
 				}
@@ -848,7 +852,7 @@ class Stykades {
 	public static function newStorm(lvl) { // 0 - 1 - 2;
 		FL_CREATE_LOCK = true;
 		// BASE
-		var b = newBad(CStorm);
+		var b = newBad(CStorm, [lvl]);
 		b.setPart(newBad(CStormSide, [lvl, -1]), -25 * Cs.NEW_GEN_SCALE, 0);
 		b.setPart(newBad(CStormSide, [lvl, 1]), 25 * Cs.NEW_GEN_SCALE, 0);
 

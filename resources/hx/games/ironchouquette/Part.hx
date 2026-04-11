@@ -8,12 +8,6 @@ class Part extends Phys {
 		scale = 100;
 	}
 
-	public function incrust(n) {
-		trace("DEAD CODE ? incrust() in Part.hx");
-		// Cs.game.plasmaDraw(root, 1);
-		// kill();
-	}
-
 	public override function kill() {
 		Cs.game.pList.remove(this);
 		super.kill();

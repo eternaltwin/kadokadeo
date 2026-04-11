@@ -24,7 +24,7 @@ class CMine extends Bads {
 	}
 
 	public override function update() {
-		turn._rotation += vy * 8 * Timer.tmod;
+		turn._rotation += vy * Timer.tmod;
 		super.update();
 	}
 }

@@ -17,13 +17,13 @@ class CNes extends Bads {
 		hp = 60;
 
 		var raf = newRafale();
-		raf.addShot(0, [10, 23, 16], 150, 1);
+		raf.addShot(0, [10 * Cs.NEW_GEN_SCALE, 23, 16], 150, 1);
 		raf.cooldown = 40;
 		raf.dx = -5 * Cs.NEW_GEN_SCALE;
 		raf.dy = 20 * Cs.NEW_GEN_SCALE;
 
 		raf = newRafale();
-		raf.addShot(0, [10, 23, 16], 6, 3);
+		raf.addShot(0, [10 * Cs.NEW_GEN_SCALE, 23, 16], 6, 3);
 		raf.cooldown = 100;
 		raf.dx = -5 * Cs.NEW_GEN_SCALE;
 		raf.dy = 24 * Cs.NEW_GEN_SCALE; // 20;

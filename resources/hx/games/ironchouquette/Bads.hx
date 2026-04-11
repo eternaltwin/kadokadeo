@@ -100,8 +100,8 @@ class Bads extends Phys {
 
 		ond = {
 			decal: 314,
-			speed: 16 * Cs.NEW_GEN_SCALE,
-			amp: 0.1,
+			speed: 16,
+			amp: 0.1 * Cs.NEW_GEN_SCALE,
 			by: 50 * Cs.NEW_GEN_SCALE,
 			vx: 3 * Cs.NEW_GEN_SCALE,
 			sens: 1,
@@ -128,6 +128,9 @@ class Bads extends Phys {
 	}
 
 	public override function update() {
+		if (this.root == null) {
+			return;
+		}
 		updateBehaviour();
 		updateFlash();
 		checkCols();
@@ -169,7 +172,7 @@ class Bads extends Phys {
 		// HERO
 		{
 			var h = Cs.game.hero;
-			var flHit = getDist(cast h) < ray + h.ray;
+			var flHit = getDist({x: h.x, y: h.y}) < ray + h.ray;
 			if (rect != null)
 				flHit = Math.abs(h.x - x) < rect.rw + h.ray && Math.abs(h.y - y) < rect.rh + h.ray;
 			if (flHit) {
@@ -179,9 +182,8 @@ class Bads extends Phys {
 		// LASER
 		var power = Cs.game.hero.weapons[Hero.WP_LASER][0];
 		var rl = 2 + Cs.game.hero.weapons[Hero.WP_LASER][1] * 2.5;
-		if (power > 0) {
-			for (i in 0...Cs.game.hero.laserList.length) {
-				var pos = Cs.game.hero.laserList[i];
+		if (power > 0 && Cs.game.hero.laserList != null) {
+			for (pos in Cs.game.hero.laserList) {
 				var flHit = Math.abs(pos[0] - x) + Math.abs(pos[1] - y) < ray + rl;
 				if (rect != null)
 					flHit = Math.abs(pos[0] - x) < rect.rw + rl && Math.abs(pos[1] - y) < rect.rh + rl;
@@ -242,10 +244,10 @@ class Bads extends Phys {
 		for (i in 0...Cs.game.badsList.length) {
 			var b = Cs.game.badsList[i];
 			if (b != this && b.bounceId == bounceId) {
-				var dist = getDist(cast b);
+				var dist = getDist({x: b.x, y: b.y});
 				var dif = (ray + b.ray) - dist;
 				if (dif > 0) {
-					var a = getAng(cast b);
+					var a = getAng({x: b.x, y: b.y});
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
 					x -= ca * dif * 0.5;
@@ -292,7 +294,7 @@ class Bads extends Phys {
 							y = p0[1] + sa * c * sp;
 
 							if (!wave.flLinear) {
-								speedCoef = (ecart / 5) / wave.speed;
+								speedCoef = (ecart / 5 * Cs.NEW_GEN_SCALE) / wave.speed;
 							}
 
 							vx = ca * wave.speed * speedCoef;
@@ -354,7 +356,7 @@ class Bads extends Phys {
 						}
 					} else if (vy < 0) {} else {
 						ond.decal = (ond.decal + ond.speed * Timer.tmod) % 628;
-						y = ond.by + Math.sin(ond.decal / 100) * (ond.amp * 100 * Cs.NEW_GEN_SCALE);
+						y = ond.by + Math.sin(ond.decal / 100) * (ond.amp * 100);
 						x += ond.vx * ond.sens * Timer.tmod;
 						var m = 10 * Cs.NEW_GEN_SCALE;
 						if (x < (ray + m) || x > Cs.mcw - (ray + m)) {
@@ -414,9 +416,9 @@ class Bads extends Phys {
 						bList.splice(i, 1);
 						i--;
 						bList.push(3);
-						trg = cast Cs.game.hero;
+						trg = {x: Cs.game.hero.x, y: Cs.game.hero.y};
 						hp = 2;
-						root.smc.play();
+						root.play();
 						score = score2;
 						flOrient = true;
 					}
@@ -435,10 +437,9 @@ class Bads extends Phys {
 
 				case 10: // SHIELD
 
-					for (k in 0...Cs.game.shotList.length) {
-						var shot = Cs.game.shotList[k];
+					for (shot in Cs.game.shotList) {
 						if (shot.flGood && shot.root._currentframe != 14) {
-							var dist = getDist(cast shot);
+							var dist = getDist({x: shot.x, y: shot.y});
 							if (dist < shieldLim) {
 								var d = shieldLim - dist;
 								shot.x += Math.cos(a) * d;
@@ -461,13 +462,15 @@ class Bads extends Phys {
 
 	// SHOT
 	public function initShot() {
+		if (weapons == null) {
+			return;
+		}
 		var max = 0;
 		for (w in weapons)
 			max += w.w;
 		var rid = Cs.random(max);
 		var sum = 0;
-		for (i in 0...weapons.length) {
-			var raf = weapons[i];
+		for (raf in weapons) {
 			sum += raf.w;
 			if (sum > rid) {
 				raf.init();
@@ -551,6 +554,7 @@ class Bads extends Phys {
 				var p = new Part(Cs.game.dm.attach("partScore", Game.DP_PARTS));
 				p.x = x;
 				p.y = y;
+				p.timer = 10;
 				// TODO: uncomment both lines below
 				// downcast(p.root).compt = 10;
 				// downcast(p.root).score = v;

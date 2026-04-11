@@ -36,7 +36,7 @@ class Phys extends mt.bumdum.Phys {
 	}
 
 	public function collide(sp:Phys) {
-		var d = getDist(cast sp);
+		var d = getDist({x: sp.x, y: sp.y});
 		return d < ray + sp.ray;
 	}
 

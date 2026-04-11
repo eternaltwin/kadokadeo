@@ -37,7 +37,7 @@ class CGergin extends Bads {
 		} else {
 			last.setPart(this, 40 * Cs.NEW_GEN_SCALE, 0);
 			var raf = newRafale();
-			raf.addShot(1, [3, 0.15], 7, 12);
+			raf.addShot(1, [3 * Cs.NEW_GEN_SCALE, 0.15], 7, 12);
 			raf.cooldown = 48;
 			raf.dy = 25 * Cs.NEW_GEN_SCALE;
 
@@ -58,7 +58,7 @@ class CGergin extends Bads {
 				trg = {x: Cs.mcw * 0.5, y: 40 * Cs.NEW_GEN_SCALE}
 				weapons = [];
 				var r = newRafale();
-				r.addShot(4, [3, 0.9], 5, 12);
+				r.addShot(4, [3 * Cs.NEW_GEN_SCALE, 0.9], 5, 12);
 				r.cooldown = 48;
 				r.dy = 25 * Cs.NEW_GEN_SCALE;
 			}

@@ -73,7 +73,9 @@ class Sprite {
 	}
 
 	public function kill() {
-		this.root.removeMovieClip();
+		if (this.root != null) {
+			this.root.removeMovieClip();
+		}
 		unregister(this);
 	}
 
@@ -159,6 +161,9 @@ class Sprite {
 	}
 
 	public function isOut(m:Float, w:Float = 900, h:Float = 900) {
+		if (Math.isNaN(x) || Math.isNaN(y)) {
+			return true;
+		}
 		return (x < -m || x > w + m || y < -m || y > h + m);
 	}
 }

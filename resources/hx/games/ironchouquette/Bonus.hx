@@ -26,14 +26,6 @@ class Bonus extends Phys {
 		70, // VOID;
 		70, // MISSILE;
 		30, // SLOT;
-		0, // MAGIC BALL;
-		0, // TELEPORT;
-		0, // HYPERTHRUST;
-		0, // POWER BALL;
-		0,
-		0,
-		0,
-		0,
 		0, // GREEN;
 		0, // BLUE;
 		0 // PINK;
@@ -54,7 +46,7 @@ class Bonus extends Phys {
 		var a = 0.775 + Cs.random(2) * 1.57;
 		vx = Math.cos(a) * SPEED;
 		vy = Math.sin(a) * SPEED;
-		root.gotoAndStop(Std.string(id + 1));
+		root.gotoAndStop(id + 1);
 	}
 
 	public function getRandomId() {

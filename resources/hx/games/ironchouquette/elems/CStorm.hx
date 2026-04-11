@@ -3,7 +3,7 @@ package ironchouquette.elems;
 // frame 11
 class CStorm extends Bads {
 	public function new(lvl:Int) {
-		var root = Cs.game.dm.attach("storm" + Std.string(lvl), Game.DP_BADS);
+		var root = Cs.game.dm.attach("storm" + Std.string(lvl + 1), Game.DP_BADS);
 		super(root);
 
 		root.loop = true;
@@ -19,7 +19,7 @@ class CStorm extends Bads {
 
 		// SHOTS
 		var raf = newRafale();
-		raf.addShot(1, [3, 0.4], 5, 5 + 4 * lvl);
+		raf.addShot(1, [3 * Cs.NEW_GEN_SCALE, 0.4], 5, 5 + 4 * lvl);
 		shootTimer = 10;
 	}
 }
