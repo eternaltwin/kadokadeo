@@ -812,7 +812,7 @@ class Hero extends Phys {
 				}
 			}
 
-			if (flStrike && b.getDist({x: onde._x, y: onde._y}) < onde._xscale * 0.5) {
+			if (b != null && flStrike && b.getDist({x: onde._x, y: onde._y}) < onde._xscale * 0.5) {
 				b.damage(5);
 				onde.list.push(b);
 			}

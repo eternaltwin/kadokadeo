@@ -19,7 +19,7 @@ class CStorm extends Bads {
 
 		// SHOTS
 		var raf = newRafale();
-		raf.addShot(1, [3 * Cs.NEW_GEN_SCALE, 0.4], 5, 5 + 4 * lvl);
+		raf.addShot(1, [3, 0.4], 5, 5 + 4 * lvl);
 		shootTimer = 10;
 	}
 }

@@ -16,7 +16,7 @@ class CStormSide extends Bads {
 
 		//
 		var raf = newRafale();
-		raf.addShot(0, [12 * Cs.NEW_GEN_SCALE, 19], 12, 1 + lvl);
+		raf.addShot(0, [12, 19], 12, 1 + lvl);
 		raf.cooldown = 150;
 		shootTimer = 150;
 	}

@@ -16,7 +16,7 @@ class CSurgromph extends Bads {
 		hp = 16;
 
 		var raf = newRafale();
-		raf.addShot(2, [6 * Cs.NEW_GEN_SCALE, 21], 4, 3);
+		raf.addShot(2, [6, 21], 4, 3);
 		raf.cooldown = 60;
 		raf.dy = 0;
 		raf.orientRay = 26 * Cs.NEW_GEN_SCALE;

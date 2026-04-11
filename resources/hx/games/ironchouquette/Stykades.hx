@@ -724,7 +724,7 @@ class Stykades {
 
 					b.hp = 120;
 					var raf = b.newRafale();
-					raf.addShot(1, [3 * Cs.NEW_GEN_SCALE, 0.6], 10, 1);
+					raf.addShot(1, [3, 0.6], 10, 1);
 					b.cooldown = 10;
 					b.shootTimer = 5 + Cs.rand() * 10;
 				}

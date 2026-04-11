@@ -18,8 +18,8 @@ class COrb extends Bads {
 
 		var raf = newRafale();
 		for (i in 0...2) {
-			raf.addShot(3, [3 * Cs.NEW_GEN_SCALE, 13, 4, 0.7], 14, 1);
-			raf.addShot(3, [3 * Cs.NEW_GEN_SCALE, 13, 3, 0.5], 14, 1);
+			raf.addShot(3, [3, 13, 4, 0.7], 14, 1);
+			raf.addShot(3, [3, 13, 3, 0.5], 14, 1);
 		}
 		raf.cooldown = 800;
 		shootTimer = 2000;

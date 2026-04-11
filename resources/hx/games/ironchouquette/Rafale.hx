@@ -66,7 +66,7 @@ class Rafale {
 		switch (type) {
 			case 0: // FRONT (  speed, skin, ray )
 				shot = newShot(a[1]);
-				shot.vy = a[0];
+				shot.vy = a[0] * Cs.NEW_GEN_SCALE;
 				if (a[2] != null)
 					shot.ray = a[2];
 
@@ -99,7 +99,7 @@ class Rafale {
 		shot.x = b.x + dx;
 		shot.y = b.y + dy;
 		if (orientRay != null) {
-			var a = b.getAng(cast Cs.game.hero);
+			var a = b.getAng({x: Cs.game.hero.x, y: Cs.game.hero.y});
 			shot.x += Math.cos(a) * orientRay;
 			shot.y += Math.sin(a) * orientRay;
 		}
@@ -112,7 +112,7 @@ class Rafale {
 		// shot.vx = Math.cos(a)*speed;
 		// shot.vy = Math.sin(a)*speed;
 
-		return newAngledShot(skin, speed, b.getAng(cast Cs.game.hero) + (Cs.rand() * 2 - 1) * da);
+		return newAngledShot(skin, speed, b.getAng({x: Cs.game.hero.x, y: Cs.game.hero.y}) + (Cs.rand() * 2 - 1) * da);
 	}
 
 	public function newAngledShot(skin, speed, a) {
