@@ -8,7 +8,6 @@ class COrb extends Bads {
 
 		setLevel(18);
 		setScore(Cs.C_ORB);
-		setSkin(10);
 		ray = 25 * Cs.NEW_GEN_SCALE;
 		y = -(ray + 5 * Cs.NEW_GEN_SCALE);
 		hp = 16;

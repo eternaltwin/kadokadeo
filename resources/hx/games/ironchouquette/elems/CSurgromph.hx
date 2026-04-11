@@ -14,7 +14,6 @@ class CSurgromph extends Bads {
 		setLevel(20);
 		setScore(Cs.C_SURGROMPH);
 		hp = 16;
-		setSkin(5);
 
 		var raf = newRafale();
 		raf.addShot(2, [6, 21], 4, 3);

@@ -336,7 +336,7 @@ class Hero extends Phys {
 		var mc = Cs.game.dm.attach("mcSlot", Game.DP_INTER);
 		var m = 8 * Cs.NEW_GEN_SCALE;
 		mc._x = m;
-		mc._y = Cs.mch - 36 - (m + boxes.length * (m + 6 * Cs.NEW_GEN_SCALE));
+		mc._y = Cs.mch - (m + boxes.length * (m + 5 * Cs.NEW_GEN_SCALE));
 		mc.stop();
 		boxes.push(mc);
 	}

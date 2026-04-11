@@ -16,7 +16,6 @@ class CNes extends Bads {
 		setScore(Cs.C_NES);
 		hp = 60;
 
-		setSkin(9);
 		var raf = newRafale();
 		raf.addShot(0, [10, 23, 16], 150, 1);
 		raf.cooldown = 40;

@@ -17,7 +17,6 @@ class CCarrier extends Bads {
 
 		setLevel(10);
 		setScore(Cs.C0);
-		setSkin(17);
 		hp = 3;
 		ray = 20 * Cs.NEW_GEN_SCALE;
 		waitTimer = 300;

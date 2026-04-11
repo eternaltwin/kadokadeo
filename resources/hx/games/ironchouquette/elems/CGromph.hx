@@ -14,7 +14,6 @@ class CGromph extends Bads {
 		setLevel(7);
 		setScore(Cs.C_GROMPH);
 		hp = 5;
-		setSkin(4);
 
 		var raf = newRafale();
 		raf.addShot(2, [6, 21], 4, 3);

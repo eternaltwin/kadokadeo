@@ -11,7 +11,6 @@ class CGergin extends Bads {
 
 		setLevel(22);
 		setScore(Cs.C_GERGIN);
-		// setSkin(14 + type * 2);
 		hp = 30;
 		rect = {rw: 20 * Cs.NEW_GEN_SCALE, rh: 26 * Cs.NEW_GEN_SCALE}
 		if (last == null) {

@@ -13,7 +13,6 @@ class CMine extends Bads {
 
 		setLevel(4);
 		setScore(Cs.C_MINE);
-		setSkin(18);
 		hp = 3;
 		ray = 16 * Cs.NEW_GEN_SCALE;
 		vy = (1 + Cs.rand() * 1) * Cs.NEW_GEN_SCALE;

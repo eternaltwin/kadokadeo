@@ -12,8 +12,6 @@ class CStorm extends Bads {
 		setLevel((lvl + 1) * 32);
 		setScore(Cs.C_STORM[lvl]);
 
-		// setSkin(11);
-		// setSubSkin(lvl + 1);
 		hp = 28 + lvl * 20;
 		ray = 25 * Cs.NEW_GEN_SCALE;
 		bList.push(5);

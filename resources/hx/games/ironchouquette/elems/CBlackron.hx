@@ -24,6 +24,5 @@ class CBlackron extends Bads {
 		setScore(Cs.C_BLACKRON);
 
 		hp = 2;
-		setSkin(2);
 	}
 }

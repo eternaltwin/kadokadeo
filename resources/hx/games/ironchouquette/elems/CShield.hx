@@ -19,7 +19,6 @@ class CShield extends Bads {
 
 		setLevel(13);
 		setScore(Cs.C_SHIELD);
-		setSkin(19);
 		hp = 10;
 		ray = 27 * Cs.NEW_GEN_SCALE;
 		shieldLim = 120;

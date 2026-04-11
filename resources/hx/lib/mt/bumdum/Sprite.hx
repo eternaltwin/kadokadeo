@@ -19,7 +19,9 @@ class Sprite {
 
 	public function new(root:ASprite) {
 		this.root = root;
-		root.obj = this;
+		if (root != null) {
+			root.obj = this;
+		}
 		register(this);
 
 		if (this.root._x == 0 && this.root._y == 0) {

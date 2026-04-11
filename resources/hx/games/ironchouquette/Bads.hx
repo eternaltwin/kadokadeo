@@ -632,15 +632,6 @@ class Bads extends Phys {
 		}
 	}
 
-	// GFX
-	public function setSkin(n) {
-		// root.gotoAndStop(n);
-	}
-
-	public function setSubSkin(fr) {
-		Cs.allGoto(root, "$sub", fr);
-	}
-
 	// SPECIFIC
 	public function chooseBeeTrg() {
 		var max = 0;
@@ -680,12 +671,14 @@ class Bads extends Phys {
 
 	public override function kill() {
 		var i = 0;
-		while (i < partList.length) {
-			var b = partList[i].b;
-			if (b.flDeath != true && b.flSide) {
-				b.die();
+		if (partList != null) {
+			while (i < partList.length) {
+				var b = partList[i].b;
+				if (b.flDeath != true && b.flSide) {
+					b.die();
+				}
+				partList.splice(i, 1);
 			}
-			partList.splice(i, 1);
 		}
 
 		flDeath = true;

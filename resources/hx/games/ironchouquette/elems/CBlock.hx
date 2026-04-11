@@ -58,7 +58,6 @@ class CBlock extends Bads {
 		hp = 30;
 		// rect = {rw:45,rh:66}
 		setRect(45 * Cs.NEW_GEN_SCALE, 66 * Cs.NEW_GEN_SCALE);
-		setSkin(20);
 		y = -rect.rh;
 		Cs.game.dm.under(root);
 	}

@@ -10,8 +10,6 @@ class CStormSide extends Bads {
 
 		setLevel(2 + lvl);
 		flSide = true;
-		setSkin(12);
-		setSubSkin(lvl + 1);
 		root._xscale = sens * 100;
 		hp = 8 + lvl * 6;
 		ray = 20 * Cs.NEW_GEN_SCALE;

@@ -22,7 +22,6 @@ class COmega extends Bads {
 		setScore(Cs.C_OMEGA);
 
 		hp = 1;
-		setSkin(1);
 		var raf = newRafale();
 		raf.addShot(1, [3, 0.6], 100, 1);
 		shootTimer = 150 + Cs.rand() * 500;

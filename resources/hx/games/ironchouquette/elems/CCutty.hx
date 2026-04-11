@@ -34,7 +34,6 @@ class CCutty extends Bads {
 
 		vr = (Cs.random(2) * 2 - 1) * (5 + Cs.rand() * 10);
 		hp = 14;
-		setSkin(8);
 		va = 0.07;
 		turnCoef = 0.1;
 		bounceId = 0;

@@ -9,7 +9,6 @@ class CBriaros extends Bads {
 		setScore(Cs.C_BRIAROS);
 
 		hp = 6;
-		setSkin(6);
 
 		vy = -Cs.rand() * 5 * Cs.NEW_GEN_SCALE;
 
