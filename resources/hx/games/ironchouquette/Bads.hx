@@ -88,13 +88,13 @@ class Bads extends Phys {
 		a = 1.57;
 		va = 0.1;
 		turnCoef = 0.1;
-		speed = 3;
+		speed = 3 * Cs.NEW_GEN_SCALE;
 
 		hp = 2;
 
 		dif = 1;
 		mid = 0;
-		ray = 16;
+		ray = 16 * Cs.NEW_GEN_SCALE;
 		level = 0;
 
 		shootRate = 30;
@@ -104,10 +104,10 @@ class Bads extends Phys {
 
 		ond = {
 			decal: 314,
-			speed: 16,
+			speed: 16 * Cs.NEW_GEN_SCALE,
 			amp: 0.1,
-			by: 50,
-			vx: 3,
+			by: 50 * Cs.NEW_GEN_SCALE,
+			vx: 3 * Cs.NEW_GEN_SCALE,
 			sens: 1,
 			svy: 0
 		}
@@ -160,7 +160,7 @@ class Bads extends Phys {
 		if (outSafeTimer > 0) {
 			outSafeTimer -= Timer.tmod;
 		} else {
-			var lim:Float = 10;
+			var lim:Float = 10 * Cs.NEW_GEN_SCALE;
 			if (ray != null)
 				lim += ray;
 			if (rect != null)
@@ -207,7 +207,7 @@ class Bads extends Phys {
 						var a = Cs.rand() * 6.28;
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
-						var sp = 3 + Cs.rand() * 3;
+						var sp = (3 + Cs.rand() * 3) * Cs.NEW_GEN_SCALE;
 						p.x = x + ca * ray;
 						p.y = y + sa * ray;
 						p.vx = ca * sp + vx;
@@ -370,9 +370,9 @@ class Bads extends Phys {
 						}
 					} else if (vy < 0) {} else {
 						ond.decal = (ond.decal + ond.speed * Timer.tmod) % 628;
-						y = ond.by + Math.sin(ond.decal / 100) * (ond.amp * 100);
+						y = ond.by + Math.sin(ond.decal / 100) * (ond.amp * 100 * Cs.NEW_GEN_SCALE);
 						x += ond.vx * ond.sens * Timer.tmod;
-						var m = 10;
+						var m = 10 * Cs.NEW_GEN_SCALE;
 						if (x < (ray + m) || x > Cs.mcw - (ray + m)) {
 							ond.sens *= -1;
 							x = Num.mm(ray + m, x, Cs.mcw - (ray + m));
@@ -392,7 +392,7 @@ class Bads extends Phys {
 
 					var dx = trg.x - x;
 					var dy = trg.y - y;
-					if (Math.abs(dx) + Math.abs(dy) < 20 + ray) {
+					if (Math.abs(dx) + Math.abs(dy) < 20 * Cs.NEW_GEN_SCALE + ray) {
 						trg = null;
 					}
 
@@ -401,7 +401,7 @@ class Bads extends Phys {
 					var pa = 0.3;
 					var da = Num.hMod(getAng(cast Cs.game.hero) - 1.57, 3.14);
 
-					if (Math.abs(da) < pa && getDist(cast Cs.game.hero) < 100) {
+					if (Math.abs(da) < pa && getDist(cast Cs.game.hero) < 100 * Cs.NEW_GEN_SCALE) {
 						flameTimer = 8;
 					}
 					if (flameTimer > 0) {
@@ -411,7 +411,7 @@ class Bads extends Phys {
 						var a = 1.57 + (Cs.rand() * 2 - 1) * pa;
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
-						var sp = 5 + Cs.rand() * 3;
+						var sp = (5 + Cs.rand() * 3) * Cs.NEW_GEN_SCALE;
 						shot.x = x + ca * ray;
 						shot.y = y + sa * ray;
 						shot.vx = ca * sp;
@@ -445,7 +445,7 @@ class Bads extends Phys {
 							vy = 0;
 						}
 					} else {
-						vy -= 0.3;
+						vy -= 0.3 * Cs.NEW_GEN_SCALE;
 						shootTimer = 200;
 					}
 
@@ -599,8 +599,8 @@ class Bads extends Phys {
 			var a = Cs.rand() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
-			var ray = 8;
-			var sp = 3 + Cs.rand() * 5;
+			var ray = 8 * Cs.NEW_GEN_SCALE;
+			var sp = (3 + Cs.rand() * 5) * Cs.NEW_GEN_SCALE;
 			p.x = x + ca * ray;
 			p.y = y + sa * ray;
 			p.vx = ca * sp;
@@ -679,7 +679,7 @@ class Bads extends Phys {
 
 	public function chooseNewTarget(xMin, xMax, yMin, yMax) {
 		if (waitTimer <= 0) {
-			trg = {x: x, y: -200}
+			trg = {x: x, y: -200 * Cs.NEW_GEN_SCALE}
 			return;
 		}
 

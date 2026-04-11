@@ -6,7 +6,7 @@ import mt.bumdum.Lib;
 
 class Bonus extends Phys {
 	public static var ID_MAX = 4;
-	public static var SPEED = 3;
+	public static var SPEED = 3 * Cs.NEW_GEN_SCALE;
 	public static var SCORE = KKApi.aconst([1000, 3000, 12000]);
 
 	public static var WP_PLASMA = 0;
@@ -48,7 +48,7 @@ class Bonus extends Phys {
 			mc = Cs.game.dm.attach("mcBonus", Game.DP_BADS);
 		super(mc);
 
-		ray = 15;
+		ray = 15 * Cs.NEW_GEN_SCALE;
 		dm = new DepthManager(root);
 		id = getRandomId();
 		var a = 0.775 + Cs.random(2) * 1.57;
@@ -85,7 +85,7 @@ class Bonus extends Phys {
 		if (id >= 15 && id <= 17) {
 			for (i in 0...2) {
 				var p = new Part(dm.attach("partRay", 1));
-				p.root.gotoAndStop(Std.string(id - 14));
+				p.root.gotoAndStop(id - 14);
 				p.vr = (Cs.rand() * 2 - 1) * 10;
 				p.fadeType = 3;
 				p.scale = 50 + Cs.rand() * 100;

@@ -42,8 +42,8 @@ class Hero extends Phys {
 	public inline static var WP_VOID = 4;
 	public inline static var WP_MISSILE = 5;
 
-	public static var RAY = 8;
-	public static var INVINCIBLE_RAY = 32;
+	public static var RAY = 8 * Cs.NEW_GEN_SCALE;
+	public static var INVINCIBLE_RAY = 32 * Cs.NEW_GEN_SCALE;
 
 	var reactorPosOnFrame:Array<Array<{x:Float, y:Float}>> = [
 		[{x: 34, y: 82}, {x: 51, y: 82}],
@@ -118,7 +118,7 @@ class Hero extends Phys {
 		updateFlamePos();
 
 		ray = RAY;
-		speed = 3.6;
+		speed = 3.6 * Cs.NEW_GEN_SCALE;
 		frict = 0.6;
 
 		laserStartAngle = 0;
@@ -143,7 +143,7 @@ class Hero extends Phys {
 		flControl = false;
 		root.gotoAndStop(10);
 
-		x = Cs.mcw * 0.5 - 5;
+		x = Cs.mcw * 0.5 - 5 * Cs.NEW_GEN_SCALE;
 		y = Cs.mch + ray;
 	}
 
@@ -164,7 +164,7 @@ class Hero extends Phys {
 			control();
 			updateShoot();
 		} else {
-			y -= 0.8 * Timer.tmod;
+			y -= 0.8 * Cs.NEW_GEN_SCALE * Timer.tmod;
 		}
 
 		if (onde != null)
@@ -177,7 +177,7 @@ class Hero extends Phys {
 			updateInvincible();
 
 		if (!flControl && Stykades.dif > 56) {
-			Game.SCROLL_SPEED += 2.4;
+			Game.SCROLL_SPEED += 2.4 * Cs.NEW_GEN_SCALE;
 			flControl = true;
 		}
 
@@ -211,9 +211,9 @@ class Hero extends Phys {
 		var r = 0;
 		var sp = 1.5 + Cs.rand() * 1.5;
 		p.x = x;
-		p.y = y - 6;
+		p.y = y - 6 * Cs.NEW_GEN_SCALE;
 		p.vx = ca * sp;
-		p.vy = sa * sp + 4;
+		p.vy = sa * sp + 4 * Cs.NEW_GEN_SCALE;
 		p.plasmaId = 1;
 		p.timer = 10;
 		p.fadeType = 0;
@@ -284,7 +284,7 @@ class Hero extends Phys {
 
 				for (i in 0...3) {
 					var a = Cs.rand() * 6.28;
-					var ray = 20 + Cs.rand() * 50;
+					var ray = (20 + Cs.rand() * 50) * Cs.NEW_GEN_SCALE;
 					mc._x = x + Math.cos(a) * ray;
 					mc._y = y + Math.sin(a) * ray;
 					mc._xscale = 100 + Cs.rand() * 150;
@@ -367,7 +367,7 @@ class Hero extends Phys {
 			case Hero.WP_PLASMA:
 				var shot = newShot(0, 14);
 				shot.setSkin(18, 1);
-				shot.ray = 50;
+				shot.ray = 50 * Cs.NEW_GEN_SCALE;
 				shot.damage = 50;
 				shot.flPierce = true;
 				shot.bList.push(11);
@@ -494,21 +494,21 @@ class Hero extends Phys {
 								case 1:
 									var shot = newShot(0, 12);
 									shot.setSkin(14, 1);
-									shot.ray = 6;
+									shot.ray = 6 * Cs.NEW_GEN_SCALE;
 									shot.damage = 1;
 								case 2:
 									for (n in 0...2) {
 										var shot = newShot(0, 12);
 										shot.setSkin(14, 1);
-										shot.ray = 6;
-										shot.x = x + (n * 2 - 1) * 5;
+										shot.ray = 6 * Cs.NEW_GEN_SCALE;
+										shot.x = x + (n * 2 - 1) * 5 * Cs.NEW_GEN_SCALE;
 										shot.damage = 1;
 									}
 								case 3:
 									{
 										var shot = newShot(0, 15);
 										shot.setSkin(14, 1);
-										shot.ray = 8;
+										shot.ray = 8 * Cs.NEW_GEN_SCALE;
 										shot.setScale(150);
 										shot.damage = 2;
 										shot.flPierce = true;
@@ -517,15 +517,15 @@ class Hero extends Phys {
 										var sens = n * 2 - 1;
 										var shot = newShot(sens * 0.15, 12);
 										shot.setSkin(14, 1);
-										shot.ray = 8;
-										shot.x = x + sens * 5;
+										shot.ray = 8 * Cs.NEW_GEN_SCALE;
+										shot.x = x + sens * 5 * Cs.NEW_GEN_SCALE;
 										shot.damage = 1;
 									}
 								case _:
 									{
 										var shot = newShot(0, 15);
 										shot.setSkin(14, 1);
-										shot.ray = 4 + a[0];
+										shot.ray = (4 + a[0]) * Cs.NEW_GEN_SCALE;
 										shot.setScale(100 + a[0] * 25);
 										shot.damage = 1 + (a[0] * 0.5);
 										shot.flPierce = true;
@@ -535,8 +535,8 @@ class Hero extends Phys {
 										for (k in 0...Std.int(a[0] * 0.5)) {
 											var shot = newShot(sens * (0.15 + k * 0.15), 12 - (k * 1.5));
 											shot.setSkin(14, 1);
-											shot.ray = 8;
-											shot.x = x + sens * (5 + k * 5);
+											shot.ray = 8 * Cs.NEW_GEN_SCALE;
+											shot.x = x + sens * (5 + k * 5) * Cs.NEW_GEN_SCALE;
 											shot.damage = 1;
 										}
 									}
@@ -572,17 +572,17 @@ class Hero extends Phys {
 									shot.setSkin(16, 1);
 									shot.damage = 0.85;
 									// shot.root._xscale = sens*100
-									shot.x += sens * 14;
-									shot.y += 16;
+									shot.x += sens * 14 * Cs.NEW_GEN_SCALE;
+									shot.y += 16 * Cs.NEW_GEN_SCALE;
 									shot.orient();
 									shot.updatePos();
 
 									if (k > 1 && k < max - 1) {
 										shot.setScale(150);
 										shot.damage = 1.5;
-										shot.speed = 18;
+										shot.speed = 18 * Cs.NEW_GEN_SCALE;
 										shot.updateVit();
-										shot.x += sens * 6;
+										shot.x += sens * 6 * Cs.NEW_GEN_SCALE;
 									}
 								}
 							}
@@ -595,8 +595,8 @@ class Hero extends Phys {
 								var dist = 1 / 0;
 								laserTrg = {
 									x: x,
-									y: -20,
-									ray: 10,
+									y: -20 * Cs.NEW_GEN_SCALE,
+									ray: 10 * Cs.NEW_GEN_SCALE,
 									damage: null,
 									flDeath: true,
 									shieldLim: null
@@ -619,7 +619,7 @@ class Hero extends Phys {
 								angle += laserStartAngle;
 							var va = 0.1;
 							var ca = 0.1;
-							var sp = 7;
+							var sp = 7 * Cs.NEW_GEN_SCALE;
 							var tr = 0;
 
 							while (true) {
@@ -717,7 +717,7 @@ class Hero extends Phys {
 							shot.orient();
 							// shot.plasmaId = 1
 							shot.bList.push(4);
-							shot.speed = 12;
+							shot.speed = 12 * Cs.NEW_GEN_SCALE;
 							shot.decal = Cs.rand() * 628;
 
 							a[1] += 18 / (a[0] * 4);
@@ -796,7 +796,7 @@ class Hero extends Phys {
 		if (laserRay.t > 0) {
 			for (i in 0...Cs.game.badsList.length) {
 				var b = Cs.game.badsList[i];
-				if (Math.abs(b.x - x) < (8 * laserRay.ray._xscale / 100) + b.ray && b.y < y) {
+				if (Math.abs(b.x - x) < (8 * Cs.NEW_GEN_SCALE * laserRay.ray._xscale / 100) + b.ray && b.y < y) {
 					b.damage(2.5 * Timer.tmod);
 				}
 			}
@@ -916,20 +916,20 @@ class Hero extends Phys {
 		shot.a = a;
 		shot.flGood = true;
 		shot.x = x;
-		shot.y = y - 20;
-		shot.vx = Math.cos(a) * speed;
-		shot.vy = Math.sin(a) * speed;
+		shot.y = y - 20 * Cs.NEW_GEN_SCALE;
+		shot.vx = Math.cos(a) * speed * Cs.NEW_GEN_SCALE;
+		shot.vy = Math.sin(a) * speed * Cs.NEW_GEN_SCALE;
 
 		return shot;
 	}
 
 	public function newMissile(a) {
 		var shot = newShot(a, 4);
-		shot.y += 10;
+		shot.y += 10 * Cs.NEW_GEN_SCALE;
 		shot.setSkin(15, 1);
-		shot.ray = 8;
+		shot.ray = 8 * Cs.NEW_GEN_SCALE;
 		shot.damage = 2;
-		shot.speed = 4;
+		shot.speed = 4 * Cs.NEW_GEN_SCALE;
 		shot.accel = {inc: 0.5, max: 16}
 		shot.va = 0.2;
 		shot.ca = 0.1;
@@ -953,7 +953,7 @@ class Hero extends Phys {
 			var a = Cs.rand() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
-			var ray = 8;
+			var ray = 8 * Cs.NEW_GEN_SCALE;
 			var sp = 6 + Cs.rand() * 6;
 			p.x = x + ca * ray;
 			p.y = y + sa * ray;

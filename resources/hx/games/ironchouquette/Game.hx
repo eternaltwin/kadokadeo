@@ -41,9 +41,9 @@ class Game implements kado.GameInterface {
 	public static var DP_UNDERPARTS = 3;
 	public static var DP_BG = 2;
 
-	public static var SCROLL_SPEED = 0.0001; // 5//10;
-	public static var SCROLL_SPEED_MAX = 6; // 5//10;
-	public static var PLASMA_CACHE = 100;
+	public static var SCROLL_SPEED = 0.0001 * Cs.NEW_GEN_SCALE; // 5//10;
+	public static var SCROLL_SPEED_MAX = 6 * Cs.NEW_GEN_SCALE; // 5//10;
+	public static var PLASMA_CACHE = 100 * Cs.NEW_GEN_SCALE;
 
 	public static var PM = 1;
 
@@ -115,8 +115,8 @@ class Game implements kado.GameInterface {
 			case 0:
 				// CHOUQUETTE
 				chouquette = new Phys(dm.attach("mcChouquette", DP_BADS));
-				chouquette.x = Cs.mcw * 0.5 - 5;
-				chouquette.y = Cs.mch + 10;
+				chouquette.x = Cs.mcw * 0.5 - 5 * Cs.NEW_GEN_SCALE;
+				chouquette.y = Cs.mch + 10 * Cs.NEW_GEN_SCALE;
 				chouquette.frict = 0.92;
 				chouquette.root.loop = true;
 				chouquette.root.play();
@@ -125,22 +125,22 @@ class Game implements kado.GameInterface {
 				untyped chouquette.zap.play();
 
 				// KIDNAPPERS
-				knTurnRay = 10;
+				knTurnRay = 10 * Cs.NEW_GEN_SCALE;
 				knTurnDecal = 0;
 				knTurnSpeed = 0;
 				kidnappers = new Array();
 				for (i in 0...3) {
 					var sp = new Phys(dm.attach("mcKidnapper", DP_BADS));
 					kidnappers.push(sp);
-					sp.x = -100;
-					sp.y = -100;
+					sp.x = -100 * Cs.NEW_GEN_SCALE;
+					sp.y = -100 * Cs.NEW_GEN_SCALE;
 					sp.updatePos();
 				}
 
 				// BASE
 				var pl = dm.attach("mcPlanet", DP_BG);
 				pl._x = Cs.mcw;
-				pl._y = 160;
+				pl._y = 160 * Cs.NEW_GEN_SCALE;
 				baseList = [pl, new Base2(dm.empty(DP_BG)), new Base1(dm.empty(DP_PARTS))];
 
 				//
@@ -170,11 +170,11 @@ class Game implements kado.GameInterface {
 		switch (step) {
 			case 0:
 				if (chouquette.y > Cs.mch * 0.5) {
-					chouquette.vy -= 0.3 * Timer.tmod;
+					chouquette.vy -= 0.3 * Cs.NEW_GEN_SCALE * Timer.tmod;
 				} else {
 					initStep(1);
 				}
-				knTurnRay += 0.35 * Timer.tmod;
+				knTurnRay += 0.35 * Cs.NEW_GEN_SCALE * Timer.tmod;
 				updateKidnappers();
 				timer = 60;
 			case 1:
@@ -182,8 +182,8 @@ class Game implements kado.GameInterface {
 				if (timer > 0) {
 					timer -= Timer.tmod;
 				} else {
-					chouquette.vy -= 0.8 * Timer.tmod;
-					if (chouquette.y < -100) {
+					chouquette.vy -= 0.8 * Cs.NEW_GEN_SCALE * Timer.tmod;
+					if (chouquette.y < -100 * Cs.NEW_GEN_SCALE) {
 						while (kidnappers.length > 0)
 							kidnappers.pop().kill();
 						chouquette.kill();
@@ -401,7 +401,7 @@ class Game implements kado.GameInterface {
 
 		bg._y += SCROLL_SPEED;
 		if (bg._y > 0)
-			bg._y -= 1800;
+			bg._y -= 1800 * Cs.NEW_GEN_SCALE;
 
 		var i = 0;
 		while (i < baseList.length) {
@@ -409,7 +409,7 @@ class Game implements kado.GameInterface {
 			if (b._y == 0)
 				b._y = Cs.mch;
 			b._y += SCROLL_SPEED;
-			if (b._y > Cs.mch + 100) {
+			if (b._y > Cs.mch + 100 * Cs.NEW_GEN_SCALE) {
 				b.removeMovieClip();
 				baseList.splice(i, 1);
 				continue;

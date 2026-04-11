@@ -168,7 +168,7 @@ class Stykades {
 
 			case 7: // BLOCK
 				var b = newBlock();
-				b.vy = 2;
+				b.vy = 2 * Cs.NEW_GEN_SCALE;
 
 			case 8: // SURGROMPH
 				var wid = 15 + Cs.random(6);
@@ -183,15 +183,15 @@ class Stykades {
 					var b = newBriaros();
 				}
 			case 17: // CUTTY
-				var m = 80;
+				var m = 80 * Cs.NEW_GEN_SCALE;
 				var x = m + Cs.rand() * (Cs.mcw - 2 * m);
 				var max = 5;
 				for (i in 0...max) {
 					var c = (i / (max - 1)) * 2 - 1;
 					var b = newCutty();
-					b.x = x + c * 40;
-					b.vy = 4 - Math.abs(c) * 1;
-					b.seekerLimit = (Cs.mch * 0.5) + 10 * c;
+					b.x = x + c * 40 * Cs.NEW_GEN_SCALE;
+					b.vy = (4 - Math.abs(c) * 1) * Cs.NEW_GEN_SCALE;
+					b.seekerLimit = (Cs.mch * 0.5) + 10 * Cs.NEW_GEN_SCALE * c;
 				}
 			case 18: // NES
 				var wid = 21;
@@ -228,11 +228,11 @@ class Stykades {
 			case 34: // KILLER BRIAROS
 				for (i in 0...8) {
 					var b = newBriaros();
-					var m = -15;
+					var m = -15 * Cs.NEW_GEN_SCALE;
 					b.x = m + Cs.random(2) * (Cs.mcw - 2 * m);
-					b.y = Cs.mch * 0.5 + 20;
+					b.y = Cs.mch * 0.5 + 20 * Cs.NEW_GEN_SCALE;
 					b.beeRange[0].w = 0;
-					b.beeRange[1].yMax += 20;
+					b.beeRange[1].yMax += 20 * Cs.NEW_GEN_SCALE;
 
 					b.hp = 120;
 					var raf = b.newRafale();
@@ -275,10 +275,10 @@ class Stykades {
 		if (!FL_CREATE_LOCK && Cs.game.badsList.length > BADS_LIMIT)
 			return null;
 		var b = new Bads(null);
-		var m = 15;
+		var m = 15 * Cs.NEW_GEN_SCALE;
 		b.x = m + Cs.rand() * (Cs.mcw - 2 * m);
 		// b.y = -20
-		b.vy = 3;
+		b.vy = 3 * Cs.NEW_GEN_SCALE;
 		b.outSafeTimer = 100;
 
 		return b;
@@ -339,7 +339,7 @@ class Stykades {
 		var raf = b.newRafale();
 		raf.addShot(2, [6, 21], 4, 3);
 		raf.dy = 0;
-		raf.orientRay = 26;
+		raf.orientRay = 26  * Cs.NEW_GEN_SCALE;
 
 		b.fire = b.root.smc;
 		b.follow = b.root.smc;
@@ -360,7 +360,7 @@ class Stykades {
 		raf.addShot(2, [6, 21], 4, 3);
 		raf.cooldown = 60;
 		raf.dy = 0;
-		raf.orientRay = 26;
+		raf.orientRay = 26  * Cs.NEW_GEN_SCALE;
 
 		b.fire = b.root.smc;
 		b.follow = b.root.smc;
@@ -377,7 +377,7 @@ class Stykades {
 		b.setScore(Cs.C_BLOCK);
 		b.hp = 30;
 		// b.rect = {rw:45,rh:66}
-		b.setRect(45, 66);
+		b.setRect(45 * Cs.NEW_GEN_SCALE, 66 * Cs.NEW_GEN_SCALE);
 		b.setSkin(20);
 		b.y = -b.rect.rh;
 		Cs.game.dm.under(b.root);
@@ -393,7 +393,7 @@ class Stykades {
 		b.hp = 6;
 		b.setSkin(6);
 
-		b.vy = -Cs.rand() * 5;
+		b.vy = -Cs.rand() * 5 * Cs.NEW_GEN_SCALE;
 
 		var raf = b.newRafale();
 		raf.addShot(1, [3, 0.6], 100, 1);
@@ -402,24 +402,24 @@ class Stykades {
 		b.bList = [6, 7];
 		b.frict = 0.9;
 
-		var m = 20;
+		var m = 20 * Cs.NEW_GEN_SCALE;
 		b.beeRange = [
 			{
 				w: 6,
 				xMin: m,
 				xMax: Cs.mcw - m,
 				yMin: m,
-				yMax: 120
+				yMax: 120 * Cs.NEW_GEN_SCALE
 			},
 			{
 				w: 1,
 				xMin: m,
 				xMax: Cs.mcw - m,
 				yMin: Cs.mch * 0.5,
-				yMax: Cs.mch - 76
+				yMax: Cs.mch - 76 * Cs.NEW_GEN_SCALE
 			},
 		];
-		b.acc = {c: 0.1, lim: 1};
+		b.acc = {c: 0.1 * Cs.NEW_GEN_SCALE, lim: 1 * Cs.NEW_GEN_SCALE};
 
 		return b;
 	}
@@ -437,7 +437,7 @@ class Stykades {
 		b.va = 0.07;
 		b.turnCoef = 0.1;
 		b.bounceId = 0;
-		b.speed = 4.5;
+		b.speed = 4.5 * Cs.NEW_GEN_SCALE;
 		b.bList = [8];
 
 		return b;
@@ -454,17 +454,17 @@ class Stykades {
 		var raf = b.newRafale();
 		raf.addShot(0, [10, 23, 16], 150, 1);
 		raf.cooldown = 40;
-		raf.dx = -5;
-		raf.dy = 20;
+		raf.dx = -5 * Cs.NEW_GEN_SCALE;
+		raf.dy = 20 * Cs.NEW_GEN_SCALE;
 
 		raf = b.newRafale();
 		raf.addShot(0, [10, 23, 16], 6, 3);
 		raf.cooldown = 100;
-		raf.dx = -5;
-		raf.dy = 24; // 20;
+		raf.dx = -5 * Cs.NEW_GEN_SCALE;
+		raf.dy = 24 * Cs.NEW_GEN_SCALE; // 20;
 
 		b.shootTimer = 50 + Cs.rand() * 50;
-		b.rect = {rw: 30, rh: 25};
+		b.rect = {rw: 30 * Cs.NEW_GEN_SCALE, rh: 25 * Cs.NEW_GEN_SCALE};
 		b.fire = b.root.smc.smc.smc;
 
 		return b;
@@ -476,12 +476,12 @@ class Stykades {
 		b.setLevel(18);
 		b.setScore(Cs.C_ORB);
 		b.setSkin(10);
-		b.ray = 25;
-		b.y = -(b.ray + 5);
+		b.ray = 25 * Cs.NEW_GEN_SCALE;
+		b.y = -(b.ray + 5 * Cs.NEW_GEN_SCALE);
 		b.hp = 16;
 		b.bounceId = 1;
 		b.bList = [9];
-		b.trg = {x: 0, y: 70 + Cs.rand() * 30}
+		b.trg = {x: 0, y: 70 * Cs.NEW_GEN_SCALE + Cs.rand() * 30 * Cs.NEW_GEN_SCALE}
 		b.waitTimer = 100;
 
 		var raf = b.newRafale();
@@ -500,16 +500,16 @@ class Stykades {
 		b.setScore(Cs.C0);
 		b.setSkin(17);
 		b.hp = 3;
-		b.ray = 20;
+		b.ray = 20 * Cs.NEW_GEN_SCALE;
 		b.waitTimer = 300;
 
-		b.speed = 6;
+		b.speed = 6 * Cs.NEW_GEN_SCALE;
 		b.a = 1.57;
 		b.va = 0.5;
 		b.turnCoef = 0.15;
 		b.flOrient = true;
 		b.bList = [3];
-		b.onTargetReach = () -> { b.chooseNewTarget(20, Cs.mcw - 20, 30, 190); };
+		b.onTargetReach = () -> { b.chooseNewTarget(20 * Cs.NEW_GEN_SCALE, Cs.mcw - 20 * Cs.NEW_GEN_SCALE, 30 * Cs.NEW_GEN_SCALE, 190 * Cs.NEW_GEN_SCALE); };
 		b.onTargetReach();
 
 		b.onDeath = () -> { b.dropBonus(); };
@@ -528,31 +528,31 @@ class Stykades {
 			b.setScore(Cs.C_GERGIN);
 			b.setSkin(14 + i * 2);
 			b.hp = 30;
-			b.rect = {rw: 20, rh: 26}
+			b.rect = {rw: 20 * Cs.NEW_GEN_SCALE, rh: 26 * Cs.NEW_GEN_SCALE}
 			if (last == null) {
 				last = b;
                 // TODO: uncomment
 				// b.root.react._visible = false;
 				b.follow = b.root.smc;
 				b.bList = [6];
-				b.acc = {c: 0.1, lim: 1}
+				b.acc = {c: 0.1 * Cs.NEW_GEN_SCALE, lim: 1 * Cs.NEW_GEN_SCALE}
 				b.frict = 0.9;
-				var m = 40;
+				var m = 40 * Cs.NEW_GEN_SCALE;
 				b.beeRange = [
 					{
 						w: 6,
 						xMin: m,
 						xMax: Cs.mcw - m * 2,
 						yMin: m,
-						yMax: 90
+						yMax: 90 * Cs.NEW_GEN_SCALE
 					},
 				];
 			} else {
-				last.setPart(b, 40, 0);
+				last.setPart(b, 40 * Cs.NEW_GEN_SCALE, 0);
 				var raf = b.newRafale();
 				raf.addShot(1, [3, 0.15], 7, 12);
 				raf.cooldown = 48;
-				raf.dy = 25;
+				raf.dy = 25 * Cs.NEW_GEN_SCALE;
 
 				var f = () -> {
 					last.bList = [3];
@@ -569,12 +569,12 @@ class Stykades {
 					b.bList = [3];
 					b.turnCoef = 0.2;
 					b.va = 1;
-					b.trg = {x: Cs.mcw * 0.5, y: 40}
+					b.trg = {x: Cs.mcw * 0.5, y: 40 * Cs.NEW_GEN_SCALE}
 					b.weapons = [];
 					var r = b.newRafale();
 					r.addShot(4, [3, 0.9], 5, 12);
 					r.cooldown = 48;
-					r.dy = 25;
+					r.dy = 25 * Cs.NEW_GEN_SCALE;
 				}
 
 				last.onDeath = f2;
@@ -591,8 +591,8 @@ class Stykades {
 		b.setScore(Cs.C_MINE);
 		b.setSkin(18);
 		b.hp = 3;
-		b.ray = 16;
-		b.vy = 1 + Cs.rand() * 1;
+		b.ray = 16 * Cs.NEW_GEN_SCALE;
+		b.vy = (1 + Cs.rand() * 1) * Cs.NEW_GEN_SCALE;
 		b.bounceId = 2;
 		b.turn = b.root.smc;
 		b.onDeath = () -> {
@@ -608,12 +608,12 @@ class Stykades {
 		b.setScore(Cs.C_SHIELD);
 		b.setSkin(19);
 		b.hp = 10;
-		b.ray = 27;
+		b.ray = 27 * Cs.NEW_GEN_SCALE;
 		b.shieldLim = 120;
 
-		var m = 20;
+		var m = 20 * Cs.NEW_GEN_SCALE;
 		b.bList = [6, 10];
-		b.acc = {c: 0.1, lim: 1}
+		b.acc = {c: 0.1 * Cs.NEW_GEN_SCALE, lim: 1 * Cs.NEW_GEN_SCALE}
 		b.frict = 0.92;
 		b.beeRange = [
 			{
@@ -621,7 +621,7 @@ class Stykades {
 				xMin: m,
 				xMax: Cs.mcw - m,
 				yMin: m,
-				yMax: 170
+				yMax: 170 * Cs.NEW_GEN_SCALE
 			},
 		];
 	}
@@ -637,7 +637,7 @@ class Stykades {
 		b.setSkin(11);
 		b.setSubSkin(lvl + 1);
 		b.hp = 28 + lvl * 20;
-		b.ray = 25;
+		b.ray = 25 * Cs.NEW_GEN_SCALE;
 		b.bList.push(5);
 		b.waitTimer = 500 + lvl * 150;
 
@@ -650,8 +650,8 @@ class Stykades {
 			side.setSubSkin(lvl + 1);
 			side.root._xscale = sens * 100;
 			side.hp = 8 + lvl * 6;
-			side.ray = 20;
-			b.setPart(side, 25 * sens, 0);
+			side.ray = 20 * Cs.NEW_GEN_SCALE;
+			b.setPart(side, 25 * Cs.NEW_GEN_SCALE * sens, 0);
 
 			//
 			var raf = side.newRafale();

@@ -116,8 +116,8 @@ class Rafale {
 
 	public function newAngledShot(speed, a) {
 		var shot = newShot();
-		shot.vx = Math.cos(a) * speed;
-		shot.vy = Math.sin(a) * speed;
+		shot.vx = Math.cos(a) * speed * Cs.NEW_GEN_SCALE;
+		shot.vy = Math.sin(a) * speed * Cs.NEW_GEN_SCALE;
 		return shot;
 	}
 }
