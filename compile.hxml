@@ -28,6 +28,6 @@ xianxiang.Game
 --next
 -js ./resources/js/games/synapses.js
 synapses.Game
-# --next
-# -js ./resources/js/games/ironchouquette.js
-# ironchouquette.Game
+--next
+-js ./resources/js/games/ironchouquette.js
+ironchouquette.Game
