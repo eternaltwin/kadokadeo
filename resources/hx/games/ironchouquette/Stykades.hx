@@ -764,10 +764,16 @@ class Stykades {
 			return null;
 		var b = Type.createInstance(_class, params);
 		var m = 15 * Cs.NEW_GEN_SCALE;
-		b.x = m + Cs.rand() * (Cs.mcw - 2 * m);
+		if (b.x == -100) {
+			b.x = m + Cs.rand() * (Cs.mcw - 2 * m);
+		}
 		// b.y = -20
-		b.vy = 3 * Cs.NEW_GEN_SCALE;
-		b.outSafeTimer = 100;
+		if (b.vy == 0) {
+			b.vy = 3 * Cs.NEW_GEN_SCALE;
+		}
+		if (b.outSafeTimer == null) {
+			b.outSafeTimer = 100;
+		}
 
 		return b;
 	}

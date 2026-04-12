@@ -46,31 +46,32 @@ class Hero extends Phys {
 	public static var INVINCIBLE_RAY = 32 * Cs.NEW_GEN_SCALE;
 
 	var reactorPosOnFrame:Array<Array<{x:Float, y:Float}>> = [
-		[{x: 34, y: 13}, {x: 51, y: 13}],
-		[{x: 33, y: 13}, {x: 52, y: 13}],
-		[{x: 32, y: 13}, {x: 53, y: 13}],
-		[{x: 30, y: 13}, {x: 54, y: 13}],
-		[{x: 28, y: 13}, {x: 56, y: 13}],
-		[{x: 26, y: 13}, {x: 58, y: 13}],
-		[{x: 24, y: 13}, {x: 60, y: 13}],
-		[{x: 22, y: 13}, {x: 62, y: 13}],
-		[{x: 20, y: 13}, {x: 64, y: 13}],
-		[{x: 17, y: 13}, {x: 66, y: 13}],
-		[{x: 20, y: 13}, {x: 64, y: 13}],
-		[{x: 22, y: 13}, {x: 62, y: 13}],
-		[{x: 24, y: 13}, {x: 60, y: 13}],
-		[{x: 26, y: 13}, {x: 58, y: 13}],
-		[{x: 28, y: 13}, {x: 56, y: 13}],
-		[{x: 30, y: 13}, {x: 54, y: 13}],
-		[{x: 32, y: 13}, {x: 53, y: 13}],
-		[{x: 33, y: 13}, {x: 52, y: 13}],
-		[{x: 34, y: 13}, {x: 51, y: 13}],
-		[{x: 35, y: 13}, {x: 50, y: 13}],
+		[{x: 34, y: 30}, {x: 51, y: 30}],
+		[{x: 33, y: 30}, {x: 52, y: 30}],
+		[{x: 32, y: 30}, {x: 53, y: 30}],
+		[{x: 30, y: 30}, {x: 54, y: 30}],
+		[{x: 28, y: 30}, {x: 56, y: 30}],
+		[{x: 26, y: 30}, {x: 58, y: 30}],
+		[{x: 24, y: 30}, {x: 60, y: 30}],
+		[{x: 22, y: 30}, {x: 62, y: 30}],
+		[{x: 20, y: 30}, {x: 64, y: 30}],
+		[{x: 17, y: 30}, {x: 66, y: 30}],
+		[{x: 20, y: 30}, {x: 64, y: 30}],
+		[{x: 22, y: 30}, {x: 62, y: 30}],
+		[{x: 24, y: 30}, {x: 60, y: 30}],
+		[{x: 26, y: 30}, {x: 58, y: 30}],
+		[{x: 28, y: 30}, {x: 56, y: 30}],
+		[{x: 30, y: 30}, {x: 54, y: 30}],
+		[{x: 32, y: 30}, {x: 53, y: 30}],
+		[{x: 33, y: 30}, {x: 52, y: 30}],
+		[{x: 34, y: 30}, {x: 51, y: 30}],
+		[{x: 35, y: 30}, {x: 50, y: 30}],
 	];
 
 	var flame1:ASprite;
 	var flame2:ASprite;
-	var isDead:Bool = false;
+
+	public var isDead:Bool = false;
 
 	public var flControl:Bool;
 
@@ -151,6 +152,9 @@ class Hero extends Phys {
 	}
 
 	public override function update() {
+		if (isDead) {
+			return;
+		}
 		super.update();
 		updateFlamePos();
 
@@ -264,15 +268,14 @@ class Hero extends Phys {
 
 		if (boost > 0) {
 			var max = 2;
+			var mc = Cs.game.dm.attach("mcSpeed", Game.DP_PARTS);
+			mc.gotoAndStop(boost);
+			mc._xscale = (120 + boost * 40) * 1.7;
+			mc._yscale = mc._xscale;
 			for (k in 0...max) {
 				var coef = k / max;
-				var mc = Cs.game.dm.attach("mcSpeed", Game.DP_PARTS);
 				mc._x = x + mx * coef;
 				mc._y = y + (my + Game.SCROLL_SPEED) * coef;
-				mc._xscale = (120 + boost * 40) * 1.7;
-				//
-				mc._yscale = mc._xscale;
-				mc.gotoAndStop(boost);
 				// mc.blendMode = BlendModes.ADD
 				Cs.game.plasmaDraw(mc, 0);
 
@@ -285,9 +288,8 @@ class Hero extends Phys {
 					mc._yscale = mc._xscale;
 					Cs.game.plasmaDraw(mc, 0);
 				}
-
-				mc.removeMovieClip();
 			}
+			mc.removeMovieClip();
 
 			var r = ray * (((60 + boost * 40) * 1.7) / 100) * 1.3;
 			for (i in 0...boost) {
@@ -841,8 +843,8 @@ class Hero extends Phys {
 				p.vx *= 1.2;
 				p.vy *= 1.2;
 
-				p.black = Math.min(p.black + 8 * Timer.tmod, 100);
-				Col.setPercentColor(p.root, p.black, 0);
+				// p.black = Math.min(p.black + 8 * Timer.tmod, 100);
+				// Col.setPercentColor(p.root, p.black, 0);
 
 				if (p.getDist(bh) > blackHole._xscale * 0.5 * Cs.NEW_GEN_SCALE + p.ray) {
 					p.mask.removeMovieClip();

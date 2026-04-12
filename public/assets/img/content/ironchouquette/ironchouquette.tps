@@ -1106,7 +1106,7 @@
             <key type="filename">src/mcHero/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0.5,0.374101</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -1647,6 +1647,25 @@
                 <rect>40,47,81,93</rect>
                 <key>scale9Paddings</key>
                 <rect>40,47,81,93</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partStatic/1.png</key>
+            <key type="filename">src/partStatic/2.png</key>
+            <key type="filename">src/partStatic/3.png</key>
+            <key type="filename">src/partStatic/4.png</key>
+            <key type="filename">src/partStatic/5.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.385714,0.482353</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>18,21,35,43</rect>
+                <key>scale9Paddings</key>
+                <rect>18,21,35,43</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

@@ -9,6 +9,7 @@ import pixi.core.math.Matrix;
 import pixi.core.sprites.Sprite;
 import pixi.core.Pixi.BlendModes;
 import common_haxe_avm1.KeyboardManager;
+import common_haxe_avm1.PixelHelper;
 import mt.bumdum.Lib;
 import mt.DepthManager;
 import mt.Timer;
@@ -86,6 +87,9 @@ class Game implements kado.GameInterface {
 	public var knTurnSpeed:Float;
 	public var kidnappers:Array<Phys>;
 	public var chouquette:Phys;
+	public var frameId:Int;
+	public var plasmaSample:PixelHelper;
+	public var plasmaSampleRate:Int;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		Cs.game = this;
@@ -96,6 +100,8 @@ class Game implements kado.GameInterface {
 		shotList = new Array();
 		badsList = new Array();
 		bonusList = new Array();
+		frameId = 0;
+		plasmaSampleRate = 3;
 
 		bg = dm.attach("mcBg", DP_BG);
 
@@ -158,6 +164,7 @@ class Game implements kado.GameInterface {
 
 	//
 	public function update(delta:Float) {
+		frameId++;
 		updateKeyboard();
 
 		if (bt != null)
@@ -333,6 +340,10 @@ class Game implements kado.GameInterface {
 				}
 			}
 		}
+
+		if (plasma.layer[0] != null && frameId % plasmaSampleRate == 0) {
+			plasmaSample = PixelHelper.extract(plasma.layer[0].bmp);
+		}
 	}
 
 	function processPlasmaLayer(layer:PlasmaLayerSprite, src:RenderTexture, dst:RenderTexture, blur:Float, tint:Int, decayAlpha:Float):Void {
@@ -422,11 +433,11 @@ class Game implements kado.GameInterface {
 	public function updateScroll() {
 		if (gfxMode < 3) {
 			SCROLL_SPEED *= 0.95;
-			if (SCROLL_SPEED < 0.5)
+			if (SCROLL_SPEED < 0.5 * Cs.NEW_GEN_SCALE)
 				SCROLL_SPEED = 0;
 		} else {
 			if (step > 1) {
-				SCROLL_SPEED = Math.min(SCROLL_SPEED + 0.01 * Timer.tmod, SCROLL_SPEED_MAX);
+				SCROLL_SPEED = Math.min(SCROLL_SPEED + 0.01 * Cs.NEW_GEN_SCALE * Timer.tmod, SCROLL_SPEED_MAX);
 			}
 		}
 

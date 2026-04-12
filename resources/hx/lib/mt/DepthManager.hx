@@ -9,10 +9,12 @@ class DepthManager {
 	public var root_mc:ASprite;
 
 	var plans:Array<{tbl:Array<ASprite>, cur:Int}>;
+	var depthStride:Int;
 
 	public function new(mc:ASprite) {
 		root_mc = mc;
 		plans = new Array();
+		depthStride = 1000;
 	}
 
 	public function getMC() {
@@ -28,6 +30,34 @@ class DepthManager {
 		return plan_data;
 	}
 
+	function reindexAllPlans() {
+		for (plan in 0...plans.length) {
+			var plan_data = plans[plan];
+			if (plan_data == null)
+				continue;
+			var p = plan_data.tbl;
+			var base = plan * depthStride;
+			for (i in 0...plan_data.cur) {
+				var mc = p[i];
+				if (mc != null && mc._name != null)
+					mc.swapDepths(base + i);
+			}
+		}
+	}
+
+	function ensureCapacity(plan:Int) {
+		var plan_data = getPlan(plan);
+		if (plan_data.cur < depthStride)
+			return;
+
+		compact(plan);
+		if (plan_data.cur < depthStride)
+			return;
+
+		depthStride *= 2;
+		reindexAllPlans();
+	}
+
 	public function compact(plan:Int) {
 		var plan_data = plans[plan];
 		if (plan_data == null)
@@ -35,7 +65,7 @@ class DepthManager {
 
 		var p = plan_data.tbl;
 		var cur = 0;
-		var base = plan * 1000;
+		var base = plan * depthStride;
 		for (i in 0...plan_data.cur)
 			if (p[i] != null && p[i]._name != null) {
 				p[i].swapDepths(base + cur);
@@ -48,13 +78,10 @@ class DepthManager {
 	public function attach(inst:String, plan:Int):ASprite {
 		var plan_data = getPlan(plan);
 		var p = plan_data.tbl;
+		ensureCapacity(plan);
 		var d = plan_data.cur;
-		if (d == 1000) {
-			compact(plan);
-			return attach(inst, plan);
-		}
 		var iname = inst + "@" + (INST_COUNTER++);
-		var mc = root_mc.attachMovie(inst, iname, d + plan * 1000);
+		var mc = root_mc.attachMovie(inst, iname, d + plan * depthStride);
 		p[d] = mc;
 		plan_data.cur = d + 1;
 		return mc;
@@ -63,13 +90,9 @@ class DepthManager {
 	public function attachBitmap(bmp:Texture, plan:Int) {
 		var plan_data = getPlan(plan);
 		var p = plan_data.tbl;
+		ensureCapacity(plan);
 		var d = plan_data.cur;
-		if (d == 1000) {
-			compact(plan);
-			attachBitmap(bmp, plan);
-			return;
-		}
-		root_mc.attachBitmap(bmp, d + plan * 1000);
+		root_mc.attachBitmap(bmp, d + plan * depthStride);
 		p[d] = null;
 		plan_data.cur = d + 1;
 	}
@@ -77,13 +100,10 @@ class DepthManager {
 	public function empty(plan:Int):ASprite {
 		var plan_data = getPlan(plan);
 		var p = plan_data.tbl;
+		ensureCapacity(plan);
 		var d = plan_data.cur;
-		if (d == 1000) {
-			compact(plan);
-			return empty(plan);
-		}
 		var iname = "empty@" + (INST_COUNTER++);
-		var mc = root_mc.createEmptyMovieClip(iname, d + plan * 1000);
+		var mc = root_mc.createEmptyMovieClip(iname, d + plan * depthStride);
 		p[d] = mc;
 		plan_data.cur = d + 1;
 		return mc;
@@ -92,18 +112,15 @@ class DepthManager {
 	public function reserve(mc:ASprite, plan:Int):Int {
 		var plan_data = getPlan(plan);
 		var p = plan_data.tbl;
+		ensureCapacity(plan);
 		var d = plan_data.cur;
-		if (d == 1000) {
-			compact(plan);
-			return reserve(mc, plan);
-		}
 		p[d] = mc;
 		plan_data.cur = d + 1;
-		return d + plan * 1000;
+		return d + plan * depthStride;
 	}
 
 	public function swap(mc:ASprite, plan:Int) {
-		var src_plan = Math.floor(mc.getDepth() / 1000);
+		var src_plan = Math.floor(mc.getDepth() / depthStride);
 		if (src_plan == plan)
 			return;
 		var plan_data = getPlan(src_plan);
@@ -118,10 +135,10 @@ class DepthManager {
 
 	public function under(mc:ASprite) {
 		var d = mc.getDepth();
-		var plan = Math.floor(d / 1000);
+		var plan = Math.floor(d / depthStride);
 		var plan_data = getPlan(plan);
 		var p = plan_data.tbl;
-		var pd = d % 1000;
+		var pd = d % depthStride;
 		if (p[pd] == mc) {
 			p[pd] = null;
 			p.unshift(mc);
@@ -132,17 +149,17 @@ class DepthManager {
 
 	public function over(mc:ASprite) {
 		var d = mc.getDepth();
-		var plan = Math.floor(d / 1000);
+		var plan = Math.floor(d / depthStride);
 		var plan_data = getPlan(plan);
 		var p = plan_data.tbl;
-		var pd = d % 1000;
+		var pd = d % depthStride;
 		if (p[pd] == mc) {
 			p[pd] = null;
-			if (plan_data.cur == 1000)
-				compact(plan);
+			if (plan_data.cur >= depthStride)
+				ensureCapacity(plan);
 			d = plan_data.cur;
 			plan_data.cur++;
-			mc.swapDepths(d + plan * 1000);
+			mc.swapDepths(d + plan * depthStride);
 			p[d] = mc;
 		}
 	}

@@ -72,6 +72,7 @@ class Bads extends Phys {
 		yMax:Float
 	}>;
 	public var seekerLimit:Float;
+	public var speedColorPhase:Int;
 
 	public function new(mc) {
 		if (mc == null)
@@ -109,6 +110,7 @@ class Bads extends Phys {
 		}
 
 		waitTimer = 200;
+		speedColorPhase = Cs.random(2);
 	}
 
 	public function setLevel(lvl:Float) {
@@ -211,22 +213,31 @@ class Bads extends Phys {
 		}
 
 		// SPEED COLOR
-		if (Cs.game.hero.weapons[Hero.WP_SPEED][0] > 0) {
-			var col = Cs.game.plasma.layer[0].bmp.extract().getPixel(Std.int(root._x * Cs.game.pq), Std.int((root._y + Game.PLASMA_CACHE) * Cs.game.pq));
-			var o = Cs.colToObj32(col);
-			var lim = 50;
-			var score = o.r * 1.2;
-			if (o.g == 0 && score > lim) {
-				// Log.print("!"+true);
-				var c = (score - lim) / (255 - lim);
-				damage((0.07 + 1 * c) * Timer.tmod);
-				var mc = Cs.game.dm.attach("partStatic", Game.DP_PARTS);
-				mc._x = x + (Cs.rand() * 2 - 1) * ray;
-				mc._y = y + (Cs.rand() * 2 - 1) * ray;
-				mc._xscale = 100 + c * 100;
-				mc._yscale = mc._xscale;
-				mc._rotation = Cs.rand() * 360;
-				mc.blendMode = BlendModes.ADD;
+		if (Cs.game.hero.weapons[Hero.WP_SPEED][0] > 0 && Cs.game.plasmaSample != null) {
+			if ((Cs.game.frameId + speedColorPhase) % 2 == 0) {
+				var px = Std.int(root._x * Cs.game.pq);
+				var py = Std.int((root._y + Game.PLASMA_CACHE) * Cs.game.pq);
+				if (px >= 0 && py >= 0 && px < Cs.game.plasmaSample.width && py < Cs.game.plasmaSample.height) {
+					var col = Cs.game.plasmaSample.getPixel(px, py);
+					var o = Cs.colToObj32(col);
+					var lim = 50;
+					var score = o.r * 1.2;
+					if (o.g == 0 && score > lim) {
+						var c = (score - lim) / (255 - lim);
+						damage((0.07 + 1 * c) * Timer.tmod * 2);
+						if (Cs.random(Std.int(Math.max(1, 2 / Timer.tmod))) == 0) {
+							var mc = Cs.game.dm.attach("partStatic", Game.DP_PARTS);
+							mc.removeOnFrame = 5;
+							mc.play();
+							mc._x = x + (Cs.rand() * 2 - 1) * ray;
+							mc._y = y + (Cs.rand() * 2 - 1) * ray;
+							mc._xscale = 100 + c * 100;
+							mc._yscale = mc._xscale;
+							mc._rotation = Cs.rand() * 360;
+							mc.blendMode = BlendModes.ADD;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -294,7 +305,7 @@ class Bads extends Phys {
 							y = p0[1] + sa * c * sp;
 
 							if (!wave.flLinear) {
-								speedCoef = (ecart / 5 * Cs.NEW_GEN_SCALE) / wave.speed;
+								speedCoef = (ecart / 5) / wave.speed;
 							}
 
 							vx = ca * wave.speed * speedCoef;
@@ -600,23 +611,23 @@ class Bads extends Phys {
 			p.root.play();
 		}
 
-		// var mc = Cs.game.dm.attach("mcExploTrace", Game.DP_PARTS);
-		// mc.gotoAndStop(3);
-		// for (i in 0...3) {
-		// 	mc._x = x + (Cs.rand() * 2 - 1) * ray;
-		// 	mc._y = y + (Cs.rand() * 2 - 1) * ray;
-		// 	mc._xscale = 100 + Cs.rand() * 100;
-		// 	mc._yscale = mc._xscale;
-		// 	mc._rotation = Cs.rand() * 360;
-		// 	mc.blendMode = BlendModes.ADD;
-		// 	// mc.onFrame.set(3, function() {
-		// 	// 	Cs.game.plasmaDraw(mc, 1);
-		// 	// 	mc.removeMovieClip();
-		// 	// });
+		var mc = Cs.game.dm.attach("mcExploTrace", Game.DP_PARTS);
+		mc.gotoAndStop(3);
+		for (i in 0...3) {
+			mc._x = x + (Cs.rand() * 2 - 1) * ray;
+			mc._y = y + (Cs.rand() * 2 - 1) * ray;
+			mc._xscale = 100 + Cs.rand() * 100;
+			mc._yscale = mc._xscale;
+			mc._rotation = Cs.rand() * 360;
+			mc.blendMode = BlendModes.ADD;
+			// mc.onFrame.set(3, function() {
+			// 	Cs.game.plasmaDraw(mc, 1);
+			// 	mc.removeMovieClip();
+			// });
 
-		// 	// Cs.game.plasmaDraw(mc, 1);
-		// }
-		// mc.removeMovieClip();
+			Cs.game.plasmaDraw(mc, 1);
+		}
+		mc.removeMovieClip();
 	}
 
 	// PARTS
