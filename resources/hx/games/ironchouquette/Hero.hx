@@ -151,7 +151,6 @@ class Hero extends Phys {
 	}
 
 	public override function update() {
-		invincibleTimer = 10;
 		super.update();
 		updateFlamePos();
 
