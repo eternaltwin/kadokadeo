@@ -3,51 +3,52 @@ package ironchouquette.elems;
 // frame 20
 class CBlock extends Bads {
 	public function new() {
-		var root = Cs.game.dm.attach("blockBody", Game.DP_BADS);
+		var root = Cs.game.dm.empty(Game.DP_BADS);
 		super(root);
+		var body = root.attachMovie("blockBody", 0);
 
 		var reactor = root.attachMovie("blockReactor", "react", -1);
 		reactor.loop = true;
 		reactor.play();
 		reactor._y = -66 * Cs.NEW_GEN_SCALE;
 
-		var p1 = root.attachMovie("blockp1");
+		var p1 = root.attachMovie("blockp1", 1);
 		p1.loop = true;
 		p1.play();
 		p1._x = -42 * Cs.NEW_GEN_SCALE;
 		p1._y = -45 * Cs.NEW_GEN_SCALE;
 
-		var p2 = root.attachMovie("blockp2");
+		var p2 = root.attachMovie("blockp2", 1);
 		p2.loop = true;
 		p2.play();
 		p2._x = -28 * Cs.NEW_GEN_SCALE;
 		p2._y = 6 * Cs.NEW_GEN_SCALE;
 
-		var p3 = root.attachMovie("blockp3");
+		var p3 = root.attachMovie("blockp3", 1);
 		p3.loop = true;
 		p3.play();
 		p3._x = 6 * Cs.NEW_GEN_SCALE;
 		p3._y = -27 * Cs.NEW_GEN_SCALE;
 
-		var p4 = root.attachMovie("blockp4");
+		var p4 = root.attachMovie("blockp4", 1);
 		p4.loop = true;
 		p4.play();
 		p4._x = 35 * Cs.NEW_GEN_SCALE;
 		p4._y = 37 * Cs.NEW_GEN_SCALE;
 
-		var p5 = root.attachMovie("blockp5");
+		var p5 = root.attachMovie("blockp5", 1);
 		p5.loop = true;
 		p5.play();
 		p5._x = -20 * Cs.NEW_GEN_SCALE;
 		p5._y = 65 * Cs.NEW_GEN_SCALE;
 
-		var p6 = root.attachMovie("blockp6");
+		var p6 = root.attachMovie("blockp6", 1);
 		p6.loop = true;
 		p6.play();
 		p6._x = -39 * Cs.NEW_GEN_SCALE;
 		p6._y = -61 * Cs.NEW_GEN_SCALE;
 
-		var p7 = root.attachMovie("blockp7");
+		var p7 = root.attachMovie("blockp7", 1);
 		p7.loop = true;
 		p7.play();
 		p7._x = -37 * Cs.NEW_GEN_SCALE;

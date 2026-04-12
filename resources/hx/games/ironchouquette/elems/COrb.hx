@@ -13,7 +13,7 @@ class COrb extends Bads {
 		hp = 16;
 		bounceId = 1;
 		bList = [9];
-		trg = {x: 0, y: 70 * Cs.NEW_GEN_SCALE + Cs.rand() * 30 * Cs.NEW_GEN_SCALE}
+		trg = {x: 0., y: 70. * Cs.NEW_GEN_SCALE + Cs.rand() * 30 * Cs.NEW_GEN_SCALE}
 		waitTimer = 100;
 
 		var raf = newRafale();

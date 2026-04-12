@@ -2,13 +2,50 @@ package mt.bumdum;
 
 import pixi.filters.colormatrix.ColorMatrixFilter;
 import pixi.core.display.DisplayObject;
-import pixi.core.display.Container;
 import pixi.filters.blur.BlurFilter;
 import pixi.filters.extras.GlowFilter;
 import pixi.filters.extras.ColorReplaceFilter;
 import common_haxe_avm1.display.ASprite;
 
 typedef Point = {x:Float, y:Float}
+
+typedef PointWithGetter_ = {
+	var x(get, set):Float;
+	var y(get, set):Float;
+}
+
+class PointWrapper {
+	var p:Point;
+
+	public var x(get, set):Float;
+	public var y(get, set):Float;
+
+	inline function get_x():Float
+		return p.x;
+
+	inline function get_y():Float
+		return p.y;
+
+	inline function set_x(v:Float):Float
+		return p.x = v;
+
+	inline function set_y(v:Float):Float
+		return p.y = v;
+
+	public inline function new(p:Point) {
+		this.p = p;
+	}
+}
+
+@:forward
+abstract PointWithGetter(PointWithGetter_) from PointWithGetter_ {
+	@:to inline function toPoint():Point
+		return {x: this.x, y: this.y};
+
+	@:from static inline function fromObject(p:Point):PointWithGetter {
+		return new PointWrapper(p);
+	}
+}
 
 class En {
 	inline static public function index(e:Dynamic) {

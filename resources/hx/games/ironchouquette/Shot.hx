@@ -21,7 +21,7 @@ class Shot extends Phys {
 	public var bList:Array<Int>;
 
 	public var op:{x:Float, y:Float}
-	public var trg:{x:Float, y:Float, flDeath:Bool};
+	public var trg:Bads;
 	public var thruster:{vx:Float, vy:Float, sleep:Float}
 	public var queue:String;
 
@@ -78,7 +78,7 @@ class Shot extends Phys {
 					if (sleep == null || sleep <= 0) {
 						getNewBadTrg();
 						if (trg != null) {
-							var da = getAng(trg) - a;
+							var da = getAng({x: trg.x, y: trg.y}) - a;
 							while (da > 3.14)
 								da -= 6.28;
 							while (da < -3.14)
@@ -172,13 +172,13 @@ class Shot extends Phys {
 			var b = list[i];
 			var d = getDist({x: b.x, y: b.y});
 			if (d < dist) {
-				trg = cast b;
+				trg = b;
 				dist = d;
 			}
 		}
 
 		if (list.length > 0) {
-			trg = cast list[Cs.random(list.length)];
+			trg = list[Cs.random(list.length)];
 		} else {
 			trg = null;
 		}

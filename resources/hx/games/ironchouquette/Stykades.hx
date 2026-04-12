@@ -705,7 +705,7 @@ class Stykades {
 					newMine();
 				}
 
-			case 32: // 5x MINE
+			case 32: // 10x MINE
 				for (i in 0...10) {
 					newMine();
 				}

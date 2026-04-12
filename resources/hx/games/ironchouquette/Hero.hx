@@ -70,6 +70,7 @@ class Hero extends Phys {
 
 	var flame1:ASprite;
 	var flame2:ASprite;
+	var isDead:Bool = false;
 
 	public var flControl:Bool;
 
@@ -150,6 +151,7 @@ class Hero extends Phys {
 	}
 
 	public override function update() {
+		invincibleTimer = 10;
 		super.update();
 		updateFlamePos();
 
@@ -985,16 +987,19 @@ class Hero extends Phys {
 	}
 
 	public override function kill() {
-		// Cs.game.hero = cast {x: x, y: y};
-		KadoKadeoManager.kkm.gameOver(Cs.game.stats);
-		if (lastLaser != null) {
-			lastLaser.removeMovieClip();
-		}
-		if (onde != null) {
-			onde.removeMovieClip();
-		}
-		if (laserRay != null) {
-			laserRay.removeMovieClip();
+		if (!isDead) {
+			isDead = true;
+			// Cs.game.hero = cast {x: x, y: y};
+			KadoKadeoManager.kkm.gameOver(Cs.game.stats);
+			if (lastLaser != null) {
+				lastLaser.removeMovieClip();
+			}
+			if (onde != null) {
+				onde.removeMovieClip();
+			}
+			if (laserRay != null) {
+				laserRay.removeMovieClip();
+			}
 		}
 		super.kill();
 	}

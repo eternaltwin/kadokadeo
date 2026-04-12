@@ -450,6 +450,12 @@ class ASprite extends Sprite {
 		}
 	}
 
+	inline function lerpAngle(prev:Float, cur:Float, t:Float):Float {
+		var tau = Math.PI * 2;
+		var delta = ((cur - prev + Math.PI) % tau + tau) % tau - Math.PI; // [-PI, PI]
+		return prev + delta * t;
+	}
+
 	public function updateGraphics(a:Float) {
 		if (_prevState == null) {
 			this.updateState();
@@ -460,7 +466,7 @@ class ASprite extends Sprite {
 		this._height = mt.gx.MathEx.lerp(_prevState.height, _curState.height, a);
 		this.scale.x = mt.gx.MathEx.lerp(_prevState.xscale, _curState.xscale, a);
 		this.scale.y = mt.gx.MathEx.lerp(_prevState.yscale, _curState.yscale, a);
-		this.rotation = mt.gx.MathEx.lerp(_prevState.rotation, _curState.rotation, a);
+		this.rotation = lerpAngle(_prevState.rotation, _curState.rotation, a);
 		this.alpha = mt.gx.MathEx.lerp(_prevState.alpha, _curState.alpha, a);
 		// this.position.x = _prevState.x;
 		// this.position.y = _prevState.y;

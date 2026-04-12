@@ -21,7 +21,7 @@ class CShield extends Bads {
 		setScore(Cs.C_SHIELD);
 		hp = 10;
 		ray = 27 * Cs.NEW_GEN_SCALE;
-		shieldLim = 120;
+		shieldLim = 120 * Cs.NEW_GEN_SCALE;
 
 		var m = 20 * Cs.NEW_GEN_SCALE;
 		bList = [6, 10];

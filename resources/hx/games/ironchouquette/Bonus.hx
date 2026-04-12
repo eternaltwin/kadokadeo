@@ -43,7 +43,6 @@ class Bonus extends Phys {
 		ray = 15 * Cs.NEW_GEN_SCALE;
 		dm = new DepthManager(root);
 		id = getRandomId();
-		id = 1;
 		var a = 0.775 + Cs.random(2) * 1.57;
 		vx = Math.cos(a) * SPEED;
 		vy = Math.sin(a) * SPEED;

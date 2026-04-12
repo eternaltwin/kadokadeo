@@ -24,7 +24,7 @@ class Bads extends Phys {
 	public var va:Float;
 	public var speed:Float;
 	public var speedCoef:Float;
-	public var trg:{x:Float, y:Float}
+	public var trg:PointWithGetter;
 	public var acc:{c:Float, lim:Float}
 
 	public var turnCoef:Float;
@@ -385,9 +385,9 @@ class Bads extends Phys {
 				case 7: // FLAMER
 
 					var pa = 0.3;
-					var da = Num.hMod(getAng(cast Cs.game.hero) - 1.57, 3.14);
+					var da = Num.hMod(getAng({x: Cs.game.hero.x, y: Cs.game.hero.y}) - 1.57, 3.14);
 
-					if (Math.abs(da) < pa && getDist(cast Cs.game.hero) < 100 * Cs.NEW_GEN_SCALE) {
+					if (Math.abs(da) < pa && getDist({x: Cs.game.hero.x, y: Cs.game.hero.y}) < 100 * Cs.NEW_GEN_SCALE) {
 						flameTimer = 8;
 					}
 					if (flameTimer > 0) {
@@ -416,7 +416,7 @@ class Bads extends Phys {
 						bList.splice(i, 1);
 						i--;
 						bList.push(3);
-						trg = {x: Cs.game.hero.x, y: Cs.game.hero.y};
+						trg = Cs.game.hero;
 						hp = 2;
 						root.play();
 						score = score2;
@@ -650,7 +650,7 @@ class Bads extends Phys {
 				trg = {
 					x: o.xMin + Cs.rand() * (o.xMax - o.xMin),
 					y: o.yMin + Cs.rand() * (o.yMax - o.yMin),
-				}
+				};
 				break;
 			}
 		}
@@ -658,7 +658,7 @@ class Bads extends Phys {
 
 	public function chooseNewTarget(xMin, xMax, yMin, yMax) {
 		if (waitTimer <= 0) {
-			trg = {x: x, y: -200 * Cs.NEW_GEN_SCALE}
+			trg = {x: x, y: -200. * Cs.NEW_GEN_SCALE};
 			return;
 		}
 

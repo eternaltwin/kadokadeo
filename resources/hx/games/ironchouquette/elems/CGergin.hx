@@ -5,17 +5,19 @@ class CGergin extends Bads {
 	public var follow:ASprite;
 	public var react:ASprite;
 
-	public function new(last:Bads = null, variant:Bool = false) {
-		var root = Cs.game.dm.attach(variant ? "gerginBodyVariant" : "gerginBody", Game.DP_BADS);
+	public function new(last:CGergin = null, variant:Bool = false) {
+		var root = Cs.game.dm.empty(Game.DP_BADS);
 		super(root);
+		var body = root.attachMovie(variant ? "gerginBodyVariant" : "gerginBody", 1);
 
 		setLevel(22);
 		setScore(Cs.C_GERGIN);
 		hp = 30;
 		rect = {rw: 20 * Cs.NEW_GEN_SCALE, rh: 26 * Cs.NEW_GEN_SCALE}
 		if (last == null) {
-			follow = root.attachMovie("gerginTurret");
-			react = root.attachMovie("gerginReactor");
+			follow = root.attachMovie("gerginTurret", 2);
+			follow._x = -11 * Cs.NEW_GEN_SCALE;
+			react = root.attachMovie("gerginReactor", 0);
 			react.loop = true;
 			react.play();
 			react._visible = false;
@@ -45,9 +47,9 @@ class CGergin extends Bads {
 				last.bList = [3];
 				last.turnCoef = 0.1;
 				last.va = 0.1;
-				last.trg = cast Cs.game.hero;
+				last.trg = Cs.game.hero;
 				last.flOrient = true;
-				untyped last.react._visible = true;
+				last.react._visible = true;
 			}
 			onDeath = f;
 
@@ -55,7 +57,10 @@ class CGergin extends Bads {
 				bList = [3];
 				turnCoef = 0.2;
 				va = 1;
-				trg = {x: Cs.mcw * 0.5, y: 40 * Cs.NEW_GEN_SCALE}
+				trg = {
+					x: Cs.mcw * 0.5,
+					y: 40. * Cs.NEW_GEN_SCALE
+				};
 				weapons = [];
 				var r = newRafale();
 				r.addShot(4, [3, 0.9], 5, 12);
