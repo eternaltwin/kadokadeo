@@ -40,6 +40,11 @@
   src: url('/fonts/Fredoka-Bold.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'GAU';
+  src: url('/fonts/GAU_font_cube_B.ttf') format('truetype');
+}
+
 [data-lang='fr'] {
   background: url('/gfx/langFrench.gif') no-repeat;
 }
@@ -48,6 +53,7 @@
   --font-junegull: 'Junegull-Regular', sans-serif;
   --font-fredoka: 'Fredoka Bold', sans-serif;
   --font-chubby-cheeks: 'Chubby Cheeks', sans-serif;
+  --font-gau: 'GAU', sans-serif;
 }
 
 /* GLOBAL */

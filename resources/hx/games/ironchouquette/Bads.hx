@@ -562,14 +562,20 @@ class Bads extends Phys {
 		if (score != null) {
 			KadoKadeoManager.kkm.addScore(score);
 			if (v > scoreDisplayLimit) {
-				var p = new Part(Cs.game.dm.attach("partScore", Game.DP_PARTS));
+				var p = new Part(Cs.game.dm.empty(Game.DP_PARTS));
 				p.x = x;
 				p.y = y;
-				p.timer = 10;
-				// TODO: uncomment both lines below
-				// downcast(p.root).compt = 10;
-				// downcast(p.root).score = v;
-				Filt.glow(p.root, 6, 5, 0x0000FF);
+				p.timer = 20;
+				p.fadeType = 0;
+				var txt = p.root.initTextField('field', {
+					font: "GAU",
+					align: "center",
+					size: 60,
+					color: 0xFFFFFF,
+					stroke: '#0000FF',
+					strokeThickness: 6,
+				});
+				txt.text = Std.string(v);
 			}
 
 			// STATS
