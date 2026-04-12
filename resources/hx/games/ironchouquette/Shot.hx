@@ -24,6 +24,7 @@ class Shot extends Phys {
 	public var trg:Bads;
 	public var thruster:{vx:Float, vy:Float, sleep:Float}
 	public var queue:String;
+	public var skin:Int;
 
 	public function new(mc) {
 		super(mc);
@@ -262,6 +263,7 @@ class Shot extends Phys {
 		root.loop = loop;
 		root.play();
 		root.obj = this;
+		skin = n;
 		updatePos();
 	}
 

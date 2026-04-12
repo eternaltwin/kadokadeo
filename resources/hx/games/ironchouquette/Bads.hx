@@ -438,7 +438,7 @@ class Bads extends Phys {
 				case 10: // SHIELD
 
 					for (shot in Cs.game.shotList) {
-						if (shot.flGood && shot.root._currentframe != 14) {
+						if (shot.flGood && shot.skin != 14) {
 							var dist = getDist({x: shot.x, y: shot.y});
 							if (dist < shieldLim) {
 								var d = shieldLim - dist;
