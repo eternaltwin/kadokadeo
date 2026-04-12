@@ -940,16 +940,147 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/mcBonus/1.png</key>
-            <key type="filename">src/mcBonus/10.png</key>
-            <key type="filename">src/mcBonus/2.png</key>
-            <key type="filename">src/mcBonus/3.png</key>
-            <key type="filename">src/mcBonus/4.png</key>
-            <key type="filename">src/mcBonus/5.png</key>
-            <key type="filename">src/mcBonus/6.png</key>
-            <key type="filename">src/mcBonus/7.png</key>
-            <key type="filename">src/mcBonus/8.png</key>
-            <key type="filename">src/mcBonus/9.png</key>
+            <key type="filename">src/mcBonus1/1.png</key>
+            <key type="filename">src/mcBonus1/10.png</key>
+            <key type="filename">src/mcBonus1/11.png</key>
+            <key type="filename">src/mcBonus1/12.png</key>
+            <key type="filename">src/mcBonus1/13.png</key>
+            <key type="filename">src/mcBonus1/14.png</key>
+            <key type="filename">src/mcBonus1/15.png</key>
+            <key type="filename">src/mcBonus1/16.png</key>
+            <key type="filename">src/mcBonus1/17.png</key>
+            <key type="filename">src/mcBonus1/18.png</key>
+            <key type="filename">src/mcBonus1/19.png</key>
+            <key type="filename">src/mcBonus1/2.png</key>
+            <key type="filename">src/mcBonus1/20.png</key>
+            <key type="filename">src/mcBonus1/21.png</key>
+            <key type="filename">src/mcBonus1/3.png</key>
+            <key type="filename">src/mcBonus1/4.png</key>
+            <key type="filename">src/mcBonus1/5.png</key>
+            <key type="filename">src/mcBonus1/6.png</key>
+            <key type="filename">src/mcBonus1/7.png</key>
+            <key type="filename">src/mcBonus1/8.png</key>
+            <key type="filename">src/mcBonus1/9.png</key>
+            <key type="filename">src/mcBonus2/1.png</key>
+            <key type="filename">src/mcBonus2/10.png</key>
+            <key type="filename">src/mcBonus2/11.png</key>
+            <key type="filename">src/mcBonus2/12.png</key>
+            <key type="filename">src/mcBonus2/13.png</key>
+            <key type="filename">src/mcBonus2/14.png</key>
+            <key type="filename">src/mcBonus2/15.png</key>
+            <key type="filename">src/mcBonus2/16.png</key>
+            <key type="filename">src/mcBonus2/17.png</key>
+            <key type="filename">src/mcBonus2/18.png</key>
+            <key type="filename">src/mcBonus2/19.png</key>
+            <key type="filename">src/mcBonus2/2.png</key>
+            <key type="filename">src/mcBonus2/20.png</key>
+            <key type="filename">src/mcBonus2/21.png</key>
+            <key type="filename">src/mcBonus2/3.png</key>
+            <key type="filename">src/mcBonus2/4.png</key>
+            <key type="filename">src/mcBonus2/5.png</key>
+            <key type="filename">src/mcBonus2/6.png</key>
+            <key type="filename">src/mcBonus2/7.png</key>
+            <key type="filename">src/mcBonus2/8.png</key>
+            <key type="filename">src/mcBonus2/9.png</key>
+            <key type="filename">src/mcBonus3/1.png</key>
+            <key type="filename">src/mcBonus3/10.png</key>
+            <key type="filename">src/mcBonus3/11.png</key>
+            <key type="filename">src/mcBonus3/12.png</key>
+            <key type="filename">src/mcBonus3/13.png</key>
+            <key type="filename">src/mcBonus3/14.png</key>
+            <key type="filename">src/mcBonus3/15.png</key>
+            <key type="filename">src/mcBonus3/16.png</key>
+            <key type="filename">src/mcBonus3/17.png</key>
+            <key type="filename">src/mcBonus3/18.png</key>
+            <key type="filename">src/mcBonus3/19.png</key>
+            <key type="filename">src/mcBonus3/2.png</key>
+            <key type="filename">src/mcBonus3/20.png</key>
+            <key type="filename">src/mcBonus3/21.png</key>
+            <key type="filename">src/mcBonus3/3.png</key>
+            <key type="filename">src/mcBonus3/4.png</key>
+            <key type="filename">src/mcBonus3/5.png</key>
+            <key type="filename">src/mcBonus3/6.png</key>
+            <key type="filename">src/mcBonus3/7.png</key>
+            <key type="filename">src/mcBonus3/8.png</key>
+            <key type="filename">src/mcBonus3/9.png</key>
+            <key type="filename">src/mcBonus4/1.png</key>
+            <key type="filename">src/mcBonus4/10.png</key>
+            <key type="filename">src/mcBonus4/11.png</key>
+            <key type="filename">src/mcBonus4/12.png</key>
+            <key type="filename">src/mcBonus4/13.png</key>
+            <key type="filename">src/mcBonus4/14.png</key>
+            <key type="filename">src/mcBonus4/15.png</key>
+            <key type="filename">src/mcBonus4/16.png</key>
+            <key type="filename">src/mcBonus4/17.png</key>
+            <key type="filename">src/mcBonus4/18.png</key>
+            <key type="filename">src/mcBonus4/19.png</key>
+            <key type="filename">src/mcBonus4/2.png</key>
+            <key type="filename">src/mcBonus4/20.png</key>
+            <key type="filename">src/mcBonus4/21.png</key>
+            <key type="filename">src/mcBonus4/3.png</key>
+            <key type="filename">src/mcBonus4/4.png</key>
+            <key type="filename">src/mcBonus4/5.png</key>
+            <key type="filename">src/mcBonus4/6.png</key>
+            <key type="filename">src/mcBonus4/7.png</key>
+            <key type="filename">src/mcBonus4/8.png</key>
+            <key type="filename">src/mcBonus4/9.png</key>
+            <key type="filename">src/mcBonus5/1.png</key>
+            <key type="filename">src/mcBonus5/10.png</key>
+            <key type="filename">src/mcBonus5/11.png</key>
+            <key type="filename">src/mcBonus5/12.png</key>
+            <key type="filename">src/mcBonus5/13.png</key>
+            <key type="filename">src/mcBonus5/14.png</key>
+            <key type="filename">src/mcBonus5/15.png</key>
+            <key type="filename">src/mcBonus5/16.png</key>
+            <key type="filename">src/mcBonus5/17.png</key>
+            <key type="filename">src/mcBonus5/18.png</key>
+            <key type="filename">src/mcBonus5/19.png</key>
+            <key type="filename">src/mcBonus5/2.png</key>
+            <key type="filename">src/mcBonus5/20.png</key>
+            <key type="filename">src/mcBonus5/21.png</key>
+            <key type="filename">src/mcBonus5/3.png</key>
+            <key type="filename">src/mcBonus5/4.png</key>
+            <key type="filename">src/mcBonus5/5.png</key>
+            <key type="filename">src/mcBonus5/6.png</key>
+            <key type="filename">src/mcBonus5/7.png</key>
+            <key type="filename">src/mcBonus5/8.png</key>
+            <key type="filename">src/mcBonus5/9.png</key>
+            <key type="filename">src/mcBonus6/1.png</key>
+            <key type="filename">src/mcBonus6/10.png</key>
+            <key type="filename">src/mcBonus6/11.png</key>
+            <key type="filename">src/mcBonus6/12.png</key>
+            <key type="filename">src/mcBonus6/13.png</key>
+            <key type="filename">src/mcBonus6/14.png</key>
+            <key type="filename">src/mcBonus6/15.png</key>
+            <key type="filename">src/mcBonus6/16.png</key>
+            <key type="filename">src/mcBonus6/17.png</key>
+            <key type="filename">src/mcBonus6/18.png</key>
+            <key type="filename">src/mcBonus6/19.png</key>
+            <key type="filename">src/mcBonus6/2.png</key>
+            <key type="filename">src/mcBonus6/20.png</key>
+            <key type="filename">src/mcBonus6/21.png</key>
+            <key type="filename">src/mcBonus6/3.png</key>
+            <key type="filename">src/mcBonus6/4.png</key>
+            <key type="filename">src/mcBonus6/5.png</key>
+            <key type="filename">src/mcBonus6/6.png</key>
+            <key type="filename">src/mcBonus6/7.png</key>
+            <key type="filename">src/mcBonus6/8.png</key>
+            <key type="filename">src/mcBonus6/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>27,27,55,55</rect>
+                <key>scale9Paddings</key>
+                <rect>27,27,55,55</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcBonus7.png</key>
             <key type="filename">src/mcShot17/1.png</key>
             <key type="filename">src/mcShot17/2.png</key>
             <struct type="IndividualSpriteSettings">

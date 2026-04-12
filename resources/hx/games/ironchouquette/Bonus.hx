@@ -36,18 +36,19 @@ class Bonus extends Phys {
 
 	public function new(mc) {
 		Cs.game.bonusList.push(this);
-		if (mc == null)
-			mc = Cs.game.dm.attach("mcBonus", Game.DP_BADS);
-		super(mc);
 
 		ray = 15 * Cs.NEW_GEN_SCALE;
-		dm = new DepthManager(root);
 		id = getRandomId();
 		// id = 3;
 		var a = 0.775 + Cs.random(2) * 1.57;
+		if (mc == null)
+			mc = Cs.game.dm.attach("mcBonus" + (id + 1), Game.DP_BADS);
+		super(mc);
+		root.loop = true;
+		root.play();
+		dm = new DepthManager(root);
 		vx = Math.cos(a) * SPEED;
 		vy = Math.sin(a) * SPEED;
-		root.gotoAndStop(id + 1);
 	}
 
 	public function getRandomId() {
