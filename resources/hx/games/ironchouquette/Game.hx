@@ -503,6 +503,20 @@ class Game implements kado.GameInterface {
 	}
 
 	public function destroy():Void {
+		SCROLL_SPEED = 0.0001 * Cs.NEW_GEN_SCALE;
+		Stykades.monsterLevel = 0;
+		Stykades.waveTimer = 150;
+		Stykades.nextWave = 300;
+		Stykades.dif = 0;
+		Stykades.nextBonus = 300;
+		Stykades.FL_CREATE_LOCK = false;
+		Bonus.NB = 0;
+
+		if (bg != null)
+			bg.filters = [];
+		if (root != null)
+			Col.setPercentColor(root, 0, 0xFFFFFF);
+
 		Cs.game = null;
 	}
 }
