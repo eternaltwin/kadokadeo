@@ -8,9 +8,9 @@ class COmega extends Bads {
 	public var eye:ASprite;
 
 	public function new() {
-		var root = Cs.game.dm.attach("omegaBody", Game.DP_BADS);
-		super(root);
-		turn = root.attachMovie("omegaTurn");
+		turn = Cs.game.dm.attach("omegaTurn", Game.DP_BADS);
+		super(turn);
+		var body = root.attachMovie("omegaBody");
 
 		eye = root.attachMovie("omegaEye");
 		eye.loop = true;

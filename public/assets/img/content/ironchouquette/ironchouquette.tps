@@ -1265,6 +1265,29 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">src/mcLaserLight/1.png</key>
+            <key type="filename">src/mcLaserLight/2.png</key>
+            <key type="filename">src/mcLaserLight/3.png</key>
+            <key type="filename">src/mcLaserLight/4.png</key>
+            <key type="filename">src/mcLaserLight/5.png</key>
+            <key type="filename">src/mcLaserLight/6.png</key>
+            <key type="filename">src/mcLaserLight/7.png</key>
+            <key type="filename">src/mcLaserLight/8.png</key>
+            <key type="filename">src/mcLaserLight/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,1</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>15,102,29,204</rect>
+                <key>scale9Paddings</key>
+                <rect>15,102,29,204</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">src/mcLaserRay.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -1747,6 +1770,55 @@
                 <rect>30,30,60,60</rect>
                 <key>scale9Paddings</key>
                 <rect>30,30,60,60</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partLaser.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>8,8,15,15</rect>
+                <key>scale9Paddings</key>
+                <rect>8,8,15,15</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partPlasmaBolt/1.png</key>
+            <key type="filename">src/partPlasmaBolt/10.png</key>
+            <key type="filename">src/partPlasmaBolt/11.png</key>
+            <key type="filename">src/partPlasmaBolt/12.png</key>
+            <key type="filename">src/partPlasmaBolt/13.png</key>
+            <key type="filename">src/partPlasmaBolt/14.png</key>
+            <key type="filename">src/partPlasmaBolt/15.png</key>
+            <key type="filename">src/partPlasmaBolt/16.png</key>
+            <key type="filename">src/partPlasmaBolt/17.png</key>
+            <key type="filename">src/partPlasmaBolt/18.png</key>
+            <key type="filename">src/partPlasmaBolt/19.png</key>
+            <key type="filename">src/partPlasmaBolt/2.png</key>
+            <key type="filename">src/partPlasmaBolt/20.png</key>
+            <key type="filename">src/partPlasmaBolt/3.png</key>
+            <key type="filename">src/partPlasmaBolt/4.png</key>
+            <key type="filename">src/partPlasmaBolt/5.png</key>
+            <key type="filename">src/partPlasmaBolt/6.png</key>
+            <key type="filename">src/partPlasmaBolt/7.png</key>
+            <key type="filename">src/partPlasmaBolt/8.png</key>
+            <key type="filename">src/partPlasmaBolt/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.504132,0.158924</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>30,102,61,205</rect>
+                <key>scale9Paddings</key>
+                <rect>30,102,61,205</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

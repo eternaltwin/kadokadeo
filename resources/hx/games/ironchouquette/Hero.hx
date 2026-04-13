@@ -231,6 +231,7 @@ class Hero extends Phys {
 			mc._rotation = Cs.rand() * 360;
 			mc._xscale = 100 + Cs.rand() * 100;
 			mc._yscale = 50 + Cs.rand() * 100;
+			mc.play();
 		}
 	}
 
@@ -270,7 +271,7 @@ class Hero extends Phys {
 			var max = 2;
 			var mc = Cs.game.dm.attach("mcSpeed", Game.DP_PARTS);
 			mc.gotoAndStop(boost);
-			mc._xscale = (120 + boost * 40) * 1.7;
+			mc._xscale = (120 + boost * 40) * 2;
 			mc._yscale = mc._xscale;
 			for (k in 0...max) {
 				var coef = k / max;
@@ -284,7 +285,7 @@ class Hero extends Phys {
 					var ray = (20 + Cs.rand() * 50) * Cs.NEW_GEN_SCALE;
 					mc._x = x + Math.cos(a) * ray;
 					mc._y = y + Math.sin(a) * ray;
-					mc._xscale = 100 + Cs.rand() * 150;
+					mc._xscale = 100 + Cs.rand() * 180;
 					mc._yscale = mc._xscale;
 					Cs.game.plasmaDraw(mc, 0);
 				}
@@ -298,8 +299,6 @@ class Hero extends Phys {
 				p.y = y + (Cs.rand() * 2 - 1) * r;
 				p.setScale(10 + Cs.rand() * (15 + boost * 5));
 				p.root.gotoAndPlay(Cs.random(p.root._totalframes) + 1);
-				// TODO: uncomment
-				// downcast(p.root).compt = 100;
 				p.vy = Game.SCROLL_SPEED;
 				p.timer = 20 + Cs.rand() * 10;
 			}
@@ -473,7 +472,7 @@ class Hero extends Phys {
 	}
 
 	public function updateShoot() {
-		var flFire = KeyboardManager.isDown(KeyboardManager.SPACE) || KeyboardManager.isDown(18) || KeyboardManager.isDown(13);
+		var flFire = KeyboardManager.isDown(KeyboardManager.SPACE);
 
 		if (lastLaser != null && lastLaser._visible)
 			lastLaser.removeMovieClip();
@@ -523,7 +522,7 @@ class Hero extends Phys {
 									}
 									for (n in 0...2) {
 										var sens = n * 2 - 1;
-										for (k in 0...Std.int(a[0] * 0.5)) {
+										for (k in 0...Std.int((a[0] + 1) * 0.5)) {
 											var shot = newShot(sens * (0.15 + k * 0.15), 12 - (k * 1.5), 14);
 											shot.ray = 8 * Cs.NEW_GEN_SCALE;
 											shot.x = x + sens * (5 + k * 5) * Cs.NEW_GEN_SCALE;
