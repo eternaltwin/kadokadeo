@@ -13,9 +13,16 @@ class KeyboardManager {
 	static public inline var ARROW_LEFT = 37;
 	static public inline var ARROW_RIGHT = 39;
 	static public inline var SPACE = 32;
+	static public inline var A = 65;
+	static public inline var D = 68;
 	static public inline var G = 71;
+	static public inline var Q = 81;
+	static public inline var S = 83;
+	static public inline var W = 87;
+	static public inline var Z = 90;
 	static public inline var ESCAPE = 27;
 	static public inline var CONTROL = 17;
+	static public inline var SHIFT = 16;
 
 	static private var keyState:IntMap<Bool>;
 	static private var isInitialized:Bool = false;

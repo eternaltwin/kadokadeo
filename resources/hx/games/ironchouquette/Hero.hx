@@ -243,21 +243,25 @@ class Hero extends Phys {
 		var mx:Float = 0;
 		var my:Float = 0;
 		var bent = 0.25;
-		if (KeyboardManager.isDown(KeyboardManager.LEFT)) {
+		var leftDown = KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.A) || KeyboardManager.isDown(KeyboardManager.Q);
+		var rightDown = KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D);
+		var upDown = KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.W) || KeyboardManager.isDown(KeyboardManager.Z);
+		var downDown = KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S);
+		if (leftDown) {
 			mx -= sp;
 			laserStartAngle -= bent;
 			rollX -= Timer.tmod * 5;
 		}
-		if (KeyboardManager.isDown(KeyboardManager.RIGHT)) {
+		if (rightDown) {
 			mx += sp;
 			laserStartAngle += bent;
 			rollX += Timer.tmod * 5;
 		}
-		if (KeyboardManager.isDown(KeyboardManager.UP)) {
+		if (upDown) {
 			my -= sp;
 			rollY -= Timer.tmod * 3.5;
 		}
-		if (KeyboardManager.isDown(KeyboardManager.DOWN)) {
+		if (downDown) {
 			my += sp;
 			rollY += Timer.tmod * 3.5;
 		}

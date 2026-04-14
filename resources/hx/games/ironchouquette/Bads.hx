@@ -346,7 +346,7 @@ class Bads extends Phys {
 
 					vx = Math.cos(a) * speed;
 					vy = Math.sin(a) * speed;
-					if (getDist(trg) < 50) {
+					if (getDist(trg) < 50 * Cs.NEW_GEN_SCALE) {
 						onTargetReach();
 					}
 

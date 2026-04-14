@@ -1,5 +1,6 @@
 package ironchouquette;
 
+import haxe.io.UInt16Array;
 import haxe.Json;
 import ironchouquette.elems.Base2;
 import ironchouquette.elems.Base1;
@@ -92,6 +93,26 @@ class Game implements kado.GameInterface {
 	public var plasmaSampleRate:Int;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
+		var replayKeys = new UInt16Array(13);
+		replayKeys[0] = KeyboardManager.ARROW_RIGHT;
+		replayKeys[1] = KeyboardManager.ARROW_DOWN;
+		replayKeys[2] = KeyboardManager.ARROW_LEFT;
+		replayKeys[3] = KeyboardManager.ARROW_UP;
+		replayKeys[4] = KeyboardManager.SPACE;
+		replayKeys[5] = KeyboardManager.CONTROL;
+		replayKeys[6] = KeyboardManager.SHIFT;
+		replayKeys[7] = KeyboardManager.W;
+		replayKeys[8] = KeyboardManager.Z;
+		replayKeys[9] = KeyboardManager.A;
+		replayKeys[10] = KeyboardManager.Q;
+		replayKeys[11] = KeyboardManager.S;
+		replayKeys[12] = KeyboardManager.D;
+		KadoKadeoManager.kkm.replay.init({
+			recordedKeys: replayKeys,
+			recordInputs: true,
+			recordEvents: false,
+		});
+
 		Cs.game = this;
 		dm = new DepthManager(root);
 		this.root = root;
@@ -497,7 +518,7 @@ class Game implements kado.GameInterface {
 		}
 		#end
 
-		if (isKeyJustPressed(KeyboardManager.CONTROL) || isKeyJustPressed(16)) {
+		if (isKeyJustPressed(KeyboardManager.CONTROL) || isKeyJustPressed(KeyboardManager.SHIFT)) {
 			hero.sacrifice(null);
 		}
 	}
