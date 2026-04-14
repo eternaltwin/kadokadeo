@@ -1,7 +1,7 @@
 package ironchouquette;
 
 import haxe.io.UInt16Array;
-import haxe.Json;
+import kado.TouchControlsConfig.TouchControlsMode;
 import ironchouquette.elems.Base2;
 import ironchouquette.elems.Base1;
 import pixi.filters.colormatrix.ColorMatrixFilter;
@@ -36,6 +36,38 @@ class PlasmaSprite extends ASprite {
 
 @:expose('GameIronChouquette')
 class Game implements kado.GameInterface {
+	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
+		mode: TouchControlsMode.JOYSTICK,
+		joystick: {
+			x: 0.18,
+			y: 0.8,
+			radius: 84,
+			deadZone: 0.18,
+			dynamicCenter: true,
+		},
+		buttons: [
+			{
+				id: "shoot",
+				label: "☄️",
+				rightPx: 14,
+				bottomPx: 14,
+				size: 84,
+				keyCode: KeyboardManager.SPACE,
+			},
+			{
+				id: "sacrifice",
+				label: "💀",
+				rightPx: 22,
+				bottomPx: 112,
+				size: 70,
+				action: TOUCH_ACTION_SACRIFICE,
+			}
+		],
+	};
+
+	static inline var JOYSTICK_DIGITAL_THRESHOLD = 0.2;
+	static inline var TOUCH_ACTION_SACRIFICE = "touch_sacrifice";
+
 	public static var DP_INTER = 12;
 	public static var DP_PARTS = 10;
 	public static var DP_SHOTS = 8;
@@ -92,6 +124,8 @@ class Game implements kado.GameInterface {
 	public var plasmaSample:PixelHelper;
 	public var plasmaSampleRate:Int;
 
+	var pendingVirtualKeyUps:Array<{keyCode:Int, framesLeft:Int}>;
+
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayKeys = new UInt16Array(13);
 		replayKeys[0] = KeyboardManager.ARROW_RIGHT;
@@ -123,6 +157,7 @@ class Game implements kado.GameInterface {
 		bonusList = new Array();
 		frameId = 0;
 		plasmaSampleRate = 3;
+		pendingVirtualKeyUps = [];
 
 		bg = dm.attach("mcBg", DP_BG);
 
@@ -187,6 +222,7 @@ class Game implements kado.GameInterface {
 	public function update(delta:Float) {
 		frameId++;
 		updateKeyboard();
+		flushPendingVirtualKeyUps();
 
 		if (bt != null)
 			updateBulletTime();
@@ -521,6 +557,74 @@ class Game implements kado.GameInterface {
 		if (isKeyJustPressed(KeyboardManager.CONTROL) || isKeyJustPressed(KeyboardManager.SHIFT)) {
 			hero.sacrifice(null);
 		}
+	}
+
+	public function pollTouchControls():Void {
+		var joystick = KadoKadeoManager.kkm.getTouchJoystickState();
+		if (joystick == null) {
+			return;
+		}
+
+		var axisX = 0;
+		var axisY = 0;
+		if (joystick.active) {
+			if (joystick.nx <= -JOYSTICK_DIGITAL_THRESHOLD) {
+				axisX = -1;
+			} else if (joystick.nx >= JOYSTICK_DIGITAL_THRESHOLD) {
+				axisX = 1;
+			}
+			if (joystick.ny <= -JOYSTICK_DIGITAL_THRESHOLD) {
+				axisY = -1;
+			} else if (joystick.ny >= JOYSTICK_DIGITAL_THRESHOLD) {
+				axisY = 1;
+			}
+		}
+
+		setDirectionalKey(KeyboardManager.LEFT, axisX < 0);
+		setDirectionalKey(KeyboardManager.RIGHT, axisX > 0);
+		setDirectionalKey(KeyboardManager.UP, axisY < 0);
+		setDirectionalKey(KeyboardManager.DOWN, axisY > 0);
+	}
+
+	inline function setDirectionalKey(keyCode:Int, down:Bool):Void {
+		if (down) {
+			KeyboardManager.setKeyDown(keyCode);
+		} else {
+			KeyboardManager.setKeyUp(keyCode);
+		}
+	}
+
+	public function onTouchAction(action:String):Void {
+		switch (action) {
+			case TOUCH_ACTION_SACRIFICE:
+				queueVirtualTap(KeyboardManager.CONTROL);
+			case _:
+		}
+	}
+
+	function queueVirtualTap(keyCode:Int):Void {
+		KeyboardManager.setKeyDown(keyCode);
+		pendingVirtualKeyUps.push({
+			keyCode: keyCode,
+			framesLeft: 2
+		});
+	}
+
+	function flushPendingVirtualKeyUps():Void {
+		if (pendingVirtualKeyUps.length == 0) {
+			return;
+		}
+
+		var keep:Array<{keyCode:Int, framesLeft:Int}> = [];
+		for (entry in pendingVirtualKeyUps) {
+			entry.framesLeft--;
+			if (entry.framesLeft <= 0) {
+				KeyboardManager.setKeyUp(entry.keyCode);
+			} else {
+				keep.push(entry);
+			}
+		}
+		pendingVirtualKeyUps = keep;
 	}
 
 	public function destroy():Void {

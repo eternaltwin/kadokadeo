@@ -7,6 +7,7 @@ import js.lib.Promise;
 import js.Browser;
 import js.html.CanvasElement;
 import js.html.CustomEvent;
+import kado.TouchControlsOverlay.TouchJoystickState;
 import kado.TouchControlsConfig.TouchControlsConfig;
 import kado.TouchControlsConfig.TouchControlsMode;
 import pixi.core.Application;
@@ -185,6 +186,7 @@ class KadoKadeoManager extends Application {
 		mt.Timer.calc_tmod = 1;
 		mt.Timer.tmod = 1;
 		if (game != null) {
+			pollGameTouchControls();
 			replay.beginFrame();
 			gameRoot.update();
 			game.update(dt);
@@ -549,6 +551,23 @@ class KadoKadeoManager extends Application {
 		var fn = Reflect.field(game, "onTouchAction");
 		if (fn != null) {
 			Reflect.callMethod(game, fn, [action]);
+		}
+	}
+
+	public function getTouchJoystickState():Null<TouchJoystickState> {
+		if (touchOverlay == null) {
+			return null;
+		}
+		return touchOverlay.getJoystickState();
+	}
+
+	function pollGameTouchControls():Void {
+		if (game == null) {
+			return;
+		}
+		var fn = Reflect.field(game, "pollTouchControls");
+		if (fn != null) {
+			Reflect.callMethod(game, fn, []);
 		}
 	}
 

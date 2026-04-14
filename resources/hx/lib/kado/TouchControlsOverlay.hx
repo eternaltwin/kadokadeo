@@ -21,6 +21,12 @@ typedef TouchControlsCallbacks = {
 	@:optional var onAction:String->Void;
 }
 
+typedef TouchJoystickState = {
+	var nx:Float;
+	var ny:Float;
+	var active:Bool;
+}
+
 private typedef TouchButtonState = {
 	var cfg:TouchButtonConfig;
 	var size:Float;
@@ -74,6 +80,9 @@ class TouchControlsOverlay {
 	var joyCenterY:Float = 0;
 	var joyKnobOffsetX:Float = 0;
 	var joyKnobOffsetY:Float = 0;
+	var joyInputX:Float = 0;
+	var joyInputY:Float = 0;
+	var joyInputActive:Bool = false;
 	var joyRadius:Float = 72;
 	var joyDeadZone:Float = 0.18;
 	var joyDynamic:Bool = false;
@@ -180,6 +189,17 @@ class TouchControlsOverlay {
 		buttonPointerById = new IntMap();
 		swipePointers = new IntMap();
 		pendingTapPointers = new IntMap();
+	}
+
+	public function getJoystickState():Null<TouchJoystickState> {
+		if (!joystickEnabled) {
+			return null;
+		}
+		return {
+			nx: joyInputX,
+			ny: joyInputY,
+			active: joyInputActive
+		};
 	}
 
 	function initButtons(buttons:Array<TouchButtonConfig>):Void {
@@ -476,6 +496,9 @@ class TouchControlsOverlay {
 		activeJoystickPointer = null;
 		joyKnobOffsetX = 0;
 		joyKnobOffsetY = 0;
+		joyInputX = 0;
+		joyInputY = 0;
+		joyInputActive = false;
 		if (callbacks != null && callbacks.onJoystick != null) {
 			callbacks.onJoystick(0, 0, false);
 		}
@@ -524,8 +547,12 @@ class TouchControlsOverlay {
 			joyKnobOffsetY = 0;
 		}
 
+		joyInputX = nx;
+		joyInputY = ny;
+		joyInputActive = active && magnitude > 0;
+
 		if (callbacks != null && callbacks.onJoystick != null) {
-			callbacks.onJoystick(nx, ny, active && magnitude > 0);
+			callbacks.onJoystick(nx, ny, joyInputActive);
 		}
 	}
 
