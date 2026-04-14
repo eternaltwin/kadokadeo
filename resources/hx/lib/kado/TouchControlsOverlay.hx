@@ -112,6 +112,7 @@ class TouchControlsOverlay {
 		if (parent.style.position == null || parent.style.position == "") {
 			parent.style.position = "relative";
 		}
+		hardenInteractionSurface(parent);
 
 		overlay = Browser.document.createCanvasElement();
 		overlay.className = "kk-touch-controls-canvas";
@@ -126,9 +127,10 @@ class TouchControlsOverlay {
 		overlay.style.userSelect = "none";
 		overlay.style.setProperty("-webkit-user-select", "none");
 		overlay.style.setProperty("-webkit-touch-callout", "none");
-		preventContextMenu(overlay);
+		hardenInteractionSurface(overlay);
 
 		canvas.style.setProperty("touch-action", "none");
+		hardenInteractionSurface(canvas);
 
 		parent.appendChild(overlay);
 		context = cast overlay.getContext("2d");
@@ -730,6 +732,23 @@ class TouchControlsOverlay {
 		el.addEventListener("contextmenu", (evt:Event) -> {
 			evt.preventDefault();
 		});
+	}
+
+	function hardenInteractionSurface(el:Element):Void {
+		if (el == null) {
+			return;
+		}
+		el.style.setProperty("user-select", "none");
+		el.style.setProperty("-webkit-user-select", "none");
+		el.style.setProperty("-webkit-touch-callout", "none");
+		el.style.setProperty("-webkit-tap-highlight-color", "transparent");
+		el.addEventListener("selectstart", (evt:Event) -> {
+			evt.preventDefault();
+		});
+		el.addEventListener("dragstart", (evt:Event) -> {
+			evt.preventDefault();
+		});
+		preventContextMenu(el);
 	}
 
 	inline function px(v:Float):String {

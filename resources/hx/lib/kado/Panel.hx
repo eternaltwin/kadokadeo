@@ -1,7 +1,6 @@
 package kado;
 
 import pixi.core.textures.Texture;
-import pixi.core.sprites.Sprite;
 import pixi.mesh.NineSlicePlane;
 import pixi.core.display.Container;
 

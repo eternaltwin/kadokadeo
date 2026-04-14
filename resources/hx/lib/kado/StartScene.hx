@@ -1,5 +1,6 @@
 package kado;
 
+import pixi.core.textures.Texture;
 import pixi.core.graphics.Graphics;
 import pixi.core.display.Container;
 import pixi.core.sprites.Sprite;
@@ -31,8 +32,8 @@ class StartScene extends Container {
 		this.addChild(overlay);
 
 		this.panel = new Panel(kkm);
-		panel.width = 500;
-		panel.height = 210;
+		panel.width = 650;
+		panel.height = 250;
 		panel.x = (kkm.renderer.width - panel.width) / 2;
 		panel.y = (kkm.renderer.height - panel.height) / 2;
 		panel.visible = false;
@@ -95,16 +96,54 @@ class StartScene extends Container {
 	public function showContract(contract:Dto.RunDTO):Void {
 		panel.setTitle("CONTRAT");
 		panel.clearContent();
-		var text = new pixi.core.text.Text('Run ID: ' + contract.run_id + '\n' + 'Server Time: ' + contract.server_time + '\n' + 'Contract Score: '
-			+ contract.contract_score + '\n' + 'Contract Points: ' + contract.contract_points + '\n' + 'Seed: ' + contract.seed,
-			{
-				fontFamily: 'Fredoka Bold',
-				fontSize: 24,
-				fill: 0x0798FF,
-				align: 'left',
-			});
-		panel.addContentDisplayObject(text);
-		text.x = 20;
-		text.y = 50;
+		var scoreToBeat = new pixi.core.text.Text('SCORE À BATTRE', {
+			fontFamily: 'Fredoka Bold',
+			fontSize: 40,
+			fill: 0x78c8c8,
+			align: 'left',
+		});
+		panel.addContentDisplayObject(scoreToBeat);
+		scoreToBeat.x = 30;
+		scoreToBeat.y = 70;
+
+		var contractPoints = new pixi.core.text.Text('POINTS', {
+			fontFamily: 'Fredoka Bold',
+			fontSize: 40,
+			fill: 0x78c8c8,
+			align: 'left',
+		});
+		panel.addContentDisplayObject(contractPoints);
+		contractPoints.x = 450;
+		contractPoints.y = 70;
+
+		var verticalBar = new Graphics();
+		verticalBar.beginFill(0xd3d3d3).drawRect(400, 70, 8, 150).endFill();
+		panel.addContentDisplayObject(verticalBar);
+
+		var scoreToBeatValue = new pixi.core.text.Text(Std.string(contract.contract_score), {
+			fontFamily: 'Fredoka Bold',
+			fontSize: 50,
+			fill: 0x0798FF,
+			align: 'center',
+		});
+		scoreToBeatValue.x = 200 - scoreToBeatValue.width / 2;
+		scoreToBeatValue.y = 140;
+		panel.addContentDisplayObject(scoreToBeatValue);
+
+		var contractPointsValue = new pixi.core.text.Text(Std.string(contract.contract_points), {
+			fontFamily: 'Fredoka Bold',
+			fontSize: 50,
+			fill: 0x0798FF,
+			align: 'right',
+		});
+		contractPointsValue.x = 550 - contractPointsValue.width;
+		contractPointsValue.y = 140;
+		panel.addContentDisplayObject(contractPointsValue);
+
+		var kImg = new Sprite(Texture.from('kado_icon.png'));
+		kImg.x = 580;
+		kImg.y = 170;
+		kImg.scale.set(0.5);
+		panel.addContentDisplayObject(kImg);
 	}
 }

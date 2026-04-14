@@ -7,25 +7,12 @@ import js.lib.Promise;
 import js.Browser;
 import js.html.CanvasElement;
 import js.html.CustomEvent;
+import kado.KadoRunFlow.RunStartContext;
 import kado.TouchControlsOverlay.TouchJoystickState;
 import kado.TouchControlsConfig.TouchControlsConfig;
 import kado.TouchControlsConfig.TouchControlsMode;
 import pixi.core.Application;
 import pixi.core.ticker.Ticker;
-
-typedef KadoConfig = {
-	var public_key:String;
-}
-
-typedef GameParams = {
-	var replayData:String;
-	var isDaily:Bool;
-	var name:String;
-	var seed:String;
-	var contractScore:Int;
-	var contractPoints:Int;
-	var gameId:Int;
-}
 
 @:expose("KadoKadeo")
 class KadoKadeoManager extends Application {
@@ -54,8 +41,9 @@ class KadoKadeoManager extends Application {
 
 	var runDetails:Dto.RunDTO;
 	var endRunDetails:Dto.EndRunResponseDTO;
-	var diffWithServerTime:Int;
 	var crypto:KadoCrypto = new KadoCrypto();
+	var endRunClient:KadoEndRun;
+	var runFlow:KadoRunFlow;
 	var params:GameParams;
 	var simulationTimeMs:Float = mt.Timer.oldTime;
 	var replayElapsedMs:Float = 0;
@@ -84,6 +72,8 @@ class KadoKadeoManager extends Application {
 		this.canvas = canvas;
 		this.gameClass = gameClass;
 		this.params = params;
+		this.endRunClient = new KadoEndRun(crypto);
+		this.runFlow = new KadoRunFlow(params);
 		canvas.width = 900;
 		canvas.height = 960;
 		this.root = new ASprite();
@@ -100,6 +90,7 @@ class KadoKadeoManager extends Application {
 			this.sheet = loader.resources["kkm"].spritesheet;
 			Browser.window.document.fonts.ready.then((fontFaceSet) -> {
 				trace("KadoKadeoManager initialized");
+				runFlow.transition(Intro, "assets-loaded");
 				this.showIntroScreen();
 				// score = 31300;
 				// this.gameOver({});
@@ -186,7 +177,7 @@ class KadoKadeoManager extends Application {
 		mt.Timer.deltaT = dt / 1000;
 		mt.Timer.calc_tmod = 1;
 		mt.Timer.tmod = 1;
-		if (game != null) {
+		if (runFlow.state == Playing && game != null) {
 			pollGameTouchControls();
 			replay.beginFrame();
 			gameRoot.update();
@@ -202,53 +193,47 @@ class KadoKadeoManager extends Application {
 		}
 	}
 
-	inline function hashFNV1a(s:String):Int {
-		var hash = 0x811C9DC5;
-		for (i in 0...s.length) {
-			hash ^= s.charCodeAt(i);
-			hash *= 0x01000193;
-		}
-		return hash;
-	}
-
 	public function showIntroScreen() {
-		if (params.replayData != null) {
-			runDetails = {
-				run_id: '',
-				server_time: 0,
-				contract_score: params.contractScore,
-				contract_points: params.contractPoints,
-				seed: params.seed,
-			}
-			seed = new mt.Rand(hashFNV1a(runDetails.seed));
+		runFlow.transition(Intro, "show-intro");
+
+		var replayContext = runFlow.createReplayContext();
+		if (replayContext != null) {
+			applyRunContext(replayContext);
 			startGame();
 			return;
 		}
 
 		#if debug
-		seed = new mt.Rand(hashFNV1a("123"));
+		applyRunContext(runFlow.createDebugContext());
 		startGame();
 		return;
 		#end
 		startScene = new StartScene(this, params.name);
 		startScene.interactive = true;
 		startScene.once("pointerdown", e -> {
-			Api.askContract({daily: params.isDaily, gameId: params.gameId}, (data:Dto.ApiResponse<Dto.RunDTO>) -> {
-				seed = new mt.Rand(hashFNV1a(data.data.seed));
-				startScene.showContract(data.data);
-				runDetails = data.data;
-				diffWithServerTime = Std.int(Date.now().getTime() / 1000) - runDetails.server_time;
+			runFlow.transition(ContractLoading, "request-contract");
+			runFlow.requestContract((context) -> {
+				applyRunContext(context);
+				startScene.showContract(context.runDetails);
+				runFlow.transition(ReadyToStart, "contract-received");
 				startScene.interactive = true;
 				startScene.once("pointerdown", startGame);
-			}, error -> {
-				trace('Contract failed: ' + error.message);
+			}, (message) -> {
+				runFlow.transition(Intro, "contract-failed");
+				trace('Contract failed: ' + message);
 			});
 			startScene.disable();
 		});
 		this.stage.addChild(startScene);
 	}
 
+	inline function applyRunContext(context:RunStartContext):Void {
+		runDetails = context.runDetails;
+		seed = new mt.Rand(context.seedHash);
+	}
+
 	function startGame() {
+		runFlow.transition(Playing, "start-game");
 		if (startScene != null) {
 			if (startScene.parent != null) {
 				startScene.parent.removeChild(startScene);
@@ -302,10 +287,12 @@ class KadoKadeoManager extends Application {
 	}
 
 	function displayEndScene(endRunDetails:Dto.EndRunResponseDTO) {
+		runFlow.transition(EndScreen, "display-end-scene");
 		reset(true);
 		this.endScene = new EndScene(this, endRunDetails);
 		this.stage.addChild(this.endScene);
 		this.endScene.once('replay', () -> {
+			runFlow.transition(ReplayTransition, "replay-clicked");
 			reset();
 			this.showIntroScreen();
 		});
@@ -389,6 +376,7 @@ class KadoKadeoManager extends Application {
 		// this.stage.removeChildren();
 		gameOverScreen = new GameOver(() -> {
 			if (wasInReplay) {
+				runFlow.transition(EndScreen, "replay-ended");
 				this.displayEndScene({
 					is_best: false,
 					previous_star: -1,
@@ -397,6 +385,7 @@ class KadoKadeoManager extends Application {
 				});
 			} else {
 				// TODO: show loading screen
+				runFlow.transition(SubmittingRun, "submit-end-run");
 				makeEndRunHttpRequest().then((endRunDetails:Dto.EndRunResponseDTO) -> {
 					this.displayEndScene(endRunDetails);
 					emitWindowEvent("gameFinished", endRunDetails);
@@ -458,31 +447,9 @@ class KadoKadeoManager extends Application {
 
 	private function makeEndRunHttpRequest():Promise<Dto.EndRunResponseDTO> {
 		#if !debug
-		var win:Dynamic = js.Browser.window;
-		var kado:KadoConfig = cast win.Kado;
-
-		var jse = new externs.JSEncrypt();
-		jse.setPublicKey(kado.public_key);
-		var req = {
-			run_id: runDetails.run_id,
-			score: score,
-			timestamp: Std.int(Date.now().getTime() / 1000) + diffWithServerTime,
-			replay: replay.encodeReplayString(),
-		};
-		var jsonReq = haxe.Json.stringify(req);
-		trace('Prepared end run request: ' + jsonReq);
-		var payload = crypto.preparePayload(jsonReq);
-		var request:Dto.EndRunRequestDTO = {
-			payload: haxe.crypto.Base64.encode(payload),
-			key: jse.encrypt(crypto.getKey().toHex()),
-			sign: haxe.crypto.Base64.encode(crypto.getHmacSha256(haxe.io.Bytes.ofString(jsonReq))),
-		}
-		return Api.endRun(runDetails.run_id, request).then((data:Dto.ApiResponse<Dto.EndRunResponseDTO>) -> {
-			// trace('Run ended successfully: ' + haxe.Json.stringify(data));
-			endRunDetails = data.data;
+		return endRunClient.submit(runFlow.getRunDetails(), score, runFlow.currentTimestamp(), replay.encodeReplayString()).then((data) -> {
+			endRunDetails = data;
 			return endRunDetails;
-		}).catchError((error) -> {
-			trace('Error ending run: ' + error.message);
 		});
 		#else
 		return Promise.resolve({
