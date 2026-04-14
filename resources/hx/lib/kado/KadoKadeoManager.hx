@@ -54,6 +54,7 @@ class KadoKadeoManager extends Application {
 
 	var runDetails:Dto.RunDTO;
 	var endRunDetails:Dto.EndRunResponseDTO;
+	var diffWithServerTime:Int;
 	var crypto:KadoCrypto = new KadoCrypto();
 	var params:GameParams;
 	var simulationTimeMs:Float = mt.Timer.oldTime;
@@ -236,6 +237,7 @@ class KadoKadeoManager extends Application {
 				seed = new mt.Rand(hashFNV1a(data.data.seed));
 				startScene.showContract(data.data);
 				runDetails = data.data;
+				diffWithServerTime = Std.int(Date.now().getTime() / 1000) - runDetails.server_time;
 				startScene.interactive = true;
 				startScene.once("pointerdown", startGame);
 			}, error -> {
@@ -464,7 +466,7 @@ class KadoKadeoManager extends Application {
 		var req = {
 			run_id: runDetails.run_id,
 			score: score,
-			timestamp: Std.int(Date.now().getTime() / 1000),
+			timestamp: Std.int(Date.now().getTime() / 1000) + diffWithServerTime,
 			replay: replay.encodeReplayString(),
 		};
 		var jsonReq = haxe.Json.stringify(req);
