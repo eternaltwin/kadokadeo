@@ -1,6 +1,5 @@
 package kslash;
 
-import pixi.core.text.Text;
 import mt.Timer;
 
 class Bonus {

@@ -142,7 +142,7 @@ class StartScene extends Container {
 
 		var kImg = new Sprite(Texture.from('kado_icon.png'));
 		kImg.x = 580;
-		kImg.y = 170;
+		kImg.y = 175;
 		kImg.scale.set(0.5);
 		panel.addContentDisplayObject(kImg);
 	}

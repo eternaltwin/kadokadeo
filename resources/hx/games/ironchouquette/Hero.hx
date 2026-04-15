@@ -25,7 +25,7 @@ class LaserRaySprite extends ASprite {
 
 class BlackHoleSpritePart extends Part {
 	public var black:Float;
-	public var mask:ASprite;
+	public var captured:Bool;
 }
 
 class BlackHoleSprite extends ASprite {
@@ -243,9 +243,13 @@ class Hero extends Phys {
 		var mx:Float = 0;
 		var my:Float = 0;
 		var bent = 0.25;
-		var leftDown = KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.A) || KeyboardManager.isDown(KeyboardManager.Q);
+		var leftDown = KeyboardManager.isDown(KeyboardManager.LEFT)
+			|| KeyboardManager.isDown(KeyboardManager.A)
+			|| KeyboardManager.isDown(KeyboardManager.Q);
 		var rightDown = KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D);
-		var upDown = KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.W) || KeyboardManager.isDown(KeyboardManager.Z);
+		var upDown = KeyboardManager.isDown(KeyboardManager.UP)
+			|| KeyboardManager.isDown(KeyboardManager.W)
+			|| KeyboardManager.isDown(KeyboardManager.Z);
 		var downDown = KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S);
 		if (leftDown) {
 			mx -= sp;
@@ -410,6 +414,7 @@ class Hero extends Phys {
 						p.frict = 0.94;
 						p.ray = b.ray;
 						p.black = 0;
+						p.captured = false;
 						p.root.stop();
 						b.root = null;
 						b.kill();
@@ -476,7 +481,7 @@ class Hero extends Phys {
 	}
 
 	public function updateShoot() {
-		var flFire = KeyboardManager.isDown(KeyboardManager.SPACE);
+		var flFire = KeyboardManager.isDown(KeyboardManager.SPACE) || KeyboardManager.isDown(KeyboardManager.ENTER);
 
 		if (lastLaser != null && lastLaser._visible)
 			lastLaser.removeMovieClip();
@@ -831,48 +836,40 @@ class Hero extends Phys {
 	}
 
 	public function updateBlackHole() {
-		blackHole.vr *= 1.05;
+		blackHole.vr *= Math.pow(1.05, Timer.tmod);
 		blackHole._rotation += 12 * Timer.tmod;
 
 		var acc = 1;
-		var bh = {x: blackHole._x, y: blackHole._y}
-		var flAllMasked = true;
+		var bh = {x: blackHole._x, y: blackHole._y};
+		var captureRay = blackHole._xscale * 0.5 * Cs.NEW_GEN_SCALE;
+		var alphaRay = Math.max(captureRay, 0.0001);
+		var centerEps = 20 * Cs.NEW_GEN_SCALE;
 
-		var i = 0;
-		while (i < blackHole.list.length) {
+		var i = blackHole.list.length - 1;
+		while (i >= 0) {
 			var p = blackHole.list[i];
+			var dist = p.getDist(bh);
 
-			if (p.mask != null) {
-				p.vx *= 1.2;
-				p.vy *= 1.2;
-
-				// p.black = Math.min(p.black + 8 * Timer.tmod, 100);
-				// Col.setPercentColor(p.root, p.black, 0);
-
-				if (p.getDist(bh) > blackHole._xscale * 0.5 * Cs.NEW_GEN_SCALE + p.ray) {
-					p.mask.removeMovieClip();
-					p.kill();
-					blackHole.list.splice(i, 1);
-					continue;
-				}
+			if (dist <= captureRay) {
+				p.root._alpha = (dist + centerEps) / alphaRay * 25;
 			} else {
-				flAllMasked = false;
+				p.root._alpha = 100;
+			}
 
+			if (!p.captured) {
 				var a = p.getAng(bh);
 				p.vx += Math.cos(a) * acc * Timer.tmod;
 				p.vy += Math.sin(a) * acc * Timer.tmod;
 
-				if (p.getDist(bh) < blackHole._xscale * 0.5 * Cs.NEW_GEN_SCALE - p.ray) {
-					p.mask = Cs.game.dm.empty(Game.DP_BADS);
-					p.mask.getGraphics().beginFill(0xFF0000, 1).drawCircle(0, 0, 50 * Cs.NEW_GEN_SCALE);
-					p.mask._x = bh.x;
-					p.mask._y = bh.y;
-					p.mask._xscale = blackHole._xscale;
-					p.mask._yscale = blackHole._yscale;
-					p.root.mask = p.mask;
+				if (dist < p.ray) {
+					p.captured = true;
+					p.kill();
+					blackHole.list.splice(i, 1);
+					i--;
+					continue;
 				}
 			}
-			i++;
+			i--;
 		}
 		// Log.setColor(0xFF0000)
 		// trace(blackHole.step);
@@ -880,22 +877,15 @@ class Hero extends Phys {
 			case 0 | 2:
 				var ts = (blackHole.step == 0) ? 150 : 0;
 				var ds = ts - blackHole._xscale;
-				blackHole._xscale += ds * 0.3;
+				var scaleLerp = 1 - Math.pow(0.7, Timer.tmod);
+				blackHole._xscale += ds * scaleLerp;
 				if (Math.abs(ds) <= 1) {
 					blackHole.step++;
 					blackHole._xscale = ts;
 				}
 				blackHole._yscale = blackHole._xscale;
-
-				for (i in 0...blackHole.list.length) {
-					var p = blackHole.list[i];
-					if (p.mask != null) {
-						p.mask._xscale = blackHole._xscale;
-						p.mask._yscale = blackHole._yscale;
-					}
-				}
 			case 1:
-				if (flAllMasked)
+				if (blackHole.list.length == 0)
 					blackHole.step = 2;
 			case 3:
 				if (blackHole.list.length == 0) {
@@ -944,6 +934,8 @@ class Hero extends Phys {
 	}
 
 	public function explode() {
+		if (isDead)
+			return;
 		// PARTS
 		for (i in 0...12) {
 			var p = new Part(Cs.game.dm.attach("mcExploPart", Game.DP_PARTS));

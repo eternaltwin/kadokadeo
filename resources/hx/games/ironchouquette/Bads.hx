@@ -177,7 +177,7 @@ class Bads extends Phys {
 			var flHit = getDist({x: h.x, y: h.y}) < ray + h.ray;
 			if (rect != null)
 				flHit = Math.abs(h.x - x) < rect.rw + h.ray && Math.abs(h.y - y) < rect.rh + h.ray;
-			if (flHit) {
+			if (flHit && !h.isDead) {
 				heroCollide();
 			}
 		}

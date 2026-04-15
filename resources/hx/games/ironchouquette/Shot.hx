@@ -117,6 +117,7 @@ class Shot extends Phys {
 						p.root._yscale = p.root._xscale;
 						p.root.blendMode = BlendModes.ADD;
 						p.fadeType = 0;
+						p.root.play();
 					}
 				case _:
 			}
