@@ -716,17 +716,19 @@ class Stykades {
 			case 34: // KILLER BRIAROS
 				for (i in 0...8) {
 					var b = newBriaros();
-					var m = -15 * Cs.NEW_GEN_SCALE;
-					b.x = m + Cs.random(2) * (Cs.mcw - 2 * m);
-					b.y = Cs.mch * 0.5 + 20 * Cs.NEW_GEN_SCALE;
-					b.beeRange[0].w = 0;
-					b.beeRange[1].yMax += 20 * Cs.NEW_GEN_SCALE;
+					if (b != null) {
+						var m = -15 * Cs.NEW_GEN_SCALE;
+						b.x = m + Cs.random(2) * (Cs.mcw - 2 * m);
+						b.y = Cs.mch * 0.5 + 20 * Cs.NEW_GEN_SCALE;
+						b.beeRange[0].w = 0;
+						b.beeRange[1].yMax += 20 * Cs.NEW_GEN_SCALE;
 
-					b.hp = 120;
-					var raf = b.newRafale();
-					raf.addShot(1, [3, 0.6], 10, 1);
-					b.cooldown = 10;
-					b.shootTimer = 5 + Cs.rand() * 10;
+						b.hp = 120;
+						var raf = b.newRafale();
+						raf.addShot(1, [3, 0.6], 10, 1);
+						b.cooldown = 10;
+						b.shootTimer = 5 + Cs.rand() * 10;
+					}
 				}
 		}
 	}
