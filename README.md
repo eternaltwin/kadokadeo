@@ -11,7 +11,7 @@
         - [Troubleshooting](#troubleshooting)
     - [Some useful commands](#some-useful-commands)
 
-# Kadokadeo
+# Kadokadéo
 
 ## Configuration
 
