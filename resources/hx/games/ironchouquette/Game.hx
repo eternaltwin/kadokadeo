@@ -127,7 +127,7 @@ class Game implements kado.GameInterface {
 	var pendingVirtualKeyUps:Array<{keyCode:Int, framesLeft:Int}>;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
-		var replayKeys = new UInt16Array(13);
+		var replayKeys = new UInt16Array(14);
 		replayKeys[0] = KeyboardManager.ARROW_RIGHT;
 		replayKeys[1] = KeyboardManager.ARROW_DOWN;
 		replayKeys[2] = KeyboardManager.ARROW_LEFT;
@@ -141,6 +141,7 @@ class Game implements kado.GameInterface {
 		replayKeys[10] = KeyboardManager.Q;
 		replayKeys[11] = KeyboardManager.S;
 		replayKeys[12] = KeyboardManager.D;
+		replayKeys[13] = KeyboardManager.ENTER;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,

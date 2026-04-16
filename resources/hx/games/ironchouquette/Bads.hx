@@ -638,6 +638,9 @@ class Bads extends Phys {
 
 	// PARTS
 	public function setPart(b, dx, dy) {
+		if (b == null) {
+			return;
+		}
 		if (partList == null)
 			partList = new Array();
 		partList.push({b: b, dx: dx, dy: dy});
