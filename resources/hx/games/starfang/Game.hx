@@ -5,6 +5,10 @@ import mt.bumdum.Lib.Num;
 import mt.DepthManager;
 import mt.Timer;
 
+class DashlightSprite extends ASprite {
+	public var multi:Float;
+}
+
 @:expose('GameStarfang')
 class Game implements kado.GameInterface {
 	public static var FL_CHEAT = false;
@@ -39,7 +43,7 @@ class Game implements kado.GameInterface {
 	public var badsList:Array<Bads>;
 	public var bonusList:Array<Bonus>;
 
-	var dashLightList:Array<ASprite>;
+	var dashLightList:Array<DashlightSprite>;
 
 	public var dm:DepthManager;
 
@@ -115,8 +119,10 @@ class Game implements kado.GameInterface {
 				genMonsters();
 			case 2:
 				lvl++;
-				hero.wings[0].trg = 0;
-				hero.wings[1].trg = 0;
+				if (hero != null) {
+					hero.wings[0].trg = 0;
+					hero.wings[1].trg = 0;
+				}
 			case 3:
 				scrollDash = 0;
 				scrollSpeed = 0;
@@ -145,29 +151,33 @@ class Game implements kado.GameInterface {
 			// Log.setColor(0x000000)
 			case 3:
 				var lim = 0.1;
-				hero.angle -= Num.mm(-lim, hero.angle * 0.2, lim);
-				hero.root._rotation = hero.angle / 0.0174;
-				var ca = Math.max(0, Math.cos(hero.angle));
-				hero.mainFlameTrg = Math.max(0, ca * 100);
-				var center = {x: Cs.mcw * 0.5, y: Cs.mch * 0.5};
-				hero.toward(center, 0.1, 3 * Cs.NEW_GEN_SCALE);
-				var f = Math.pow(0.9, Timer.tmod);
-				hero.vx *= f;
-				hero.vy *= f;
-				scrollDash += Timer.tmod;
-				scrollSpeed = ca * Math.max(20 * Cs.NEW_GEN_SCALE - hero.getDist(center), 0) + scrollDash;
+				if (hero != null) {
+					hero.angle -= Num.mm(-lim, hero.angle * 0.2, lim);
+					hero.root._rotation = hero.angle / 0.0174;
+					var ca = Math.max(0, Math.cos(hero.angle));
+					hero.mainFlameTrg = Math.max(0, ca * 100);
+					var center = {x: Cs.mcw * 0.5, y: Cs.mch * 0.5};
+					hero.toward(center, 0.1, 3 * Cs.NEW_GEN_SCALE);
+					var f = Math.pow(0.9, Timer.tmod);
+					hero.vx *= f;
+					hero.vy *= f;
+					scrollDash += Timer.tmod;
+					scrollSpeed = ca * Math.max(20 * Cs.NEW_GEN_SCALE - hero.getDist(center), 0) + scrollDash;
+					Cs.game.hero.launchSparks(0, Std.int(Math.min(scrollSpeed * 0.1, 5)), scrollSpeed * 0.1);
+				}
 				if (scrollDash >= 100)
 					initStep(4);
 				scrollBg();
 				updateDashLight();
-				Cs.game.hero.launchSparks(0, Std.int(Math.min(scrollSpeed * 0.1, 5)), scrollSpeed * 0.1);
 			case 4:
-				var center = {x: Cs.mcw * 0.5, y: Cs.mch * 0.5};
-				hero.toward(center, 0.1, 3 * Cs.NEW_GEN_SCALE);
+				if (hero != null) {
+					var center = {x: Cs.mcw * 0.5, y: Cs.mch * 0.5};
+					hero.toward(center, 0.1, 3 * Cs.NEW_GEN_SCALE);
+					Cs.game.hero.launchSparks(0, Std.int(Math.min(scrollSpeed * 0.1, 5)), scrollSpeed * 0.1);
+				}
 				scrollSpeed *= Math.pow(0.95, Timer.tmod);
 				scrollBg();
 				updateDashLight();
-				Cs.game.hero.launchSparks(0, Std.int(Math.min(scrollSpeed * 0.1, 5)), scrollSpeed * 0.1);
 				if (dashLightList.length == 0) {
 					initStep(1);
 				}
@@ -205,13 +215,13 @@ class Game implements kado.GameInterface {
 	function spawnDashLight() {
 		if (Cs.random(2) == 0)
 			return;
-		var mc = dm.attach("mcDashLight", DP_PARTS);
+		var mc:DashlightSprite = cast dm.attach("mcDashLight", DP_PARTS);
 		mc._x = Cs.mcw + Cs.rand() * 100 * Cs.NEW_GEN_SCALE;
 		mc._y = Cs.rand() * Cs.mch;
 		mc._yscale = 50 + Cs.rand() * 50;
 		mc._xscale = mc._yscale;
 
-		// FIXME: mc.multi = 1 + Math.random() * 3;
+		mc.multi = 1 + Math.random() * 3;
 		dashLightList.push(mc);
 	}
 
@@ -223,7 +233,7 @@ class Game implements kado.GameInterface {
 		while (i < dashLightList.length) {
 			var mc = dashLightList[i];
 			mc._x -= scrollSpeed * (mc._yscale / 100);
-			// FIXME: mc._xscale = mc._yscale + Math.max(scrollSpeed - 30, 0) * 10 * mc.multi;
+			mc._xscale = mc._yscale + Math.max(scrollSpeed - 30, 0) * 10 * mc.multi;
 			mc._alpha -= 4 * (mc._yscale / 100) * Timer.tmod;
 			if (mc._x < -mc._width || mc._alpha < 3) {
 				mc.removeMovieClip();

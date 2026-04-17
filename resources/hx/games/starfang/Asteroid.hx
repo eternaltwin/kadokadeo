@@ -5,7 +5,13 @@ import common_haxe_avm1.KKApi;
 
 @:publicFields
 class Asteroid extends Bads {
-	static var SIZE = [6 * Cs.NEW_GEN_SCALE, 12 * Cs.NEW_GEN_SCALE, 25 * Cs.NEW_GEN_SCALE, 50 * Cs.NEW_GEN_SCALE, 100 * Cs.NEW_GEN_SCALE];
+	static var SIZE = [
+		6 * Cs.NEW_GEN_SCALE,
+		12 * Cs.NEW_GEN_SCALE,
+		25 * Cs.NEW_GEN_SCALE,
+		50 * Cs.NEW_GEN_SCALE,
+		100 * Cs.NEW_GEN_SCALE
+	];
 
 	var type:Int;
 	var size:Int;
@@ -92,7 +98,7 @@ class Asteroid extends Bads {
 		}
 		dif = Math.pow(division, size) * (hp + speed * 0.3);
 		score = Cs.SCORE_ASTEROID[type] * KKApi.const(size);
-		vr = (10 / size + 2) * (Cs.rand() * 2 - 1);
+		vr = (10 / (size + 2)) * (Cs.rand() * 2 - 1);
 	}
 
 	override function explode() {

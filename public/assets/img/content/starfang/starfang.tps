@@ -398,7 +398,7 @@
             <key type="filename">src/mcIcon/6.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.535714,-1.875</point_f>
+                <point_f>1.69643,-0.803571</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
