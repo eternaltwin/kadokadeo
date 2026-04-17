@@ -8,7 +8,7 @@ class Cs {
 	public static var mcw = 300 * NEW_GEN_SCALE;
 	public static var mch = 300 * NEW_GEN_SCALE;
 
-	public static var START_SAFE_DIST = 40;
+	public static var START_SAFE_DIST = 40 * NEW_GEN_SCALE;
 	public static var WEAPON_POWER_MAX = 4;
 
 	// GAMEPLAY

@@ -28,7 +28,7 @@ class Shot extends Phys {
 		root.stop();
 		flPierce = false;
 		flInvincible = false;
-		ray = 4;
+		ray = 4 * Cs.NEW_GEN_SCALE;
 		damage = 0;
 		ft = 0;
 		Cs.game.shotList.push(this);
@@ -54,8 +54,8 @@ class Shot extends Phys {
 					timer = null;
 					switch (ft) {
 						case 1:
-							fxOnde(ray * 2 + 40);
-							fxExplode(ray * 2 + 20);
+							fxOnde(ray * 2 + 40 * Cs.NEW_GEN_SCALE);
+							fxExplode(ray * 2 + 20 * Cs.NEW_GEN_SCALE);
 							kill();
 
 						case 2:
@@ -69,7 +69,7 @@ class Shot extends Phys {
 		}
 		checkCols();
 		updateBehaviour();
-		if (isOut(100))
+		if (isOut(100 * Cs.NEW_GEN_SCALE))
 			kill();
 
 		// Cs.game.plasmaDraw(root,0)
@@ -112,7 +112,7 @@ class Shot extends Phys {
 					updateVit();
 
 				case 5: // SWARM;
-					if (Math.sqrt(vx * vx + vy * vy) < 3 || Cs.rand() / Timer.tmod < 0.1) {
+					if (Math.sqrt(vx * vx + vy * vy) < 3 * Cs.NEW_GEN_SCALE || Cs.rand() / Timer.tmod < 0.1) {
 						a = Cs.random(4) * 1.57;
 						vx = Math.cos(a) * speed;
 						vy = Math.sin(a) * speed;
@@ -175,6 +175,9 @@ class Shot extends Phys {
 			var list = Cs.game.badsList;
 			for (i in 0...list.length) {
 				var b = list[i];
+				if (b == null) {
+					continue;
+				}
 				if (getDist({x: b.x, y: b.y}) < ray + b.ray) {
 					onHit(b);
 					var hp = b.hp;
@@ -219,7 +222,7 @@ class Shot extends Phys {
 					for (i in 0...list.length) {
 						var b = list[i];
 						if (b != bad) {
-							if (getDist({x: b.x, y: b.y}) < b.ray + ray + 36) {
+							if (getDist({x: b.x, y: b.y}) < b.ray + ray + 36 * Cs.NEW_GEN_SCALE) {
 								b.hit(this);
 							}
 						}

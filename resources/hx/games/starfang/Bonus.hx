@@ -1,5 +1,6 @@
 package starfang;
 
+import kado.KadoKadeoManager;
 import mt.bumdum.Lib.Num;
 import mt.bumdum.Part;
 import common_haxe_avm1.KKApi;
@@ -9,7 +10,7 @@ import mt.DepthManager;
 class Bonus extends Phys {
 	static var ID_MAX = 4;
 	static var BOUNCE_MAX = 5;
-	static var SPEED = 3;
+	static var SPEED = 3 * Cs.NEW_GEN_SCALE;
 
 	static var SCORE = KKApi.aconst([1000, 3000, 12000]);
 	static var STATS = [
@@ -41,7 +42,7 @@ class Bonus extends Phys {
 		Cs.game.bonusList.push(this);
 		super(mc);
 		bounce = 0;
-		ray = 15;
+		ray = 15 * Cs.NEW_GEN_SCALE;
 		dm = new DepthManager(root);
 		id = getRandomId();
 		var a = 0.775 + Cs.random(4) * 1.57;
@@ -105,7 +106,7 @@ class Bonus extends Phys {
 
 			case 15 | 16 | 17:
 				var sc = SCORE[id - 15];
-				KKApi.addScore(sc);
+				KadoKadeoManager.kkm.addScore(sc);
 				var mc = Cs.game.dm.attach("mcTextField", Game.DP_PARTS);
 				// FIXME: mc.txt = KKApi.val(sc);
 				mc._x = x;
@@ -122,8 +123,8 @@ class Bonus extends Phys {
 			var a = Cs.rand() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
-			var r = 5 + Cs.rand() * ray;
-			var sp = 0.5 + Cs.rand() * 2;
+			var r = 5 * Cs.NEW_GEN_SCALE + Cs.rand() * ray;
+			var sp = (0.5 + Cs.rand() * 2) * Cs.NEW_GEN_SCALE;
 			p.x = x + ca * r;
 			p.y = y + sa * r;
 			p.vx = ca * sp;
@@ -135,7 +136,7 @@ class Bonus extends Phys {
 			p.fadeType = 0;
 		}
 		for (i in 0...12) {
-			var p = newPart("partLight", ray, 1 + Cs.rand() * 3);
+			var p = newPart("partLight", ray, (1 + Cs.rand() * 3) * Cs.NEW_GEN_SCALE);
 			p.setScale(50 + Cs.rand() * 100);
 		}
 	}

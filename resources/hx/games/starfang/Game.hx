@@ -150,12 +150,12 @@ class Game implements kado.GameInterface {
 				var ca = Math.max(0, Math.cos(hero.angle));
 				hero.mainFlameTrg = Math.max(0, ca * 100);
 				var center = {x: Cs.mcw * 0.5, y: Cs.mch * 0.5};
-				hero.toward(center, 0.1, 3);
+				hero.toward(center, 0.1, 3 * Cs.NEW_GEN_SCALE);
 				var f = Math.pow(0.9, Timer.tmod);
 				hero.vx *= f;
 				hero.vy *= f;
 				scrollDash += Timer.tmod;
-				scrollSpeed = ca * Math.max(20 - hero.getDist(center), 0) + scrollDash;
+				scrollSpeed = ca * Math.max(20 * Cs.NEW_GEN_SCALE - hero.getDist(center), 0) + scrollDash;
 				if (scrollDash >= 100)
 					initStep(4);
 				scrollBg();
@@ -163,7 +163,7 @@ class Game implements kado.GameInterface {
 				Cs.game.hero.launchSparks(0, Std.int(Math.min(scrollSpeed * 0.1, 5)), scrollSpeed * 0.1);
 			case 4:
 				var center = {x: Cs.mcw * 0.5, y: Cs.mch * 0.5};
-				hero.toward(center, 0.1, 3);
+				hero.toward(center, 0.1, 3 * Cs.NEW_GEN_SCALE);
 				scrollSpeed *= Math.pow(0.95, Timer.tmod);
 				scrollBg();
 				updateDashLight();
@@ -206,7 +206,7 @@ class Game implements kado.GameInterface {
 		if (Cs.random(2) == 0)
 			return;
 		var mc = dm.attach("mcDashLight", DP_PARTS);
-		mc._x = Cs.mcw + Cs.rand() * 100;
+		mc._x = Cs.mcw + Cs.rand() * 100 * Cs.NEW_GEN_SCALE;
 		mc._y = Cs.rand() * Cs.mch;
 		mc._yscale = 50 + Cs.rand() * 50;
 		mc._xscale = mc._yscale;

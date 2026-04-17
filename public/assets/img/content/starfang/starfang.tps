@@ -232,7 +232,7 @@
             <key type="filename">src/mcBg.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>0.1,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -241,6 +241,39 @@
                 <rect>900,225,1800,450</rect>
                 <key>scale9Paddings</key>
                 <rect>900,225,1800,450</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcBonus/1.png</key>
+            <key type="filename">src/mcBonus/10.png</key>
+            <key type="filename">src/mcBonus/11.png</key>
+            <key type="filename">src/mcBonus/12.png</key>
+            <key type="filename">src/mcBonus/13.png</key>
+            <key type="filename">src/mcBonus/14.png</key>
+            <key type="filename">src/mcBonus/15.png</key>
+            <key type="filename">src/mcBonus/16.png</key>
+            <key type="filename">src/mcBonus/17.png</key>
+            <key type="filename">src/mcBonus/18.png</key>
+            <key type="filename">src/mcBonus/2.png</key>
+            <key type="filename">src/mcBonus/3.png</key>
+            <key type="filename">src/mcBonus/4.png</key>
+            <key type="filename">src/mcBonus/5.png</key>
+            <key type="filename">src/mcBonus/6.png</key>
+            <key type="filename">src/mcBonus/7.png</key>
+            <key type="filename">src/mcBonus/8.png</key>
+            <key type="filename">src/mcBonus/9.png</key>
+            <key type="filename">src/partBlackBall.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>38,38,75,75</rect>
+                <key>scale9Paddings</key>
+                <rect>38,38,75,75</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -365,7 +398,7 @@
             <key type="filename">src/mcIcon/6.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0.535714,-1.875</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -812,21 +845,6 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/partBlackBall.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>38,38,75,75</rect>
-                <key>scale9Paddings</key>
-                <rect>38,38,75,75</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
             <key type="filename">src/partConcentrate/1.png</key>
             <key type="filename">src/partConcentrate/10.png</key>
             <key type="filename">src/partConcentrate/11.png</key>
@@ -1217,7 +1235,7 @@
             <key type="filename">src/wheel/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>1,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>

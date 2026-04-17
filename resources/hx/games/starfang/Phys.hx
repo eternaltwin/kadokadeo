@@ -16,17 +16,25 @@ class Phys extends mt.bumdum.Phys {
 	}
 
 	function checkWarp() {
+		var hasWarped = false;
 		if (x < -ray) {
 			x = Cs.mcw + ray;
+			hasWarped = true;
 		}
 		if (x > Cs.mcw + ray) {
 			x = -ray;
+			hasWarped = true;
 		}
 		if (y < -ray) {
 			y = Cs.mch + ray;
+			hasWarped = true;
 		}
 		if (y > Cs.mch + ray) {
 			y = -ray;
+			hasWarped = true;
+		}
+		if (hasWarped) {
+			root.updateState();
 		}
 	}
 
@@ -65,7 +73,7 @@ class Phys extends mt.bumdum.Phys {
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
 			var c = 0.5 + Cs.rand() * 0.5;
-			var sp = 3;
+			var sp = 3 * Cs.NEW_GEN_SCALE;
 
 			p.x = x + ca * c * ray;
 			p.y = y + sa * c * ray;

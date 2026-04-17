@@ -5,7 +5,7 @@ import common_haxe_avm1.KKApi;
 
 @:publicFields
 class Asteroid extends Bads {
-	static var SIZE = [6, 12, 25, 50, 100];
+	static var SIZE = [6 * Cs.NEW_GEN_SCALE, 12 * Cs.NEW_GEN_SCALE, 25 * Cs.NEW_GEN_SCALE, 50 * Cs.NEW_GEN_SCALE, 100 * Cs.NEW_GEN_SCALE];
 
 	var type:Int;
 	var size:Int;
@@ -17,7 +17,7 @@ class Asteroid extends Bads {
 		super(mc);
 		destructPoint = 1;
 		division = 2;
-		speed = 1.5;
+		speed = 1.5 * Cs.NEW_GEN_SCALE;
 		hp = 1;
 	}
 
@@ -44,7 +44,7 @@ class Asteroid extends Bads {
 			for (i in 0...3) {
 				var p = getRandomPart(type + 1);
 				var a = ang + (Cs.rand() * 2 - 1) * 1.57;
-				var sp = 0.5 + Cs.rand() * 3;
+				var sp = (0.5 + Cs.rand() * 3) * Cs.NEW_GEN_SCALE;
 				p.x = x;
 				p.y = y;
 				p.vx = vx + Math.cos(a) * sp;
@@ -119,7 +119,7 @@ class Asteroid extends Bads {
 			}
 		}
 
-		fxOnde(ray * 2 + 30);
+		fxOnde(ray * 2 + 30 * Cs.NEW_GEN_SCALE);
 		throwDebris(type + 1, (size + 1) / 5);
 
 		super.explode();

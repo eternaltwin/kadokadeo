@@ -1,7 +1,7 @@
 package starfang;
 
+import kado.KadoKadeoManager;
 import mt.bumdum.Lib;
-import common_haxe_avm1.KKApi;
 
 @:publicFields
 class Bads extends Phys {
@@ -72,6 +72,7 @@ class Bads extends Phys {
 				x = Cs.mcw + ray;
 				y = ry;
 		}
+		root.updateState();
 	}
 
 	override function update() {
@@ -158,7 +159,7 @@ class Bads extends Phys {
 		 */
 
 		// SCORE
-		KKApi.addScore(score);
+		KadoKadeoManager.kkm.addScore(score);
 		//
 		Cs.game.stats.k[mid]++;
 		kill();
