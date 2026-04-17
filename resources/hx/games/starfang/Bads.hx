@@ -51,9 +51,9 @@ class Bads extends Phys {
 				if(flBreak)break;
 			}
 		 */
-		var rnd = Std.random(4);
-		var rx = Math.random() * (Cs.mcw + 2 * ray);
-		var ry = Math.random() * (Cs.mch + 2 * ray);
+		var rnd = Cs.random(4);
+		var rx = Cs.rand() * (Cs.mcw + 2 * ray);
+		var ry = Cs.rand() * (Cs.mch + 2 * ray);
 
 		switch (rnd) {
 			case 0:

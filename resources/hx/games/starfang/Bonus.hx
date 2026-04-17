@@ -44,7 +44,7 @@ class Bonus extends Phys {
 		ray = 15;
 		dm = new DepthManager(root);
 		id = getRandomId();
-		var a = 0.775 + Std.random(4) * 1.57;
+		var a = 0.775 + Cs.random(4) * 1.57;
 		vx = Math.cos(a) * SPEED;
 		vy = Math.sin(a) * SPEED;
 		root.gotoAndStop(id + 1);
@@ -55,7 +55,7 @@ class Bonus extends Phys {
 		for (i in 0...STATS.length) {
 			max += STATS[i];
 		}
-		var rnd = Std.random(max);
+		var rnd = Cs.random(max);
 		var cur = 0;
 		for (i in 0...STATS.length) {
 			cur += STATS[i];
@@ -81,13 +81,13 @@ class Bonus extends Phys {
 			for (i in 0...2) {
 				var p = new Part(dm.attach("partRay", 1));
 				p.root.gotoAndStop(id - 14);
-				p.vr = (Math.random() * 2 - 1) * 10;
+				p.vr = (Cs.rand() * 2 - 1) * 10;
 				p.fadeType = 3;
-				p.scale = 50 + Math.random() * 100;
-				p.root._xscale = 10 + Math.random() * 20;
+				p.scale = 50 + Cs.rand() * 100;
+				p.root._xscale = 10 + Cs.rand() * 20;
 				p.root._yscale = p.scale;
-				p.root._rotation = Math.random() * 360;
-				p.timer = 10 + Math.random() * 10;
+				p.root._rotation = Cs.rand() * 360;
+				p.timer = 10 + Cs.rand() * 10;
 				p.root._x = 0;
 				p.root._y = 0;
 			}
@@ -119,37 +119,37 @@ class Bonus extends Phys {
 		for (i in 0...24) {
 			var p = new Part(Cs.game.dm.attach("partPaillette", Game.DP_PARTS));
 			p.root.gotoAndStop(id - 14);
-			var a = Math.random() * 6.28;
+			var a = Cs.rand() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
-			var r = 5 + Math.random() * ray;
-			var sp = 0.5 + Math.random() * 2;
+			var r = 5 + Cs.rand() * ray;
+			var sp = 0.5 + Cs.rand() * 2;
 			p.x = x + ca * r;
 			p.y = y + sa * r;
 			p.vx = ca * sp;
 			p.vy = sa * sp;
-			p.vr = (Math.random() * 2 - 1) * 20;
-			p.timer = 10 + Math.random() * 20;
-			p.setScale(10 + Math.random() * 50);
-			p.root._rotation = Math.random() * 360;
+			p.vr = (Cs.rand() * 2 - 1) * 20;
+			p.timer = 10 + Cs.rand() * 20;
+			p.setScale(10 + Cs.rand() * 50);
+			p.root._rotation = Cs.rand() * 360;
 			p.fadeType = 0;
 		}
 		for (i in 0...12) {
-			var p = newPart("partLight", ray, 1 + Math.random() * 3);
-			p.setScale(50 + Math.random() * 100);
+			var p = newPart("partLight", ray, 1 + Cs.rand() * 3);
+			p.setScale(50 + Cs.rand() * 100);
 		}
 	}
 
 	function newPart(link, r:Float, sp:Float) {
 		var p = new Part(Cs.game.dm.attach(link, Game.DP_PARTS));
-		var a = Math.random() * 6.28;
+		var a = Cs.rand() * 6.28;
 		var ca = Math.cos(a);
 		var sa = Math.sin(a);
 		p.x = x + ca * r;
 		p.y = y + sa * r;
 		p.vx = ca * sp;
 		p.vy = sa * sp;
-		p.timer = 10 + Math.random() * 10;
+		p.timer = 10 + Cs.rand() * 10;
 		p.fadeType = 0;
 		return p;
 	}

@@ -180,11 +180,11 @@ class Game implements kado.GameInterface {
 	function genMonsters() {
 		var dif:Float = lvl * 14 - 8;
 		while (dif > 0) {
-			if (Std.random(2) == 0) {
-				var type = Std.int(Math.min(Std.random(Std.int(lvl * 0.5)), 4));
+			if (Cs.random(2) == 0) {
+				var type = Std.int(Math.min(Cs.random(Std.int(lvl * 0.5)), 4));
 				var m = new Asteroid(dm.attach("mcAsteroid" + (type + 1), DP_BADS));
 				var max = Math.min(Math.pow(lvl - type, 0.5), 3);
-				var size = 2 + Std.random(Std.int(max));
+				var size = 2 + Cs.random(Std.int(max));
 				m.setInfo(type, size);
 				m.initStartPosition();
 				dif -= m.dif;
@@ -203,12 +203,12 @@ class Game implements kado.GameInterface {
 	}
 
 	function spawnDashLight() {
-		if (Std.random(2) == 0)
+		if (Cs.random(2) == 0)
 			return;
 		var mc = dm.attach("mcDashLight", DP_PARTS);
-		mc._x = Cs.mcw + Math.random() * 100;
-		mc._y = Math.random() * Cs.mch;
-		mc._yscale = 50 + Math.random() * 50;
+		mc._x = Cs.mcw + Cs.rand() * 100;
+		mc._y = Cs.rand() * Cs.mch;
+		mc._yscale = 50 + Cs.rand() * 50;
 		mc._xscale = mc._yscale;
 
 		// FIXME: mc.multi = 1 + Math.random() * 3;

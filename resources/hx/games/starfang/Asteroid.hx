@@ -24,7 +24,7 @@ class Asteroid extends Bads {
 	override function initStartPosition() {
 		super.initStartPosition();
 		// var a = Math.random()*6.28
-		var a = 0.77 + (Math.random() * 2 - 1) * 0.2 + Std.random(4) * 1.57;
+		var a = 0.77 + (Cs.rand() * 2 - 1) * 0.2 + Cs.random(4) * 1.57;
 
 		vx = Math.cos(a) * speed;
 		vy = Math.sin(a) * speed;
@@ -43,23 +43,23 @@ class Asteroid extends Bads {
 		if (hp > 0) {
 			for (i in 0...3) {
 				var p = getRandomPart(type + 1);
-				var a = ang + (Math.random() * 2 - 1) * 1.57;
-				var sp = 0.5 + Math.random() * 3;
+				var a = ang + (Cs.rand() * 2 - 1) * 1.57;
+				var sp = 0.5 + Cs.rand() * 3;
 				p.x = x;
 				p.y = y;
 				p.vx = vx + Math.cos(a) * sp;
 				p.vy = vy + Math.sin(a) * sp;
-				p.vr = (Math.random() * 2 - 1) * 15;
-				p.timer = 10 + Math.random() * 10;
+				p.vr = (Cs.rand() * 2 - 1) * 15;
+				p.timer = 10 + Cs.rand() * 10;
 				p.fadeType = 0;
-				p.root._rotation = Math.random() * 360;
+				p.root._rotation = Cs.rand() * 360;
 			}
 		}
 	}
 
 	function getRandomPart(gid:Int):Part {
 		var p = new Part(Cs.game.dm.attach("partDebris" + gid, Game.DP_PARTS));
-		p.root.gotoAndStop(Std.random(p.root._totalframes) + 1);
+		p.root.gotoAndStop(Cs.random(p.root._totalframes) + 1);
 
 		return p;
 	}
@@ -92,11 +92,11 @@ class Asteroid extends Bads {
 		}
 		dif = Math.pow(division, size) * (hp + speed * 0.3);
 		score = Cs.SCORE_ASTEROID[type] * KKApi.const(size);
-		vr = (10 / size + 2) * (Math.random() * 2 - 1);
+		vr = (10 / size + 2) * (Cs.rand() * 2 - 1);
 	}
 
 	override function explode() {
-		if ((Cs.game.flOption && Std.random(Cs.game.badsList.length) == 0) || Std.random(30) == 0) {
+		if ((Cs.game.flOption && Cs.random(Cs.game.badsList.length) == 0) || Cs.random(30) == 0) {
 			Cs.game.flOption = false;
 			var bonus = new Bonus(Cs.game.dm.attach("mcBonus", Game.DP_SHOT));
 			bonus.x = x;

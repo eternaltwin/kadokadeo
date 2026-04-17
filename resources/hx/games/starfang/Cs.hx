@@ -1,6 +1,7 @@
 package starfang;
 
 import common_haxe_avm1.KKApi;
+import kado.KadoKadeoManager;
 
 class Cs {
 	public static var NEW_GEN_SCALE = 3;
@@ -22,6 +23,16 @@ class Cs {
 
 	//
 	public static var game:Game;
+
+	public static inline function rand():Float {
+		return KadoKadeoManager.kkm.seed.rand();
+	}
+
+	public static inline function random(max:Int):Int {
+		if (max <= 0)
+			return 0;
+		return KadoKadeoManager.kkm.seed.random(max);
+	}
 
 	public static function init() {}
 }
