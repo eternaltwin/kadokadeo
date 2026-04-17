@@ -1,5 +1,6 @@
 package starfang;
 
+import pixi.core.math.Point;
 import mt.bumdum.Lib.PointWithGetter;
 import mt.bumdum.Part;
 import kado.KadoKadeoManager;
@@ -10,19 +11,20 @@ import mt.Timer;
 
 class Hero extends Phys {
 	var flWarp:Bool;
-	var flInvincible:Bool;
-	var flBounce:Bool;
+
+	public var flInvincible:Bool;
+	public var flBounce:Bool;
 
 	// var cs:Int;
 	// var csmulti:Int;
-	var turnSpeed:Float;
-	var speed:Float;
-	var accel:Float;
-	var angle:Float;
-	var hyperThrustTimer:Float;
+	public var turnSpeed:Float;
+	public var speed:Float;
+	public var accel:Float;
+	public var angle:Float;
+	public var hyperThrustTimer:Float;
 
-	var mainFlame:Float;
-	var mainFlameTrg:Float;
+	public var mainFlame:Float;
+	public var mainFlameTrg:Float;
 
 	// var weapon:{selected:Int, cd:Float, power:Array<Int>}
 	var weaponSelected:Int;
@@ -35,7 +37,9 @@ class Hero extends Phys {
 	public var secSelected:Int;
 	public var secCooldown:Float;
 
-	var wings:Array<{mc:ASprite, flame:ASprite, trg:Float}>;
+	public var wings:Array<{mc:ASprite, flame:ASprite, trg:Float}>;
+
+	var flame:ASprite;
 
 	var dm:DepthManager;
 	var shieldDecal:Float;
@@ -53,11 +57,18 @@ class Hero extends Phys {
 	}>;
 	var mcHyperThrust:ASprite;
 
-	function new(mc) {
+	public function new(mc) {
 		super(mc);
 		flBounce = true;
 		flInvincible = false;
 		flWarp = false;
+		mc.attachMovie("mcHeroBody", "mcHeroBody", 2);
+		var eye = mc.attachMovie("mcHeroEye", "mcHeroEye", 4);
+		eye._x = 25;
+		flame = mc.attachMovie("flame", "flame", 1);
+		flame._x = -32;
+		flame.loop = true;
+		flame.play();
 
 		turnSpeed = 0.15;
 		accel = 0.5;
@@ -78,7 +89,29 @@ class Hero extends Phys {
 		dm = new DepthManager(root);
 
 		var body = cast(root);
-		wings = [{mc: body.w0, flame: body.f0, trg: 0}, {mc: body.w1, flame: body.f1, trg: 0}];
+		wings = [
+			{mc: root.attachMovie("wing0", "wing0", 3), flame: root.attachMovie("flame", "wing0flame", 1), trg: 0},
+			{mc: root.attachMovie("wing1", "wing1", 3), flame: root.attachMovie("flame", "wing1flame", 1), trg: 0}
+		];
+		// wings[0].mc._visible = false;
+		wings[0].mc.pivot = new Point(23, 0);
+		wings[0].mc._x = 19;
+		wings[0].mc._y = -3;
+		wings[0].flame._x = 30;
+		wings[0].flame._y = -3;
+		wings[0].flame._rotation = 25;
+		wings[0].flame.scale.set(0.47, 0.63);
+		wings[0].flame.loop = true;
+		wings[0].flame.play();
+		wings[1].mc.pivot = new Point(23, 0);
+		wings[1].mc._x = 19;
+		wings[1].mc._y = 3;
+		wings[1].flame._x = 30;
+		wings[1].flame._y = 3;
+		wings[1].flame._rotation = -25;
+		wings[1].flame.scale.set(0.47, -0.63);
+		wings[1].flame.loop = true;
+		wings[1].flame.play();
 
 		mainFlame = 0;
 		mainFlameTrg = 0;
@@ -128,10 +161,10 @@ class Hero extends Phys {
 		}
 		var df = mainFlameTrg - mainFlame;
 		mainFlame += df * 0.3 * Timer.tmod;
-		root.flame._xscale = mainFlame;
+		flame._xscale = mainFlame;
 	}
 
-	function control() {
+	public function control() {
 		if (hyperThrustTimer == null)
 			flInvincible = false;
 
@@ -171,14 +204,14 @@ class Hero extends Phys {
 		wings[n].trg = ec * sens;
 	}
 
-	function updateWeapon(id) {
+	public function updateWeapon(id) {
 		weaponPower[id] = Std.int(Math.min(weaponPower[id] + 1, Cs.WEAPON_POWER_MAX));
 		weaponSelected = id;
 		concentration = 1;
 		// Log.trace("("+csmulti+") "+cs );
 	}
 
-	function updateSecondary(id) {
+	public function updateSecondary(id) {
 		secAmmo = 100;
 		secSelected = id;
 		Cs.game.inter.update();
@@ -190,7 +223,7 @@ class Hero extends Phys {
 		vy += Math.sin(angle + ma) * accel * power * Timer.tmod;
 	}
 
-	function hit(shot) {}
+	public function hit(shot) {}
 
 	function fireMain() {
 		if (weaponCooldown > 0)
@@ -216,6 +249,7 @@ class Hero extends Phys {
 						t = 38;
 					}
 					var shot = newShot(fr, sp, a, ray + 15);
+					shot.root.loop = true;
 					shot.damage = 1;
 					shot.timer = t;
 					shot.orient();
@@ -224,6 +258,9 @@ class Hero extends Phys {
 
 			case 1:
 				var shot = newShot(4, 12, 0, ray + 8);
+				shot.root.onFrame.set(8, function() {
+					shot.root.gotoAndPlay(4);
+				});
 				shot.damage = 0.75;
 				shot.bList = [4];
 				shot.decal = Math.random() * 628;
@@ -239,6 +276,10 @@ class Hero extends Phys {
 				for (n in 0...2) {
 					var sens = n * 2 - 1;
 					var shot = newShot(5, 8, sens * 0.5, ray + 8);
+					shot.root.stopOnFrame = [7];
+					shot.root.onFrame.set(13, function() {
+						shot.kill();
+					});
 					shot.orient();
 					shot.ft = 2;
 					shot.flWarp = true;
@@ -340,6 +381,8 @@ class Hero extends Phys {
 			case 1:
 				flInvincible = true;
 				var mc = dm.attach("mcShield", 2);
+				mc.removeOnFrame = 5;
+				mc.play();
 				shieldDecal = (shieldDecal + 63 * Timer.tmod) % 628;
 				var a = shieldDecal / 100; // Math.random()*6.28;
 				var ec = 16;
@@ -353,6 +396,8 @@ class Hero extends Phys {
 				for (i in 0...Cs.game.badsList.length) {
 					var b:PointWithGetter = Cs.game.badsList[i];
 					var mc = Cs.game.dm.attach("mcMagicBall", Game.DP_SHOT);
+					mc.play();
+					mc.loop = true;
 					mc._x = x;
 					mc._y = y;
 					magicBallList.push({
@@ -363,7 +408,7 @@ class Hero extends Phys {
 						mc: mc,
 						trg: Cs.game.badsList[i],
 						pos: 0,
-						max: getDist(b),
+						max: getDist({x: b.x, y: b.y}),
 					});
 				}
 				cd = 50;
@@ -372,6 +417,8 @@ class Hero extends Phys {
 			case 3: // TELEPORT;
 
 				var ghost = Cs.game.dm.attach("mcGhost", Game.DP_UNDERPARTS);
+				ghost.play();
+				ghost.removeOnFrame = 7;
 				ghost._x = x;
 				ghost._y = y;
 				ghost._rotation = root._rotation;
@@ -403,6 +450,11 @@ class Hero extends Phys {
 				vx = Math.cos(angle) * sp;
 				vy = Math.sin(angle) * sp;
 				mcHyperThrust = dm.attach("mcHyperThrust", 1);
+				mcHyperThrust.onFrame.set(8, function() {
+					mcHyperThrust.gotoAndPlay(6);
+				});
+				mcHyperThrust.removeOnFrame = 19;
+				mcHyperThrust.play();
 				flInvincible = true;
 				flBounce = false;
 				flWarp = true;
@@ -412,7 +464,8 @@ class Hero extends Phys {
 			case 5: // SWARM;
 				var shot = newShot(6, 10, 0, ray + 10);
 				shot.timer = 100;
-				shot.root.sub.gotoAndPlay(Std.string(Std.random(5) + 1));
+				shot.root.gotoAndPlay(Std.random(5) + 1);
+				shot.root.loop = true;
 				cd = 0;
 				am = 0.5;
 		}
@@ -422,6 +475,8 @@ class Hero extends Phys {
 	}
 
 	function updateMagicBalls() {
+		if (magicBallList == null)
+			return;
 		var i = magicBallList.length - 1;
 		while (i >= 0) {
 			var info = magicBallList[i];
@@ -437,6 +492,8 @@ class Hero extends Phys {
 				var ddy = info.mc._y - info.opy;
 
 				var mc = Cs.game.dm.attach("queueMagicBall", Game.DP_PARTS);
+				mc.removeOnFrame = 16;
+				mc.play();
 				mc._x = info.mc._x;
 				mc._y = info.mc._y;
 				mc._xscale = Math.sqrt(ddx * ddx + ddy * ddy);
@@ -447,6 +504,8 @@ class Hero extends Phys {
 
 				if (Std.random(2) == 0) {
 					var p = new Part(Cs.game.dm.attach("partMagicSpark", Game.DP_PARTS));
+					p.root.loop = true;
+					p.root.play();
 					p.x = info.mc._x;
 					p.y = info.mc._y;
 					p.setScale(40 + Math.random() * 150);
@@ -470,7 +529,7 @@ class Hero extends Phys {
 			hyperThrustTimer -= Timer.tmod;
 			if (hyperThrustTimer < 0) {
 				hyperThrustTimer = null;
-				mcHyperThrust.gotoAndPlay("death");
+				mcHyperThrust.gotoAndPlay(9);
 
 				// Log.trace(mcHyperThrust)
 				// flInvincible = false;
@@ -481,13 +540,12 @@ class Hero extends Phys {
 	}
 
 	//
-	function newShot(frame, speed:Float, ang:Float, dist:Float) {
+	function newShot(frame:Int, speed:Float, ang:Float, dist:Float) {
 		if (ang == null)
 			ang = 0;
 		if (dist == null)
 			dist = ray;
-		var shot = new Shot(Cs.game.dm.attach("mcShot", Game.DP_SHOT));
-		shot.root.gotoAndStop(Std.string(frame));
+		var shot = new Shot(Cs.game.dm.attach("mcShot" + frame, Game.DP_SHOT));
 		var a = angle + ang;
 		var ca = Math.cos(a);
 		var sa = Math.sin(a);
@@ -499,6 +557,7 @@ class Hero extends Phys {
 		shot.damage = 1;
 		shot.speed = speed;
 		shot.a = a;
+		shot.root.play();
 		return shot;
 	}
 
@@ -516,21 +575,28 @@ class Hero extends Phys {
 		shot.timer = 80 + sleep;
 		shot.ft = 1;
 		shot.flWarp = true;
-		downcast(shot.root.sub).compt = 1 + sleep;
+		var compt = 1 + sleep;
+		shot.root.onFrame.set(2, function() {
+			compt--;
+			if (compt > 0) {
+				shot.root.gotoAndPlay(1);
+			}
+		});
+		shot.root.stopOnFrame = [6];
 
 		return shot;
 	}
 
 	function newPlasmaWave() {}
 
-	function explode() {
+	public function explode() {
 		fxOnde(ray * 2 + 20);
 		throwDebris(10, 1);
 		kill();
 	}
 
 	override function kill() {
-		while (magicBallList.length > 0)
+		while (magicBallList != null && magicBallList.length > 0)
 			magicBallList.pop().mc.removeMovieClip();
 
 		/*
@@ -567,7 +633,7 @@ class Hero extends Phys {
 		}
 	}
 
-	function launchSparks(ang, max, vvx) {
+	public function launchSparks(ang, max, vvx:Float) {
 		for (i in 0...max) {
 			var p = new Part(Cs.game.dm.attach("partSpark", Game.DP_UNDERPARTS));
 			var r = (ray + 5 + i * 4);
@@ -584,8 +650,9 @@ class Hero extends Phys {
 			var dy = Math.sin(a) * d;
 			p.x += dx;
 			p.y += dy;
-			p.root.sub._x -= dx + (Math.random() * 2 - 1) * 2;
-			p.root.sub._y -= dy + (Math.random() * 2 - 1) * 2;
+			p.root._x -= dx + (Math.random() * 2 - 1) * 2;
+			p.root._y -= dy + (Math.random() * 2 - 1) * 2;
+			p.root.play();
 			//*/
 
 			p.vx = ca * 1.5 * max; //-(vx*0.5+vvx)

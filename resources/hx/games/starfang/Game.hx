@@ -2,8 +2,6 @@ package starfang;
 
 import mt.bumdum.Sprite;
 import mt.bumdum.Lib.Num;
-import common_haxe_avm1.KKApi;
-import common_haxe_avm1.KeyboardManager;
 import mt.DepthManager;
 import mt.Timer;
 
@@ -54,7 +52,7 @@ class Game implements kado.GameInterface {
 
 	public var inter:Inter;
 
-	public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
+	public function new(root:ASprite, ?isReplay:Bool = false) {
 		Cs.game = this;
 		dm = new DepthManager(root);
 		this.root = root;
@@ -65,7 +63,7 @@ class Game implements kado.GameInterface {
 
 		bg = dm.attach("mcBg", DP_BG);
 
-		hero = new Hero(dm.attach("mcHero", DP_HERO));
+		hero = new Hero(dm.empty(DP_HERO));
 		hero.x = Cs.mcw * 0.5;
 		hero.y = Cs.mch * 0.5;
 
@@ -111,7 +109,7 @@ class Game implements kado.GameInterface {
 		switch (n) {
 			case 1:
 				var mc = dm.attach("mcLevel", DP_INTERFACE);
-				mc.txt = "secteur " + lvl;
+				// FIXME: mc.txt = "sector " + lvl;
 
 				flOption = true;
 				genMonsters();
@@ -135,7 +133,9 @@ class Game implements kado.GameInterface {
 
 		switch (step) {
 			case 1: // PLAY;
-				hero.control();
+				if (hero != null) {
+					hero.control();
+				}
 				if (badsList.length == 0 && bonusList.length == 0)
 					initStep(2);
 			case 2:
@@ -181,8 +181,8 @@ class Game implements kado.GameInterface {
 		var dif:Float = lvl * 14 - 8;
 		while (dif > 0) {
 			if (Std.random(2) == 0) {
-				var m = new Asteroid(dm.attach("mcAsteroid", DP_BADS));
 				var type = Std.int(Math.min(Std.random(Std.int(lvl * 0.5)), 4));
+				var m = new Asteroid(dm.attach("mcAsteroid" + (type + 1), DP_BADS));
 				var max = Math.min(Math.pow(lvl - type, 0.5), 3);
 				var size = 2 + Std.random(Std.int(max));
 				m.setInfo(type, size);
@@ -196,8 +196,10 @@ class Game implements kado.GameInterface {
 
 	function scrollBg() {
 		bg._x -= scrollSpeed;
-		if (bg._x < -900)
-			bg._x += 900;
+		if (bg._x < -900 * Cs.NEW_GEN_SCALE) {
+			bg._x += 900 * Cs.NEW_GEN_SCALE;
+			bg._prevState.x = bg._x + scrollSpeed;
+		}
 	}
 
 	function spawnDashLight() {
@@ -209,7 +211,7 @@ class Game implements kado.GameInterface {
 		mc._yscale = 50 + Math.random() * 50;
 		mc._xscale = mc._yscale;
 
-		mc.multi = 1 + Math.random() * 3;
+		// FIXME: mc.multi = 1 + Math.random() * 3;
 		dashLightList.push(mc);
 	}
 
@@ -221,7 +223,7 @@ class Game implements kado.GameInterface {
 		while (i < dashLightList.length) {
 			var mc = dashLightList[i];
 			mc._x -= scrollSpeed * (mc._yscale / 100);
-			mc._xscale = mc._yscale + Math.max(scrollSpeed - 30, 0) * 10 * mc.multi;
+			// FIXME: mc._xscale = mc._yscale + Math.max(scrollSpeed - 30, 0) * 10 * mc.multi;
 			mc._alpha -= 4 * (mc._yscale / 100) * Timer.tmod;
 			if (mc._x < -mc._width || mc._alpha < 3) {
 				mc.removeMovieClip();

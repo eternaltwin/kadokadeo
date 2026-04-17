@@ -1,12 +1,13 @@
 package starfang;
 
+import mt.bumdum.Part;
 import mt.bumdum.Lib.Num;
 import mt.Timer;
 
 class Shot extends Phys {
 	var op:{x:Float, y:Float};
 	var flInvincible:Bool;
-	var trg:{x:Float, y:Float, flDeath:Bool};
+	var trg:Bads;
 
 	public var thruster:{vx:Float, vy:Float, sleep:Float};
 	public var bList:Array<Int>;
@@ -58,7 +59,7 @@ class Shot extends Phys {
 							kill();
 
 						case 2:
-							root.sub.gotoAndPlay("death");
+							root.gotoAndPlay(8);
 
 						case _:
 							kill();
@@ -97,7 +98,7 @@ class Shot extends Phys {
 					getNewBadTrg();
 					if (trg == null)
 						break;
-					var da = getAng(trg) - a;
+					var da = getAng({x: trg.x, y: trg.y}) - a;
 					while (da > 3.14)
 						da -= 6.28;
 					while (da < -3.14)
@@ -136,6 +137,8 @@ class Shot extends Phys {
 			mc._xscale = getDist(op);
 			mc._x = x;
 			mc._y = y;
+			mc.removeOnFrame = 19;
+			mc.play();
 
 			op = {x: x, y: y}
 		}
@@ -153,15 +156,15 @@ class Shot extends Phys {
 		trg = null;
 		for (i in 0...list.length) {
 			var b = list[i];
-			var d = getDist(b);
+			var d = getDist({x: b.x, y: b.y});
 			if (d < dist) {
-				trg = upcast(b);
+				trg = b;
 				dist = d;
 			}
 		}
 
 		if (list.length > 0) {
-			trg = upcast(list[Std.random(list.length)]);
+			trg = list[Std.random(list.length)];
 		} else {
 			trg = null;
 		}
@@ -172,7 +175,7 @@ class Shot extends Phys {
 			var list = Cs.game.badsList;
 			for (i in 0...list.length) {
 				var b = list[i];
-				if (getDist(b) < ray + b.ray) {
+				if (getDist({x: b.x, y: b.y}) < ray + b.ray) {
 					onHit(b);
 					var hp = b.hp;
 					b.hit(this);
@@ -183,6 +186,8 @@ class Shot extends Phys {
 							var mc = Cs.game.dm.attach("partImpact", Game.DP_PARTS);
 							mc._x = x;
 							mc._y = y;
+							mc.removeOnFrame = 15;
+							mc.play();
 
 							kill();
 							return;
@@ -192,7 +197,7 @@ class Shot extends Phys {
 			}
 		} else {
 			var h = Cs.game.hero;
-			var dist = getDist(h);
+			var dist = getDist({x: h.x, y: h.y});
 
 			if (dist < Cs.game.hero.ray + ray) {
 				Cs.game.hero.hit(this);
@@ -214,7 +219,7 @@ class Shot extends Phys {
 					for (i in 0...list.length) {
 						var b = list[i];
 						if (b != bad) {
-							if (getDist(b) < b.ray + ray + 36) {
+							if (getDist({x: b.x, y: b.y}) < b.ray + ray + 36) {
 								b.hit(this);
 							}
 						}
@@ -226,10 +231,6 @@ class Shot extends Phys {
 					p.updatePos();
 			}
 		}
-	}
-
-	function setSkin(n) {
-		root.gotoAndStop(Std.string(n));
 	}
 
 	public function orient() {

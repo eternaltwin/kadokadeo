@@ -1,5 +1,6 @@
 package starfang;
 
+import mt.bumdum.Part;
 import common_haxe_avm1.KKApi;
 
 @:publicFields
@@ -38,7 +39,7 @@ class Asteroid extends Bads {
 		super.hit(shot);
 		var x = shot.x;
 		var y = shot.y;
-		var ang = getAng(shot);
+		var ang = getAng({x: shot.x, y: shot.y});
 		if (hp > 0) {
 			for (i in 0...3) {
 				var p = getRandomPart(type + 1);
@@ -57,10 +58,8 @@ class Asteroid extends Bads {
 	}
 
 	function getRandomPart(gid:Int):Part {
-		var p = new Part(Cs.game.dm.attach("partDebris", Game.DP_PARTS));
-		p.root.gotoAndStop(Std.string(gid));
-		var mc = cast(p.root).sub;
-		mc.gotoAndStop(Std.string(Std.random(mc._totalframes) + 1));
+		var p = new Part(Cs.game.dm.attach("partDebris" + gid, Game.DP_PARTS));
+		p.root.gotoAndStop(Std.random(p.root._totalframes) + 1);
 
 		return p;
 	}
@@ -68,8 +67,7 @@ class Asteroid extends Bads {
 	public function setInfo(t, s) {
 		type = t;
 		size = s;
-		root.gotoAndStop(Std.string(type + 1));
-		root.sub.gotoAndStop(Std.string(size + 1));
+		root.gotoAndStop(size + 1);
 		ray = SIZE[size];
 
 		hp = 1 + size;
@@ -109,7 +107,7 @@ class Asteroid extends Bads {
 		if (size > destructPoint) {
 			for (i in 0...2) {
 				var a = Math.atan2(vy, vx) + 1.57 * ((i * 2) - 1);
-				var sp = new Asteroid(Cs.game.dm.attach("mcAsteroid", Game.DP_BADS));
+				var sp = new Asteroid(Cs.game.dm.attach("mcAsteroid" + (type + 1), Game.DP_BADS));
 				sp.setInfo(type, size - 1);
 				var ca = Math.cos(a);
 				var sa = Math.sin(a);

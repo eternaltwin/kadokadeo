@@ -276,7 +276,7 @@ class Game implements kado.GameInterface {
 Doit être remplacé par :
 
 ```
-public function new(kkm:kado.KadoKadeoManager, root:ASprite, ?isReplay:Bool = false) {
+public function new(root:ASprite, ?isReplay:Bool = false) {
 ```
 
 ---

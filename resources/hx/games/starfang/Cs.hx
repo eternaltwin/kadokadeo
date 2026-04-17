@@ -3,8 +3,9 @@ package starfang;
 import common_haxe_avm1.KKApi;
 
 class Cs {
-	public static var mcw = 300;
-	public static var mch = 300;
+	public static var NEW_GEN_SCALE = 3;
+	public static var mcw = 300 * NEW_GEN_SCALE;
+	public static var mch = 300 * NEW_GEN_SCALE;
 
 	public static var START_SAFE_DIST = 40;
 	public static var WEAPON_POWER_MAX = 4;

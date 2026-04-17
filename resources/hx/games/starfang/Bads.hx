@@ -1,6 +1,6 @@
 package starfang;
 
-import mt.bumdum.Lib.Point;
+import mt.bumdum.Lib;
 import common_haxe_avm1.KKApi;
 
 @:publicFields
@@ -93,7 +93,10 @@ class Bads extends Phys {
 	}
 
 	function checkCols() {
-		if (getDist(Cs.game.hero) < ray + Cs.game.hero.ray) {
+		if (Cs.game.hero == null) {
+			return;
+		}
+		if (getDist({x: Cs.game.hero.x, y: Cs.game.hero.y}) < ray + Cs.game.hero.ray) {
 			heroCollide();
 		}
 	}
@@ -104,7 +107,7 @@ class Bads extends Phys {
 			h.explode();
 		} else {
 			if (h.flBounce) {
-				var a = getAng(h);
+				var a = getAng({x: h.x, y: h.y});
 				var sp = Math.sqrt(h.vx * h.vx + h.vy * h.vy) + Math.sqrt(vx * vx + vy * vy) + ray * 0.1;
 				h.vx = Math.cos(a) * sp;
 				h.vy = Math.sin(a) * sp;
@@ -118,7 +121,7 @@ class Bads extends Phys {
 		damage(shot.damage);
 	}
 
-	function damage(n) {
+	function damage(n:Float) {
 		flash = 100;
 		hp -= n;
 		if (hp <= 0) {

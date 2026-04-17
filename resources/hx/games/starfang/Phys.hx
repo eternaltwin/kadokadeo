@@ -2,15 +2,14 @@ package starfang;
 
 import mt.bumdum.Part;
 import mt.bumdum.Lib.PointWithGetter;
-import mt.bumdum.Lib.Point;
-import mt.bumdum.Lib.Num;
-import mt.bumdum.Lib.Col;
-import mt.Timer;
 
 class Phys extends mt.bumdum.Phys {
 	var ray:Float;
 
 	function collide(sp:Hero) {
+		if (sp == null) {
+			return false;
+		}
 		var p:PointWithGetter = sp;
 		var d = getDist(p);
 		return d < ray + sp.ray;
@@ -38,6 +37,8 @@ class Phys extends mt.bumdum.Phys {
 		p._y = y;
 		p._xscale = sc;
 		p._yscale = sc;
+		p.removeOnFrame = 6;
+		p.play();
 	}
 
 	function fxExplode(sc) {
@@ -46,6 +47,8 @@ class Phys extends mt.bumdum.Phys {
 		p._y = y;
 		p._xscale = sc;
 		p._yscale = sc;
+		p.removeOnFrame = 9;
+		p.play();
 	}
 
 	function throwDebris(gid:Int, coef:Float) {
@@ -54,12 +57,10 @@ class Phys extends mt.bumdum.Phys {
 		var fr = 0;
 		while (true) {
 			fr++;
-			var p = new Part(Cs.game.dm.attach("partDebris", Game.DP_PARTS));
-			p.root.gotoAndStop(gid);
-			var mc = cast(p.root).sub;
-			mc.gotoAndStop(fr);
+			var p = new Part(Cs.game.dm.attach("partDebris" + gid, Game.DP_PARTS));
+			p.root.gotoAndStop(fr);
 
-			var flBreak = (fr + 1) > mc._totalframes * coef;
+			var flBreak = (fr + 1) > p.root._totalframes * coef;
 			var a = Math.random() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);

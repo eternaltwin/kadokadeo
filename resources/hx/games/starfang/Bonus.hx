@@ -107,7 +107,7 @@ class Bonus extends Phys {
 				var sc = SCORE[id - 15];
 				KKApi.addScore(sc);
 				var mc = Cs.game.dm.attach("mcTextField", Game.DP_PARTS);
-				downcast(mc).txt = KKApi.val(sc);
+				// FIXME: mc.txt = KKApi.val(sc);
 				mc._x = x;
 				mc._y = y;
 				exploPaillette();
