@@ -1,10 +1,13 @@
 package starfang;
 
+import haxe.io.UInt16Array;
+import common_haxe_avm1.KeyboardManager;
 import mt.bumdum.Part;
 import mt.bumdum.Sprite;
 import mt.bumdum.Lib.Num;
 import mt.DepthManager;
 import mt.Timer;
+import kado.KadoKadeoManager;
 
 class DashlightSprite extends ASprite {
 	public var multi:Float;
@@ -58,6 +61,26 @@ class Game implements kado.GameInterface {
 	public var inter:Inter;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
+		var replayKeys = new UInt16Array(13);
+		replayKeys[0] = KeyboardManager.RIGHT;
+		replayKeys[1] = KeyboardManager.DOWN;
+		replayKeys[2] = KeyboardManager.LEFT;
+		replayKeys[3] = KeyboardManager.UP;
+		replayKeys[4] = KeyboardManager.SPACE;
+		replayKeys[5] = KeyboardManager.CONTROL;
+		replayKeys[6] = KeyboardManager.D;
+		replayKeys[7] = KeyboardManager.S;
+		replayKeys[8] = KeyboardManager.Q;
+		replayKeys[9] = KeyboardManager.Z;
+		replayKeys[10] = KeyboardManager.A;
+		replayKeys[11] = KeyboardManager.W;
+		replayKeys[12] = KeyboardManager.ENTER;
+		KadoKadeoManager.kkm.replay.init({
+			recordedKeys: replayKeys,
+			recordInputs: true,
+			recordEvents: false,
+		});
+
 		Cs.game = this;
 		dm = new DepthManager(root);
 		this.root = root;

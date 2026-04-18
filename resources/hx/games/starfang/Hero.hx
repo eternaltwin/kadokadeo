@@ -172,18 +172,18 @@ class Hero extends Phys {
 		wings[1].trg = 0;
 		mainFlameTrg = 0;
 
-		if (KeyboardManager.isDown(KeyboardManager.LEFT))
+		if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A))
 			turn(-1);
-		if (KeyboardManager.isDown(KeyboardManager.RIGHT))
+		if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D))
 			turn(1);
-		if (KeyboardManager.isDown(KeyboardManager.UP)) {
+		if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W)) {
 			thrust(0, 1);
 			mainFlameTrg = 100;
 			launchSparks(0, 2, 0);
 		}
-		if (KeyboardManager.isDown(KeyboardManager.SPACE))
+		if (KeyboardManager.isDown(KeyboardManager.SPACE) || KeyboardManager.isDown(KeyboardManager.ENTER))
 			fireMain();
-		if (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.CONTROL))
+		if (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S) || KeyboardManager.isDown(KeyboardManager.CONTROL))
 			fireSecondary();
 	}
 
