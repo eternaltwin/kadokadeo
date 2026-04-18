@@ -107,10 +107,19 @@ class Bonus extends Phys {
 			case 15 | 16 | 17:
 				var sc = SCORE[id - 15];
 				KadoKadeoManager.kkm.addScore(sc);
-				var mc = Cs.game.dm.attach("mcTextField", Game.DP_PARTS);
-				// FIXME: mc.txt = KKApi.val(sc);
-				mc._x = x;
-				mc._y = y;
+				var mc = new Part(Cs.game.dm.empty(Game.DP_PARTS));
+				var txt = mc.root.initTextField("txt", {
+					font: "Orbitron",
+					size: 40,
+					color: 0xFFFFFF,
+					align: "center",
+				});
+				mc.root._x = x;
+				mc.root._y = y;
+				txt.text = Std.string(KKApi.val(sc));
+				mc.timer = 20;
+				mc.root._x = x;
+				mc.root._y = y;
 				exploPaillette();
 		}
 		kill();

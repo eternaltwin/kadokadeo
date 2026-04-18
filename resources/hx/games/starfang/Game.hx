@@ -1,5 +1,6 @@
 package starfang;
 
+import mt.bumdum.Part;
 import mt.bumdum.Sprite;
 import mt.bumdum.Lib.Num;
 import mt.DepthManager;
@@ -112,8 +113,19 @@ class Game implements kado.GameInterface {
 		step = n;
 		switch (n) {
 			case 1:
-				var mc = dm.attach("mcLevel", DP_INTERFACE);
-				// FIXME: mc.txt = "sector " + lvl;
+				var mc = new Part(dm.empty(DP_INTERFACE));
+				var txt = mc.root.initTextField("txt", {
+					font: "Orbitron",
+					size: 90,
+					color: 0xFFFFFF,
+					align: "left",
+				});
+				mc.root._x = 0;
+				mc.root._y = 0;
+				txt.text = "SECTEUR " + lvl;
+				mc.timer = 64;
+				mc.fadeLimit = 20;
+				mc.fadeType = 3;
 
 				flOption = true;
 				genMonsters();

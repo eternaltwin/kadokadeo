@@ -88,7 +88,7 @@ class KadoKadeoManager extends Application {
 		loader.add('kkm', "/assets/img/content/default/kkm-0.json");
 		loader.load(() -> {
 			this.sheet = loader.resources["kkm"].spritesheet;
-			Browser.window.document.fonts.ready.then((fontFaceSet) -> {
+			loadFonts().then((e:Dynamic) -> {
 				trace("KadoKadeoManager initialized");
 				runFlow.transition(Intro, "assets-loaded");
 				this.showIntroScreen();
@@ -254,6 +254,18 @@ class KadoKadeoManager extends Application {
 				beginGame();
 			});
 		}
+	}
+
+	private function loadFonts() {
+		var fonts = [
+			"Fredoka Bold",
+			"Chubby Cheeks",
+			"GAU",
+			"Orbitron",
+			"Junegull-Regular",
+			"Jost-Medium"
+		];
+		return Promise.all(fonts.map(font -> Browser.window.document.fonts.load("16px " + font)));
 	}
 
 	private function beginGame() {
