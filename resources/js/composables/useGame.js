@@ -91,6 +91,10 @@ export function useGame(game) {
 
     const gameClass = window[config.global]
     if (typeof window.KadoKadeo !== 'function' || typeof gameClass !== 'function') {
+      console.error('Game globals are missing:', {
+        kadoKadeo: window.KadoKadeo,
+        gameClass,
+      })
       unloadScript(config.src, config.global)
       throw new Error(`Game globals are missing for ${config.src} - ${config.global}`)
     }

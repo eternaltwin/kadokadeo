@@ -35,3 +35,6 @@ ironchouquette.Game
 --next
 -js ./resources/js/games/starfang.js
 starfang.Game
+--next
+-js ./resources/js/games/kanji.js
+kanji.Game
