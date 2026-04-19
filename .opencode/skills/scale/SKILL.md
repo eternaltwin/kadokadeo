@@ -26,7 +26,7 @@ Puis que tu multiplies toutes les valeurs de position, taille, deplacement... pa
 ## Valeurs à ne pas multiplier
 
 - angles (rotation, direction...)
-- valeurs de logique (hp, score, timers...)
+- valeurs de logique (hp, score, timers, scale...)
 - valeurs de gameplay (dégats)
 - valeurs de configuration (nombre d'ennemis, fréquence d'apparition...)
 - types de projectiles, numéros de frames...

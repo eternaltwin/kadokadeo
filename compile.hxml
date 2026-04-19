@@ -37,3 +37,6 @@ starfang.Game
 --next
 -js ./resources/js/games/kanji.js
 kanji.Game
+--next
+-js ./resources/js/games/pioupiou.js
+pioupiou.Game
