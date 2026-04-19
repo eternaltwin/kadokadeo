@@ -51,6 +51,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /.vite
-docker-compose.override.yml
+compose.override.yaml
 docker/database-data
 .eslintcache

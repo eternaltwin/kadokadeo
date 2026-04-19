@@ -1,23 +1,3 @@
-###
-#
-# docker build --pull --tag kadokadeo:dev --file docker/app/Dockerfile ./
-#
-###
-
-FROM docker.io/library/node:20.19.3-alpine3.22 AS frontend
-
-WORKDIR "/kadokadeo"
-
-COPY ["./package.json", "./"]
-COPY ["./yarn.lock", "./"]
-COPY ["./.yarn", "./.yarn"]
-RUN yarn
-
-COPY ["./vite.config.js", "./"]
-COPY ["./resources", "./resources"]
-COPY ["./public", "./public"]
-RUN yarn build
-
 FROM docker.io/library/php:8.3-fpm AS backend
 
 ARG UID
@@ -65,7 +45,6 @@ RUN mkdir /home/dev/haxelib \
     && haxelib setup /home/dev/haxelib \
     && haxelib install --always resources/hx/install.hxml
 
-COPY --from=frontend --chown=dev:dev ["/kadokadeo/public/build", "/www/public/build"]
 USER root
 
 COPY ["docker/app/conf/php.ini", "$PHP_INI_DIR/app.ini"]

@@ -1,10 +1,7 @@
-version: '3'
 services:
   kadokadeo_app:
     build:
         args:
-            ARCH: x86_64
-            # ARCH: arm64 # For ARM cpus
             UID: 1000
             GID: 1000
 

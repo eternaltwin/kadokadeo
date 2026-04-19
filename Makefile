@@ -50,7 +50,7 @@ start-kadokadeo-database:
 	docker start kadokadeo_database
 
 setup-env-variables:
-	cp docker-compose.override.yml.example docker-compose.override.yml
+	cp compose.override.yaml.example compose.override.yaml
 	cp .env.example .env
 	cp eternaltwin/etwin.toml.example eternaltwin/etwin.toml
 	openssl genrsa -out storage/app/private/privkey.pem
