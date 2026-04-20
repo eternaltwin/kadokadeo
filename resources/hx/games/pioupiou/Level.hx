@@ -277,7 +277,7 @@ class Level {
 		while (i < bonuses.length) {
 			var b = bonuses[i];
 			if (game.hero.state != Hero.DEATH
-				&& distMC({x: b.mc._x + Cs.BLK_WIDTH / 2, y: b.mc._y + Cs.BLK_WIDTH / 2}, {x: game.hero.mc._x, y: game.hero.mc._y}) < 20 * Cs.NEW_GEN_SCALE) {
+				&& distMC({x: b.mc._x + Cs.BLK_WIDTH / 2, y: b.mc._y + Cs.BLK_WIDTH / 2}, {x: game.hero.mc._x, y: game.hero.mc._y}) < 30 * Cs.NEW_GEN_SCALE) {
 				var mc = game.dmanager.attach("FXVanish" + (b.type + 1), Cs.PLAN_FX);
 				mc.removeOnFrame = 60;
 				mc.play();
