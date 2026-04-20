@@ -7,6 +7,7 @@ import js.lib.Promise;
 import js.Browser;
 import js.html.CanvasElement;
 import js.html.CustomEvent;
+import haxe.CallStack;
 import kado.KadoRunFlow.RunStartContext;
 import kado.TouchControlsOverlay.TouchJoystickState;
 import kado.TouchControlsConfig.TouchControlsConfig;
@@ -45,6 +46,7 @@ class KadoKadeoManager extends Application {
 	var endRunClient:KadoEndRun;
 	var runFlow:KadoRunFlow;
 	var params:GameParams;
+	var hasPhysicsCrashReported:Bool = false;
 	var simulationTimeMs:Float = mt.Timer.oldTime;
 	var replayElapsedMs:Float = 0;
 	var replaySpeed:Float = 1;
@@ -172,25 +174,67 @@ class KadoKadeoManager extends Application {
 	}
 
 	public function updatePhysics(dt:Float) {
-		simulationTimeMs += dt;
-		mt.Timer.update(simulationTimeMs);
-		mt.Timer.deltaT = dt / 1000;
-		mt.Timer.calc_tmod = 1;
-		mt.Timer.tmod = 1;
-		if (runFlow.state == Playing && game != null) {
-			pollGameTouchControls();
-			replay.beginFrame();
-			gameRoot.update();
-			game.update(dt);
-			replay.endFrame();
-			if (replayOverlay != null && replay.isPlayingReplay() && !replayPaused) {
-				replayElapsedMs += dt;
-				replayOverlay.updateElapsed(replayElapsedMs);
+		if (hasPhysicsCrashReported) {
+			return;
+		}
+		try {
+			simulationTimeMs += dt;
+			mt.Timer.update(simulationTimeMs);
+			mt.Timer.deltaT = dt / 1000;
+			mt.Timer.calc_tmod = 1;
+			mt.Timer.tmod = 1;
+			if (runFlow.state == Playing && game != null) {
+				pollGameTouchControls();
+				replay.beginFrame();
+				gameRoot.update();
+				game.update(dt);
+				replay.endFrame();
+				if (replayOverlay != null && replay.isPlayingReplay() && !replayPaused) {
+					replayElapsedMs += dt;
+					replayOverlay.updateElapsed(replayElapsedMs);
+				}
+			}
+			if (gameOverScreen != null) {
+				gameOverScreen.update();
+			}
+		} catch (e:Dynamic) {
+			reportPhysicsCrash(e);
+		}
+	}
+
+	function reportPhysicsCrash(error:Dynamic):Void {
+		if (hasPhysicsCrashReported) {
+			return;
+		}
+		hasPhysicsCrashReported = true;
+
+		var message:String = Std.string(error);
+		if (Reflect.hasField(error, "message")) {
+			var rawMessage:Dynamic = Reflect.field(error, "message");
+			if (rawMessage != null) {
+				message = Std.string(rawMessage);
 			}
 		}
-		if (gameOverScreen != null) {
-			gameOverScreen.update();
+
+		var stack = CallStack.toString(CallStack.exceptionStack());
+		if (stack == null || stack.length == 0) {
+			stack = CallStack.toString(CallStack.callStack());
 		}
+
+		trace('Physics crash: ' + message);
+		if (stack != null && stack.length > 0) {
+			trace(stack);
+		}
+
+		emitWindowEvent("gameCrash", {
+			message: message,
+			stack: stack,
+			name: params.name,
+			gameId: params.gameId,
+			runState: Std.string(runFlow.state),
+			score: score,
+			timestamp: Date.now().toString()
+		});
 	}
 
 	public function showIntroScreen() {

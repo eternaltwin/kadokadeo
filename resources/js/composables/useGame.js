@@ -1,4 +1,4 @@
-import { toValue } from 'vue'
+import { ref, toValue } from 'vue'
 
 const scriptRegistry = {}
 
@@ -52,8 +52,39 @@ export function useGame(game) {
   let gameInstance = null
   let activeScript = null
   let loadToken = 0
+  let crashListenerAttached = false
+
+  const crash = ref(null)
+
+  function onGameCrash(event) {
+    crash.value = event?.detail ?? {
+      message: 'Unknown game crash',
+      phase: 'updatePhysics',
+    }
+  }
+
+  function attachCrashListener() {
+    if (crashListenerAttached || !window?.evts?.addEventListener) {
+      return
+    }
+    window.evts.addEventListener('gameCrash', onGameCrash)
+    crashListenerAttached = true
+  }
+
+  function detachCrashListener() {
+    if (!crashListenerAttached || !window?.evts?.removeEventListener) {
+      return
+    }
+    window.evts.removeEventListener('gameCrash', onGameCrash)
+    crashListenerAttached = false
+  }
+
+  function clearCrash() {
+    crash.value = null
+  }
 
   function destroy() {
+    detachCrashListener()
     if (gameInstance && typeof gameInstance.destroy === 'function') {
       gameInstance.destroy(true)
     }
@@ -71,6 +102,8 @@ export function useGame(game) {
   async function mount(canvas, args = {}) {
     const token = ++loadToken
     destroy()
+    clearCrash()
+    attachCrashListener()
 
     const currentGame = toValue(game)
     const config = {
@@ -115,5 +148,7 @@ export function useGame(game) {
     mount,
     destroy,
     invalidate,
+    crash,
+    clearCrash,
   }
 }

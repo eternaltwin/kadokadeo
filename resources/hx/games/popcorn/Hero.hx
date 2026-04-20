@@ -66,8 +66,7 @@ class Hero extends Phys {
 	}
 
 	inline function isRightDown():Bool {
-		return KeyboardManager.isDown(KeyboardManager.RIGHT)
-			|| KeyboardManager.isDown(KeyboardManager.D);
+		return KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D);
 	}
 
 	public function initStep(n:Int):Void {
@@ -292,7 +291,9 @@ class Hero extends Phys {
 				var a = jumpAngle - 1.57;
 				var dx = Math.cos(a) * 6 * Cs.NEW_GEN_SCALE;
 				var dy = Math.sin(a) * 6 * Cs.NEW_GEN_SCALE;
-				bouncer.setPos(trg.x + dx, trg.y + dy);
+				if (bouncer != null) {
+					bouncer.setPos(trg.x + dx, trg.y + dy);
+				}
 				root._rotation = a / 0.0174 + 90;
 			}
 
