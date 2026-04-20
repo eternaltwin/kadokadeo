@@ -5,7 +5,6 @@ import mt.bumdum.Lib;
 
 class Phys extends Sprite {
 	public var frict:Float;
-
 	public var vx:Float;
 	public var vy:Float;
 	public var vr:Float;

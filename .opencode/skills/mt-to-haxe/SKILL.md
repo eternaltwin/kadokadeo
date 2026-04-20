@@ -552,6 +552,14 @@ S'il existe, retirer le `Key.init()`
 
 Remplacer les itérations sur `Sprite.spriteList` par un appel à `Sprite.updateAll()`.
 
+## 🟢 gotoAndPlay(), gotoAndStop()
+
+Ces fonctions prennent désormais un argument de type Int au lieu d'un String. Il faut remplacer les appels en conséquence.
+
+## 🟢 KKApi.addScore(), KKApi.gameOver()
+
+Ces fonctions doivent être remplacées par des appels à `KadoKadeoManager.addScore()` et `KadoKadeoManager.gameOver()` respectivement.
+
 ---
 
 # ⚠️ Contraintes globales

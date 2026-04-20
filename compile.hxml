@@ -40,3 +40,6 @@ kanji.Game
 --next
 -js ./resources/js/games/pioupiou.js
 pioupiou.Game
+--next
+-js ./resources/js/games/popcorn.js
+popcorn.Game
