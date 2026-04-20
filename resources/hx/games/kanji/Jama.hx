@@ -108,8 +108,8 @@ class Jama {
 		var hcX = game.hero.x + game.hero.colOffX;
 		var hcY = game.hero.y + game.hero.colOffY;
 
-		var hLeft = hcX - game.hero.colHalfW - hray;
-		var hRight = hcX + game.hero.colHalfW + hray;
+		var hLeft = hcX - game.hero.colHalfW;
+		var hRight = hcX + game.hero.colHalfW;
 		var hTop = hcY - game.hero.colHalfH - hray;
 		var hBottom = hcY + game.hero.colHalfH + hray;
 
@@ -193,6 +193,7 @@ class Jama {
 
 						ret = remove();
 					} else {
+						remove();
 						if (Cs.DEBUG) {
 							return false;
 						}
