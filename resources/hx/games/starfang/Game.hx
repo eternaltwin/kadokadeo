@@ -218,6 +218,18 @@ class Game implements kado.GameInterface {
 				}
 			case _:
 		}
+
+		#if debug
+		for (n in 65...83) {
+			if (KeyboardManager.isDown(n)) {
+				var bonus = new Bonus(dm.attach("mcBonus", Game.DP_SHOT));
+				bonus.id = n - 65;
+				bonus.root.gotoAndStop(bonus.id + 1);
+				bonus.x = 20;
+				bonus.y = 20;
+			}
+		}
+		#end
 	}
 
 	public function destroy() {}

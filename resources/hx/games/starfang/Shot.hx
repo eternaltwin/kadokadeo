@@ -36,7 +36,10 @@ class Shot extends Phys {
 	}
 
 	override function update() {
+		var oldTimer = timer;
+		timer = null;
 		super.update();
+		timer = oldTimer;
 		if (flWarp)
 			checkWarp();
 		if (timer != null) {
