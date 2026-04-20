@@ -160,7 +160,10 @@ class RunService
             throw new \Exception("Échec du déchiffrement de la clé AES.");
         }
 
-        $decryptedAesKey = hex2bin($decryptedAesKey);
+        $decryptedAesKey = base64_decode($decryptedAesKey, true);
+        if ($decryptedAesKey === false) {
+            throw new \Exception("Clé AES invalide : base64 incorrect.");
+        }
 
         // Check that the decrypted AES key is a binary chain of 16, 24 or 32 bytes (AES-128, 192, 256)
         $aesKeyLength = strlen($decryptedAesKey);

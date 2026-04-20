@@ -78,7 +78,7 @@ class RunsRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('score')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw("score {$direction} NULLS LAST")),
                 TextColumn::make('play_time_seconds')
                     ->numeric()
                     ->sortable(),

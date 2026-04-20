@@ -37,12 +37,8 @@ class KadoEndRun {
 		trace('Prepared end run request: ' + jsonReq);
 
 		var payload = crypto.preparePayload(jsonReq);
-		var keyHex = crypto.getKey().toHex();
-		if ((keyHex.length & 1) == 1) {
-			return cast Promise.reject("Invalid symmetric key hex length");
-		}
-
-		var encryptedKey:Dynamic = jse.encrypt(keyHex);
+		var keyB64 = haxe.crypto.Base64.encode(crypto.getKey());
+		var encryptedKey:Dynamic = jse.encrypt(keyB64);
 		if (!Std.isOfType(encryptedKey, String)) {
 			return cast Promise.reject("Unable to encrypt request key");
 		}

@@ -50,7 +50,7 @@ class RunServiceTest extends TestCase
         $aesKey = random_bytes(16);
 
         // Encrypt the AES key with the service public key
-        openssl_public_encrypt(bin2hex($aesKey), $encryptedAesKey, $this->publicKey);
+        openssl_public_encrypt(base64_encode($aesKey), $encryptedAesKey, $this->publicKey);
         $encryptedAesKeyBase64 = base64_encode($encryptedAesKey);
 
         $result = $this->invokePrivateMethod($this->runService, 'getAesKeyFromEncrypted', [$encryptedAesKeyBase64]);
