@@ -268,7 +268,7 @@ class Game implements kado.GameInterface {
 		while (i < dashLightList.length) {
 			var mc = dashLightList[i];
 			mc._x -= scrollSpeed * (mc._yscale / 100);
-			mc._xscale = mc._yscale + Math.max(scrollSpeed - 30, 0) * 10 * mc.multi;
+			mc._xscale = mc._yscale + Math.max(scrollSpeed - 30 * Cs.NEW_GEN_SCALE, 0) * 10 * mc.multi;
 			mc._alpha -= 4 * (mc._yscale / 100) * Timer.tmod;
 			if (mc._x < -mc._width || mc._alpha < 3) {
 				mc.removeMovieClip();

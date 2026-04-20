@@ -125,7 +125,7 @@ class Asteroid extends Bads {
 			}
 		}
 
-		fxOnde(ray * 2 + 30 * Cs.NEW_GEN_SCALE);
+		fxOnde(ray + 30);
 		throwDebris(type + 1, (size + 1) / 5);
 
 		super.explode();
