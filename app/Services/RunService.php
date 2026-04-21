@@ -79,9 +79,9 @@ class RunService
         $end = Carbon::createFromTimestamp($timestamp);
         $realEnd = now();
 
-        if ($end->clone()->diffInSeconds($realEnd, true) > 30) {
-            throw new \Error('Invalid timestamp');
-        }
+        // if ($end->clone()->diffInSeconds($realEnd, true) > 30) {
+        //     throw new \Error('Invalid timestamp');
+        // }
         $run->play_time_seconds = (int) $realEnd->diffInSeconds($run->created_at, true);
         $run->completed_at = $realEnd;
         $run->score = $score;
