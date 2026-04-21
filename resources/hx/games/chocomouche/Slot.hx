@@ -51,11 +51,12 @@ class Slot extends Phys {
 	static var activeParts:Int = 0;
 
 	public function new(p:Pos, isBomb:Bool) {
+		var mc = Game.me.gdm.empty(Game.DP_SLOT);
+		super(mc);
 		pos = p;
 		state = Hidden;
 		hide = if (isBomb) Bomb else Nothing;
 		parsed = false;
-		var mc = Game.me.gdm.empty(Game.DP_SLOT);
 		mc.getGraphics().beginFill(1, 0);
 		mc.getGraphics().moveTo(0, 0);
 		mc.getGraphics().lineTo(Cs.SLOT_SIZE, 0);
@@ -78,7 +79,6 @@ class Slot extends Phys {
 		mc.onReleaseOutside = imReleased;
 		mc.interactive = true;
 		common_haxe_avm1.KKApi.registerButton(mc);
-		super(mc);
 		initPartsPool();
 		// ### TO CONTINUE
 	}
