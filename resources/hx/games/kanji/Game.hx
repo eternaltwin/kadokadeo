@@ -195,9 +195,9 @@ class Game implements kado.GameInterface {
 		jamas.push(j);
 	}
 
-	public function drawBox(b, x:Float, y:Float):Void {
+	public function drawBox(b, x:Float, y:Float, color = 0xFF00FF):Void {
 		dbg.moveTo(Std.int(b.xMin + x), Std.int(b.yMin + y));
-		dbg.lineStyle(4, 0xFF00FF, 100);
+		dbg.lineStyle(4, color, 100);
 		dbg.lineTo(Std.int(b.xMax + x), Std.int(b.yMin + y));
 		dbg.lineTo(Std.int(b.xMax + x), Std.int(b.yMax + y));
 		dbg.lineTo(Std.int(b.xMin + x), Std.int(b.yMax + y));

@@ -37,7 +37,6 @@ class Hero {
 		jump_pow = 0;
 		frame = 0;
 		colOffX = 0;
-		colOffY = -20 * Cs.NEW_GEN_SCALE;
 		colHalfW = 10 * Cs.NEW_GEN_SCALE;
 		colHalfH = 10 * Cs.NEW_GEN_SCALE;
 		arrow = game.dmanager.attach("arrow", 5);
@@ -139,6 +138,7 @@ class Hero {
 		mc._x = x;
 		mc._y = y;
 		mc._xscale = 100;
+		colOffY = -20 * Cs.NEW_GEN_SCALE;
 
 		switch (state) {
 			case S_WAIT:
@@ -150,6 +150,7 @@ class Hero {
 				} else if (frame >= 40) {
 					if (frame >= 46) {
 						frame = KeyboardManager.isDown(KeyboardManager.DOWN) ? 59 : 1;
+						colOffY = -10 * Cs.NEW_GEN_SCALE;
 					}
 				} else if (KeyboardManager.isDown(KeyboardManager.DOWN)) {
 					frame = 59;
@@ -177,11 +178,11 @@ class Hero {
 
 		if (Cs.DEBUG) {
 			game.drawBox({
-				xMin: -10 * Cs.NEW_GEN_SCALE,
-				yMin: -10 * Cs.NEW_GEN_SCALE,
-				xMax: 10 * Cs.NEW_GEN_SCALE,
-				yMax: 10 * Cs.NEW_GEN_SCALE
-			}, x, y - 20 * Cs.NEW_GEN_SCALE);
+				xMin: -colHalfW,
+				yMin: -colHalfH,
+				xMax: colHalfW,
+				yMax: colHalfH
+			}, x + colOffX, y + colOffY, 0xFF0000);
 		}
 	}
 }

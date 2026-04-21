@@ -22,7 +22,7 @@ class Jama {
 	var time:Float;
 	var sx:Float;
 	var sy:Float;
-	var hitUnder:Bool;
+	var hitFromAbove:Bool;
 
 	static inline var CIGOGNE = 0;
 	static inline var BEE = 1;
@@ -105,26 +105,26 @@ class Jama {
 		var boundSource:ASprite = (col != null) ? col : mc;
 		var ob:Rectangle = boundSource.getBounds();
 
-		var hcX = game.hero.x + game.hero.colOffX;
-		var hcY = game.hero.y + game.hero.colOffY;
+		var hcX = game.hero.x + game.hero.colOffX - game.hero.colHalfW;
+		var hcY = game.hero.y + game.hero.colOffY - game.hero.colHalfH;
 
-		var hLeft = hcX - game.hero.colHalfW;
-		var hRight = hcX + game.hero.colHalfW;
-		var hTop = hcY - game.hero.colHalfH - hray;
-		var hBottom = hcY + game.hero.colHalfH + hray;
+		var hLeft = hcX;
+		var hRight = hcX + game.hero.colHalfW * 2;
+		var hTop = hcY;
+		var hBottom = hcY + game.hero.colHalfH * 2;
 
-		var oLeft = ob.x;
-		var oRight = ob.x + ob.width;
+		var oLeft = ob.x + hray;
+		var oRight = ob.x + ob.width - hray;
 		var oTop = ob.y;
 		var oBottom = ob.y + ob.height;
 
 		if (Cs.DEBUG) {
 			game.drawBox({
-				xMin: oLeft - hcX,
-				yMin: oTop - hcY,
-				xMax: oRight - hcX,
-				yMax: oBottom - hcY
-			}, hcX, hcY);
+				xMin: oLeft,
+				yMin: oTop,
+				xMax: oRight,
+				yMax: oBottom
+			}, 0, 0);
 		}
 
 		if (oRight < hLeft || oLeft > hRight) {
@@ -135,9 +135,9 @@ class Jama {
 			return false;
 		}
 
-		hitUnder = (((oTop + oBottom) * 0.5) - hcY > 5 * Cs.NEW_GEN_SCALE);
-		if (!hitUnder && Cs.DEBUG) {
-			trace(((oTop + oBottom) * 0.5) - hcY);
+		hitFromAbove = hcY < (oTop + oBottom) * 0.5;
+		if (!hitFromAbove && Cs.DEBUG) {
+			trace("hit side/below - enemy center:", (oTop + oBottom) * 0.5, "hero center:", hcY);
 		}
 		return true;
 	}
@@ -156,7 +156,7 @@ class Jama {
 			case CIGOGNE:
 				x += speed * Timer.tmod * (way ? -1 : 1);
 				if (hit(10 * Cs.NEW_GEN_SCALE)) {
-					if (hitUnder) {
+					if (hitFromAbove) {
 						var p = Math.abs(game.hero.jump_pow);
 						p *= 0.7;
 						p = Math.max(p, 5);
