@@ -104,6 +104,9 @@ class Jama {
 
 		var boundSource:ASprite = (col != null) ? col : mc;
 		var ob:Rectangle = boundSource.getBounds();
+		if (ob.x < 0 || ob.y < 0) {
+			return false;
+		}
 
 		var hcX = game.hero.x + game.hero.colOffX - game.hero.colHalfW;
 		var hcY = game.hero.y + game.hero.colOffY - game.hero.colHalfH;

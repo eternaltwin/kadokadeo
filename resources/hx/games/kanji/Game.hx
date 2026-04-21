@@ -231,9 +231,11 @@ class Game implements kado.GameInterface {
 
 		dbg.clear();
 
-		if (KeyboardManager.isDown(KeyboardManager.A + 3)) {
+		#if debug
+		if (KeyboardManager.isDown(KeyboardManager.D)) {
 			Cs.DEBUG = !Cs.DEBUG;
 		}
+		#end
 
 		if (game_over) {
 			death._x += hero.jump_dx * Timer.tmod;
