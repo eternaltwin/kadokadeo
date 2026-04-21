@@ -328,7 +328,7 @@ class Game implements kado.GameInterface {
 				mc.removeMovieClip();
 				animator.splice(i--, 1);
 			} else {
-				mc.gotoAndStop(Std.string(Std.int(mc.frame) + 1));
+				mc.gotoAndStop(Std.int(mc.frame) + 1);
 			}
 			i++;
 		}

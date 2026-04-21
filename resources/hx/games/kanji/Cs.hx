@@ -15,8 +15,6 @@ class Cs {
 	public static var MAXX = 285 * NEW_GEN_SCALE;
 	public static var MAXY = 280 * NEW_GEN_SCALE;
 
-	public static var HERO_Y_DELTA = -20 * NEW_GEN_SCALE;
-
 	public static var BONUS_PROBAS = 100;
 	public static var BONUS_PROBAS_TBL = [50, 10, 1];
 	public static var JAMA_PROBAS_TBL = [100, 40, 10];

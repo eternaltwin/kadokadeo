@@ -36,7 +36,7 @@ class Corn extends Phys {
 					bouncer.onBounceAngle = this.col;
 					step = 1;
 				}
-				var m = RAY * 2;
+				var m = RAY * 2.7;
 				if (x < m || x > Cs.mcw - m) {
 					x = Num.mm(m, x, Cs.mcw - m);
 					vx *= -1;
@@ -77,16 +77,16 @@ class Corn extends Phys {
 			if (jumpTimer < 0 && Math.abs(Num.hMod(1.57 - n, 3.14)) < 1.57) {
 				if (Cs.game.hero.trg == this) {
 					Cs.game.hero.releaseJump();
+				} else {
+					Cs.game.ly = Math.min(Cs.game.ly, y - 30 * Cs.NEW_GEN_SCALE);
+					vx = 0;
+					vy = 0;
+					weight = 0;
+					removeBouncer();
+					frame = 0;
+					root._rotation = Cs.rand() * 360;
+					Cs.game.stampPopcorn(x, y, root._rotation);
 				}
-
-				Cs.game.ly = Math.min(Cs.game.ly, y - 30 * Cs.NEW_GEN_SCALE);
-				vx = 0;
-				vy = 0;
-				weight = 0;
-				removeBouncer();
-				frame = 0;
-				root._rotation = Cs.rand() * 360;
-				Cs.game.stampPopcorn(x, y, root._rotation);
 			}
 		}
 	}
