@@ -104,7 +104,7 @@ class Jama {
 
 		var boundSource:ASprite = (col != null) ? col : mc;
 		var ob:Rectangle = boundSource.getBounds();
-		if (ob.x < 0 || ob.y < 0) {
+		if (ob.x < 1 && ob.y < 1) {
 			return false;
 		}
 
