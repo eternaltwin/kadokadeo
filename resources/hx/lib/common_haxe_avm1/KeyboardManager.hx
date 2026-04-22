@@ -24,8 +24,17 @@ class KeyboardManager {
 	static public inline var S = 83;
 	static public inline var W = 87;
 	static public inline var Z = 90;
+	static public inline var F1 = 112;
+	static public inline var F2 = 113;
+	static public inline var F3 = 114;
+	static public inline var F4 = 115;
+	static public inline var F5 = 116;
+	static public inline var F6 = 117;
+	static public inline var F7 = 118;
+	static public inline var F8 = 119;
 
 	static private var keyState:IntMap<Bool>;
+	static private var justPressed:IntMap<Bool>;
 	static private var isInitialized:Bool = false;
 	static private var inputLocked:Bool = false;
 	static private var pendingOps:Array<{keyCode:Int, isDown:Bool}> = [];
@@ -38,6 +47,7 @@ class KeyboardManager {
 		}
 
 		keyState = new IntMap();
+		justPressed = new IntMap();
 		isInitialized = true;
 
 		js.Browser.window.addEventListener("keydown", onKeyDown);
@@ -93,6 +103,7 @@ class KeyboardManager {
 
 	static public function beginFrame():Int {
 		ensureInitialized();
+		justPressed = new IntMap();
 		if (pendingOps.length == 0) {
 			return 0;
 		}
@@ -101,9 +112,13 @@ class KeyboardManager {
 		pendingOps = [];
 		var applied = 0;
 		for (op in ops) {
-			if (op.isDown)
+			if (op.isDown) {
+				var wasDown = keyState.exists(op.keyCode);
 				setKeyDown(op.keyCode);
-			else
+				if (!wasDown) {
+					justPressed.set(op.keyCode, true);
+				}
+			} else
 				setKeyUp(op.keyCode);
 			applied++;
 		}
@@ -124,6 +139,7 @@ class KeyboardManager {
 	static public function clearState():Void {
 		ensureInitialized();
 		keyState = new IntMap();
+		justPressed = new IntMap();
 		pendingOps = [];
 		lastDown = 0;
 	}
@@ -131,6 +147,11 @@ class KeyboardManager {
 	static public function isDown(keyCode:Int):Bool {
 		ensureInitialized();
 		return keyState.exists(keyCode);
+	}
+
+	static public function isJustDown(keyCode:Int):Bool {
+		ensureInitialized();
+		return justPressed.exists(keyCode);
 	}
 
 	static public function isArrowDown():Bool {
