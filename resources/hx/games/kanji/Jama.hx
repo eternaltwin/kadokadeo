@@ -196,8 +196,8 @@ class Jama {
 
 						ret = remove();
 					} else {
-						remove();
 						if (Cs.DEBUG) {
+							remove();
 							return false;
 						}
 						game.kill();
