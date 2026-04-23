@@ -50,6 +50,11 @@
   src: url('/fonts/Orbitron.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'LCD';
+  src: url('/fonts/LCD.ttf') format('truetype');
+}
+
 [data-lang='fr'] {
   background: url('/gfx/langFrench.gif') no-repeat;
 }
@@ -60,6 +65,7 @@
   --font-chubby-cheeks: 'Chubby Cheeks', sans-serif;
   --font-gau: 'GAU', sans-serif;
   --font-orbitron: 'Orbitron', sans-serif;
+  --font-lcd: 'LCD', sans-serif;
 }
 
 /* GLOBAL */

@@ -43,3 +43,6 @@ pioupiou.Game
 --next
 -js ./resources/js/games/popcorn.js
 popcorn.Game
+--next
+-js ./resources/js/games/f1champion.js
+f1champion.Game

@@ -198,6 +198,7 @@ class KadoKadeoManager extends Application {
 			}
 		} catch (e:Dynamic) {
 			reportPhysicsCrash(e);
+			throw e;
 		}
 	}
 
@@ -306,7 +307,8 @@ class KadoKadeoManager extends Application {
 			"GAU",
 			"Orbitron",
 			"Junegull-Regular",
-			"Jost-Medium"
+			"Jost-Medium",
+			"LCD",
 		];
 		return Promise.all(fonts.map(font -> Browser.window.document.fonts.load("16px " + font)));
 	}
