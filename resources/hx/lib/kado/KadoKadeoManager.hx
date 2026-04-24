@@ -9,6 +9,7 @@ import js.html.CanvasElement;
 import js.html.CustomEvent;
 import haxe.CallStack;
 import kado.KadoRunFlow.RunStartContext;
+import kado.Seed;
 import kado.TouchControlsOverlay.TouchJoystickState;
 import kado.TouchControlsConfig.TouchControlsConfig;
 import kado.TouchControlsConfig.TouchControlsMode;
@@ -274,6 +275,7 @@ class KadoKadeoManager extends Application {
 	inline function applyRunContext(context:RunStartContext):Void {
 		runDetails = context.runDetails;
 		seed = new mt.Rand(context.seedHash);
+		Seed.init(context.seedHash);
 	}
 
 	function startGame() {
@@ -309,6 +311,7 @@ class KadoKadeoManager extends Application {
 			"Junegull-Regular",
 			"Jost-Medium",
 			"LCD",
+			"IronMan",
 		];
 		return Promise.all(fonts.map(font -> Browser.window.document.fonts.load("16px " + font)));
 	}

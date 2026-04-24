@@ -50,3 +50,6 @@ popcorn.Game
 --next
 -js ./resources/js/games/f1champion.js
 f1champion.Game
+--next
+-js ./resources/js/games/zipzap.js
+zipzap.Game

@@ -15,7 +15,6 @@ L'orchestration globale (start/stop/frame + envoi replay) est deja geree par `re
 ## Entree attendue
 
 - Le point d'entrée du jeu est souvent la classe `Game.hx`
-- ne pas traiter `synapses` ni `xianxiang` comme reference d'implementation replay
 
 ## Principes importants (a respecter absolument)
 
@@ -43,11 +42,11 @@ Choisir le mode en fonction des controles du jeu:
     - `recordInputs: false`, `recordEvents: true`
     - enregistrer des evenements metier via `recordEvent(...)`
     - rejouer via `consumeEvents()` + `applyReplayEvent(...)`
-    - exemple: `resources/hx/games/chocomouche/Game.hx`
+    - exemple: `resources/hx/games/synapses/Game.hx`
 
 3. Mix clavier + evenements
     - `recordInputs: true`, `recordEvents: true`
-    - exemples: `resources/hx/games/interwheel/Game.hx`, `resources/hx/games/kaskade2/Game.hx`, `resources/hx/games/opalus2/Game.hx`
+    - exemples: `resources/hx/games/interwheel/Game.hx`, `resources/hx/games/kaskade2/Game.hx`, `resources/hx/games/opalus2/Game.hx`, `resources/hx/games/zipzap/Game.hx`
 
 ## Etapes d'implementation (ordre recommande)
 

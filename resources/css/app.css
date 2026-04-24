@@ -55,6 +55,11 @@
   src: url('/fonts/LCD.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'IronMan';
+  src: url('/fonts/IronMan.ttf') format('truetype');
+}
+
 [data-lang='fr'] {
   background: url('/gfx/langFrench.gif') no-repeat;
 }
