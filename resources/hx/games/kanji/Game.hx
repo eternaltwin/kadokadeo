@@ -3,6 +3,7 @@ package kanji;
 import common_haxe_avm1.KKApi;
 import kado.KadoKadeoManager;
 import common_haxe_avm1.KeyboardManager;
+import haxe.io.UInt16Array;
 import mt.DepthManager;
 import mt.Timer;
 
@@ -48,6 +49,18 @@ class Game implements kado.GameInterface {
 	public var feathers:Array<FeatherMain>;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
+		var replayKeys = new UInt16Array(5);
+		replayKeys[0] = KeyboardManager.LEFT;
+		replayKeys[1] = KeyboardManager.RIGHT;
+		replayKeys[2] = KeyboardManager.UP;
+		replayKeys[3] = KeyboardManager.DOWN;
+		replayKeys[4] = KeyboardManager.SPACE;
+		KadoKadeoManager.kkm.replay.init({
+			recordedKeys: replayKeys,
+			recordInputs: true,
+			recordEvents: false,
+		});
+
 		this.root = root;
 		nb = 0;
 		level = 0;
