@@ -561,22 +561,22 @@ class ReplayManager {
 		}
 
 		var version = input.readByte();
-		if (version != REPLAY_VERSION) {
+		if (version != 1 && version != REPLAY_VERSION) {
 			throw "Unsupported replay version " + version;
 		}
 		var flags = input.readByte();
 
-		readInitParams(input, flags);
+		readInitParams(input, flags, version);
 		if ((flags & FLAG_INPUTS) != 0) {
 			readInputRecords(input, replayFrameRecords);
 		}
 		if ((flags & FLAG_EVENTS) != 0) {
 			readEventRecords(input, replayFrameRecords);
 		}
-		if ((flags & FLAG_MOUSE_POSITION) != 0) {
+		if (version >= 2 && (flags & FLAG_MOUSE_POSITION) != 0) {
 			readMousePositionRecords(input, replayFrameRecords);
 		}
-		if ((flags & FLAG_MOUSE_BUTTONS) != 0) {
+		if (version >= 2 && (flags & FLAG_MOUSE_BUTTONS) != 0) {
 			readMouseButtonRecords(input, replayFrameRecords);
 		}
 		#if debug
@@ -585,11 +585,12 @@ class ReplayManager {
 		#end
 	}
 
-	private function readInitParams(input:BytesInput, flags:Int):Void {
+	private function readInitParams(input:BytesInput, flags:Int, version:Int):Void {
 		var recordInputs = (flags & FLAG_INPUTS) != 0;
 		var recordEvents = (flags & FLAG_EVENTS) != 0;
-		var recordMousePosition = (flags & FLAG_MOUSE_POSITION) != 0;
-		var recordMouseButtons = (flags & FLAG_MOUSE_BUTTONS) != 0;
+		var supportsMouse = version >= 2;
+		var recordMousePosition = supportsMouse && (flags & FLAG_MOUSE_POSITION) != 0;
+		var recordMouseButtons = supportsMouse && (flags & FLAG_MOUSE_BUTTONS) != 0;
 
 		var keyCount = recordInputs ? readVarUInt(input) : 0;
 		var keys = new UInt16Array(keyCount);
