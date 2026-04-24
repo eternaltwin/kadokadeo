@@ -365,6 +365,7 @@ class KadoKadeoManager extends Application {
 			score = 0;
 		}
 		common_haxe_avm1.KeyboardManager.clearState();
+		common_haxe_avm1.MouseManager.clearState();
 
 		if (game != null) {
 			game.destroy();

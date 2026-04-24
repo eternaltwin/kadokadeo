@@ -4,6 +4,7 @@ import haxe.io.UInt16Array;
 import mt.bumdum.Sprite;
 import mt.Timer;
 import common_haxe_avm1.KKApi;
+import common_haxe_avm1.MouseManager;
 import mt.bumdum.Lib;
 
 @:expose('GameKaskade2')
@@ -37,16 +38,18 @@ class Game implements kado.GameInterface {
 	var flash:Float;
 	var time:Float;
 	var ncoups:KKConst;
-	var isReplayMode:Bool;
 	var hoveredBille:Bille;
-	var lastHoveredCell:{x:Int, y:Int};
+	var currentHoveredCell:{x:Int, y:Int};
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
-		this.isReplayMode = isReplay;
+		var replayMouseButtons = new UInt16Array(1);
+		replayMouseButtons[0] = MouseManager.BUTTON_LEFT;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: new UInt16Array(0),
 			recordInputs: false,
 			recordEvents: true,
+			recordMousePosition: true,
+			recordedMouseButtons: replayMouseButtons,
 		});
 
 		dm = new mt.DepthManager(root);
@@ -65,60 +68,19 @@ class Game implements kado.GameInterface {
 		return KadoKadeoManager.kkm.seed.random(max);
 	}
 
-	public function showCursor() {
-		bg.useHandCursor = true;
-		// Mouse.hide();
-		// Mouse.show();
-	}
-
-	public function hideCursor() {
-		bg.useHandCursor = false;
-		// Mouse.hide();
-		// Mouse.show();
-	}
-
-	public function onBilleClick(target:Bille) {
-		var pos = getBilleGridPos(target);
-		if (pos == null) {
-			return;
-		}
-		resolveCellAction(pos.x, pos.y, true);
-	}
-
-	public function onBilleHover(target:Bille) {
-		var pos = getBilleGridPos(target);
-		if (pos == null) {
-			return;
-		}
-		setHoveredCell(pos.x, pos.y, true);
-	}
-
-	public function onBilleOut(target:Bille) {
-		if (lock || hoveredBille == null || target != hoveredBille) {
-			return;
-		}
-		hoveredBille.onRollOut();
-		hoveredBille = null;
-		lastHoveredCell = null;
-	}
-
-	function resolveCellAction(x:Int, y:Int, recordEvent:Bool) {
+	function resolveCellAction(x:Int, y:Int) {
 		if (lock)
 			return;
-		setHoveredCell(x, y, recordEvent);
+		setHoveredCell(x, y);
 
 		if (curGroup == null) {
 			return;
 		}
 
-		if (recordEvent && !isReplayMode) {
-			KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: x, y: y});
-		}
-
 		destroyCurrentGroup();
 	}
 
-	function setHoveredCell(x:Int, y:Int, recordEvent:Bool) {
+	function setHoveredCell(x:Int, y:Int) {
 		if (lock) {
 			return;
 		}
@@ -126,7 +88,7 @@ class Game implements kado.GameInterface {
 		var bille = findBilleAt(x, y);
 		if (bille == hoveredBille) {
 			if (bille != null) {
-				lastHoveredCell = {x: x, y: y};
+				currentHoveredCell = {x: x, y: y};
 			}
 			return;
 		}
@@ -137,15 +99,12 @@ class Game implements kado.GameInterface {
 
 		hoveredBille = bille;
 		if (hoveredBille == null) {
-			lastHoveredCell = null;
+			currentHoveredCell = null;
 			return;
 		}
 
-		lastHoveredCell = {x: x, y: y};
+		currentHoveredCell = {x: x, y: y};
 		hoveredBille.onRollOver();
-		if (recordEvent && !isReplayMode) {
-			KadoKadeoManager.kkm.replay.recordEvent({k: 0, x: x, y: y});
-		}
 	}
 
 	function destroyCurrentGroup() {
@@ -186,12 +145,12 @@ class Game implements kado.GameInterface {
 			else
 				color = 0x42FF42;
 			Filt.replaceColor(p, 0x4C4C4C, color, 0.5);
-			Filt.glow(p, 10, 2, color);
+			// Filt.glow(p, 10, 2, color);
 			b.kill();
 		}
 		lock = true;
 		hoveredBille = null;
-		lastHoveredCell = null;
+		currentHoveredCell = null;
 		level.gravity();
 	}
 
@@ -206,39 +165,16 @@ class Game implements kado.GameInterface {
 	}
 
 	function rehoverFromMouse() {
-		var mouse = new pixi.core.math.Point(bg._xmouse, bg._ymouse);
-		var best:{x:Int, y:Int, d:Float} = null;
-		for (x in 0...Const.LVL_WIDTH) {
-			for (y in 0...Const.LVL_HEIGHT) {
-				var b = level.billes[x][y];
-				if (b == null || b.mc == null || b.mc.hitArea == null)
-					continue;
-				var local = b.mc.toLocal(mouse);
-				if (untyped b.mc.hitArea.contains(local.x, local.y)) {
-					var dx = b.x - mouse.x;
-					var dy = b.y - mouse.y;
-					var d = dx * dx + dy * dy;
-					if (best == null || d < best.d)
-						best = {x: x, y: y, d: d};
-				}
-			}
+		var cell = cellAtPixel(MouseManager.getX(), MouseManager.getY());
+		if (cell != null) {
+			setHoveredCell(cell.x, cell.y);
+			return;
 		}
-		if (best != null)
-			setHoveredCell(best.x, best.y, false);
-		else if (hoveredBille != null) {
+		if (hoveredBille != null) {
 			hoveredBille.onRollOut();
 			hoveredBille = null;
-			lastHoveredCell = null;
+			currentHoveredCell = null;
 		}
-	}
-
-	function updateSprites() {
-		Sprite.updateAll();
-
-		// for (s in toUpdate) {
-		// 	if (s.parent != null)
-		// 		s.update();
-		// }
 	}
 
 	public function update(ts:Float) {
@@ -246,28 +182,22 @@ class Game implements kado.GameInterface {
 			applyReplayEvent(event);
 		}
 
-		updateSprites();
-		var p = Math.pow(0.6, Timer.tmod);
-		if (flash != null) {
-			flash -= Timer.tmod * 3;
-			if (flash < 0)
-				flash = 0;
-			var k = (flash * 2.55).int();
-			var f = (flash / 2).int();
-			// var c = new Color(dm.getMC());
-			// c.setTransform({
-			// 	ra: 100 - f,
-			// 	rb: k,
-			// 	ga: 100 - f,
-			// 	gb: 0,
-			// 	ba: 100 - f,
-			// 	bb: 0,
-			// 	aa: 100,
-			// 	ab: 0
-			// });
-			if (flash == 0)
-				flash = null;
+		var mx = MouseManager.getX();
+		var my = MouseManager.getY();
+		var cell = cellAtPixel(mx, my);
+		if (cell == null) {
+			if (currentHoveredCell != null) {
+				setHoveredCell(-1, -1);
+			}
+		} else if (currentHoveredCell == null || cell.x != currentHoveredCell.x || cell.y != currentHoveredCell.y) {
+			setHoveredCell(cell.x, cell.y);
 		}
+
+		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT) && cell != null) {
+			resolveCellAction(cell.x, cell.y);
+		}
+
+		Sprite.updateAll();
 		time += Timer.deltaT;
 		timebar.gotoAndStop((KKApi.val(ncoups) + 1).int());
 		particules.update();
@@ -280,20 +210,41 @@ class Game implements kado.GameInterface {
 		}
 
 		var kind:Int = Reflect.field(event, "k");
-		var x:Null<Int> = Reflect.field(event, "x");
-		var y:Null<Int> = Reflect.field(event, "y");
-		if (kind == null || x == null || y == null) {
+		if (kind == null) {
 			return;
 		}
 
 		switch (kind) {
-			case 0:
-				setHoveredCell(x, y, false);
 			case 1:
-			case 2:
-				resolveCellAction(x, y, false);
 			default:
 		}
+	}
+
+	function cellAtPixel(px:Float, py:Float):{x:Int, y:Int} {
+		var mouse = new pixi.core.math.Point(px, py);
+		var best:{x:Int, y:Int, d:Float} = null;
+		for (x in 0...Const.LVL_WIDTH) {
+			for (y in 0...Const.LVL_HEIGHT) {
+				var b = level.billes[x][y];
+				if (b == null || b.mc == null || b.mc.hitArea == null) {
+					continue;
+				}
+				var local = b.mc.toLocal(mouse);
+				if (untyped b.mc.hitArea.contains(local.x, local.y)) {
+					var dx = b.x - mouse.x;
+					var dy = b.y - mouse.y;
+					var d = dx * dx + dy * dy;
+					if (best == null || d < best.d) {
+						best = {x: x, y: y, d: d};
+					}
+				}
+			}
+		}
+
+		if (best == null) {
+			return null;
+		}
+		return {x: best.x, y: best.y};
 	}
 
 	function findBilleAt(x:Int, y:Int):Bille {
@@ -301,23 +252,6 @@ class Game implements kado.GameInterface {
 			return null;
 		}
 		return level.billes[x][y];
-	}
-
-	function getBilleGridPos(target:Bille):{x:Int, y:Int} {
-		if (target == null) {
-			return null;
-		}
-
-		for (x in 0...Const.LVL_WIDTH) {
-			for (y in 0...Const.LVL_HEIGHT) {
-				var b = level.billes[x][y];
-				if (b == target) {
-					return {x: x, y: y};
-				}
-			}
-		}
-
-		return null;
 	}
 
 	public function gameOver() {

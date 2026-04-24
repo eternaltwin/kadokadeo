@@ -52,24 +52,9 @@ class Bille extends Phys {
 		// hitboxDebug.interactive = false;
 		// mc.addChild(hitboxDebug);
 		activate(false);
-		mc.onRollOver = onPointerOver;
-		mc.onRollOut = onPointerOut;
-		mc.onRelease = onPointerRelease;
 		super(mc);
 		setPos(px, py);
 		this.scale = 0;
-	}
-
-	function onPointerOver() {
-		game.onBilleHover(this);
-	}
-
-	function onPointerOut() {
-		game.onBilleOut(this);
-	}
-
-	function onPointerRelease() {
-		game.onBilleClick(this);
 	}
 
 	public function onRollOver() {

@@ -2,6 +2,7 @@ package interwheel;
 
 import mt.bumdum.Lib;
 import common_haxe_avm1.KeyboardManager;
+import common_haxe_avm1.MouseManager;
 import mt.Timer;
 import mt.bumdum.Phys;
 
@@ -44,9 +45,6 @@ class Blob extends Phys {
 		wet = 0;
 		vvx = 0;
 		vvy = 0;
-
-		Cs.game.dm.root_mc.onPress = this.onPressInput;
-		Cs.game.dm.root_mc.onRelease = this.onReleaseInput;
 	}
 
 	public function initStep(s) {
@@ -95,6 +93,8 @@ class Blob extends Phys {
 	}
 
 	public override function update() {
+		flClick = MouseManager.isButtonDown(MouseManager.BUTTON_LEFT);
+
 		switch (step) {
 			case 0: //
 				var m = Cs.SIDE + RAY;
@@ -302,18 +302,6 @@ class Blob extends Phys {
 		Cs.game.initStep(9);
 		initStep(5);
 		kill();
-	}
-
-	public function setMousePressed(value:Bool):Void {
-		flClick = value;
-	}
-
-	function onPressInput() {
-		Cs.game.onBlobMouseDown();
-	}
-
-	function onReleaseInput() {
-		Cs.game.onBlobMouseUp();
 	}
 
 	function checkPress() {
