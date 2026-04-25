@@ -109,7 +109,7 @@ class Hero {
 		}
 
 		if (ty != null) {
-			var p = Math.pow((moving == null) ? 0.7 : 0.99, Timer.tmod);
+			var p = Math.pow((moving == null) ? 0.887 : 0.99, Timer.tmod);
 			y = y * p + ty * (1 - p);
 			if (Math.abs(ty - y) < 5 * Cs.NEW_GEN_SCALE) {
 				y = ty;
