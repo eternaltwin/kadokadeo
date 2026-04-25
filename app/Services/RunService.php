@@ -160,7 +160,7 @@ class RunService
             throw new \Exception("Échec du déchiffrement de la clé AES.");
         }
 
-        $saveDecrypted = $decryptedAesKey;
+        $saveDecrypted = base64_encode($decryptedAesKey);
         $decryptedAesKey = base64_decode($decryptedAesKey, true);
         if ($decryptedAesKey === false) {
             throw new \Exception("Clé AES invalide : base64 incorrect: $saveDecrypted");
