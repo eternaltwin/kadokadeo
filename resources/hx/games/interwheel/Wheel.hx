@@ -182,6 +182,8 @@ class Wheel extends Element {
 		sh.gotoAndStop(fr);
 
 		var dust = dm.attach("mcDust", 0);
+		dust.loop = true;
+		dust.play();
 
 		wh = dm.empty(0);
 
@@ -192,8 +194,8 @@ class Wheel extends Element {
 		wh._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
 		sh._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
 		sh._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
-		dust._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
-		dust._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
+		dust._xscale = ray;
+		dust._yscale = ray;
 		if (fr == 2) {
 			light._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
 			light._yscale = ray * 2 / Cs.NEW_GEN_SCALE;

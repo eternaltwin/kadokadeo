@@ -396,7 +396,7 @@
             <key type="filename">src/mcDust/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.0505464,0.0928571</point_f>
+                <point_f>0.5,-0.25</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>

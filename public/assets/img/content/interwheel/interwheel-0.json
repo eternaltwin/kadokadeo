@@ -952,7 +952,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":5,"w":181,"h":122},
 	"sourceSize": {"w":183,"h":140},
-	"anchor": {"x":0.0505464,"y":0.0928571}
+	"anchor": {"x":0.5,"y":-0.25}
 },
 "mcDust/3.png":
 {
@@ -961,7 +961,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":19,"w":179,"h":113},
 	"sourceSize": {"w":183,"h":140},
-	"anchor": {"x":0.0505464,"y":0.0928571}
+	"anchor": {"x":0.5,"y":-0.25}
 },
 "mcDust/8.png":
 {
@@ -970,7 +970,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":18,"w":182,"h":119},
 	"sourceSize": {"w":183,"h":140},
-	"anchor": {"x":0.0505464,"y":0.0928571}
+	"anchor": {"x":0.5,"y":-0.25}
 },
 "mcDust/13.png":
 {
@@ -979,7 +979,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":16,"w":180,"h":124},
 	"sourceSize": {"w":183,"h":140},
-	"anchor": {"x":0.0505464,"y":0.0928571}
+	"anchor": {"x":0.5,"y":-0.25}
 },
 "mcDust/15.png":
 {
@@ -988,7 +988,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":26,"w":179,"h":114},
 	"sourceSize": {"w":183,"h":140},
-	"anchor": {"x":0.0505464,"y":0.0928571}
+	"anchor": {"x":0.5,"y":-0.25}
 },
 "mcDust/17.png":
 {
@@ -997,7 +997,7 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":27,"w":180,"h":113},
 	"sourceSize": {"w":183,"h":140},
-	"anchor": {"x":0.0505464,"y":0.0928571}
+	"anchor": {"x":0.5,"y":-0.25}
 },
 "mcExplosion/1.png":
 {
@@ -2215,6 +2215,6 @@
 	"size": {"w":2048,"h":2048},
 	"scale": "1",
 	"related_multi_packs": [ "interwheel-1.json" ],
-	"smartupdate": "$TexturePacker:SmartUpdate:17b3ed314e45bb0169288beeeb30141c:3360f7d25febcf5e38c9583f3ebabef3:aaf30fafb005a8c3352f123e3f4ad3e8$"
+	"smartupdate": "$TexturePacker:SmartUpdate:1cd9d58d03d3719c993861236c7f2207:3360f7d25febcf5e38c9583f3ebabef3:aaf30fafb005a8c3352f123e3f4ad3e8$"
 }
 }
