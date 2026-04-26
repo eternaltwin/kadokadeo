@@ -137,7 +137,7 @@ class Hero extends Phys {
 	function updateConcentration() {
 		if (concentration != null) {
 			concentration -= 0.05 * Timer.tmod;
-			for (i in 0...5 * Std.int(concentration)) {
+			for (i in 0...Std.int(5 * concentration)) {
 				var p = new Part(Cs.game.dm.attach("partConcentrate", Game.DP_UNDERPARTS));
 				p.x = x;
 				p.y = y;
