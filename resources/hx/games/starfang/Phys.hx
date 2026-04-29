@@ -69,20 +69,20 @@ class Phys extends mt.bumdum.Phys {
 			p.root.gotoAndStop(fr);
 
 			var flBreak = (fr + 1) > p.root._totalframes * coef;
-			var a = Cs.rand() * 6.28;
+			var a = Seed.randVfx() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
-			var c = 0.5 + Cs.rand() * 0.5;
+			var c = 0.5 + Seed.randVfx() * 0.5;
 			var sp = 3 * Cs.NEW_GEN_SCALE;
 
 			p.x = x + ca * c * ray;
 			p.y = y + sa * c * ray;
 			p.vx = vx + ca * c * sp;
 			p.vy = vy + sa * c * sp;
-			p.vr = (Cs.rand() * 2 - 1) * 15;
-			p.timer = 10 + Cs.rand() * 10;
+			p.vr = (Seed.randVfx() * 2 - 1) * 15;
+			p.timer = 10 + Seed.randVfx() * 10;
 			p.fadeType = 0;
-			p.root._rotation = Cs.rand() * 360;
+			p.root._rotation = Seed.randVfx() * 360;
 			if (flBreak)
 				break;
 		}

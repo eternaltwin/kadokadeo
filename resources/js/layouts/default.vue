@@ -29,8 +29,8 @@ const authStore = useAuthStore()
   </header>
 
   <Error style="width:890px;margin:20px 60px 40px 60px;font-size:0.85em;">
-    Kadokadéo est toujours en alpha!<br />
-    Les scores des jeux ont été réinitialisés le 1er avril 2026. Nous ne pouvons pas garantir que tous les futurs scores seront conservés.<br />
+    Kadokadéo est en alpha! Il le restera jusqu'à avoir un site complet.<br />
+    Les replays des jeux ont été réinitialisés le 1er mai 2026.<br />
     De nouveaux jeux seront ajoutés régulièrement, n'hésitez pas à revenir souvent pour les découvrir!<br />
   </Error>
 

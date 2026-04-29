@@ -32,14 +32,4 @@ class Cs {
 		1, // score 3
 		6, // oil
 	];
-
-	public static inline function rand():Float {
-		return KadoKadeoManager.kkm.seed.rand();
-	}
-
-	public static inline function random(max:Int):Int {
-		if (max <= 0)
-			return 0;
-		return KadoKadeoManager.kkm.seed.random(max);
-	}
 }

@@ -19,7 +19,7 @@ class Flyer extends Monster {
 		root.play();
 		stLevel = 2;
 		score = Cs.C120;
-		setSens(Cs.random(2) * 2 - 1);
+		setSens(Seed.random(2) * 2 - 1);
 		initStep(Cs.ST_NORMAL);
 
 		flCol = false;
@@ -42,7 +42,7 @@ class Flyer extends Monster {
 				waitTimer -= Timer.tmod;
 				if (waitTimer < 0) {
 					chooseTrg();
-					waitTimer = waitTimerMax + Cs.rand() * 20;
+					waitTimer = waitTimerMax + Seed.rand() * 20;
 					waitTimerMax = Math.max(0, waitTimerMax - 8);
 				}
 				move();

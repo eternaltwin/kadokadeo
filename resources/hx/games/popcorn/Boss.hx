@@ -128,7 +128,7 @@ class Boss extends Phys {
 				if (launch == FR_END_LAUNCH) {
 					step = 2;
 					var sp = Cs.game.genPopcorn(x - 44 * Cs.NEW_GEN_SCALE * (100 / root._xscale), y - 34 * Cs.NEW_GEN_SCALE);
-					sp.vx = sens * Cs.rand() * 6 * Cs.NEW_GEN_SCALE;
+					sp.vx = sens * Seed.rand() * 6 * Cs.NEW_GEN_SCALE;
 				}
 				root.gotoAndStop(Std.int(launch) + 1);
 				move();
@@ -136,7 +136,7 @@ class Boss extends Phys {
 				launch = Math.max(launch - 5 * Timer.tmod, FR_START_LAUNCH);
 				if (launch == FR_START_LAUNCH) {
 					step = 0;
-					root._xscale = (Cs.random(2) * 2 - 1) * 100;
+					root._xscale = (Seed.random(2) * 2 - 1) * 100;
 				}
 				root.gotoAndStop(Std.int(launch) + 1);
 				move();
@@ -192,7 +192,7 @@ class Boss extends Phys {
 		while (popTimer <= 0) {
 			var rnd = Math.max(12 - dif * 0.004, 3);
 
-			if (Cs.rand() * rnd < 1) {
+			if (Seed.rand() * rnd < 1) {
 				step = 1;
 				if (launch == null)
 					launch = 0;

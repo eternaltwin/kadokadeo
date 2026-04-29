@@ -15,7 +15,7 @@ class CMine extends Bads {
 		setScore(Cs.C_MINE);
 		hp = 3;
 		ray = 16 * Cs.NEW_GEN_SCALE;
-		vy = (1 + Cs.rand() * 1) * Cs.NEW_GEN_SCALE;
+		vy = (1 + Seed.rand() * 1) * Cs.NEW_GEN_SCALE;
 		bounceId = 2;
 		onDeath = () -> {
 			var raf = newRafale();

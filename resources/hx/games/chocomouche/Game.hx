@@ -231,8 +231,8 @@ class Game implements kado.GameInterface {
 		var b = Cs.getLevelBombs(level);
 		left = Cs.GRID_WIDTH * Cs.GRID_HEIGHT - b;
 		while (b > 0) {
-			var x = Cs.random(Cs.GRID_WIDTH);
-			var y = Cs.random(Cs.GRID_HEIGHT);
+			var x = Seed.random(Cs.GRID_WIDTH);
+			var y = Seed.random(Cs.GRID_HEIGHT);
 			if (from != null && from.x == x && from.y == y)
 				continue;
 			var s = grid[x][y];

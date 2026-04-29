@@ -203,11 +203,11 @@ class Hero extends Phys {
 		// PARTS
 
 		var p = new Part(Cs.game.dm.attach("partInvincibility", Game.DP_UNDERPARTS));
-		var a = Cs.rand() * 6.28;
+		var a = Seed.randVfx() * 6.28;
 		var ca = Math.cos(a);
 		var sa = Math.sin(a);
 		var r = 0;
-		var sp = 1.5 + Cs.rand() * 1.5;
+		var sp = 1.5 + Seed.randVfx() * 1.5;
 		p.x = x;
 		p.y = y - 6 * Cs.NEW_GEN_SCALE;
 		p.vx = ca * sp;
@@ -216,7 +216,7 @@ class Hero extends Phys {
 		p.timer = 10;
 		p.fadeType = 0;
 		p.root.blendMode = BlendModes.ADD;
-		p.setScale((150 + Cs.rand() * 100) * size);
+		p.setScale((150 + Seed.randVfx() * 100) * size);
 
 		if (invincibleTimer < 0) {
 			invincibleTimer = null;
@@ -226,11 +226,11 @@ class Hero extends Phys {
 		var pdm = new DepthManager(p.root);
 
 		//
-		if (Cs.rand() * 3 < 1) {
+		if (Seed.randVfx() * 3 < 1) {
 			var mc = pdm.attach("mcLaserLight", 0);
-			mc._rotation = Cs.rand() * 360;
-			mc._xscale = 100 + Cs.rand() * 100;
-			mc._yscale = 50 + Cs.rand() * 100;
+			mc._rotation = Seed.randVfx() * 360;
+			mc._xscale = 100 + Seed.randVfx() * 100;
+			mc._yscale = 50 + Seed.randVfx() * 100;
 			mc.play();
 		}
 	}
@@ -289,11 +289,11 @@ class Hero extends Phys {
 				Cs.game.plasmaDraw(mc, 0);
 
 				for (i in 0...3) {
-					var a = Cs.rand() * 6.28;
-					var ray = (20 + Cs.rand() * 50) * Cs.NEW_GEN_SCALE;
+					var a = Seed.rand() * 6.28;
+					var ray = (20 + Seed.rand() * 50) * Cs.NEW_GEN_SCALE;
 					mc._x = x + Math.cos(a) * ray;
 					mc._y = y + Math.sin(a) * ray;
-					mc._xscale = 100 + Cs.rand() * 180;
+					mc._xscale = 100 + Seed.rand() * 180;
 					mc._yscale = mc._xscale;
 					Cs.game.plasmaDraw(mc, 0);
 				}
@@ -303,12 +303,12 @@ class Hero extends Phys {
 			var r = ray * (((60 + boost * 40) * 1.7) / 100) * 1.3;
 			for (i in 0...boost) {
 				var p = new Part(Cs.game.dm.attach("partSparkSpeed", Game.DP_UNDERPARTS));
-				p.x = x + (Cs.rand() * 2 - 1) * r;
-				p.y = y + (Cs.rand() * 2 - 1) * r;
-				p.setScale(10 + Cs.rand() * (15 + boost * 5));
-				p.root.gotoAndPlay(Cs.random(p.root._totalframes) + 1);
+				p.x = x + (Seed.randVfx() * 2 - 1) * r;
+				p.y = y + (Seed.randVfx() * 2 - 1) * r;
+				p.setScale(10 + Seed.randVfx() * (15 + boost * 5));
+				p.root.gotoAndPlay(Seed.randomVfx(p.root._totalframes) + 1);
 				p.vy = Game.SCROLL_SPEED;
-				p.timer = 20 + Cs.rand() * 10;
+				p.timer = 20 + Seed.randVfx() * 10;
 			}
 		}
 
@@ -441,12 +441,12 @@ class Hero extends Phys {
 					laserRay.list = new Array();
 					for (i in 0...12) {
 						var mc:LaserRayListSprite = cast laserRay.dm.attach("mcLaserRay", 0);
-						mc._rotation = Cs.rand() * 360;
-						mc._xscale = 100 + Cs.rand() * 100;
-						mc._yscale = 100 + Cs.rand() * 500;
-						mc.t = 10 + Cs.rand() * 50;
+						mc._rotation = Seed.rand() * 360;
+						mc._xscale = 100 + Seed.rand() * 100;
+						mc._yscale = 100 + Seed.rand() * 500;
+						mc.t = 10 + Seed.rand() * 50;
 						mc.blendMode = BlendModes.ADD;
-						mc.vr = (Cs.rand() * 2 - 1) * 5;
+						mc.vr = (Seed.rand() * 2 - 1) * 5;
 						laserRay.list.push(mc);
 					}
 					laserRay.t = 80;
@@ -684,16 +684,16 @@ class Hero extends Phys {
 							mc.lineStyle(1, 0xFFFFFF, 100);
 							for (n in 0...3) {
 								var k = 0;
-								var st = Cs.random(list.length - 3);
+								var st = Seed.randomVfx(list.length - 3);
 								mc.moveTo(list[st][0], list[st][1]);
-								while (Cs.random(k) == 0) {
+								while (Seed.randomVfx(k) == 0) {
 									k++;
-									st = Std.int(Math.min(st + ba + Cs.random(br), list.length - 1));
-									var px = list[st][0] + (Cs.rand() * 2 - 1) * ra;
-									var py = list[st][1] + (Cs.rand() * 2 - 1) * ra;
+									st = Std.int(Math.min(st + ba + Seed.randomVfx(br), list.length - 1));
+									var px = list[st][0] + (Seed.randVfx() * 2 - 1) * ra;
+									var py = list[st][1] + (Seed.randVfx() * 2 - 1) * ra;
 									mc.lineTo(px, py);
 								}
-								st = Std.int(Math.min(st + ba + Cs.random(br), list.length - 1));
+								st = Std.int(Math.min(st + ba + Seed.randomVfx(br), list.length - 1));
 								mc.lineTo(list[st][0], list[st][1]);
 							}
 							//*/
@@ -712,13 +712,13 @@ class Hero extends Phys {
 							a[1] = 0.1;
 						case 4: // VOID BALLS
 
-							var shot = newShot((Cs.rand() * 2 - 1) * (0.3 + a[0] * 0.15), 10, 17);
+							var shot = newShot((Seed.rand() * 2 - 1) * (0.3 + a[0] * 0.15), 10, 17);
 							shot.damage = 1.2;
 							shot.orient();
 							// shot.plasmaId = 1
 							shot.bList.push(4);
 							shot.speed = 12 * Cs.NEW_GEN_SCALE;
-							shot.decal = Cs.rand() * 628;
+							shot.decal = Seed.rand() * 628;
 
 							a[1] += 18 / (a[0] * 4);
 						case 3: // SPEED UP
@@ -785,12 +785,12 @@ class Hero extends Phys {
 
 		while (laserRay.list.length < Math.min(12, laserRay.t * 0.5)) {
 			var mc:LaserRayListSprite = cast laserRay.dm.attach("mcLaserRay", 0);
-			mc._rotation = Cs.rand() * 360;
-			mc._xscale = 100 + Cs.rand() * 100;
-			mc._yscale = 100 + Cs.rand() * 1000;
-			mc.t = 10 + Cs.rand() * 60;
+			mc._rotation = Seed.randVfx() * 360;
+			mc._xscale = 100 + Seed.randVfx() * 100;
+			mc._yscale = 100 + Seed.randVfx() * 1000;
+			mc.t = 10 + Seed.randVfx() * 60;
 			mc.blendMode = BlendModes.ADD;
-			mc.vr = (Cs.rand() * 2 - 1) * 5;
+			mc.vr = (Seed.randVfx() * 2 - 1) * 5;
 			laserRay.list.push(mc);
 		}
 		if (laserRay.t > 0) {
@@ -939,37 +939,37 @@ class Hero extends Phys {
 		// PARTS
 		for (i in 0...12) {
 			var p = new Part(Cs.game.dm.attach("mcExploPart", Game.DP_PARTS));
-			p.setScale(20 + Cs.rand() * 30);
-			var a = Cs.rand() * 6.28;
+			p.setScale(20 + Seed.randVfx() * 30);
+			var a = Seed.randVfx() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
 			var ray = 8 * Cs.NEW_GEN_SCALE;
-			var sp = 6 + Cs.rand() * 6;
+			var sp = 6 + Seed.randVfx() * 6;
 			p.x = x + ca * ray;
 			p.y = y + sa * ray;
 			p.vx = ca * sp;
 			p.vy = sa * sp;
 			p.plasmaId = 1;
-			p.timer = 10 + Cs.rand() * 30;
+			p.timer = 10 + Seed.randVfx() * 30;
 			p.frict = 0.96;
 			p.root.blendMode = BlendModes.ADD;
-			p.root._rotation = Cs.rand() * 360;
+			p.root._rotation = Seed.randVfx() * 360;
 			p.root.play();
 		}
 		// TRACE
 		for (i in 0...6) {
 			var mc = Cs.game.dm.attach("mcExploTrace", Game.DP_PARTS);
-			mc._x = x + (Cs.rand() * 2 - 1) * ray;
-			mc._y = y + (Cs.rand() * 2 - 1) * ray;
-			mc._xscale = 150 + Cs.rand() * 150;
+			mc._x = x + (Seed.randVfx() * 2 - 1) * ray;
+			mc._y = y + (Seed.randVfx() * 2 - 1) * ray;
+			mc._xscale = 150 + Seed.randVfx() * 150;
 			mc._yscale = mc._xscale;
-			mc._rotation = Cs.rand() * 360;
+			mc._rotation = Seed.randVfx() * 360;
 			mc.blendMode = BlendModes.ADD;
 			mc.onFrame.set(3, function() {
 				Cs.game.plasmaDraw(mc, 1);
 				mc.removeMovieClip();
 			});
-			mc.gotoAndPlay(Cs.random(3) + 1);
+			mc.gotoAndPlay(Seed.randomVfx(3) + 1);
 		}
 		// ONDE
 		var mc = Cs.game.dm.attach("mcOnde", Game.DP_UNDERPARTS);

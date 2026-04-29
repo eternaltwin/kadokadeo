@@ -66,7 +66,7 @@ class Game implements kado.GameInterface {
 		level = 0;
 		avg_tmod = 0;
 
-		if (Cs.random(1000) == 0) {
+		if (Seed.random(1000) == 0) {
 			Cs.BONUS_PROBAS_TBL[2] = 3;
 		}
 
@@ -96,9 +96,9 @@ class Game implements kado.GameInterface {
 		var r2 = r * r;
 		while (ntrys-- > 0) {
 			if (bx == null) {
-				x = Cs.random(300 * Cs.NEW_GEN_SCALE - r * 2) + r;
+				x = Seed.random(300 * Cs.NEW_GEN_SCALE - r * 2) + r;
 			}
-			y = Cs.random(Cs.MAXY - r * 2) + r;
+			y = Seed.random(Cs.MAXY - r * 2) + r;
 			var hit = false;
 			for (i in 0...l) {
 				var b = entities[i];
@@ -197,7 +197,7 @@ class Game implements kado.GameInterface {
 	}
 
 	function genJama():Void {
-		var w = Cs.random(2) == 0;
+		var w = Seed.random(2) == 0;
 		var p = genPlace(40 * Cs.NEW_GEN_SCALE, w ? 320 * Cs.NEW_GEN_SCALE : -20 * Cs.NEW_GEN_SCALE);
 		if (p == null) {
 			return;
@@ -225,7 +225,7 @@ class Game implements kado.GameInterface {
 		if (total <= 0) {
 			return 0;
 		}
-		var rnd = Cs.random(total);
+		var rnd = Seed.random(total);
 		for (i in 0...probas.length) {
 			rnd -= probas[i];
 			if (rnd < 0) {
@@ -264,7 +264,7 @@ class Game implements kado.GameInterface {
 			hero.update();
 		}
 
-		if (bonuses.length < 3 && Cs.random(Std.int(Cs.BONUS_PROBAS * bonuses.length / Timer.tmod)) == 0) {
+		if (bonuses.length < 3 && Seed.random(Std.int(Cs.BONUS_PROBAS * bonuses.length / Timer.tmod)) == 0) {
 			genBonus();
 		}
 
@@ -272,7 +272,7 @@ class Game implements kado.GameInterface {
 		if (l >= Cs.JAMA_PROBAS.length) {
 			l = Cs.JAMA_PROBAS.length - 1;
 		}
-		if (jamas.length < 10 && Cs.random(Std.int(Cs.JAMA_PROBAS[l] * jamas.length / Timer.tmod)) == 0) {
+		if (jamas.length < 10 && Seed.random(Std.int(Cs.JAMA_PROBAS[l] * jamas.length / Timer.tmod)) == 0) {
 			genJama();
 		}
 

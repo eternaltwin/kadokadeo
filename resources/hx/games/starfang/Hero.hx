@@ -144,7 +144,8 @@ class Hero extends Phys {
 				p.vx = vx;
 				p.vy = vy;
 				p.root.play();
-				p.root._rotation = Cs.rand() * 360;
+				p.root._rotation = Seed.randVfx() * 360;
+				p.root.play();
 				// mc._rotation = Math.random()*360
 				if (concentration < 0)
 					concentration = null;
@@ -270,9 +271,9 @@ class Hero extends Phys {
 				});
 				shot.damage = 0.75;
 				shot.bList = [4];
-				shot.decal = Cs.rand() * 628;
+				shot.decal = Seed.rand() * 628;
 				shot.queue = "queueRocket";
-				shot.timer = 50 + Cs.rand() * 10;
+				shot.timer = 50 + Seed.rand() * 10;
 				shot.a += Math.sin(shot.decal / 100) * 0.5;
 				shot.orient();
 				shot.ray = 8 * Cs.NEW_GEN_SCALE;
@@ -299,30 +300,30 @@ class Hero extends Phys {
 				}
 
 			case 3:
-				var shot = newShot(7 + power, 7 * Cs.NEW_GEN_SCALE, (Cs.rand() * 2 - 1) * 0.2, ray + 6 * Cs.NEW_GEN_SCALE);
+				var shot = newShot(7 + power, 7 * Cs.NEW_GEN_SCALE, (Seed.rand() * 2 - 1) * 0.2, ray + 6 * Cs.NEW_GEN_SCALE);
 				var ec = 1 * Cs.NEW_GEN_SCALE;
-				shot.timer = 12 + Cs.rand() * 10 + power * 5;
-				shot.x += (Cs.rand() * 2 - 1) * ec;
-				shot.y += (Cs.rand() * 2 - 1) * ec;
+				shot.timer = 12 + Seed.rand() * 10 + power * 5;
+				shot.x += (Seed.rand() * 2 - 1) * ec;
+				shot.y += (Seed.rand() * 2 - 1) * ec;
 				shot.damage = 0.14 + power * 0.08;
 				cd = 0;
 				for (i in 0...power + 1) {
 					var p = new Part(Cs.game.dm.attach("partLight", Game.DP_PARTS));
-					var a = angle + (Cs.rand() * 2 - 1) * 0.2;
+					var a = angle + (Seed.randVfx() * 2 - 1) * 0.2;
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
 					var r = ray + 5 * Cs.NEW_GEN_SCALE;
-					var sp = (2 + Cs.rand() * 10) * Cs.NEW_GEN_SCALE;
+					var sp = (2 + Seed.randVfx() * 10) * Cs.NEW_GEN_SCALE;
 					p.x = x + ca * r;
 					p.y = y + sa * r;
 					p.vx = ca * sp;
 					p.vy = sa * sp;
-					p.timer = 10 + Cs.rand() * 10;
-					p.setScale(50 + Cs.rand() * 100);
+					p.timer = 10 + Seed.randVfx() * 10;
+					p.setScale(50 + Seed.randVfx() * 100);
 				}
 
 			case 4:
-				var shot = newShot(12, 6 * Cs.NEW_GEN_SCALE, (Cs.rand() * 2 - 1) * 0.2, ray + 16 * Cs.NEW_GEN_SCALE);
+				var shot = newShot(12, 6 * Cs.NEW_GEN_SCALE, (Seed.rand() * 2 - 1) * 0.2, ray + 16 * Cs.NEW_GEN_SCALE);
 				shot.timer = 36;
 				// shot.damage = 1
 				shot.ray = 9 * Cs.NEW_GEN_SCALE;
@@ -335,32 +336,32 @@ class Hero extends Phys {
 
 				for (i in 0...4) {
 					var p = new Part(Cs.game.dm.attach("partBlackBall", Game.DP_PARTS));
-					var a = angle + (Cs.rand() * 2 - 1) * 0.4;
+					var a = angle + (Seed.randVfx() * 2 - 1) * 0.4;
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
 					var r = ray + 5 * Cs.NEW_GEN_SCALE;
-					var sp = (1 + Cs.rand() * 5) * Cs.NEW_GEN_SCALE;
+					var sp = (1 + Seed.randVfx() * 5) * Cs.NEW_GEN_SCALE;
 					p.x = x + ca * r;
 					p.y = y + sa * r;
 					p.vx = ca * sp;
 					p.vy = sa * sp;
 					p.fadeType = 0;
-					p.timer = 10 + Cs.rand() * 10;
-					p.setScale(10 + Cs.rand() * 40);
+					p.timer = 10 + Seed.randVfx() * 10;
+					p.setScale(10 + Seed.randVfx() * 40);
 				}
 				for (i in 0...2) {
 					var p = new Part(Cs.game.dm.attach("partLight", Game.DP_PARTS));
-					var a = angle + (Cs.rand() * 2 - 1) * 0.2;
+					var a = angle + (Seed.randVfx() * 2 - 1) * 0.2;
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
 					var r = ray + 5 * Cs.NEW_GEN_SCALE;
-					var sp = (1 + Cs.rand() * 5) * Cs.NEW_GEN_SCALE;
+					var sp = (1 + Seed.randVfx() * 5) * Cs.NEW_GEN_SCALE;
 					p.x = x + ca * r;
 					p.y = y + sa * r;
 					p.vx = ca * sp;
 					p.vy = sa * sp;
-					p.timer = 10 + Cs.rand() * 10;
-					p.setScale(50 + Cs.rand() * 100);
+					p.timer = 10 + Seed.randVfx() * 10;
+					p.setScale(50 + Seed.randVfx() * 100);
 				}
 
 				vx -= shot.vx * 0.1;
@@ -434,8 +435,8 @@ class Hero extends Phys {
 				var ntry = 0;
 				while (true) {
 					var flBreak = true;
-					nx = Cs.rand() * Cs.mcw;
-					ny = Cs.rand() * Cs.mch;
+					nx = Seed.rand() * Cs.mcw;
+					ny = Seed.rand() * Cs.mch;
 					for (i in 0...Cs.game.badsList.length) {
 						var b = Cs.game.badsList[i];
 						if (b.getDist({x: nx, y: ny}) < 150 * Cs.NEW_GEN_SCALE - ntry * 2 * Cs.NEW_GEN_SCALE) {
@@ -471,7 +472,7 @@ class Hero extends Phys {
 			case 5: // SWARM;
 				var shot = newShot(6, 10 * Cs.NEW_GEN_SCALE, 0, ray + 10 * Cs.NEW_GEN_SCALE);
 				shot.timer = 100;
-				shot.root.gotoAndPlay(Cs.random(5) + 1);
+				shot.root.gotoAndPlay(Seed.randomVfx(5) + 1);
 				shot.root.loop = true;
 				cd = 0;
 				am = 0.5;
@@ -509,14 +510,14 @@ class Hero extends Phys {
 				info.opx = info.mc._x;
 				info.opy = info.mc._y;
 
-				if (Cs.random(2) == 0) {
+				if (Seed.randomVfx(2) == 0) {
 					var p = new Part(Cs.game.dm.attach("partMagicSpark", Game.DP_PARTS));
 					p.root.loop = true;
 					p.root.play();
 					p.x = info.mc._x;
 					p.y = info.mc._y;
-					p.setScale(40 + Cs.rand() * 150);
-					p.timer = 10 + Cs.rand() * 10;
+					p.setScale(40 + Seed.randVfx() * 150);
+					p.timer = 10 + Seed.randVfx() * 10;
 					p.vx = ddx * 0.1;
 					p.vy = ddy * 0.1;
 					p.fadeType = 0;
@@ -651,22 +652,22 @@ class Hero extends Phys {
 			p.y = y + sa * r;
 
 			//*
-			var a = Cs.rand() * 6.28;
-			var d = Cs.rand() * 16 * Cs.NEW_GEN_SCALE;
+			var a = Seed.randVfx() * 6.28;
+			var d = Seed.randVfx() * 16 * Cs.NEW_GEN_SCALE;
 			var dx = Math.cos(a) * d;
 			var dy = Math.sin(a) * d;
 			p.x += dx;
 			p.y += dy;
-			p.root._x -= dx + (Cs.rand() * 2 - 1) * 2 * Cs.NEW_GEN_SCALE;
-			p.root._y -= dy + (Cs.rand() * 2 - 1) * 2 * Cs.NEW_GEN_SCALE;
+			p.root._x -= dx + (Seed.randVfx() * 2 - 1) * 2 * Cs.NEW_GEN_SCALE;
+			p.root._y -= dy + (Seed.randVfx() * 2 - 1) * 2 * Cs.NEW_GEN_SCALE;
 			p.root.play();
 			//*/
 
 			p.vx = ca * 1.5 * Cs.NEW_GEN_SCALE * max; //-(vx*0.5+vvx)
 			p.vy = sa * 1.5 * Cs.NEW_GEN_SCALE * max; //-vy*0.5
 
-			p.vr = 20 * (Cs.rand() * 2 - 1);
-			p.timer = 10 + Cs.rand() * 10;
+			p.vr = 20 * (Seed.randVfx() * 2 - 1);
+			p.timer = 10 + Seed.randVfx() * 10;
 		}
 	}
 }

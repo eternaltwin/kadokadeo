@@ -10,11 +10,11 @@ class CBriaros extends Bads {
 
 		hp = 6;
 
-		vy = -Cs.rand() * 5 * Cs.NEW_GEN_SCALE;
+		vy = -Seed.rand() * 5 * Cs.NEW_GEN_SCALE;
 
 		var raf = newRafale();
 		raf.addShot(1, [3, 0.6], 100, 1);
-		shootTimer = 150 + Cs.rand() * 15;
+		shootTimer = 150 + Seed.rand() * 15;
 
 		bList = [6, 7];
 		frict = 0.9;

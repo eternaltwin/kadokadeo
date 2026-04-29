@@ -56,21 +56,21 @@ class Layer {
 		//
 		for (i in 0...8) {
 			var mc = dm.attach("mcCell", 0);
-			mc._xscale = mc._yscale = 50 + Cs.rand() * 75;
-			mc._rotation = Cs.rand() * 360;
-			mc.gotoAndStop(Cs.random(mc._totalframes) + 1);
+			mc._xscale = mc._yscale = 50 + Seed.randVfx() * 75;
+			mc._rotation = Seed.randVfx() * 360;
+			mc.gotoAndStop(Seed.randomVfx(mc._totalframes) + 1);
 			// imc.gotoAndStop(1);
 
-			var sx = Cs.rand() * 2 - 1;
-			var sy = Cs.rand() * 2 - 1;
+			var sx = Seed.randVfx() * 2 - 1;
+			var sy = Seed.randVfx() * 2 - 1;
 
-			if (Cs.random(2) == 0)
-				sx = Cs.random(2) * 2 - 1;
+			if (Seed.randomVfx(2) == 0)
+				sx = Seed.randomVfx(2) * 2 - 1;
 			else
-				sy = Cs.random(2) * 2 - 1;
+				sy = Seed.randomVfx(2) * 2 - 1;
 
-			var rx = Cs.mcw * 0.5 + mc._width * 0.5 + Cs.rand() * (200 * Cs.NEW_GEN_SCALE);
-			var ry = Cs.mch * 0.5 + mc._height * 0.5 + Cs.rand() * (200 * Cs.NEW_GEN_SCALE);
+			var rx = Cs.mcw * 0.5 + mc._width * 0.5 + Seed.randVfx() * (200 * Cs.NEW_GEN_SCALE);
+			var ry = Cs.mch * 0.5 + mc._height * 0.5 + Seed.randVfx() * (200 * Cs.NEW_GEN_SCALE);
 
 			mc._x = Cs.mcw * 0.5 + rx * sx;
 			mc._y = Cs.mch * 0.5 + ry * sy;

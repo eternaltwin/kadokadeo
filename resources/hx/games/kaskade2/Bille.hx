@@ -30,7 +30,7 @@ class Bille extends Phys {
 		if (game.nlevels == Const.MAXCOLORS)
 			id = Const.MAXCOLORS - 1;
 		else
-			id = game.random(game.nlevels);
+			id = Seed.random(game.nlevels);
 		mc = game.dm.attach("bille/bille_" + (id + 1), Const.PLAN_BILLE);
 		mc.gotoAndStop(id + 1);
 		var w:Float = mc._width;

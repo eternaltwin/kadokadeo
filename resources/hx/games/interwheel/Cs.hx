@@ -42,14 +42,6 @@ class Cs {
 
 	public static var game:Game;
 
-	public static inline function rand():Float {
-		return KadoKadeoManager.kkm.seed.rand();
-	}
-
-	public static inline function random(max:Int):Int {
-		return KadoKadeoManager.kkm.seed.random(max);
-	}
-
 	public static function getDist(o:{x:Float, y:Float}, o2:{x:Float, y:Float}) {
 		var dx = o2.x - o.x;
 		var dy = o2.y - o.y;

@@ -23,7 +23,6 @@ class Game implements kado.GameInterface {
 	// static var replaySeed = 10426;
 	// static var replay = [[4, 3], [6, 2], [5, 2], [2, 3], [4, 3], [3, 1], [5, 4], [2, 2], [4, 4], [6, 2], [2, 4], [4, 4], [4, 3], [5, 4], [5, 4], [4, 2], [4, 2], [7, 4], [7, 3], [7, 4]];
 	var level:Level;
-	var particules:Particules;
 
 	public var dm:mt.DepthManager;
 	public var nlevels:Int;
@@ -53,7 +52,6 @@ class Game implements kado.GameInterface {
 		});
 
 		dm = new mt.DepthManager(root);
-		particules = new Particules(dm);
 		nlevels = 3;
 		level = new Level(this);
 		time = 0;
@@ -62,10 +60,6 @@ class Game implements kado.GameInterface {
 		bg = dm.attach("bg", Const.PLAN_BG);
 		timebar = dm.attach("timebar", Const.PLAN_OVER);
 		bg.useHandCursor = false;
-	}
-
-	public function random(max) {
-		return KadoKadeoManager.kkm.seed.random(max);
 	}
 
 	function resolveCellAction(x:Int, y:Int) {
@@ -127,15 +121,12 @@ class Game implements kado.GameInterface {
 		KadoKadeoManager.kkm.addScore(KKApi.const(pts));
 
 		for (b in curGroup) {
-			// for (j in 0...3) {
-			// 	particules.addWordPart(b.mc._x, b.mc._y, b.mc._currentframe);
-			// }
 			var p = dm.attach("explosion", Const.PLAN_PART);
 			p._x = b.x;
 			p._y = b.y;
-			p._rotation = Std.random(360);
+			p._rotation = Seed.randomVfx(360);
 			p.gotoAndPlay(1);
-			p._alpha = 30 + Std.random(70);
+			p._alpha = 30 + Seed.randomVfx(70);
 			p.removeOnFrame = 11;
 			var color;
 			if (b.id == 0)
@@ -200,7 +191,6 @@ class Game implements kado.GameInterface {
 		Sprite.updateAll();
 		time += Timer.deltaT;
 		timebar.gotoAndStop((KKApi.val(ncoups) + 1).int());
-		particules.update();
 		level.update();
 	}
 

@@ -2,6 +2,9 @@ package ironchouquette.elems;
 
 // frame 17
 class CCarrier extends Bads {
+	var bonusId:Int;
+	var bonusDir:Int;
+
 	public function new() {
 		var root = Cs.game.dm.attach("carrierBody", Game.DP_BADS);
 		super(root);
@@ -33,9 +36,11 @@ class CCarrier extends Bads {
 			chooseNewTarget(20 * Cs.NEW_GEN_SCALE, Cs.mcw - 20 * Cs.NEW_GEN_SCALE, 30 * Cs.NEW_GEN_SCALE, 190 * Cs.NEW_GEN_SCALE);
 		};
 		onTargetReach();
+		bonusId = Bonus.getRandomId();
+		bonusDir = Seed.random(2);
 
 		onDeath = () -> {
-			dropBonus();
+			dropBonus(bonusId, bonusDir);
 		};
 	}
 }

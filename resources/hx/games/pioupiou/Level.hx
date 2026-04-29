@@ -72,7 +72,7 @@ class Level {
 		if (total <= 0) {
 			return 0;
 		}
-		var rnd = Cs.random(total);
+		var rnd = Seed.random(total);
 		for (i in 0...probas.length) {
 			rnd -= probas[i];
 			if (rnd < 0) {
@@ -107,7 +107,7 @@ class Level {
 		var y = base_y + 1;
 		var ntrys = 20;
 		do {
-			x = Cs.random(Cs.LVL_WIDTH);
+			x = Seed.random(Cs.LVL_WIDTH);
 		} while (--ntrys > 0 && (tbl[x][y] != null || tbl[x][y - 1] != null));
 		if (ntrys == 0) {
 			return;
@@ -117,7 +117,7 @@ class Level {
 		while (tbl[x][i + level] != null) {
 			i++;
 		}
-		if (Cs.random(i * i) > 1) {
+		if (Seed.random(i * i) > 1) {
 			startFalling();
 			return;
 		}
@@ -139,7 +139,7 @@ class Level {
 		var y = base_y + 1;
 		var ntrys = 20;
 		do {
-			x = Cs.random(Cs.LVL_WIDTH);
+			x = Seed.random(Cs.LVL_WIDTH);
 		} while (--ntrys > 0 && (tbl[x][y] != null || tbl[x][y - 1] != null));
 		if (ntrys == 0) {
 			return;
@@ -251,7 +251,7 @@ class Level {
 	public function update():Void {
 		spawn += Timer.tmod / (1 + fallings.length) / Math.max(2, 15 - Math.max((level - 10) / 2, 0));
 
-		while (Cs.random(10) < spawn * 10) {
+		while (Seed.random(10) < spawn * 10) {
 			spawn--;
 			var n = randomProbas([10, 5, 2, 1]);
 			while (n >= 0) {
@@ -260,7 +260,7 @@ class Level {
 			}
 		}
 
-		if (Cs.random(Std.int(Cs.BONUS_PROBAS * bonuses.length / Timer.tmod)) == 0) {
+		if (Seed.random(Std.int(Cs.BONUS_PROBAS * bonuses.length / Timer.tmod)) == 0) {
 			genBonus();
 		}
 

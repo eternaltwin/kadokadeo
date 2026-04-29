@@ -245,7 +245,7 @@ class Game implements kado.GameInterface {
 						var p = new Part(gdm.attach("mcFruit", 8));
 						p.x = mc._x;
 						p.y = mc._y;
-						p.weight = 0.4 * Cs.NEW_GEN_SCALE + Math.random() * 0.4 * Cs.NEW_GEN_SCALE;
+						p.weight = 0.4 * Cs.NEW_GEN_SCALE + Seed.randVfx() * 0.4 * Cs.NEW_GEN_SCALE;
 						p.root.gotoAndStop(mc._currentframe);
 						free(pos.x, pos.y);
 						fList.push(p);
@@ -875,7 +875,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function getRandomId() {
-		var rnd = random(Cs.PROB_SUM);
+		var rnd = Seed.random(Cs.PROB_SUM);
 		var sum = 0;
 		for (i in 0...Cs.PROB.length) {
 			sum += Cs.PROB[i];
@@ -884,10 +884,6 @@ class Game implements kado.GameInterface {
 		}
 		trace("RANDOM ID ERROR");
 		return null;
-	}
-
-	public function random(max:Int):Int {
-		return KadoKadeoManager.kkm.seed.random(max);
 	}
 
 	//
@@ -923,17 +919,17 @@ class Game implements kado.GameInterface {
 			// partB.loop = true;
 			partB.play();
 			var p = new Part(partB);
-			var a = Math.random() * 6.28;
-			var sp = 2 + Math.random() * 3;
+			var a = Seed.randVfx() * 6.28;
+			var sp = 2 + Seed.randVfx() * 3;
 			p.vx = Math.cos(a) * sp;
 			p.vy = Math.sin(a) * sp;
-			p.vr = (Math.random() * 2 - 1) * 30;
-			p.timer = 10 + Math.random() * 10;
+			p.vr = (Seed.randVfx() * 2 - 1) * 30;
+			p.timer = 10 + Seed.randVfx() * 10;
 			p.frict = 0.92;
-			var dist = Math.random() * 10 * Cs.NEW_GEN_SCALE;
+			var dist = Seed.randVfx() * 10 * Cs.NEW_GEN_SCALE;
 			partB._x = dist;
 			// p.root.sub._x = dist;
-			var na = Math.random() * 6.28;
+			var na = Seed.randVfx() * 6.28;
 			p.root._rotation = na / 0.0174;
 			p.x = base._x - Math.cos(na) * dist;
 			p.y = base._y - Math.sin(na) * dist;

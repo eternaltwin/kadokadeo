@@ -28,7 +28,7 @@ class CNes extends Bads {
 		raf.dx = -5 * Cs.NEW_GEN_SCALE;
 		raf.dy = 24 * Cs.NEW_GEN_SCALE; // 20;
 
-		shootTimer = 50 + Cs.rand() * 50;
+		shootTimer = 50 + Seed.rand() * 50;
 		rect = {rw: 30 * Cs.NEW_GEN_SCALE, rh: 25 * Cs.NEW_GEN_SCALE};
 	}
 }

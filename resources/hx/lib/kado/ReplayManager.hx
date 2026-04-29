@@ -9,8 +9,6 @@ import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
 import haxe.io.UInt16Array;
 import js.lib.Uint8Array;
-import js.Browser;
-import js.html.KeyboardEvent;
 
 typedef ReplayInitParams = {
 	var recordedKeys:UInt16Array;
@@ -57,16 +55,12 @@ class ReplayManager {
 	private var trackedKeys:IntMap<Bool>;
 	private var trackedMouseButtons:IntMap<Bool>;
 	private var recordedKeyStates:IntMap<Bool>;
-	private var recordedMouseButtonStates:IntMap<Bool>;
 	private var shouldRecordInputs:Bool = true;
 	private var shouldRecordEvents:Bool = true;
 	private var shouldRecordMousePosition:Bool = false;
-	private var useFramePolledInputs:Bool = false;
 	private var lastRecordedMouseX:Int = 0;
 	private var lastRecordedMouseY:Int = 0;
 	private var hasLastRecordedMouse:Bool = false;
-
-	private var keyboardRegistered:Bool = false;
 
 	public function new(?replayData:String = null) {
 		this.replayData = parseReplayString(replayData);
@@ -77,7 +71,6 @@ class ReplayManager {
 		this.trackedKeys = new IntMap();
 		this.trackedMouseButtons = new IntMap();
 		this.recordedKeyStates = new IntMap();
-		this.recordedMouseButtonStates = new IntMap();
 		this.params = defaultParams();
 
 		if (this.replayData != null) {
@@ -97,7 +90,6 @@ class ReplayManager {
 		this.shouldRecordInputs = this.params.recordInputs;
 		this.shouldRecordEvents = this.params.recordEvents;
 		this.shouldRecordMousePosition = this.params.recordMousePosition;
-		this.useFramePolledInputs = this.shouldRecordInputs && this.params.recordedKeys.length > 0;
 	}
 
 	public function start():Void {
@@ -109,7 +101,6 @@ class ReplayManager {
 		pendingEvents = [];
 		frameEvents = [];
 		recordedKeyStates = new IntMap();
-		recordedMouseButtonStates = new IntMap();
 		hasLastRecordedMouse = false;
 		currentFrame = 0;
 
@@ -124,10 +115,6 @@ class ReplayManager {
 			frameRecords = new IntMap();
 			common_haxe_avm1.KeyboardManager.setInputLocked(false);
 			common_haxe_avm1.MouseManager.setInputLocked(false);
-
-			if (shouldRecordInputs && !useFramePolledInputs) {
-				registerKeyboardEvents();
-			}
 		}
 	}
 
@@ -136,8 +123,6 @@ class ReplayManager {
 		this.isPlaying = false;
 		common_haxe_avm1.KeyboardManager.setInputLocked(false);
 		common_haxe_avm1.MouseManager.setInputLocked(false);
-
-		unregisterKeyboardEvents();
 	}
 
 	public inline function isPlayingReplay():Bool {
@@ -165,7 +150,7 @@ class ReplayManager {
 		common_haxe_avm1.KeyboardManager.beginFrame();
 		common_haxe_avm1.MouseManager.beginFrame();
 
-		if (this.shouldRecordInputs && this.useFramePolledInputs) {
+		if (this.shouldRecordInputs) {
 			captureFrameInputs();
 		}
 
@@ -190,11 +175,6 @@ class ReplayManager {
 		}
 		currentFrame++;
 	}
-
-	// public inline function update():Void {
-	// 	beginFrame();
-	// 	endFrame();
-	// }
 
 	public function recordEvent(event:ReplayEvent, ?frameIndex:Int):Void {
 		if (!this.isRecording || !this.shouldRecordEvents || event == null) {
@@ -282,34 +262,6 @@ class ReplayManager {
 		return Base64.encode(uint8ArrayToBytes(compressed));
 	}
 
-	public function registerKeyboardEvents():Void {
-		if (keyboardRegistered) {
-			return;
-		}
-
-		Browser.window.addEventListener("keydown", onKeyDown);
-		Browser.window.addEventListener("keyup", onKeyUp);
-		keyboardRegistered = true;
-	}
-
-	public function unregisterKeyboardEvents():Void {
-		if (!keyboardRegistered) {
-			return;
-		}
-
-		Browser.window.removeEventListener("keydown", onKeyDown);
-		Browser.window.removeEventListener("keyup", onKeyUp);
-		keyboardRegistered = false;
-	}
-
-	private function onKeyDown(e:KeyboardEvent):Void {
-		recordInput(e.keyCode, true);
-	}
-
-	private function onKeyUp(e:KeyboardEvent):Void {
-		recordInput(e.keyCode, false);
-	}
-
 	private function applyFrame(frameIndex:Int):Void {
 		var record = replayFrameRecords.get(frameIndex);
 		if (record == null) {
@@ -332,9 +284,9 @@ class ReplayManager {
 
 		for (input in record.inputs) {
 			if (input.isDown) {
-				common_haxe_avm1.KeyboardManager.setKeyDown(input.keyCode);
+				common_haxe_avm1.KeyboardManager.queueReplayKeyDown(input.keyCode);
 			} else {
-				common_haxe_avm1.KeyboardManager.setKeyUp(input.keyCode);
+				common_haxe_avm1.KeyboardManager.queueReplayKeyUp(input.keyCode);
 			}
 		}
 
@@ -343,8 +295,15 @@ class ReplayManager {
 		}
 	}
 
-	private function captureFrameInputs():Int {
-		var count = 0;
+	private function captureFrameInputs():Void {
+		for (change in common_haxe_avm1.KeyboardManager.getFrameKeyChanges()) {
+			if (!shouldTrackKey(change.keyCode)) {
+				continue;
+			}
+
+			recordInput(change.keyCode, change.isDown, currentFrame);
+		}
+
 		for (keyCode in trackedKeys.keys()) {
 			var isDown = common_haxe_avm1.KeyboardManager.isDown(keyCode);
 			var previous = recordedKeyStates.exists(keyCode) ? recordedKeyStates.get(keyCode) : false;
@@ -353,9 +312,7 @@ class ReplayManager {
 			}
 
 			recordInput(keyCode, isDown, currentFrame);
-			count++;
 		}
-		return count;
 	}
 
 	private function captureFrameMousePosition():Void {
@@ -383,47 +340,24 @@ class ReplayManager {
 			return;
 		}
 
-		var changes:Array<{button:Int, isDown:Bool}> = [];
-		for (button in trackedMouseButtons.keys()) {
-			var isDown = common_haxe_avm1.MouseManager.isButtonDown(button);
-			var previous = recordedMouseButtonStates.exists(button) ? recordedMouseButtonStates.get(button) : false;
-			if (previous == isDown) {
+		var record:ReplayFrameRecord = null;
+		for (change in common_haxe_avm1.MouseManager.getFrameButtonChanges()) {
+			if (!trackedMouseButtons.exists(change.button)) {
 				continue;
 			}
 
-			if (isDown) {
-				recordedMouseButtonStates.set(button, true);
-			} else {
-				recordedMouseButtonStates.remove(button);
+			if (record == null) {
+				record = getOrCreateFrameRecord(currentFrame);
+				if (record.mouseButtons == null) {
+					record.mouseButtons = [];
+				}
 			}
-			changes.push({button: button, isDown: isDown});
-		}
-
-		if (changes.length == 0) {
-			return;
-		}
-
-		var record = getOrCreateFrameRecord(currentFrame);
-		if (record.mouseButtons == null) {
-			record.mouseButtons = [];
-		}
-		for (change in changes) {
-			record.mouseButtons.push(change);
+			record.mouseButtons.push({button: change.button, isDown: change.isDown});
 		}
 	}
 
 	private function getOrCreateFrameRecord(frameIndex:Int):ReplayFrameRecord {
-		var record = frameRecords.get(frameIndex);
-		if (record != null) {
-			return record;
-		}
-
-		record = {
-			events: [],
-			inputs: []
-		};
-		frameRecords.set(frameIndex, record);
-		return record;
+		return getOrCreateFrameRecordFromMap(frameRecords, frameIndex);
 	}
 
 	private function shouldTrackKey(keyCode:Int):Bool {
@@ -617,7 +551,6 @@ class ReplayManager {
 		this.shouldRecordInputs = this.params.recordInputs;
 		this.shouldRecordEvents = this.params.recordEvents;
 		this.shouldRecordMousePosition = this.params.recordMousePosition;
-		this.useFramePolledInputs = this.shouldRecordInputs && this.params.recordedKeys.length > 0;
 	}
 
 	private function readInputRecords(input:BytesInput, target:IntMap<ReplayFrameRecord>):Void {

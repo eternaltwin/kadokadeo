@@ -320,7 +320,7 @@ class Game implements kado.GameInterface {
 			// if(Cs.game.root.filters.length>0)return;
 			var c = 1 - bt.val;
 			var sat = 0.3;
-			var inc = Cs.rand() * 15;
+			var inc = Seed.randVfx() * 15;
 			fl.matrix = [
 				1 + c * sat,           0,           0, 0, (inc + 200 * c) / 255,
 				          0, 1 + c * sat,           0, 0,  (inc - 50 * c) / 255,
@@ -543,13 +543,14 @@ class Game implements kado.GameInterface {
 				hero.addWeapon(n - 96);
 		}
 		for (n in 49...54) {
-			if (isKeyJustPressed(n))
+			if (isKeyJustPressed(n)) {
 				hero.addBox();
+			}
 		}
 		for (n in 54...59) {
 			if (isKeyJustPressed(n)) {
 				var bonus = new Bonus(null);
-				bonus.x = Cs.rand() * Cs.mcw;
+				bonus.x = Seed.rand() * Cs.mcw;
 				bonus.y = -bonus.ray;
 			}
 		}

@@ -10,9 +10,9 @@ class Pastille extends Element {
 		skin = "mcPastille";
 
 		type = 0;
-		if (Cs.random(30) == 0)
+		if (Seed.random(30) == 0)
 			type = 1;
-		if (Cs.random(200) == 0)
+		if (Seed.random(200) == 0)
 			type = 2;
 	}
 

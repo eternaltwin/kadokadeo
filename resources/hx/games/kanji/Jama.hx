@@ -176,12 +176,12 @@ class Jama {
 						while (i < 10) {
 							var d:FeatherSprite = cast game.dmanager.attach("FXFeather", Cs.PLAN_JAMA + 1);
 							d.loop = true;
-							d.gotoAndPlay(1 + Cs.random(d._totalframes));
-							d._xscale = d._yscale = 50 + Cs.random(100);
+							d.gotoAndPlay(1 + Seed.randomVfx(d._totalframes));
+							d._xscale = d._yscale = 50 + Seed.randomVfx(100);
 							var b:Rectangle = d.getBounds();
 							d._x = feather._x - b.width / 2;
 							d._y = feather._y - b.y;
-							d.t = 10 + Cs.random(40);
+							d.t = 10 + Seed.randomVfx(40);
 							i++;
 							feather.fList.push(d);
 						}

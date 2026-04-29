@@ -38,7 +38,7 @@ class Tanker extends Runner {
 				p.root.play();
 				p.vx = -shot.vx * 0.75;
 				p.vy = shot.vy - 3 * Cs.NEW_GEN_SCALE;
-				p.timer = 20 + Cs.rand() * 10;
+				p.timer = 20 + Seed.randVfx() * 10;
 				p.weight = 0.4 * Cs.NEW_GEN_SCALE;
 				return;
 			}
@@ -71,7 +71,7 @@ class Tanker extends Runner {
 					setSens(-sens);
 				}
 			} else {
-				if (Cs.rand() < 0.7) {
+				if (Seed.rand() < 0.7) {
 					setSens(-sens);
 				}
 			}

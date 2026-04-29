@@ -13,13 +13,13 @@ private enum MouseOpType {
 private typedef MouseOp = {
 	var type:MouseOpType;
 	var button:Int;
-	var x:Float;
-	var y:Float;
+	var x:Null<Int>;
+	var y:Null<Int>;
 }
 
 typedef MouseCoords = {
-	var x:Float;
-	var y:Float;
+	var x:Int;
+	var y:Int;
 }
 
 class MouseManager {
@@ -31,15 +31,16 @@ class MouseManager {
 	static private var isInitialized:Bool = false;
 	static private var pendingCallbacks:Array<Void->Void> = [];
 	static private var hasCapturedCoords:Bool = false;
-	static private var capturedX:Float = 0;
-	static private var capturedY:Float = 0;
+	static private var capturedX:Int = 0;
+	static private var capturedY:Int = 0;
 	static private var interactionTrackingRegistered:Bool = false;
 	static private var domTrackingRegistered:Bool = false;
 	static private var buttonState:IntMap<Bool>;
 	static private var justPressed:IntMap<Bool>;
 	static private var justReleased:IntMap<Bool>;
-	static private var polledX:Float = 0;
-	static private var polledY:Float = 0;
+	static private var frameButtonChanges:Array<{button:Int, isDown:Bool}> = [];
+	static private var polledX:Int = 0;
+	static private var polledY:Int = 0;
 	static private var hasPolledCoords:Bool = false;
 	static private var pendingOps:Array<MouseOp> = [];
 	static private var inputLocked:Bool = false;
@@ -54,22 +55,22 @@ class MouseManager {
 		}
 	}
 
-	static public function getMouseX():Float {
+	static public function getMouseX():Int {
 		return getX();
 	}
 
-	static public function getMouseY():Float {
+	static public function getMouseY():Int {
 		return getY();
 	}
 
-	static public function getX():Float {
+	static public function getX():Int {
 		if (hasPolledCoords) {
 			return polledX;
 		}
 		return getLiveX();
 	}
 
-	static public function getY():Float {
+	static public function getY():Int {
 		if (hasPolledCoords) {
 			return polledY;
 		}
@@ -104,6 +105,7 @@ class MouseManager {
 		buttonState = new IntMap();
 		justPressed = new IntMap();
 		justReleased = new IntMap();
+		frameButtonChanges = [];
 		pendingOps = [];
 		pendingCallbacks = [];
 		hasPolledCoords = false;
@@ -114,7 +116,7 @@ class MouseManager {
 		capturedY = 0;
 	}
 
-	static public function setPosition(x:Float, y:Float):Void {
+	static public function setPosition(x:Int, y:Int):Void {
 		queueMouseOp({
 			type: POSITION,
 			button: -1,
@@ -127,8 +129,8 @@ class MouseManager {
 		queueMouseOp({
 			type: BUTTON_DOWN,
 			button: button,
-			x: Math.NaN,
-			y: Math.NaN
+			x: null,
+			y: null
 		}, true);
 	}
 
@@ -136,8 +138,8 @@ class MouseManager {
 		queueMouseOp({
 			type: BUTTON_UP,
 			button: button,
-			x: Math.NaN,
-			y: Math.NaN
+			x: null,
+			y: null
 		}, true);
 	}
 
@@ -175,6 +177,7 @@ class MouseManager {
 		ensureStateInitialized();
 		justPressed = new IntMap();
 		justReleased = new IntMap();
+		frameButtonChanges = [];
 		var applied = 0;
 
 		if (pendingOps.length > 0) {
@@ -189,12 +192,14 @@ class MouseManager {
 						buttonState.set(op.button, true);
 						if (!wasDown) {
 							justPressed.set(op.button, true);
+							frameButtonChanges.push({button: op.button, isDown: true});
 						}
 					case BUTTON_UP:
 						var wasDown = buttonState.exists(op.button);
 						buttonState.remove(op.button);
 						if (wasDown) {
 							justReleased.set(op.button, true);
+							frameButtonChanges.push({button: op.button, isDown: false});
 						}
 				}
 				applied++;
@@ -212,6 +217,11 @@ class MouseManager {
 			applied++;
 		}
 		return applied;
+	}
+
+	static public function getFrameButtonChanges():Array<{button:Int, isDown:Bool}> {
+		ensureStateInitialized();
+		return frameButtonChanges.copy();
 	}
 
 	static private function registerInteractionTracking():Void {
@@ -270,16 +280,12 @@ class MouseManager {
 			return;
 		}
 		var coords = extractCanvasCoords(event);
-		var x:Null<Float> = null;
-		var y:Null<Float> = null;
+		var x:Null<Int> = null;
+		var y:Null<Int> = null;
 		if (coords != null) {
 			x = coords.x;
 			y = coords.y;
 			setCapturedCoords(coords.x, coords.y);
-		}
-		if (x == null || y == null) {
-			x = Math.NaN;
-			y = Math.NaN;
 		}
 		queueMouseOp({
 			type: BUTTON_DOWN,
@@ -294,16 +300,12 @@ class MouseManager {
 			return;
 		}
 		var coords = extractCanvasCoords(event);
-		var x:Null<Float> = null;
-		var y:Null<Float> = null;
+		var x:Null<Int> = null;
+		var y:Null<Int> = null;
 		if (coords != null) {
 			x = coords.x;
 			y = coords.y;
 			setCapturedCoords(coords.x, coords.y);
-		}
-		if (x == null || y == null) {
-			x = Math.NaN;
-			y = Math.NaN;
 		}
 		queueMouseOp({
 			type: BUTTON_UP,
@@ -318,8 +320,8 @@ class MouseManager {
 			return;
 		}
 		var coords = extractCanvasCoords(event);
-		var x = Math.NaN;
-		var y = Math.NaN;
+		var x:Null<Int> = null;
+		var y:Null<Int> = null;
 		if (coords != null) {
 			x = coords.x;
 			y = coords.y;
@@ -335,13 +337,13 @@ class MouseManager {
 		}
 	}
 
-	static private inline function setCapturedCoords(x:Float, y:Float):Void {
+	static private inline function setCapturedCoords(x:Int, y:Int):Void {
 		hasCapturedCoords = true;
 		capturedX = x;
 		capturedY = y;
 	}
 
-	static private function extractCanvasCoords(event:MouseEvent):Null<{x:Float, y:Float}> {
+	static private function extractCanvasCoords(event:MouseEvent):Null<{x:Int, y:Int}> {
 		if (event == null || app == null || app.view == null) {
 			return null;
 		}
@@ -353,11 +355,11 @@ class MouseManager {
 
 		var localX = (event.clientX - rect.left) * (app.view.width / rect.width);
 		var localY = (event.clientY - rect.top) * (app.view.height / rect.height);
-		return {x: localX, y: localY};
+		return {x: Std.int(localX), y: Std.int(localY)};
 	}
 
-	static private inline function applyCoords(x:Float, y:Float):Void {
-		if (!Math.isNaN(x) && !Math.isNaN(y)) {
+	static private inline function applyCoords(x:Null<Int>, y:Null<Int>):Void {
+		if (x != null && y != null) {
 			hasPolledCoords = true;
 			polledX = x;
 			polledY = y;
@@ -382,6 +384,9 @@ class MouseManager {
 		if (justReleased == null) {
 			justReleased = new IntMap();
 		}
+		if (frameButtonChanges == null) {
+			frameButtonChanges = [];
+		}
 		if (pendingOps == null) {
 			pendingOps = [];
 		}
@@ -390,27 +395,27 @@ class MouseManager {
 		}
 	}
 
-	static private inline function getLiveX():Float {
+	static private inline function getLiveX():Int {
 		if (!isInitialized) {
 			return 0;
 		}
 		if (hasCapturedCoords) {
 			return capturedX;
 		}
-		return app.renderer.plugins.interaction.mouse.global.x;
+		return Std.int(app.renderer.plugins.interaction.mouse.global.x);
 	}
 
-	static private inline function getLiveY():Float {
+	static private inline function getLiveY():Int {
 		if (!isInitialized) {
 			return 0;
 		}
 		if (hasCapturedCoords) {
 			return capturedY;
 		}
-		return app.renderer.plugins.interaction.mouse.global.y;
+		return Std.int(app.renderer.plugins.interaction.mouse.global.y);
 	}
 
-	static private function extractCoord(event:Dynamic, forX:Bool):Null<Float> {
+	static private function extractCoord(event:Dynamic, forX:Bool):Null<Int> {
 		if (event == null) {
 			return null;
 		}
@@ -421,7 +426,7 @@ class MouseManager {
 			if (global != null) {
 				var value = Reflect.field(global, forX ? "x" : "y");
 				if (value != null) {
-					return value;
+					return Std.int(value);
 				}
 			}
 		}
@@ -430,7 +435,7 @@ class MouseManager {
 		if (global != null) {
 			var value = Reflect.field(global, forX ? "x" : "y");
 			if (value != null) {
-				return value;
+				return Std.int(value);
 			}
 		}
 
@@ -442,13 +447,13 @@ class MouseManager {
 			var touch = src[0];
 			var touchValue = Reflect.field(touch, forX ? "clientX" : "clientY");
 			if (touchValue != null) {
-				return touchValue;
+				return Std.int(touchValue);
 			}
 		}
 
 		var clientValue = Reflect.field(event, forX ? "clientX" : "clientY");
 		if (clientValue != null) {
-			return clientValue;
+			return Std.int(clientValue);
 		}
 
 		return null;

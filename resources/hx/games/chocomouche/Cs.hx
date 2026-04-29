@@ -41,14 +41,4 @@ class Cs {
 	public static var LEVEL_BONUS = common_haxe_avm1.KKApi.const(20000);
 	public static var POINTS = 1000;
 	public static var MULT_LEVEL = 5;
-
-	public static inline function rand():Float {
-		return KadoKadeoManager.kkm.seed.rand();
-	}
-
-	public static inline function random(max:Int):Int {
-		if (max <= 0)
-			return 0;
-		return KadoKadeoManager.kkm.seed.random(max);
-	}
 }

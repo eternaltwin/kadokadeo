@@ -20,7 +20,7 @@ class Corn extends Phys {
 		Cs.game.cList.push(this);
 		super(mc);
 
-		weight = (0.14 + Cs.rand() * (0.1 + Cs.game.boss.escPop)) * Cs.NEW_GEN_SCALE;
+		weight = (0.14 + Seed.rand() * (0.1 + Cs.game.boss.escPop)) * Cs.NEW_GEN_SCALE;
 		frict = 0.95;
 
 		step = 0;
@@ -84,7 +84,7 @@ class Corn extends Phys {
 					weight = 0;
 					removeBouncer();
 					frame = 0;
-					root._rotation = Cs.rand() * 360;
+					root._rotation = Seed.rand() * 360;
 					Cs.game.stampPopcorn(x, y, root._rotation);
 				}
 			}
@@ -94,20 +94,20 @@ class Corn extends Phys {
 	public function explode(bx:Float, by:Float):Void {
 		for (i in 0...12) {
 			var p = Cs.game.newPart("mcCornDebris");
-			var a = Cs.rand() * 6.28;
+			var a = Seed.randVfx() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
-			var sp = (0.5 + Cs.rand() * 2) * Cs.NEW_GEN_SCALE;
+			var sp = (0.5 + Seed.randVfx() * 2) * Cs.NEW_GEN_SCALE;
 
-			p.x = x + ca * RAY * Cs.rand();
-			p.y = y + sa * RAY * Cs.rand();
+			p.x = x + ca * RAY * Seed.randVfx();
+			p.y = y + sa * RAY * Seed.randVfx();
 			p.vx = ca * sp + bx * 0.5;
 			p.vy = sa * sp + by * 0.5;
-			p.setScale(50 + Cs.rand() * 50);
-			p.timer = 10 + Cs.rand() * 10;
-			p.weight = (0.05 + Cs.rand() * 0.1) * Cs.NEW_GEN_SCALE;
+			p.setScale(50 + Seed.randVfx() * 50);
+			p.timer = 10 + Seed.randVfx() * 10;
+			p.weight = (0.05 + Seed.randVfx() * 0.1) * Cs.NEW_GEN_SCALE;
 			p.fadeType = 0;
-			p.root.gotoAndStop(Cs.random(root._totalframes) + 1);
+			p.root.gotoAndStop(Seed.randomVfx(root._totalframes) + 1);
 		}
 
 		var impact:GameAnimSprite = cast Cs.game.dm.attach("mcImpact", Game.DP_PART);

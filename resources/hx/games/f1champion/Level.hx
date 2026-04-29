@@ -111,22 +111,22 @@ class Level {
 		var space = 150 * Cs.NEW_GEN_SCALE - wallspacing;
 		var delta:Float = 0;
 
-		if (Cs.random(3) == 0)
+		if (Seed.random(3) == 0)
 			delta = wallspacing - 140 * Cs.NEW_GEN_SCALE;
 
-		if (Cs.random(5) == 0) {
+		if (Seed.random(5) == 0) {
 			ampl = Std.int(Math.min(100 * cur_speed / Cs.MINSPEED, 150) * Cs.NEW_GEN_SCALE);
 			space = 40 * Cs.NEW_GEN_SCALE;
 			delta = 0;
 		}
 
 		while (true) {
-			var dy = fmin + Cs.random(fampl);
+			var dy = fmin + Seed.random(fampl);
 			var p = {
-				x: delta + space + Cs.random(ampl),
+				x: delta + space + Seed.random(ampl),
 				y: y,
 				tx: 0.,
-				ty: -dy / (3 + Cs.random(30) / 20)
+				ty: -dy / (3 + Seed.random(30) / 20)
 			};
 			points_up.push(p);
 			if (y < 0)

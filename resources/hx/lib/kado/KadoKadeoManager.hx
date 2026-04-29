@@ -61,8 +61,6 @@ class KadoKadeoManager extends Application {
 
 	public var score:Int = 0;
 
-	public var seed:mt.Rand;
-
 	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>, params:GameParams) {
 		super({
 			view: canvas,
@@ -274,7 +272,6 @@ class KadoKadeoManager extends Application {
 
 	inline function applyRunContext(context:RunStartContext):Void {
 		runDetails = context.runDetails;
-		seed = new mt.Rand(context.seedHash);
 		Seed.init(context.seedHash);
 	}
 

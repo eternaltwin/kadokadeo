@@ -38,13 +38,13 @@ class Element extends Phys {
 		super(mc);
 		ray = 4 * Cs.NEW_GEN_SCALE;
 		aura = 0;
-		x = (Cs.rand() * Cs.mcw - 4 * ray);
-		y = (Cs.rand() * Cs.mch - 4 * ray);
+		x = (Seed.rand() * Cs.mcw - 4 * ray);
+		y = (Seed.rand() * Cs.mch - 4 * ray);
 		updatePos();
 		root.stop();
-		// root.smc.gotoAndPlay(Std.random(2) + 1);
+		// root.smc.gotoAndPlay(Seed.randomVfx(2) + 1);
 
-		vr = (Cs.rand() * 2 - 1) * 20;
+		vr = (Seed.randVfx() * 2 - 1) * 20;
 	}
 
 	override function update() {
@@ -55,7 +55,7 @@ class Element extends Phys {
 
 	// MOVE
 	public function initMove(a, speed) {
-		// speed = 0.5+Math.random()*3;
+		// speed = 0.5 + Seed.rand() * 3;
 		state = Moving;
 		action = updateMove;
 		vx = Math.cos(a) * speed;
@@ -68,7 +68,7 @@ class Element extends Phys {
 				y -= vy*recalCoef;
 				if( Cs.isOut(x,y,-ray) )break;
 			}
-			boost = Math.random()*20;
+			boost = Seed.rand()*20;
 		 */
 	}
 

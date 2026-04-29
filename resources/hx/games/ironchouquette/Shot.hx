@@ -94,8 +94,8 @@ class Shot extends Phys {
 					updateVit();
 
 				case 5: // SWARM
-					if (Math.sqrt(vx * vx + vy * vy) < 3 * Cs.NEW_GEN_SCALE || Cs.rand() / Timer.tmod < 0.1) {
-						a = Cs.random(4) * 1.57;
+					if (Math.sqrt(vx * vx + vy * vy) < 3 * Cs.NEW_GEN_SCALE || Seed.rand() / Timer.tmod < 0.1) {
+						a = Seed.random(4) * 1.57;
 						vx = Math.cos(a) * speed;
 						vy = Math.sin(a) * speed;
 					}
@@ -107,11 +107,11 @@ class Shot extends Phys {
 					var max = 2 * Game.PM;
 					for (i in 0...max) {
 						var p = new Part(Cs.game.dm.attach("partPlasmaBolt", Game.DP_PARTS));
-						var a = Cs.rand() * 6.28;
-						var r = Cs.rand() * 40;
+						var a = Seed.randVfx() * 6.28;
+						var r = Seed.randVfx() * 40;
 						p.x = x + Math.cos(a) * r;
 						p.y = y + Math.sin(a) * r;
-						p.vy = -(1 + Cs.rand() + 6) * Cs.NEW_GEN_SCALE;
+						p.vy = -(1 + Seed.randVfx() + 6) * Cs.NEW_GEN_SCALE;
 						// p.timer = 20+Math.random()*10;
 						p.root._xscale = 150;
 						p.root._yscale = p.root._xscale;
@@ -180,7 +180,7 @@ class Shot extends Phys {
 		}
 
 		if (list.length > 0) {
-			trg = list[Cs.random(list.length)];
+			trg = list[Seed.random(list.length)];
 		} else {
 			trg = null;
 		}
@@ -228,7 +228,7 @@ class Shot extends Phys {
 				mc._y = y;
 				mc._xscale = 50 + damage * 100;
 				mc._yscale = mc._xscale;
-				mc._rotation = Cs.rand() * 360;
+				mc._rotation = Seed.randVfx() * 360;
 				mc.blendMode = BlendModes.ADD;
 				mc.removeOnFrame = 14;
 				mc.play();
@@ -245,7 +245,7 @@ class Shot extends Phys {
 		switch (n) {
 			case 14:
 				root = Cs.game.shots.layer[d].dm.attach("mcShot14", 0);
-				root.onFrame.set(1, () -> root._rotation = Cs.rand() * 360);
+				root.onFrame.set(1, () -> root._rotation = Seed.randVfx() * 360);
 				root.onFrame.set(8, () -> root.gotoAndPlay(5));
 			case 15 | 16 | 17 | 18 | 21:
 				root = Cs.game.shots.layer[d].dm.attach("mcShot" + n, 0);

@@ -11,6 +11,6 @@ class CFuria extends Bads {
 		hp = 1;
 		var raf = newRafale();
 		raf.addShot(0, [4.5, 13], 0, 1);
-		shootTimer = 70 + Cs.rand() * 30;
+		shootTimer = 70 + Seed.rand() * 30;
 	}
 }

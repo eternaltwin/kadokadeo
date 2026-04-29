@@ -115,8 +115,8 @@ class Shot extends Phys {
 					updateVit();
 
 				case 5: // SWARM;
-					if (Math.sqrt(vx * vx + vy * vy) < 3 * Cs.NEW_GEN_SCALE || Cs.rand() / Timer.tmod < 0.1) {
-						a = Cs.random(4) * 1.57;
+					if (Math.sqrt(vx * vx + vy * vy) < 3 * Cs.NEW_GEN_SCALE || Seed.rand() / Timer.tmod < 0.1) {
+						a = Seed.random(4) * 1.57;
 						vx = Math.cos(a) * speed;
 						vy = Math.sin(a) * speed;
 					}
@@ -167,7 +167,7 @@ class Shot extends Phys {
 		}
 
 		if (list.length > 0) {
-			trg = list[Cs.random(list.length)];
+			trg = list[Seed.random(list.length)];
 		} else {
 			trg = null;
 		}

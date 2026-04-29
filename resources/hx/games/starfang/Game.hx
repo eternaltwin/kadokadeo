@@ -236,16 +236,21 @@ class Game implements kado.GameInterface {
 
 	function genMonsters() {
 		var dif:Float = lvl * 14 - 8;
+		var asteroids = new Array<Asteroid>();
 		while (dif > 0) {
-			if (Cs.random(2) == 0) {
-				var type = Std.int(Math.min(Cs.random(Std.int(lvl * 0.5)), 4));
+			if (Seed.random(2) == 0) {
+				var type = Std.int(Math.min(Seed.random(Std.int(lvl * 0.5)), 4));
 				var m = new Asteroid(dm.attach("mcAsteroid" + (type + 1), DP_BADS));
 				var max = Math.min(Math.pow(lvl - type, 0.5), 3);
-				var size = 2 + Cs.random(Std.int(max));
+				var size = 2 + Seed.random(Std.int(max));
 				m.setInfo(type, size);
 				m.initStartPosition();
+				asteroids.push(m);
 				dif -= m.dif;
 			}
+		}
+		for (m in asteroids) {
+			m.reserveBonus();
 		}
 	}
 
@@ -260,15 +265,15 @@ class Game implements kado.GameInterface {
 	}
 
 	function spawnDashLight() {
-		if (Cs.random(2) == 0)
+		if (Seed.randomVfx(2) == 0)
 			return;
 		var mc:DashlightSprite = cast dm.attach("mcDashLight", DP_PARTS);
-		mc._x = Cs.mcw + Cs.rand() * 100 * Cs.NEW_GEN_SCALE;
-		mc._y = Cs.rand() * Cs.mch;
-		mc._yscale = 50 + Cs.rand() * 50;
+		mc._x = Cs.mcw + Seed.randVfx() * 100 * Cs.NEW_GEN_SCALE;
+		mc._y = Seed.randVfx() * Cs.mch;
+		mc._yscale = 50 + Seed.randVfx() * 50;
 		mc._xscale = mc._yscale;
 
-		mc.multi = 1 + Math.random() * 3;
+		mc.multi = 1 + Seed.randVfx() * 3;
 		dashLightList.push(mc);
 	}
 

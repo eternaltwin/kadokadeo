@@ -27,11 +27,11 @@ class Ghost extends Phys {
 		// debug = mc.createEmptyMovieClip().getGraphics();
 		smc = mc.attachMovie("mcGhost");
 
-		angle = KadoKadeoManager.kkm.seed.rand() * 6.28;
+		angle = Seed.rand() * 6.28;
 		va = 0;
-		speed = 1 + KadoKadeoManager.kkm.seed.rand() * 1;
-		speedFloat = 20 + KadoKadeoManager.kkm.seed.rand() * 20;
-		float = KadoKadeoManager.kkm.seed.rand() * 628;
+		speed = 1 + Seed.rand() * 1;
+		speedFloat = 20 + Seed.rand() * 20;
+		float = Seed.rand() * 628;
 
 		var p = getFreePos();
 		x = (p[0] + 0.5) * Game.SIZE;
@@ -39,7 +39,7 @@ class Ghost extends Phys {
 	}
 
 	override function update() {
-		va += (KadoKadeoManager.kkm.seed.rand() * 2 - 1) * 0.05;
+		va += (Seed.rand() * 2 - 1) * 0.05;
 		va *= Math.pow(0.92, mt.Timer.tmod);
 		angle = Num.hMod(angle + va, 3.14);
 
@@ -88,7 +88,7 @@ class Ghost extends Phys {
 				}
 				var da = Num.hMod(Math.atan2(vy, vx) - angle, 3.14);
 				if (turnCol == null)
-					turnCol = game.random(2) * 2 - 1;
+					turnCol = Seed.random(2) * 2 - 1;
 				va += 0.05 * turnCol * mt.Timer.tmod;
 				flCol = true;
 			}
@@ -102,7 +102,7 @@ class Ghost extends Phys {
 		var max = 12;
 		for (i in 0...max) {
 			var p = new Phys(game.dm.attach("partCloud", Game.DP_PARTS));
-			var sp = 0.2 + game.rand() * 0.5;
+			var sp = 0.2 + Seed.randVfx() * 0.5;
 			var r = sp * 10;
 			var a = i / max * 6.28;
 			var ca = Math.cos(a);
@@ -112,15 +112,15 @@ class Ghost extends Phys {
 			p.vx = ca * sp;
 			p.vy = sa * sp;
 			p.frict = 0.95;
-			p.timer = 10 + game.rand() * 20;
-			p.sleep = game.rand() * 8;
-			p.setScale(100 + game.rand() * 100);
+			p.timer = 10 + Seed.randVfx() * 20;
+			p.sleep = Seed.randVfx() * 8;
+			p.setScale(100 + Seed.randVfx() * 100);
 			p.fadeType = 0;
 			p.root.blendMode = BlendModes.ADD;
-			p.weight = -game.rand() * 0.3;
-			p.vr = game.randomSign() * 10;
-			p.root._rotation = game.rand() * 360;
-			// if(Std.random(2)==0)Col.setColor(p.root,0xCCCC00,-255);
+			p.weight = -Seed.randVfx() * 0.3;
+			p.vr = (Seed.randVfx() * 2 - 1) * 10;
+			p.root._rotation = Seed.randVfx() * 360;
+			// if(Seed.randomVfx(2)==0)Col.setColor(p.root,0xCCCC00,-255);
 			p.root.updateState();
 		}
 
@@ -133,8 +133,8 @@ class Ghost extends Phys {
 		var y = null;
 		var to = 0;
 		do {
-			x = KadoKadeoManager.kkm.seed.random(game.xmax);
-			y = KadoKadeoManager.kkm.seed.random(game.ymax);
+			x = Seed.random(game.xmax);
+			y = Seed.random(game.ymax);
 			if (to++ > 100) {
 				trace("noFreePos!");
 				break;

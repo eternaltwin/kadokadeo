@@ -190,7 +190,7 @@ class Game implements kado.GameInterface {
 		hero = new Hero(mdm.attach("mcHero", DP_HERO));
 
 		flNight = false;
-		if (Cs.rand() * 500 < 1)
+		if (Seed.rand() * 500 < 1)
 			setNight();
 		initGrid();
 		initPlat();
@@ -230,15 +230,15 @@ class Game implements kado.GameInterface {
 
 		while (y > 8) {
 			y -= Cs.PLAT_ECART;
-			var x = Cs.random(4);
+			var x = Seed.random(4);
 			while (x < XMAX) {
-				var w = 2 + Cs.random(8);
+				var w = 2 + Seed.random(8);
 				platList.push({
 					x: x,
 					y: y,
 					w: w,
 				});
-				x += w + 2 + Std.int(Cs.random(8) * (1 - (y / YMAX)));
+				x += w + 2 + Std.int(Seed.random(8) * (1 - (y / YMAX)));
 			}
 		}
 
@@ -361,16 +361,16 @@ class Game implements kado.GameInterface {
 		// return;
 
 		// TANKER
-		if (dif > 4000 && Cs.random(4) == 0) {
+		if (dif > 4000 && Seed.random(4) == 0) {
 			newMonster(4);
 		}
 		// FLIER
-		if (dif > 1800 && Cs.random(4) == 0) {
+		if (dif > 1800 && Seed.random(4) == 0) {
 			newMonster(3);
 		}
 		//*/
 		// RUNNER
-		newMonster(Cs.random(Std.int(Math.min(Math.ceil(dif / 1300), 3))));
+		newMonster(Seed.random(Std.int(Math.min(Math.ceil(dif / 1300), 3))));
 	}
 
 	public function newMonster(id) {
@@ -381,18 +381,18 @@ class Game implements kado.GameInterface {
 			case 0 | 1 | 2:
 				m = new Soldier(mdm.attach("mcMonster" + (id + 1), DP_MONSTER));
 				m.x = sens * XMAX;
-				m.y = YMAX - (2 + (Cs.random(6)) * Cs.PLAT_ECART);
-				m.dx = Cs.rand() * 10;
+				m.y = YMAX - (2 + (Seed.random(6)) * Cs.PLAT_ECART);
+				m.dx = Seed.rand() * 10;
 				m.setSens(-(sens * 2 - 1));
 				untyped m.setLevel(id + 1);
 			case 3:
 				m = new Flyer(mdm.attach("mcFlyer", DP_MONSTER));
-				m.x = Cs.random(XMAX);
+				m.x = Seed.random(XMAX);
 				m.y = 0;
 			case 4:
 				m = new Tanker(mdm.attach("mcTanker", DP_MONSTER));
 				m.x = sens * XMAX;
-				m.y = YMAX - (2 + (Cs.random(6)) * Cs.PLAT_ECART);
+				m.y = YMAX - (2 + (Seed.random(6)) * Cs.PLAT_ECART);
 		}
 
 		monsterLevel += m.stLevel;

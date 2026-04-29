@@ -34,13 +34,14 @@ class Bonus extends Phys {
 	public var id:Int;
 	public var dm:DepthManager;
 
-	public function new(mc) {
+	public function new(mc, ?forcedId:Int, ?forcedDir:Int) {
 		Cs.game.bonusList.push(this);
 
 		ray = 15 * Cs.NEW_GEN_SCALE;
-		id = getRandomId();
+		id = forcedId == null ? getRandomId() : forcedId;
 		// id = 3;
-		var a = 0.775 + Cs.random(2) * 1.57;
+		var dir = forcedDir == null ? Seed.random(2) : forcedDir;
+		var a = 0.775 + dir * 1.57;
 		if (mc == null)
 			mc = Cs.game.dm.attach("mcBonus" + (id + 1), Game.DP_BADS);
 		super(mc);
@@ -51,12 +52,12 @@ class Bonus extends Phys {
 		vy = Math.sin(a) * SPEED;
 	}
 
-	public function getRandomId() {
+	public static function getRandomId() {
 		var max = 0;
 		for (i in 0...STATS.length) {
 			max += STATS[i];
 		}
-		var rnd = Cs.random(max);
+		var rnd = Seed.random(max);
 		var cur = 0;
 		for (i in 0...STATS.length) {
 			cur += STATS[i];
@@ -80,13 +81,13 @@ class Bonus extends Phys {
 			for (i in 0...2) {
 				var p = new Part(dm.attach("partRay", 1));
 				p.root.gotoAndStop(id - 14);
-				p.vr = (Cs.rand() * 2 - 1) * 10;
+				p.vr = (Seed.randVfx() * 2 - 1) * 10;
 				p.fadeType = 3;
-				p.scale = 50 + Cs.rand() * 100;
-				p.root._xscale = 10 + Cs.rand() * 20;
+				p.scale = 50 + Seed.randVfx() * 100;
+				p.root._xscale = 10 + Seed.randVfx() * 20;
 				p.root._yscale = p.scale;
-				p.root._rotation = Cs.rand() * 360;
-				p.timer = 10 + Cs.rand() * 10;
+				p.root._rotation = Seed.randVfx() * 360;
+				p.timer = 10 + Seed.randVfx() * 10;
 				p.root._x = 0;
 				p.root._y = 0;
 			}

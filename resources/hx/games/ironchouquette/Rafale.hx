@@ -84,7 +84,7 @@ class Rafale {
 					// shot.orient();
 				}
 			case 4: // FRONT ANGLED ( speed, acc )
-				var c = Cs.rand() * 2 - 1;
+				var c = Seed.rand() * 2 - 1;
 				shot = newAngledShot(13, a[0], 1.57 + c * a[1]);
 		}
 		if (cInert != null) {
@@ -112,7 +112,7 @@ class Rafale {
 		// shot.vx = Math.cos(a)*speed;
 		// shot.vy = Math.sin(a)*speed;
 
-		return newAngledShot(skin, speed, b.getAng({x: Cs.game.hero.x, y: Cs.game.hero.y}) + (Cs.rand() * 2 - 1) * da);
+		return newAngledShot(skin, speed, b.getAng({x: Cs.game.hero.x, y: Cs.game.hero.y}) + (Seed.rand() * 2 - 1) * da);
 	}
 
 	public function newAngledShot(skin, speed, a) {

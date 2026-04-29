@@ -159,11 +159,11 @@ class Game implements kado.GameInterface {
 				pl._xscale = -(n * 2 - 1) * 100;
 				var y = 0;
 				while (y < bmp.height) {
-					if (Cs.random(3) == 0) {
+					if (Seed.random(3) == 0) {
 						var mc = dm.attach("mcFrontDecor", DP_BASE);
 						mc._y = y;
-						mc.gotoAndStop(Cs.random(mc._totalframes) + 1);
-						var sc = 50 + Cs.rand() * 50;
+						mc.gotoAndStop(Seed.random(mc._totalframes) + 1);
+						var sc = 50 + Seed.rand() * 50;
 						mc._xscale = sc;
 						mc._yscale = sc;
 						Cs.draw(bmp, mc);
@@ -193,7 +193,7 @@ class Game implements kado.GameInterface {
 						mc._xscale = 100 * pl.c;
 						mc._yscale = 100 * pl.c;
 						mc._y = y;
-						mc.gotoAndStop(Cs.random(mc._totalframes) + 1);
+						mc.gotoAndStop(Seed.random(mc._totalframes) + 1);
 						Cs.draw(bmp, mc);
 						mc.removeMovieClip();
 						y += 100 * Cs.NEW_GEN_SCALE * pl.c;
@@ -285,11 +285,11 @@ class Game implements kado.GameInterface {
 		}
 		for (i in 0...3) {
 			var p = newPart("partLight");
-			p.x = list[Cs.random(list.length)];
+			p.x = list[Seed.randomVfx(list.length)];
 			p.y = yLim;
-			p.weight = -(0.1 + Cs.rand() * 0.5) * Cs.NEW_GEN_SCALE;
-			p.timer = 10 + Cs.rand() * 10;
-			p.setScale(100 + Cs.rand() * 150);
+			p.weight = -(0.1 + Seed.randVfx() * 0.5) * Cs.NEW_GEN_SCALE;
+			p.timer = 10 + Seed.randVfx() * 10;
+			p.setScale(100 + Seed.randVfx() * 150);
 			p.vy = -1 * Cs.NEW_GEN_SCALE;
 			p.root.loop = true;
 			p.root.play();
@@ -377,7 +377,7 @@ class Game implements kado.GameInterface {
 				var glow = 0.;
 				if (hero.jumpPower != null)
 					glow = (1 - c) * 160;
-				fl.matrix = Cs.getGreyMatrix(30 + glow + Cs.rand() * 15);
+				fl.matrix = Cs.getGreyMatrix(30 + glow + Seed.randVfx() * 15);
 				root.filters = [fl];
 				// Log.print(glow)
 				// Log.print(c)
@@ -402,9 +402,9 @@ class Game implements kado.GameInterface {
 			var max = 12 / Timer.tmod;
 			for (i in 0...Std.int(max)) {
 				var mc:GpListSprite = cast gdm.attach("partLight", 10);
-				mc._x = Cs.rand() * Cs.mcw;
-				mc._y = Cs.rand() * Cs.mch;
-				mc.size = 0.2 + Cs.rand() * 0.8;
+				mc._x = Seed.randVfx() * Cs.mcw;
+				mc._y = Seed.randVfx() * Cs.mch;
+				mc.size = 0.2 + Seed.randVfx() * 0.8;
 				mc._xscale = 50 + mc.size * 100;
 				mc._yscale = mc._xscale;
 				if (i % 2 == 0)
@@ -517,8 +517,8 @@ class Game implements kado.GameInterface {
 	//
 	public function getRandomPos():{x:Int, y:Int} {
 		return {
-			x: Cs.MARGIN + Cs.random(Cs.mcw - 2 * Cs.MARGIN),
-			y: Cs.MARGIN + Cs.random(Cs.mch - 2 * Cs.MARGIN)
+			x: Cs.MARGIN + Seed.random(Cs.mcw - 2 * Cs.MARGIN),
+			y: Cs.MARGIN + Seed.random(Cs.mch - 2 * Cs.MARGIN)
 		}
 	}
 

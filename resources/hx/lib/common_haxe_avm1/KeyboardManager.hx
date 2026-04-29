@@ -35,6 +35,7 @@ class KeyboardManager {
 
 	static private var keyState:IntMap<Bool>;
 	static private var justPressed:IntMap<Bool>;
+	static private var frameKeyChanges:Array<{keyCode:Int, isDown:Bool}> = [];
 	static private var isInitialized:Bool = false;
 	static private var inputLocked:Bool = false;
 	static private var pendingOps:Array<{keyCode:Int, isDown:Bool}> = [];
@@ -48,6 +49,7 @@ class KeyboardManager {
 
 		keyState = new IntMap();
 		justPressed = new IntMap();
+		frameKeyChanges = [];
 		isInitialized = true;
 
 		js.Browser.window.addEventListener("keydown", onKeyDown);
@@ -88,22 +90,25 @@ class KeyboardManager {
 	}
 
 	static public function queueVirtualKeyDown(keyCode:Int):Void {
-		if (inputLocked) {
-			return;
-		}
 		queueKeyOp(keyCode, true);
 	}
 
 	static public function queueVirtualKeyUp(keyCode:Int):Void {
-		if (inputLocked) {
-			return;
-		}
 		queueKeyOp(keyCode, false);
+	}
+
+	static public function queueReplayKeyDown(keyCode:Int):Void {
+		queueKeyOp(keyCode, true, true);
+	}
+
+	static public function queueReplayKeyUp(keyCode:Int):Void {
+		queueKeyOp(keyCode, false, true);
 	}
 
 	static public function beginFrame():Int {
 		ensureInitialized();
 		justPressed = new IntMap();
+		frameKeyChanges = [];
 		if (pendingOps.length == 0) {
 			return 0;
 		}
@@ -117,12 +122,23 @@ class KeyboardManager {
 				setKeyDown(op.keyCode);
 				if (!wasDown) {
 					justPressed.set(op.keyCode, true);
+					frameKeyChanges.push({keyCode: op.keyCode, isDown: true});
 				}
-			} else
+			} else {
+				var wasDown = keyState.exists(op.keyCode);
 				setKeyUp(op.keyCode);
+				if (wasDown) {
+					frameKeyChanges.push({keyCode: op.keyCode, isDown: false});
+				}
+			}
 			applied++;
 		}
 		return applied;
+	}
+
+	static public function getFrameKeyChanges():Array<{keyCode:Int, isDown:Bool}> {
+		ensureInitialized();
+		return frameKeyChanges.copy();
 	}
 
 	static public function setKeyDown(keyCode:Int):Void {
@@ -140,6 +156,7 @@ class KeyboardManager {
 		ensureInitialized();
 		keyState = new IntMap();
 		justPressed = new IntMap();
+		frameKeyChanges = [];
 		pendingOps = [];
 		lastDown = 0;
 	}
@@ -164,8 +181,11 @@ class KeyboardManager {
 		}
 	}
 
-	static private inline function queueKeyOp(keyCode:Int, isDown:Bool):Void {
+	static private inline function queueKeyOp(keyCode:Int, isDown:Bool, bypassLock:Bool = false):Void {
 		ensureInitialized();
+		if (inputLocked && !bypassLock) {
+			return;
+		}
 		pendingOps.push({keyCode: keyCode, isDown: isDown});
 	}
 }

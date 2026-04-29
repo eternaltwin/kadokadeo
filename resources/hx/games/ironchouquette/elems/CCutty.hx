@@ -32,7 +32,7 @@ class CCutty extends Bads {
 		setScore(Cs.C_CUTTY_CLOSE);
 		score2 = Cs.C_CUTTY_OPEN;
 
-		vr = (Cs.random(2) * 2 - 1) * (5 + Cs.rand() * 10);
+		vr = (Seed.random(2) * 2 - 1) * (5 + Seed.rand() * 10);
 		hp = 14;
 		va = 0.07;
 		turnCoef = 0.1;

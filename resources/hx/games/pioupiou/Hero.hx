@@ -120,11 +120,11 @@ class Hero {
 		while (i < 10) {
 			var d:FeatherSprite = cast death_mc.attachMovie("FXFeather");
 			d.loop = true;
-			d.gotoAndPlay(1 + Cs.random(d._totalframes));
-			d._xscale = d._yscale = 50 + Cs.random(100);
+			d.gotoAndPlay(1 + Seed.randomVfx(d._totalframes));
+			d._xscale = d._yscale = 50 + Seed.randomVfx(100);
 			d._x = 0;
 			d._y = -Cs.BLK_HEIGHT;
-			d.t = 10 + Cs.random(20);
+			d.t = 10 + Seed.randomVfx(20);
 			i++;
 			death_mc.fList.push(d);
 		}

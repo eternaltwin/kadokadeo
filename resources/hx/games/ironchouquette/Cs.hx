@@ -39,16 +39,6 @@ class Cs {
 
 	public static function init() {}
 
-	public static inline function rand():Float {
-		return KadoKadeoManager.kkm.seed.rand();
-	}
-
-	public static inline function random(max:Int):Int {
-		if (max <= 0)
-			return 0;
-		return KadoKadeoManager.kkm.seed.random(max);
-	}
-
 	// COLOR
 	public static function colToObj32(col) {
 		return {

@@ -24,14 +24,4 @@ class Cs {
 
 	public static var LEVEL_DELTA = 15;
 	public static var JAMA_PROBAS = [50, 35, 20, 10, 5, 4, 4, 3, 3, 2, 1];
-
-	public static inline function rand():Float {
-		return KadoKadeoManager.kkm.seed.rand();
-	}
-
-	public static inline function random(max:Int):Int {
-		if (max <= 0)
-			return 0;
-		return KadoKadeoManager.kkm.seed.random(max);
-	}
 }

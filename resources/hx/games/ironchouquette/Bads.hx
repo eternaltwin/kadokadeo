@@ -110,7 +110,7 @@ class Bads extends Phys {
 		}
 
 		waitTimer = 200;
-		speedColorPhase = Cs.random(2);
+		speedColorPhase = Seed.random(2);
 	}
 
 	public function setLevel(lvl:Float) {
@@ -163,8 +163,8 @@ class Bads extends Phys {
 		super.update();
 	}
 
-	public function dropBonus() {
-		var b = new Bonus(null);
+	public function dropBonus(?bonusId:Int, ?bonusDir:Int) {
+		var b = new Bonus(null, bonusId, bonusDir);
 		b.x = x;
 		b.y = y;
 	}
@@ -190,18 +190,18 @@ class Bads extends Phys {
 				if (rect != null)
 					flHit = Math.abs(pos[0] - x) < rect.rw + rl && Math.abs(pos[1] - y) < rect.rh + rl;
 				if (flHit) {
-					if (Cs.random(Std.int((3 / Timer.tmod) / Game.PM)) == 0) {
+					if (Seed.randomVfx(Std.int((3 / Timer.tmod) / Game.PM)) == 0) {
 						var p = new Part(Cs.game.dm.attach("partLaser", Game.DP_PARTS));
-						var a = Cs.rand() * 6.28;
+						var a = Seed.randVfx() * 6.28;
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
-						var sp = (3 + Cs.rand() * 3) * Cs.NEW_GEN_SCALE;
+						var sp = (3 + Seed.randVfx() * 3) * Cs.NEW_GEN_SCALE;
 						p.x = x + ca * ray;
 						p.y = y + sa * ray;
 						p.vx = ca * sp + vx;
 						p.vy = sa * sp + vy;
-						p.setScale(100 + power * 10 + Cs.rand() * 50);
-						p.timer = 10 + Cs.rand() * 10;
+						p.setScale(100 + power * 10 + Seed.randVfx() * 50);
+						p.timer = 10 + Seed.randVfx() * 10;
 						p.fadeType = 0;
 						p.root.blendMode = BlendModes.ADD;
 						// p.plasmaId = 1
@@ -225,15 +225,15 @@ class Bads extends Phys {
 					if (o.g == 0 && score > lim) {
 						var c = (score - lim) / (255 - lim);
 						damage((0.07 + 1 * c) * Timer.tmod * 2);
-						if (Cs.random(Std.int(Math.max(1, 2 / Timer.tmod))) == 0) {
+						if (Seed.randomVfx(Std.int(Math.max(1, 2 / Timer.tmod))) == 0) {
 							var mc = Cs.game.dm.attach("partStatic", Game.DP_PARTS);
 							mc.removeOnFrame = 5;
 							mc.play();
-							mc._x = x + (Cs.rand() * 2 - 1) * ray;
-							mc._y = y + (Cs.rand() * 2 - 1) * ray;
+							mc._x = x + (Seed.randVfx() * 2 - 1) * ray;
+							mc._y = y + (Seed.randVfx() * 2 - 1) * ray;
 							mc._xscale = 100 + c * 100;
 							mc._yscale = mc._xscale;
-							mc._rotation = Cs.rand() * 360;
+							mc._rotation = Seed.randVfx() * 360;
 							mc.blendMode = BlendModes.ADD;
 						}
 					}
@@ -326,7 +326,7 @@ class Bads extends Phys {
 					}
 
 				case 1: // WANDERING
-					va += (Cs.rand() * 2 - 1) * 0.06;
+					va += (Seed.rand() * 2 - 1) * 0.06;
 					va *= Math.pow(0.8, Timer.tmod);
 					a += va;
 					updateVit();
@@ -352,7 +352,7 @@ class Bads extends Phys {
 
 				case 4: // SHOOTER
 					if (shootTimer <= 0) {
-						if (Cs.random(Std.int(shootRate / Timer.tmod)) == 0) {
+						if (Seed.random(Std.int(shootRate / Timer.tmod)) == 0) {
 							initShot();
 						}
 					}
@@ -405,17 +405,17 @@ class Bads extends Phys {
 						flameTimer -= Timer.tmod;
 						var shot = new Shot(null);
 						shot.setSkin(22, 1);
-						var a = 1.57 + (Cs.rand() * 2 - 1) * pa;
+						var a = 1.57 + (Seed.rand() * 2 - 1) * pa;
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
-						var sp = (5 + Cs.rand() * 3) * Cs.NEW_GEN_SCALE;
+						var sp = (5 + Seed.rand() * 3) * Cs.NEW_GEN_SCALE;
 						shot.x = x + ca * ray;
 						shot.y = y + sa * ray;
 						shot.vx = ca * sp;
 						shot.vy = sa * sp;
 						shot.ray = 8;
-						shot.timer = 10 + Cs.rand() * 10;
-						shot.vr = (Cs.rand() * 2 - 1) * 20;
+						shot.timer = 10 + Seed.rand() * 10;
+						shot.vr = (Seed.rand() * 2 - 1) * 20;
 						shot.root.blendMode = BlendModes.ADD;
 						shot.plasmaId = 1;
 						shot.updatePos();
@@ -479,7 +479,7 @@ class Bads extends Phys {
 		var max = 0;
 		for (w in weapons)
 			max += w.w;
-		var rid = Cs.random(max);
+		var rid = Seed.random(max);
 		var sum = 0;
 		for (raf in weapons) {
 			sum += raf.w;
@@ -600,31 +600,31 @@ class Bads extends Phys {
 		var max = 5 * Game.PM;
 		for (i in 0...max) {
 			var p = new Part(Cs.game.dm.attach("mcExploPart", Game.DP_PARTS));
-			p.setScale(20 + Cs.rand() * 30);
-			var a = Cs.rand() * 6.28;
+			p.setScale(20 + Seed.randVfx() * 30);
+			var a = Seed.randVfx() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
 			var ray = 8 * Cs.NEW_GEN_SCALE;
-			var sp = (3 + Cs.rand() * 5) * Cs.NEW_GEN_SCALE;
+			var sp = (3 + Seed.randVfx() * 5) * Cs.NEW_GEN_SCALE;
 			p.x = x + ca * ray;
 			p.y = y + sa * ray;
 			p.vx = ca * sp;
-			p.vy = sa * sp + Game.SCROLL_SPEED * (0.6 + Cs.rand() * 0.4);
+			p.vy = sa * sp + Game.SCROLL_SPEED * (0.6 + Seed.randVfx() * 0.4);
 			p.plasmaId = 1;
-			p.timer = 10 + Cs.rand() * 10;
+			p.timer = 10 + Seed.randVfx() * 10;
 			p.root.blendMode = BlendModes.ADD;
-			p.root._rotation = Cs.rand() * 360;
+			p.root._rotation = Seed.randVfx() * 360;
 			p.root.play();
 		}
 
 		var mc = Cs.game.dm.attach("mcExploTrace", Game.DP_PARTS);
 		mc.gotoAndStop(3);
 		for (i in 0...3) {
-			mc._x = x + (Cs.rand() * 2 - 1) * ray;
-			mc._y = y + (Cs.rand() * 2 - 1) * ray;
-			mc._xscale = 100 + Cs.rand() * 100;
+			mc._x = x + (Seed.randVfx() * 2 - 1) * ray;
+			mc._y = y + (Seed.randVfx() * 2 - 1) * ray;
+			mc._xscale = 100 + Seed.randVfx() * 100;
 			mc._yscale = mc._xscale;
-			mc._rotation = Cs.rand() * 360;
+			mc._rotation = Seed.randVfx() * 360;
 			mc.blendMode = BlendModes.ADD;
 			// mc.onFrame.set(3, function() {
 			// 	Cs.game.plasmaDraw(mc, 1);
@@ -661,15 +661,15 @@ class Bads extends Phys {
 		var max = 0;
 		for (r in beeRange)
 			max += r.w;
-		var rid = Cs.random(max);
+		var rid = Seed.random(max);
 		var cur = 0;
 		for (i in 0...beeRange.length) {
 			var o = beeRange[i];
 			cur += o.w;
 			if (cur > rid) {
 				trg = {
-					x: o.xMin + Cs.rand() * (o.xMax - o.xMin),
-					y: o.yMin + Cs.rand() * (o.yMax - o.yMin),
+					x: o.xMin + Seed.rand() * (o.xMax - o.xMin),
+					y: o.yMin + Seed.rand() * (o.yMax - o.yMin),
 				};
 				break;
 			}
@@ -683,8 +683,8 @@ class Bads extends Phys {
 		}
 
 		trg = {
-			x: xMin + Cs.rand() * (xMax - xMin),
-			y: yMin + Cs.rand() * (yMax - yMin),
+			x: xMin + Seed.rand() * (xMax - xMin),
+			y: yMin + Seed.rand() * (yMax - yMin),
 		}
 	}
 

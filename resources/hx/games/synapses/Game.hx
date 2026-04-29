@@ -6,8 +6,8 @@ import pixi.core.math.Matrix;
 import pixi.core.graphics.Graphics;
 import pixi.core.Pixi.BlendModes;
 import common_haxe_avm1.KeyboardManager;
+import common_haxe_avm1.MouseManager;
 import pixi.core.text.Text;
-import common_haxe_avm1.KKApi;
 import mt.bumdum.Lib;
 import mt.bumdum.Sprite;
 
@@ -34,8 +34,6 @@ class Game implements kado.GameInterface {
 	public static var DP_BG = 0;
 
 	public static var BG_COLOR = 0x5C0101;
-	public static inline var REPLAY_MOUSE_MOVE = 0;
-	public static inline var REPLAY_CLICK = 2;
 
 	var isClickRegistered:Bool = false;
 
@@ -65,12 +63,8 @@ class Game implements kado.GameInterface {
 
 	public var bdx:Float;
 	public var bdy:Float;
-	public var isReplayMode:Bool;
 	public var playerTargetX:Int;
 	public var playerTargetY:Int;
-
-	var lastRecordedMouseX:Int;
-	var lastRecordedMouseY:Int;
 
 	public var sx:Float;
 	public var sy:Float;
@@ -82,11 +76,14 @@ class Game implements kado.GameInterface {
 	public var bmpGrid:RenderTexture;
 
 	public function new(mc:ASprite, ?isReplay:Bool = false) {
-		isReplayMode = isReplay;
+		var replayMouseButtons = new UInt16Array(1);
+		replayMouseButtons[0] = MouseManager.BUTTON_LEFT;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: new UInt16Array(0),
 			recordInputs: false,
-			recordEvents: true,
+			recordEvents: false,
+			recordMousePosition: true,
+			recordedMouseButtons: replayMouseButtons,
 		});
 
 		// haxe.Log.setColor(0xFFFFFF);
@@ -104,16 +101,6 @@ class Game implements kado.GameInterface {
 
 		initBg();
 		initGrid();
-		if (!isReplayMode) {
-			setPlayerTarget(bg._xmouse, bg._ymouse);
-			KadoKadeoManager.kkm.replay.recordEvent({
-				k: REPLAY_MOUSE_MOVE,
-				x: playerTargetX,
-				y: playerTargetY,
-			}, 0);
-			lastRecordedMouseX = playerTargetX;
-			lastRecordedMouseY = playerTargetY;
-		}
 
 		lvl = 0;
 		var h = new Hunter(0);
@@ -148,16 +135,13 @@ class Game implements kado.GameInterface {
 
 	//
 	public function update(delta:Float) {
-		for (event in KadoKadeoManager.kkm.replay.consumeEvents()) {
-			applyReplayEvent(event);
-		}
-
 		// haxe.Log.clear();
 		// trace("hunters:"+hunters.length);
 		// trace("elements:"+elements.length);
 		// trace("sp:"+Sprite.spriteList.length);
 
 		frict = Math.pow(0.97, mt.Timer.tmod);
+		updateMouseInput();
 
 		// viewGrid(grid);
 		Sprite.updateAll();
@@ -192,7 +176,7 @@ class Game implements kado.GameInterface {
 		var max = Cs.CEL_MAX;
 		for (i in 0...max) {
 			var el = new Element();
-			el.initMove(Cs.rand() * 6.28, 1 * Cs.NEW_GEN_SCALE);
+			el.initMove(Seed.rand() * 6.28, 1 * Cs.NEW_GEN_SCALE);
 		}
 
 		//
@@ -203,62 +187,32 @@ class Game implements kado.GameInterface {
 		if (lvl == 1)
 			timer = 500;
 		//
-		if (!isReplayMode) {
-			bg.onPress = () -> {
-				isClickRegistered = true;
-			}
-		}
-		bg.onRelease = onResolvePress;
-		bg.onMouseMove = onLiveMouseMove;
+		isClickRegistered = false;
 		bg.useHandCursor = true;
-		KKApi.registerButton(bg);
 	}
 
-	function onLiveMouseMove() {
-		if (isReplayMode) {
+	function updateMouseInput():Void {
+		if (!bg.useHandCursor) {
 			return;
 		}
 
-		var target = getClampedTarget(bg._xmouse, bg._ymouse);
+		var target = getMouseTarget();
 		setPlayerTarget(target.x, target.y);
-		recordTargetMoveIfChanged();
+
+		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {
+			isClickRegistered = true;
+		}
+
+		if (MouseManager.isButtonJustReleased(MouseManager.BUTTON_LEFT)) {
+			if (isClickRegistered) {
+				resolvePress();
+			}
+			isClickRegistered = false;
+		}
 	}
 
-	function recordTargetMoveIfChanged():Void {
-		if (bg.onRelease == null) {
-			return;
-		}
-		if (playerTargetX == lastRecordedMouseX && playerTargetY == lastRecordedMouseY) {
-			return;
-		}
-		lastRecordedMouseX = playerTargetX;
-		lastRecordedMouseY = playerTargetY;
-		KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_MOUSE_MOVE, x: playerTargetX, y: playerTargetY});
-	}
-
-	function applyReplayEvent(event:Dynamic) {
-		if (event == null) {
-			return;
-		}
-
-		var kind:Null<Int> = Reflect.field(event, "k");
-		if (kind == null) {
-			return;
-		}
-
-		switch (kind) {
-			case REPLAY_MOUSE_MOVE:
-				var x:Null<Int> = Reflect.field(event, "x");
-				var y:Null<Int> = Reflect.field(event, "y");
-				if (x != null && y != null) {
-					setPlayerTarget(x, y);
-				}
-			case REPLAY_CLICK:
-				var x:Null<Int> = Reflect.field(event, "x");
-				var y:Null<Int> = Reflect.field(event, "y");
-				resolvePress(x, y, false);
-			default:
-		}
+	inline function getMouseTarget():{x:Int, y:Int} {
+		return getClampedTarget(MouseManager.getX(), MouseManager.getY());
 	}
 
 	public inline function getPlayerTarget():{x:Float, y:Float} {
@@ -280,24 +234,13 @@ class Game implements kado.GameInterface {
 		};
 	}
 
-	function onResolvePress() {
-		if (isClickRegistered) {
-			isClickRegistered = false;
-			resolvePress(playerTargetX, playerTargetY, !isReplayMode);
-		}
-	}
-
-	function resolvePress(?x:Null<Int>, ?y:Null<Int>, shouldRecord:Bool = false) {
-		if (bg.onRelease == null) {
+	function resolvePress(?x:Null<Int>, ?y:Null<Int>) {
+		if (!bg.useHandCursor) {
 			return;
 		}
 
 		if (x != null && y != null) {
 			setPlayerTarget(x, y);
-		}
-
-		if (shouldRecord) {
-			KadoKadeoManager.kkm.replay.recordEvent({k: REPLAY_CLICK, x: playerTargetX, y: playerTargetY});
 		}
 
 		initResolve();
@@ -341,7 +284,7 @@ class Game implements kado.GameInterface {
 	// RESOLVE
 	public function initResolve() {
 		coef = null;
-		bg.onRelease = null;
+		isClickRegistered = false;
 		bg.useHandCursor = false;
 		action = updateResolve;
 		for (h in hunters)
@@ -408,8 +351,8 @@ class Game implements kado.GameInterface {
 			sx = bdx;
 			sy = bdy;
 
-			ex = (Cs.rand() * 2 - 1) * margin;
-			ey = (Cs.rand() * 2 - 1) * margin;
+			ex = (Seed.randVfx() * 2 - 1) * margin;
+			ey = (Seed.randVfx() * 2 - 1) * margin;
 		}
 	}
 
@@ -454,18 +397,18 @@ class Game implements kado.GameInterface {
 			strokeThickness: 5,
 		});
 		field.text = Std.string(n);
-		p.weight = -(0.1 + Cs.rand() * 0.1) * Cs.NEW_GEN_SCALE;
+		p.weight = -(0.1 + Seed.randVfx() * 0.1) * Cs.NEW_GEN_SCALE;
 		// p.vy = 2;
 		p.timer = 20;
 		p.fadeLimit = 5;
 		p.fadeType = 0;
-		p.sleep = Cs.rand() * 2;
+		p.sleep = Seed.randVfx() * 2;
 		p.root.stop();
 		p.updatePos();
 	}
 
 	public function updateFlux() {
-		// if(coef == null && Std.random(1)==0 && mt.Timer.tmod < 1.5 && flux.length<influxMax )newInflux();
+		// if(coef == null && Seed.random(1)==0 && mt.Timer.tmod < 1.5 && flux.length<influxMax )newInflux();
 
 		var index = 0;
 		while (index < flux.length) {
@@ -505,7 +448,7 @@ class Game implements kado.GameInterface {
 					list.push(e);
 			if (list.length == 0)
 				return;
-			el = list[Cs.random(list.length)];
+			el = list[Seed.random(list.length)];
 		}
 
 		mc.el = el;

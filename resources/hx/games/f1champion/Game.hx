@@ -153,7 +153,7 @@ class Game implements kado.GameInterface {
 			} else if (KeyboardManager.isDown(KeyboardManager.UP))
 				level.cur_speed += Cs.NEW_GEN_SCALE;
 		}
-		delta += 0.05 * time * (Cs.MAXLIFE - lifepts) / Cs.MAXLIFE * ((Cs.random(2) == 0) ? -1 : 1);
+		delta += 0.05 * time * (Cs.MAXLIFE - lifepts) / Cs.MAXLIFE * ((Seed.random(2) == 0) ? -1 : 1);
 		delta *= Math.pow((oil_time <= 0) ? Cs.STEER_FRICTION_DRY : Cs.STEER_FRICTION_OIL, time);
 		if (delta > max)
 			delta = max;
@@ -258,7 +258,7 @@ class Game implements kado.GameInterface {
 				chkdata.b[id]++;
 			case 4:
 				chkdata.b[0]++;
-				oil_time += 2 + Cs.random(200) / 100;
+				oil_time += 2 + Seed.random(200) / 100;
 		}
 	}
 
@@ -301,12 +301,12 @@ class Game implements kado.GameInterface {
 			i++;
 		}
 		if (level.pos < Level.DELTA - 25 * Cs.NEW_GEN_SCALE
-			&& Cs.random(Std.int(Cs.OPTIONS_PROBA * (options.length / 5 + 1) / Timer.tmod)) == 0) {
+			&& Seed.random(Std.int(Cs.OPTIONS_PROBA * (options.length / 5 + 1) / Timer.tmod)) == 0) {
 			var ntries = 20;
 			var y = -10 * Cs.NEW_GEN_SCALE;
 			var x;
 			do {
-				x = (30 + Cs.random(240)) * Cs.NEW_GEN_SCALE;
+				x = (30 + Seed.random(240)) * Cs.NEW_GEN_SCALE;
 				if (!level.middleContains(x - 15 * Cs.NEW_GEN_SCALE, y)
 					&& !level.middleContains(x + 15 * Cs.NEW_GEN_SCALE, y)
 					&& !level.middleContains(x, y - 15 * Cs.NEW_GEN_SCALE)
@@ -322,7 +322,7 @@ class Game implements kado.GameInterface {
 			for (opt in Cs.OPTIONS)
 				sum += opt;
 
-			sum = Cs.random(sum);
+			sum = Seed.random(sum);
 
 			id = 0;
 			while (sum >= Cs.OPTIONS[id])
@@ -336,7 +336,7 @@ class Game implements kado.GameInterface {
 			mc._x = x;
 			mc._y = y;
 			if (id == 4)
-				mc.gotoAndStop(Cs.random(3) + 5);
+				mc.gotoAndStop(Seed.random(3) + 5);
 			else
 				mc.gotoAndStop(id + 1);
 			options.push({id: id, mc: mc});
@@ -347,16 +347,16 @@ class Game implements kado.GameInterface {
 		var mc = dmanager.attach("part", Cs.PLAN_PART);
 		mc._x = f1._x;
 		mc._y = f1._y + 10 * Cs.NEW_GEN_SCALE;
-		mc._xscale = (25 + Cs.random(40)) * Cs.NEW_GEN_SCALE;
+		mc._xscale = (25 + Seed.randomVfx(40)) * Cs.NEW_GEN_SCALE;
 		mc._yscale = mc._xscale;
-		mc._rotation = Cs.random(360);
+		mc._rotation = Seed.randomVfx(360);
 		mc.tint = 0x224400;
 		mc._alpha = 30;
 		mc.gotoAndStop(3);
 		parts.push({
 			mc: mc,
-			sx: (Cs.random(8) - 4) * Cs.NEW_GEN_SCALE,
-			sy: -(3 + Cs.random(30) / 10) * Cs.NEW_GEN_SCALE,
+			sx: (Seed.randomVfx(8) - 4) * Cs.NEW_GEN_SCALE,
+			sy: -(3 + Seed.randomVfx(30) / 10) * Cs.NEW_GEN_SCALE,
 			ay: 0.95,
 			ss: 0,
 			sr: 10
@@ -364,15 +364,15 @@ class Game implements kado.GameInterface {
 	}
 
 	function genSmoke() {
-		var sx = (Cs.random(8) - 4) / 5 * Cs.NEW_GEN_SCALE;
+		var sx = (Seed.randomVfx(8) - 4) / 5 * Cs.NEW_GEN_SCALE;
 		for (i in 0...3) {
 			var mc = dmanager.attach("part", Cs.PLAN_PART);
 			mc.gotoAndStop(1);
-			mc._x = f1._x + (Cs.random(10) - 5) * Cs.NEW_GEN_SCALE;
-			mc._y = f1._y + (Cs.random(10) - 5) * Cs.NEW_GEN_SCALE;
-			mc._xscale = 60 + Cs.random(40);
+			mc._x = f1._x + (Seed.randomVfx(10) - 5) * Cs.NEW_GEN_SCALE;
+			mc._y = f1._y + (Seed.randomVfx(10) - 5) * Cs.NEW_GEN_SCALE;
+			mc._xscale = 60 + Seed.randomVfx(40);
 			mc._yscale = mc._xscale;
-			mc._rotation = Cs.random(360);
+			mc._rotation = Seed.randomVfx(360);
 			mc._alpha = 30;
 			parts.push({
 				mc: mc,
@@ -444,7 +444,7 @@ class Game implements kado.GameInterface {
 			}
 		}
 
-		if (!lock && lifepts < Cs.MAXLIFE / 2 && Cs.random(Std.int(30 * (lifepts / Cs.MAXLIFE) / Timer.tmod)) == 0)
+		if (!lock && lifepts < Cs.MAXLIFE / 2 && Seed.randomVfx(Std.int(30 * (lifepts / Cs.MAXLIFE) / Timer.tmod)) == 0)
 			genSmoke();
 
 		if (expl_mc != null) {

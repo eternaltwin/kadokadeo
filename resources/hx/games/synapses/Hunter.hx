@@ -33,8 +33,8 @@ class Hunter extends Sprite {
 		angle = 0;
 		Game.me.hunters.push(this);
 
-		x = Cs.rand() * Cs.mcw;
-		y = Cs.rand() * Cs.mch;
+		x = Seed.rand() * Cs.mcw;
+		y = Seed.rand() * Cs.mch;
 
 		speed = 10 * Cs.NEW_GEN_SCALE;
 		initQueuePool();
@@ -145,8 +145,8 @@ class Hunter extends Sprite {
 	function newTrg() {
 		var ray = 20 * Cs.NEW_GEN_SCALE;
 		trg = {
-			x: ray + Cs.rand() * (Cs.mcw - 2 * ray),
-			y: ray + Cs.rand() * (Cs.mch - 2 * ray)
+			x: ray + Seed.rand() * (Cs.mcw - 2 * ray),
+			y: ray + Seed.rand() * (Cs.mch - 2 * ray)
 		}
 	}
 
@@ -173,7 +173,7 @@ class Hunter extends Sprite {
 		if (first.size == 0 && flExplode) {
 			var max = 36;
 			for (i in 0...max) {
-				var sp = 3 + Cs.rand() * 8;
+				var sp = 3 + Seed.randVfx() * 8;
 				var a = i / max * 6.28;
 				var cr = 4;
 				var p = new mt.bumdum.Phys(Game.me.dm.attach("partPix", Game.DP_FX));
@@ -182,7 +182,7 @@ class Hunter extends Sprite {
 				p.x = x + p.vx * cr;
 				p.y = y + p.vy * cr;
 				p.updatePos();
-				p.timer = 10 + Cs.rand() * 10;
+				p.timer = 10 + Seed.randVfx() * 10;
 				p.frict = 0.85;
 			}
 			kill();

@@ -35,12 +35,10 @@ class Cs {
 	public static var C8000 = KKApi.const(8000);
 
 	public static inline function rand():Float {
-		return KadoKadeoManager.kkm.seed.rand();
+		return Seed.rand();
 	}
 
 	public static inline function random(max:Int):Int {
-		if (max <= 0)
-			return 0;
-		return KadoKadeoManager.kkm.seed.random(max);
+		return Seed.random(max);
 	}
 }

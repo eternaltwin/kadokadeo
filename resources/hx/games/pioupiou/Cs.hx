@@ -1,6 +1,5 @@
 package pioupiou;
 
-import kado.KadoKadeoManager;
 import common_haxe_avm1.KKApi;
 
 class Cs {
@@ -25,14 +24,4 @@ class Cs {
 
 	public static var BONUS_PROBAS_TBL:Array<Int> = [50, 10, 1];
 	public static var BONUS_POINTS = KKApi.aconst([200, 500, 3000]);
-
-	public static inline function rand():Float {
-		return KadoKadeoManager.kkm.seed.rand();
-	}
-
-	public static inline function random(max:Int):Int {
-		if (max <= 0)
-			return 0;
-		return KadoKadeoManager.kkm.seed.random(max);
-	}
 }
