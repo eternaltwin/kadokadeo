@@ -199,15 +199,15 @@ class Game implements kado.GameInterface {
 		var target = getMouseTarget();
 		setPlayerTarget(target.x, target.y);
 
+		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {
+			isClickRegistered = true;
+		}
+
 		if (MouseManager.isButtonJustReleased(MouseManager.BUTTON_LEFT)) {
 			if (isClickRegistered) {
 				resolvePress();
 			}
 			isClickRegistered = false;
-		}
-
-		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {
-			isClickRegistered = true;
 		}
 	}
 

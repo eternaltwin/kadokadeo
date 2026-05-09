@@ -314,6 +314,8 @@ class KadoKadeoManager extends Application {
 	}
 
 	private function beginGame() {
+		common_haxe_avm1.KeyboardManager.clearState();
+		common_haxe_avm1.MouseManager.clearState();
 		this.replay.start();
 		this.gameRoot = dm.empty(1);
 		replayElapsedMs = 0;
