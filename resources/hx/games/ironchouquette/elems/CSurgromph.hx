@@ -27,8 +27,10 @@ class CSurgromph extends Bads {
 	public override function update() {
 		super.update();
 		// TURRET
-		var dx = Cs.game.hero.x - x;
-		var dy = Cs.game.hero.y - y;
-		follow._rotation = Math.atan2(dy, dx) / 0.0174 - root._rotation;
+		if (this.root != null) {
+			var dx = Cs.game.hero.x - x;
+			var dy = Cs.game.hero.y - y;
+			follow._rotation = Math.atan2(dy, dx) / 0.0174 - root._rotation;
+		}
 	}
 }
