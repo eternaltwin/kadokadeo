@@ -1,10 +1,6 @@
 <script setup>
-import { computed } from 'vue'
-
-import { formatScore } from '@/composables/helpers'
-
 const props = defineProps({
-  value: { type: Number, required: true },
+  value: { type: [String, Number], required: true },
   color: {
     type: String,
     default: 'green',
@@ -14,6 +10,9 @@ const props = defineProps({
 })
 
 const charUrls = computed(() => {
+  if (typeof props.value === 'string') {
+    return props.value.split('').map((c) => `/gfx/typo/${props.color}/${c == '.' ? 'dot' : c}.gif`)
+  }
   const nbString = formatScore(props.value).replace(' ', '.')
   return Array.from(nbString).map((c) => `/gfx/typo/${props.color}/${c == '.' ? 'dot' : c}.gif`)
 })

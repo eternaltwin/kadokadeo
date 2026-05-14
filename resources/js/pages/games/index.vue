@@ -1,12 +1,4 @@
 <script setup>
-// import { useGodot } from '@/composables/useGodot'
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
-
-import DailyGameBlock from '@/components/games/DailyGameBlock.vue'
-import Loader from '@/components/Loader.vue'
-import { useGames } from '@/composables/useGames'
-
 const { isLoading, fetchGames } = useGames()
 const route = useRoute()
 const games = ref([])
@@ -26,26 +18,39 @@ const gamesFiltered = computed(() => {
   }
   return games.value
 })
+
+function getStarImage(game) {
+  const star = game.user_star
+  switch (star) {
+    case 0:
+      return '/gfx/starGreenMedium.gif'
+    case 1:
+      return '/gfx/starOrangeMedium.gif'
+    case 2:
+      return '/gfx/starRedMedium.gif'
+    default:
+      return null
+  }
+}
 </script>
 
 <template>
   <nav id="tabNav">
     <ul>
-      <li :id="!route.query.category ? 'tabNavActive' : ''">
-        <RouterLink :to="{ name: 'games.index' }">Tous les jeux</RouterLink>
-      </li>
-      <li v-for="cat in categories" :id="route.query.category === cat.name ? 'tabNavActive' : ''" :key="cat.id">
-        <RouterLink :to="{ name: 'games.index', query: { category: cat.name } }">
-          {{ cat.name }}
-        </RouterLink>
-      </li>
     </ul>
   </nav>
+  <NavTabs
+    :items="[
+      { label: 'Tous les jeux', value: 'all', route: { name: 'games.index' } },
+      ...categories.map((cat) => ({ label: cat.name, value: cat.name, route: { name: 'games.index', query: { category: cat.name } } })),
+    ]"
+    :selected-index="route.query.category ? categories.findIndex((c) => c.name === route.query.category) + 1 : 0"
+  />
 
-  <div class="withRightAside">
-    <DailyGameBlock />
+  <div>
+    <GamesDailyGameBlock />
 
-    <div id="gamesBoxes" class="relative min-h-48">
+    <div id="gamesBoxes" class="relative min-h-48 flex flex-wrap justify-around px-2">
       <Loader v-if="isLoading">Chargement des jeux...</Loader>
       <template v-else>
         <RouterLink
@@ -60,9 +65,9 @@ const gamesFiltered = computed(() => {
             <img :src="game.image_path" :alt="game.name" />
           </div>
           <div class="gameBoxStar">
-            <img :src="'/gfx/starGreenMedium.gif'" alt="green" />
+            <img v-if="game.user_star !== null" :src="getStarImage(game)" :alt="`star ${game.user_star}`" />
           </div>
-          <h3 class="gameBoxTitle">{{ game.name }}</h3>
+          <h3 class="font-normal text-center text-kado-cyan-900 w-44 text-xl absolute top-28 left-[55%] -translate-x-1/2 z-10">{{ game.name }}</h3>
         </RouterLink>
       </template>
     </div>

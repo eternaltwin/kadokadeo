@@ -24,8 +24,12 @@ class RunResource extends JsonResource
             'seed' => $this->seed,
             'play_time_seconds' => $this->play_time_seconds,
             'period_id' => $this->period_id,
+            'league_id' => $this->league_id,
+            'rank_position' => $this->whenHas('rank_position', $this->rank_position),
+            'league_rank' => $this->whenHas('league_rank', $this->league_rank),
             'replay' => $this->replay,
             'has_replay' => $this->has_replay,
+            'completed_at' => $this->completed_at,
         ];
     }
 }

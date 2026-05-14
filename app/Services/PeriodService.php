@@ -10,7 +10,7 @@ class PeriodService
     {
         $p = Period::current()->first();
 
-        if (! $p) {
+        if (!$p) {
             return 0;
         }
 

@@ -1,10 +1,4 @@
 <script setup>
-import { toRef } from 'vue'
-
-import Loader from '@/components/Loader.vue'
-import Number from '@/components/Number.vue'
-import { useDailyGameStore } from '@/stores/dailyGame'
-
 const dailyGameStore = useDailyGameStore()
 const dailyGame = toRef(dailyGameStore, 'dailyGame')
 const game = toRef(dailyGameStore, 'game')
@@ -22,8 +16,8 @@ const game = toRef(dailyGameStore, 'game')
       <div class="__bg z-[1] h-full w-full"></div>
       <div class="gameBoxImg">
         <img :src="game.image_path" :alt="game.name" />
+        <h3 class="font-normal text-kado-pink-900 text-xl w-full text-center leading-5">{{ game.name }}</h3>
       </div>
-      <h3 class="gameBoxTitle">{{ game.name }}</h3>
       <div class="gameBoxDayText">
         Le jeu du jour est choisi aléatoirement chaque jour à minuit (UTC). La partie est identique pour tous les joueurs.
         <div class="flex gap-1 items-center">

@@ -8,11 +8,11 @@
           <span>Jeux</span>
         </RouterLink>
       </li>
-      <li>
-        <a href="#" id="topNavCompetition"><span>Site</span></a>
+      <li class="grayscale">
+        <RouterLink to="/" id="topNavCompetition"><span>Site</span></RouterLink>
       </li>
       <li>
-        <a href="#" id="topNavProfile"><span>Kado</span></a>
+        <RouterLink :to="{ name: 'profile.index' }" id="topNavProfile"><span>Kado</span></RouterLink>
       </li>
     </ul>
   </nav>

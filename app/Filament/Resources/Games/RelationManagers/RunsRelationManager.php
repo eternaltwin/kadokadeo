@@ -9,8 +9,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
-use App\Filament\Resources\Runs\RunResource;
-use App\Models\Run;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
@@ -21,6 +19,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,17 +69,20 @@ class RunsRelationManager extends RelationManager
                 TextColumn::make('user.display_name')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('contract_score')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('contract_points')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('seed')
-                    ->searchable(),
                 TextColumn::make('score')
                     ->numeric()
-                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw("score {$direction} NULLS LAST")),
+                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw("score {$direction} NULLS LAST"))
+                    ->searchable(),
+                TextColumn::make('seed')
+                    ->searchable(),
+                TextColumn::make('contract_score')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('contract_points')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('play_time_seconds')
                     ->numeric()
                     ->sortable(),
@@ -102,6 +104,10 @@ class RunsRelationManager extends RelationManager
             ])
             ->filters([
                 TrashedFilter::make(),
+                Filter::make('completed_at')
+                    ->default(true)
+                    ->label('Completed Runs')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('completed_at')),
             ])
             ->headerActions([
                 CreateAction::make(),

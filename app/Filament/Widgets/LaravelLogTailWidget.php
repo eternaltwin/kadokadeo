@@ -30,7 +30,7 @@ class LaravelLogTailWidget extends Widget
         $logPath = storage_path('logs/laravel.log');
         $this->logFileExists = is_file($logPath);
 
-        if (! $this->logFileExists) {
+        if (!$this->logFileExists) {
             $this->logLines = [];
             $this->updatedAt = now()->format('H:i:s');
 

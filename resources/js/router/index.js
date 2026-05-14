@@ -8,6 +8,8 @@ import GamesDaily from '@/pages/games/daily.vue'
 import GamesIndex from '@/pages/games/index.vue'
 import GamesRanking from '@/pages/games/ranking.vue'
 import GamesShow from '@/pages/games/show.vue'
+import ProfileShow from '@/pages/profile/show.vue'
+import Help from '@/pages/help.vue'
 import Login from '@/pages/login.vue'
 import LoginCallback from '@/pages/loginCallback.vue'
 import RunsShow from '@/pages/runs/show.vue'
@@ -18,8 +20,11 @@ const router = createRouter({
     { path: '/', redirect: '/games', meta: {} },
     { path: '/login', name: 'login', component: Login, meta: {} },
     { path: '/oauth/callback', component: LoginCallback, meta: {} },
+    { path: '/help', name: 'help', component: Help, meta: { middleware: ['auth'] } },
     { path: '/daily', name: 'games.daily', component: GamesDaily, meta: { middleware: ['auth'] } },
     { path: '/games', name: 'games.index', component: GamesIndex, meta: { middleware: ['auth'] } },
+    { path: '/profile', name: 'profile.index', component: ProfileShow, meta: { middleware: ['auth'] } },
+    { path: '/profile/:id', name: 'profile.show', component: ProfileShow, meta: { middleware: ['auth'] } },
     {
       path: '/games/:id',
       name: 'games.show',

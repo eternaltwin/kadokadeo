@@ -7,11 +7,11 @@ use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Artisan;
 use Throwable;
 
-class ResetScoresButton extends Widget
+class MaintenanceActions extends Widget
 {
-    protected string $view = 'filament.widgets.reset-scores-button';
+    protected string $view = 'filament.widgets.maintenance-actions';
 
-    protected int|string|array $columnSpan = 'full';
+    // protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 3;
 
@@ -30,6 +30,26 @@ class ResetScoresButton extends Widget
             Notification::make()
                 ->title('Unable to reset scores.')
                 ->body('Check logs for details and try again.')
+                ->danger()
+                ->send();
+        }
+    }
+
+    public function prepareNewPeriod(): void
+    {
+        try {
+            Artisan::call('kado:prepare-new-period');
+
+            Notification::make()
+                ->title('OK!')
+                ->success()
+                ->send();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            Notification::make()
+                ->title('Unable to prepare new period.')
+                ->body('Maybe a period is already in progress.')
                 ->danger()
                 ->send();
         }

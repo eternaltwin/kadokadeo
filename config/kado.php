@@ -8,8 +8,12 @@ return [
         'max_concurrency' => env('KADO_RUNS_MAX_CONCURRENCY', 50),
     ],
 
+    'poids_plume' => [
+        'jackpot' => env('KADO_POIDS_PLUME_JACKPOT', 0),
+    ],
+
     'security' => [
         'private_key_path' => env('KADO_RSA_PRIVATE_KEY_PATH', storage_path('app/private/privkey.pem')),
         'public_key_path' => env('KADO_RSA_PUBLIC_KEY_PATH', storage_path('app/private/pubkey.pem')),
-    ]
+    ],
 ];

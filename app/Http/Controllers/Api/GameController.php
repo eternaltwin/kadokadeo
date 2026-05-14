@@ -9,6 +9,7 @@ use App\Services\GameService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class GameController extends Controller implements HasMiddleware
@@ -29,6 +30,7 @@ class GameController extends Controller implements HasMiddleware
             'category' => 'sometimes|required|string|max:255|exists:categories,name',
         ]);
         $categoryName = data_get($data, 'category');
+        $periodId = \App\Models\Period::current()->first()?->id;
 
         $gamesQ = Game::where('is_active', true);
         if ($categoryName) {
@@ -36,7 +38,13 @@ class GameController extends Controller implements HasMiddleware
                 $query->where('name', $categoryName);
             });
         }
-        $games = $gamesQ->get();
+        $games = $gamesQ->with(['periodStars' => function ($query) use ($periodId) {
+            $query->where('user_id', Auth::id());
+            $query->when($periodId, function ($q) use ($periodId) {
+                $q->where('period_id', $periodId);
+            });
+            $query->orderBy('star', 'desc');
+        }])->get();
 
         $categories = \App\Models\Category::all();
 

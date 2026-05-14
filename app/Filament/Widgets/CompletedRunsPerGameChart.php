@@ -16,7 +16,7 @@ class CompletedRunsPerGameChart extends ChartWidget
 {
     use HasFiltersSchema;
 
-    protected ?string $heading = 'Parties complétées par jeu';
+    protected ?string $heading = 'Completed runs per game';
 
     protected function getData(): array
     {
@@ -39,7 +39,7 @@ class CompletedRunsPerGameChart extends ChartWidget
                 ->count();
 
             if ($labels === null) {
-                $labels = $trend->map(fn(TrendValue $value) => $value->date);
+                $labels = $trend->map(fn (TrendValue $value) => $value->date);
             }
 
             $hue = $total > 1 ? (int) round($index * 360 / $total) : 200;
@@ -47,7 +47,7 @@ class CompletedRunsPerGameChart extends ChartWidget
 
             $datasets[] = [
                 'label' => $game->name,
-                'data' => $trend->map(fn(TrendValue $value) => $value->aggregate),
+                'data' => $trend->map(fn (TrendValue $value) => $value->aggregate),
                 'borderColor' => $color,
                 'backgroundColor' => $color,
             ];

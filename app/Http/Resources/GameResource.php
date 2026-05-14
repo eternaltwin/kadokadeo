@@ -24,6 +24,10 @@ class GameResource extends JsonResource
             'stars' => $this->stars,
             'gamedata' => $this->gamedata,
             'controls' => GameControlResource::collection($this->whenLoaded('controls')),
+            'user_star' => $this->whenLoaded('periodStars', function () {
+                $periodStar = $this->periodStars->first();
+                return $periodStar ? $periodStar->star : null;
+            }),
         ];
     }
 }

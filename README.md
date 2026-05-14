@@ -25,6 +25,9 @@ Here are the configuration variables:
 | `KADO_RUNS_MAX_CONCURRENCY` | Maximum amount of games a user can play in parallel before being throttled | 5                                 |
 | `KADO_RSA_PRIVATE_KEY_PATH` | Private RSA key path of the server. Should be kept **private**.            | `storage/app/private/privkey.pem` |
 | `KADO_RSA_PUBLIC_KEY_PATH`  | Public key path associated with the private key                            | `storage/app/private/pubkey.pem`  |
+| `KADO_POIDS_PLUME_JACKPOT`  | Jackpot in Kado point earnt when having the maximum amount of feathers     | 0                                 |
+| `DISCORD_WEBHOOK`           | Webhook url for error reporting                                            |                                   |
+| `DISCORD_SCORE`             | Webhook url for daily score recap                                          |                                   |
 
 You can generate keys with :
 

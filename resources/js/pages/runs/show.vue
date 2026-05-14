@@ -1,11 +1,4 @@
 <script setup>
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-
-import { useRuns } from '@/composables/useRuns'
-
-import GameScript from '../../components/games/GameScript.vue'
-
 const route = useRoute()
 const { isLoading, fetchRun } = useRuns()
 const runId = route.params.id
@@ -23,8 +16,9 @@ fetchRun(runId).then((data) => {
     <h2 class="m-0!">Vous regardez {{ run.user?.display_name }}</h2>
     <h2 class="m-0!">Score: {{ run.score }}</h2>
     <h2 class="m-0!">Jeu: {{ run.game.name }}</h2>
+    <h2 class="m-0!">Date: {{ dayjs(run.completed_at).format('DD/MM/YYYY HH:mm') }}</h2>
     <div class="relative" :style="{ width: '600px', height: '640px' }">
-      <GameScript
+      <GamesGameScript
         :game="run.game"
         :args="{
           replayData: run.replay,

@@ -75,13 +75,13 @@ class LoginController extends Controller implements HasMiddleware
         $userUuid = $user->getId();
 
         $attrs = [
-            'ewtin_id' => $userUuid->toString(),
+            'etwin_id' => $userUuid->toString(),
             'display_name' => $userDisplayName->toString(),
             'last_seen_at' => now(),
         ];
 
         // Check if the user already exists in the database
-        $dbUser = User::where('ewtin_id', $userUuid->toString())->first();
+        $dbUser = User::where('etwin_id', $userUuid->toString())->first();
         if ($dbUser) {
             $dbUser->fill($attrs);
         } else {

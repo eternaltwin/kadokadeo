@@ -9,21 +9,30 @@ const otherGames = [
   { name: 'ePopotamo', url: 'https://epopotamo.eternaltwin.org' },
   { name: 'DinoRPG', url: 'https://dinorpg.eternaltwin.org' },
   { name: 'EternalKingdom', url: 'https://kingdom.eternaltwin.org' },
+  { name: 'DinoCard', url: 'https://dinocard.eternaltwin.org/' },
 ]
 </script>
 
 <template>
-  <aside id="containerSide">
+  <aside id="containerSide" class="z-10">
     <nav class="sideBoxGreen">
       <h2>Menu</h2>
       <ul id="menuSide">
-        <li class="news"><a href="#" title="Nouveautés">Nouveautés</a></li>
-        <li class="scores"><a href="#" title="Mes scores">Mes scores</a></li>
-        <li class="account"><a href="user/settings" title="Mon compte">Mon compte</a></li>
-        <li class="help"><a href="#" title="Aide">Aide</a></li>
+        <li class="news grayscale">
+          <RouterLink to="/" title="Nouveautés">Nouveautés</RouterLink>
+        </li>
+        <li class="scores grayscale">
+          <RouterLink to="/" title="Mes scores">Mes scores</RouterLink>
+        </li>
+        <li class="account grayscale">
+          <RouterLink to="/" title="Mon compte">Mon compte</RouterLink>
+        </li>
+        <li class="help">
+          <RouterLink :to="{ name: 'help' }" title="Aide">Aide</RouterLink>
+        </li>
       </ul>
     </nav>
-    <aside class="sideBoxBlue">
+    <aside class="sideBoxBlue grayscale">
       <h2>Top 3 clans</h2>
       <ul>
         <li class="text-center italic">Non disponible...</li>
@@ -33,17 +42,22 @@ const otherGames = [
       <h2>Nos autres jeux</h2>
       <ul>
         <li class="text-center mb-1">
-          <a href="https://eternal-twin.net" title="Projet EternalTwin" class="font-bold">
+          <a href="https://eternaltwin.org"
+             title="Projet EternalTwin"
+             class="font-bold"
+             target="_blank">
             Projet EternalTwin
           </a>
           <br />
-          <a href="https://discord.gg/ERc3svy" title="Discord EternalTwin">
+          <a href="https://discord.gg/ERc3svy" title="Discord EternalTwin" target="_blank">
             Nous rejoindre sur Discord
           </a>
         </li>
         <li>
           <template v-for="og of otherGames" :key="og.name">
-            <a :href="og.url" :title="og.name" target="_blank">{{ og.name }}</a>
+            <a :href="og.url" :title="og.name" target="_blank">
+              {{ og.name }}
+            </a>
             <br />
           </template>
         </li>

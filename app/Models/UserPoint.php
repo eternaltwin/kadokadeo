@@ -17,6 +17,11 @@ class UserPoint extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function period()
+    {
+        return $this->belongsTo(Period::class);
+    }
+
     public function source()
     {
         return $this->morphTo();

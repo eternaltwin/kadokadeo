@@ -24,6 +24,24 @@ export const useAuthStore = defineStore('auth', () => {
     window.Kado.token = token.value
   }
 
+  window.evts.addEventListener('gameFinished', (e) => {
+    const endRunDetails = e.detail
+    if (endRunDetails.current_star >= 0 && endRunDetails.previous_star < endRunDetails.current_star) {
+      if (endRunDetails.current_star >= 0 && endRunDetails.previous_star < 0) {
+        stars.green += 1
+      }
+      if (endRunDetails.current_star >= 1 && endRunDetails.previous_star < 1) {
+        stars.orange += 1
+      }
+      if (endRunDetails.current_star >= 2 && endRunDetails.previous_star < 2) {
+        stars.red += 1
+      }
+      if (endRunDetails.current_star >= 3 && endRunDetails.previous_star < 3) {
+        stars.purple += 1
+      }
+    }
+  })
+
   const setUser = (u) => {
     user.value = u
     if (u && u.stars) {

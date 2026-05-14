@@ -16,7 +16,7 @@ const keyMap = {
 </script>
 
 <template>
-  <table class="gameCommands noBorder noBackground">
+  <table class="gameCommands border-0 **:border-0 noBackground">
     <thead>
       <tr>
         <th style="width: 70px" scope="col">Commande</th>

@@ -19,15 +19,15 @@ class CleanOldRuns extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Clean old runs that are more than two months old and have no score.';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        Run::where('created_at', '<', now()->subDays(1))
-        ->whereNull('score')
-        ->forceDelete();
+        Run::where('created_at', '<', now()->subMonths(2))
+            ->whereNull('score')
+            ->forceDelete();
     }
 }

@@ -1,14 +1,16 @@
-import { defineConfig, globalIgnores } from 'eslint/config'
-import globals from 'globals'
 import js from '@eslint/js'
-import pluginVue from 'eslint-plugin-vue'
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 import stylistic from '@stylistic/eslint-plugin'
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
+import { defineConfig, globalIgnores } from 'eslint/config'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import unusedImports from 'eslint-plugin-unused-imports'
+import pluginVue from 'eslint-plugin-vue'
+import globals from 'globals'
+
+import autoImportGlobals from './.eslintrc-auto-import.mjs'
 
 export default defineConfig([
-  globalIgnores(['**/dist/**', '**/coverage/**']),
+  globalIgnores(['**/dist/**', '**/coverage/**', 'resources/js/games/**']),
 
   // Base JS rules
   js.configs.recommended,
@@ -20,7 +22,7 @@ export default defineConfig([
   skipFormatting,
 
   {
-    files: ['resources/js/**/*.{js,jsx,mjs,ts,tsx,vue}'],
+    files: ['resources/js/**/*.{js,jsx,mjs,ts,tsx,vue}', '*.{js,ts,json}'],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 'latest',
@@ -28,6 +30,8 @@ export default defineConfig([
       },
       globals: {
         ...globals.browser,
+        PIXI: 'readonly',
+        ...autoImportGlobals.globals,
       },
     },
     plugins: {

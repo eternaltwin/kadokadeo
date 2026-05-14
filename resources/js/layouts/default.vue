@@ -28,20 +28,24 @@ const authStore = useAuthStore()
     </template>
   </header>
 
-  <Error style="width:890px;margin:20px 60px 40px 60px;font-size:0.85em;">
+  <Error style="width: 890px; margin: 20px 60px 40px 60px; font-size: 0.85em">
     Kadokadéo est en alpha! Il le restera jusqu'à avoir un site complet.<br />
-    Les replays des jeux ont été réinitialisés le 1er mai 2026.<br />
-    De nouveaux jeux seront ajoutés régulièrement, n'hésitez pas à revenir souvent pour les découvrir!<br />
+    Les replays des jeux ont été réinitialisés le 14 mai 2026.<br />
   </Error>
 
   <main id="container">
+    <section id="bodySection" class="w-full flex">
+      <div class="flex-1">
+        <slot />
+      </div>
 
-    <section id="bodySection">
-      <slot />
+      <template v-if="authStore.isAuthenticated">
+        <div class="w-[150px] relative">
+          <div class="absolute right-0 translate-x-1/4 text-xs w-[200px]">
+            <Sidebar />
+          </div>
+        </div>
+      </template>
     </section>
-
-    <template v-if="authStore.isAuthenticated">
-      <Sidebar />
-    </template>
   </main>
 </template>

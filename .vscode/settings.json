@@ -5,11 +5,11 @@
     "vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*",
     "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .prettier*, prettier*, .editorconfig"
   },
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "javascript.preferences.importModuleSpecifier": "non-relative",
 
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "always"
   },
   "eslint.validate": [
     "javascript",
@@ -30,10 +30,17 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true
   },
+  "[php]": {
+      "editor.defaultFormatter": "open-southeners.laravel-pint",
+  },
   "haxe.configurations": [
     ["compile.hxml"]
   ],
   "haxe.displayServer": {
     "arguments": []
-  }
+  },
+  "prettier.enable": false,
+  "eslint.format.enable": true,
+  "eslint.run": "onSave",
+  "eslint.useFlatConfig": true,
 }

@@ -8,8 +8,13 @@ use Illuminate\Support\Facades\Artisan;
 
 class GameService
 {
-    public function __construct()
+    public function __construct() {}
+
+    public function getMaxStarsCount(): int
     {
+        return cache()->remember('max_stars', now()->addDay(), function () {
+            return Game::where('is_active', true)->count() * 3;
+        });
     }
 
     public function getContract(Game $game)
@@ -33,6 +38,7 @@ class GameService
             Artisan::call('kado:prepare-daily-game');
             $dg = DailyGame::where('day', today())->first();
         }
+
         return $dg;
     }
 
@@ -117,6 +123,7 @@ class GameService
             if ($probaPoints[$i] <= $rand && $rand <= $probaPoints[$i + 1]) {
                 $ratio = ($rand - $probaPoints[$i]) / ($probaPoints[$i + 1] - $probaPoints[$i]);
                 $points = $pointsValues[$i] + $ratio * ($pointsValues[$i + 1] - $pointsValues[$i]);
+
                 return intval(round($points));
             }
         }
@@ -138,5 +145,4 @@ class GameService
 
         return $mag * sin(2.0 * pi() * $v) + $mean;
     }
-
 }

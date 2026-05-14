@@ -1,5 +1,3 @@
-import dayjs from 'dayjs'
-
 export function formatScore(score) {
   return Number(score).toLocaleString('fr-FR').replace(/\u202f/g, ' ')
 }

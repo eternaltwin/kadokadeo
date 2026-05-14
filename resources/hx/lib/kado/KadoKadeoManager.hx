@@ -446,7 +446,7 @@ class KadoKadeoManager extends Application {
 			} else {
 				// TODO: show loading screen
 				runFlow.transition(SubmittingRun, "submit-end-run");
-				makeEndRunHttpRequest().then((endRunDetails:Dto.EndRunResponseDTO) -> {
+				makeEndRunHttpRequest(params).then((endRunDetails:Dto.EndRunResponseDTO) -> {
 					this.displayEndScene(endRunDetails);
 					emitWindowEvent("gameFinished", endRunDetails);
 				}).catchError((_) -> {
@@ -503,9 +503,9 @@ class KadoKadeoManager extends Application {
 		untyped evts.dispatchEvent(new CustomEvent(eventName, {detail: detail}));
 	}
 
-	private function makeEndRunHttpRequest():Promise<Dto.EndRunResponseDTO> {
+	private function makeEndRunHttpRequest(params:Dynamic):Promise<Dto.EndRunResponseDTO> {
 		#if !debug
-		return endRunClient.submit(runFlow.getRunDetails(), score, runFlow.currentTimestamp(), replay.encodeReplayString()).then((data) -> {
+		return endRunClient.submit(runFlow.getRunDetails(), score, runFlow.currentTimestamp(), replay.encodeReplayString(), params).then((data) -> {
 			endRunDetails = data;
 			return endRunDetails;
 		});

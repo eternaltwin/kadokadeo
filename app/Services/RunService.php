@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Game;
 use App\Models\GamePeriodStar;
 use App\Models\Run;
 use Carbon\Carbon;
@@ -21,10 +20,10 @@ use Illuminate\Support\Facades\Validator;
  * déchiffre le message chiffré AES
  * vérifie la signature
  */
-
 class RunService
 {
     private string $publicKey;
+
     private string $privateKey;
 
     public function __construct($config)
@@ -47,7 +46,7 @@ class RunService
         $expectedSign = base64_encode(hash_hmac('sha256', $decryptedPayload, $aesKey, true));
 
         if (!hash_equals($expectedSign, $sign)) {
-            throw new \Exception("Signature invalide.");
+            throw new \Exception('Signature invalide.');
         }
 
         $json = json_decode($decryptedPayload, true);
@@ -58,6 +57,7 @@ class RunService
             'score' => 'required|integer|min:0',
             'timestamp' => 'required|integer',
             'replay' => 'nullable|string', // TODO: make a function to decode a replay.
+            'data' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -75,6 +75,7 @@ class RunService
         $score = data_get($decoded, 'score');
         $timestamp = data_get($decoded, 'timestamp');
         $replay = data_get($decoded, 'replay');
+        $data = data_get($decoded, 'data');
 
         $end = Carbon::createFromTimestamp($timestamp);
         $realEnd = now();
@@ -86,12 +87,14 @@ class RunService
         $run->completed_at = $realEnd;
         $run->score = $score;
         $run->replay = $replay;
+        $run->score_details = $data;
         $run->save();
         if ($run->contract_score > 0 && $run->score >= $run->contract_score) {
             $user = $run->user;
             $user->kado_points += $run->contract_points;
             $user->save();
             $user->userPoints()->create([
+                'period_id' => $run->period_id,
                 'delta' => $run->contract_points,
                 'reason' => 'contract completed',
                 'source_type' => Run::class,
@@ -150,14 +153,14 @@ class RunService
         // Decrypt AES key with server's private key
         $privateKey = openssl_pkey_get_private($this->privateKey);
         if (!$privateKey) {
-            throw new \Exception("Impossible de charger la clé privée du serveur.");
+            throw new \Exception('Impossible de charger la clé privée du serveur.');
         }
 
         $decryptedAesKey = null;
         $decodeResult = openssl_private_decrypt(base64_decode($key), $decryptedAesKey, $privateKey);
 
         if (!$decodeResult || !$decryptedAesKey) {
-            throw new \Exception("Échec du déchiffrement de la clé AES.");
+            throw new \Exception('Échec du déchiffrement de la clé AES.');
         }
 
         $saveDecrypted = base64_encode($decryptedAesKey);
@@ -193,7 +196,7 @@ class RunService
             throw new \Exception("Le payload n'est pas un base64 valide.");
         }
         if (strlen($payloadRaw) < $ivLength) {
-            throw new \Exception("Payload trop court pour contenir un IV.");
+            throw new \Exception('Payload trop court pour contenir un IV.');
         }
 
         $iv = substr($payloadRaw, 0, $ivLength);
@@ -202,7 +205,7 @@ class RunService
         $decryptedPayload = openssl_decrypt($cipherText, $algo, $aesKey, OPENSSL_RAW_DATA, $iv);
 
         if ($decryptedPayload === false) {
-            throw new \Exception("Échec du déchiffrement du payload.");
+            throw new \Exception('Échec du déchiffrement du payload.');
         }
 
         return $decryptedPayload;

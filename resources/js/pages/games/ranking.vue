@@ -1,20 +1,11 @@
 <script setup>
-import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-
-import GameScoreTable from '@/components/games/GameScoreTable.vue'
-import Loader from '@/components/Loader.vue'
-import Error from '@/components/message/Error.vue'
-import { useGameRanking } from '@/composables/useGameRanking'
-import { useGames } from '@/composables/useGames'
-import { usePeriodStore } from '@/stores/period'
-
 const route = useRoute()
 const router = useRouter()
 const gameId = route.params.id
 const { isLoading: isGameLoading, error: gameError, fetchGame } = useGames()
-const { isLoading, error, period, results, hasNextPage, fetchGameRanking } = useGameRanking(gameId)
+const { isLoading, error, period, league, results, hasNextPage, fetchGameRanking } = useGameRanking(gameId)
 const periodStore = usePeriodStore()
+const leagueStore = useLeagueStore()
 const game = ref(null)
 
 fetchGame(gameId).then((data) => {
@@ -22,9 +13,13 @@ fetchGame(gameId).then((data) => {
 })
 
 period.value = route.query.period || null
+league.value = route.query.league || null
 
 watch(period, (newVal) => {
   router.push({ query: { ...route.query, period: newVal || undefined } })
+})
+watch(league, (newVal) => {
+  router.push({ query: { ...route.query, league: newVal || undefined } })
 })
 
 fetchGameRanking()
@@ -35,16 +30,22 @@ fetchGameRanking()
   <div v-else-if="game" class="relative w-3/4">
     <h2>Classement général de {{ game.name }}</h2>
 
-    <div class="mb-4 text-center">
+    <div class="flex gap-4 my-4 justify-center items-center">
       <select id="period" v-model="period">
         <option :value="null">Toutes les périodes</option>
         <option v-for="periodOption in periodStore.period?.id" :key="periodOption" :value="periodOption">
           Période {{ periodOption }}
         </option>
       </select>
+      <select id="league" v-model="league">
+        <option :value="null">Toutes les ligues</option>
+        <option v-for="leagueOption in leagueStore.leagues" :key="leagueOption.level" :value="leagueOption.level">
+          {{ leagueOption.name }}
+        </option>
+      </select>
     </div>
 
-    <GameScoreTable :scores="results" />
+    <GamesGameScoreTable :scores="results" />
     <div v-if="hasNextPage" class="mt-4 text-center">
       <button
         @click="fetchGameRanking()"
@@ -54,8 +55,8 @@ fetchGameRanking()
         Charger plus de résultats
       </button>
       <Loader v-if="isLoading" />
-      <Error v-else-if="error">{{ error }}</Error>
+      <MessageError v-else-if="error">{{ error }}</MessageError>
     </div>
-    <Error v-else-if="gameError">{{ gameError }}</Error>
+    <MessageError v-else-if="gameError">{{ gameError }}</MessageError>
   </div>
 </template>

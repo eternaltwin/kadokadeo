@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Period;
+use App\Services\LeagueService;
+use App\Services\PoidsPlumeService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -24,30 +27,49 @@ class PrepareNewPeriod extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(LeagueService $leagueService, PoidsPlumeService $poidsPlumeService)
     {
-        $period = \App\Models\Period::orderBy('id', 'desc')->first();
+        $period = Period::orderBy('id', 'desc')->first();
 
-        if ($period && $period->start_at->diffInDays(now()) < \App\Models\Period::DAYS_PER_PERIOD) {
+        if ($period && $period->start_at->diffInDays(now()) < Period::DAYS_PER_PERIOD) {
+            $previousPeriod = Period::query()
+                ->where('id', '<', $period->id)
+                ->orderByDesc('id')
+                ->first();
+
+            if ($previousPeriod) {
+                $this->closePeriod($previousPeriod, $period, $leagueService, $poidsPlumeService);
+            }
+
             $this->info('Current period is still active, no new period created.');
+
             return 0;
         }
 
         if (!$period) {
             $this->info('No period found to close.');
-        } else {
-            $this->info('Closing old period...');
-            // TODO
         }
 
         $newPeriodStartDate = now()->isMonday() ? now()->startOfDay() : now()->previous(Carbon::MONDAY)->startOfDay();
 
-        $newPeriod = \App\Models\Period::create([
+        $newPeriod = Period::create([
             'start_at' => $newPeriodStartDate,
-            'end_at' => $newPeriodStartDate->clone()->addDays(\App\Models\Period::DAYS_PER_PERIOD)->endOfDay(),
+            'end_at' => $newPeriodStartDate->clone()->addDays(Period::DAYS_PER_PERIOD)->endOfDay(),
         ]);
-        $this->info('Period ' . $newPeriod->id . ' created: ' . $newPeriod->start_at->toDateString() . ' to ' . $newPeriod->end_at->toDateString());
+        $this->info('Period '.$newPeriod->id.' created: '.$newPeriod->start_at->toDateString().' to '.$newPeriod->end_at->toDateString());
+
+        if ($period) {
+            $this->closePeriod($period, $newPeriod, $leagueService, $poidsPlumeService);
+        }
 
         return 0;
+    }
+
+    private function closePeriod(Period $period, Period $nextPeriod, LeagueService $leagueService, PoidsPlumeService $poidsPlumeService): void
+    {
+        $this->info('Closing period '.$period->id.'...');
+
+        $leagueService->closePeriod($period, $nextPeriod);
+        $poidsPlumeService->closePeriod($period);
     }
 }

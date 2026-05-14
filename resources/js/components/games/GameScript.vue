@@ -1,8 +1,4 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, useAttrs, watch } from 'vue'
-
-import { useGame } from '@/composables/useGame'
-
 const props = defineProps({
   game: { type: Object, required: true },
   args: { type: Object, default: () => ({}) },

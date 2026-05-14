@@ -13,7 +13,7 @@ class UserForm
     {
         return $schema
             ->components([
-                TextInput::make('ewtin_id')
+                TextInput::make('etwin_id')
                     ->required(),
                 TextInput::make('display_name')
                     ->required(),

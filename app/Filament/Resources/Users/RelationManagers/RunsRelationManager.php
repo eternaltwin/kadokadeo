@@ -9,8 +9,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
-use App\Filament\Resources\Runs\RunResource;
-use App\Models\Run;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
@@ -104,10 +102,10 @@ class RunsRelationManager extends RelationManager
             ->filters([
                 TrashedFilter::make(),
                 Filter::make('completed_at')
-                ->default(true)
-                ->label('Completed Runs')
+                    ->default(true)
+                    ->label('Completed Runs')
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('completed_at')),
-                ])
+            ])
             ->headerActions([
                 CreateAction::make(),
                 AssociateAction::make(),

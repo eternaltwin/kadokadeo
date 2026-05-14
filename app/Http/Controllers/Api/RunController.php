@@ -11,9 +11,9 @@ use App\Models\Game;
 use App\Models\Period;
 use App\Models\Run;
 use App\Services\GameService;
+use App\Services\LeagueService;
 use App\Services\RunService;
 use App\Services\ScoreService;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +30,7 @@ class RunController extends Controller implements HasMiddleware
         ];
     }
 
-    public function begin(RunStartRequest $request, GameService $gameService, Game $game)
+    public function begin(RunStartRequest $request, GameService $gameService, LeagueService $leagueService, Game $game)
     {
         Gate::authorize('create', Run::class);
 
@@ -56,9 +56,12 @@ class RunController extends Controller implements HasMiddleware
         }
 
         $user = $request->user();
+        $period = Period::current()->first();
+        $membership = $period ? $leagueService->resolveMembership($user, $game, $period) : null;
         $run = $game->runs()->create([
             'user_id' => $user->id,
-            'period_id' => Period::current()->first()?->id,
+            'period_id' => $period?->id,
+            'league_id' => $membership?->league_id,
             'seed' => $seed,
             'contract_score' => $score,
             'contract_points' => $points,
@@ -80,7 +83,7 @@ class RunController extends Controller implements HasMiddleware
     public function end(RunEndRequest $request, Run $run, RunService $runService, ScoreService $scoreService)
     {
         $user = $request->user();
-        $periodId = Period::current()->first()?->id;
+        $periodId = $run->period_id ?? Period::current()->first()?->id;
         $payload = $request->validated('payload');
         $key = $request->validated('key');
         $sign = $request->validated('sign');
@@ -97,7 +100,7 @@ class RunController extends Controller implements HasMiddleware
             throw new BadRequestException($e->getMessage());
         }
 
-        $leaderBoardQuery = $scoreService->getLeaderBoard($run->game, $periodId);
+        $leaderBoardQuery = $scoreService->getLeaderBoard($run->game, $periodId, $run->league_id);
         $toBeatCount = $leaderBoardQuery->where('runs.score', '>', $run->score)->count();
 
         return [

@@ -34,24 +34,24 @@ class PrepareDailyGame extends Command
     ];
 
     protected $firstPlaceMessages = [
-        "Victoire écrasante !",
-        "Impressionnant !",
-        "Chapeau bas, champion !",
-        "T'as cheat ??"
+        'Victoire écrasante !',
+        'Impressionnant !',
+        'Chapeau bas, champion !',
+        "T'as cheat ??",
     ];
 
     protected $secondPlaceMessages = [
-        "Bien joué !",
-        "Pas mal du tout !",
+        'Bien joué !',
+        'Pas mal du tout !',
         "Tu t'es battu jusqu'au bout !",
-        "La prochaine fois sera la bonne !"
+        'La prochaine fois sera la bonne !',
     ];
 
     protected $thirdPlaceMessages = [
-        "Bravo !",
-        "Tu feras mieux demain...",
-        "Continue comme ça !",
-        "Honnêtement pas mal !"
+        'Bravo !',
+        'Tu feras mieux demain...',
+        'Continue comme ça !',
+        'Honnêtement pas mal !',
     ];
 
     /**
@@ -128,6 +128,8 @@ class PrepareDailyGame extends Command
                 $message .= "{$place} **{$run->user->display_name}**: {$score} points. {$customMsg}\n";
             }
         }
-        DiscordAlert::to('scores')->message($message);
+        if (config('discord-alerts.webhook_urls.scores')) {
+            DiscordAlert::to('scores')->message($message);
+        }
     }
 }

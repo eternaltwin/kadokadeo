@@ -1,9 +1,4 @@
 <script setup>
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-
-import { useAuthStore } from '@/stores/auth'
-
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
@@ -19,6 +14,6 @@ authStore.login(route.query?.code, route.query?.state).then(() => {
 <template>
   <div class="inColumns">
     <p v-if="!error">Veuillez patienter...</p>
-    <p v-else>{{ error }}</p>
+    <MessageError v-else>{{ error }}</MessageError>
   </div>
 </template>

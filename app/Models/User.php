@@ -60,6 +60,21 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(UserStar::class);
     }
 
+    public function leagueMemberships()
+    {
+        return $this->hasMany(LeagueMembership::class);
+    }
+
+    public function leaguePromotions()
+    {
+        return $this->hasMany(LeaguePromotion::class);
+    }
+
+    public function poidsPlumeResults()
+    {
+        return $this->hasMany(PoidsPlumeResult::class);
+    }
+
     //
 
     public function canAccessPanel(Panel $panel): bool

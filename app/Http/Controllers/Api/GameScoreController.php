@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\RunResource;
 use App\Models\Game;
 use App\Models\Period;
-use App\Models\Run;
 use App\Services\GameService;
+use App\Services\LeagueService;
 use App\Services\ScoreService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -24,10 +24,11 @@ class GameScoreController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(Game $game, ScoreService $scoreService)
+    public function index(Game $game, ScoreService $scoreService, LeagueService $leagueService)
     {
         $currentPeriod = Period::current()->first();
-        $scores = $scoreService->getLeaderBoard($game, $currentPeriod?->id)->take(10)->get();
+        $league = $currentPeriod ? $leagueService->getCurrentLeagueFor(Auth::user(), $game, $currentPeriod) : null;
+        $scores = $scoreService->getLeaderBoard($game, $currentPeriod?->id, $league?->id)->take(10)->get();
         $personalBest = $scoreService->getUserBestScore($game, Auth::id());
         $personalBestForPeriod = $scoreService->getUserBestScore($game, Auth::id(), $currentPeriod?->id);
         $worldsBest = $scoreService->getUserBestScore($game, null);
@@ -37,6 +38,7 @@ class GameScoreController extends Controller implements HasMiddleware
             'worldsBest' => $worldsBest ? RunResource::make($worldsBest) : null,
             'personalBest' => $personalBest ? RunResource::make($personalBest) : null,
             'personalBestForPeriod' => $personalBestForPeriod ? RunResource::make($personalBestForPeriod) : null,
+            'league' => $league,
         ]);
     }
 
@@ -44,8 +46,9 @@ class GameScoreController extends Controller implements HasMiddleware
     {
         $data = $request->validate([
             'period' => 'sometimes|required|integer|min:1|max_digits:6|exists:periods,id',
+            'league' => 'sometimes|required|integer|min:1|exists:leagues,id',
         ]);
-        $scores = $scoreService->getLeaderBoard($game, data_get($data, 'period'))->paginate(10);
+        $scores = $scoreService->getLeaderBoard($game, data_get($data, 'period'), data_get($data, 'league'))->paginate(50);
 
         return RunResource::collection($scores);
     }

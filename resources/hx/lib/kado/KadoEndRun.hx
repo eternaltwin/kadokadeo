@@ -13,7 +13,7 @@ class KadoEndRun {
 		this.crypto = crypto;
 	}
 
-	public function submit(runDetails:Dto.RunDTO, score:Int, timestamp:Int, replayData:String):Promise<Dto.EndRunResponseDTO> {
+	public function submit(runDetails:Dto.RunDTO, score:Int, timestamp:Int, replayData:String, data:Dynamic):Promise<Dto.EndRunResponseDTO> {
 		if (runDetails == null || runDetails.run_id == null || runDetails.run_id == "") {
 			return cast Promise.reject("Missing run details");
 		}
@@ -32,6 +32,7 @@ class KadoEndRun {
 			score: score,
 			timestamp: timestamp,
 			replay: replayData,
+			data: data,
 		};
 		var jsonReq = haxe.Json.stringify(req);
 		trace('Prepared end run request: ' + jsonReq);

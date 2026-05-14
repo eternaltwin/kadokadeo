@@ -24,6 +24,7 @@
         <env name="CACHE_STORE" value="array"/>
         <env name="DATABASE_CONNECTION" value="sqlite"/>
         <env name="DATABASE_DATABASE" value=":memory:"/>
+        <env name="DATABASE_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

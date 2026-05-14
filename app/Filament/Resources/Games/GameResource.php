@@ -11,6 +11,7 @@ use App\Filament\Resources\Games\RelationManagers\RunsRelationManager;
 use App\Filament\Resources\Games\Schemas\GameForm;
 use App\Filament\Resources\Games\Schemas\GameInfolist;
 use App\Filament\Resources\Games\Tables\GamesTable;
+use App\Livewire\GameLeaguesOverview;
 use App\Models\Game;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -56,6 +57,13 @@ class GameResource extends Resource
             'create' => CreateGame::route('/create'),
             'view' => ViewGame::route('/{record}'),
             'edit' => EditGame::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            GameLeaguesOverview::class,
         ];
     }
 }

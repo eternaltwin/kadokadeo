@@ -5,6 +5,7 @@ import { useApi } from './useApi'
 export function useGameRanking(gameId) {
   const { isLoading, error, get } = useApi()
   const period = ref(null)
+  const league = ref(null)
   const meta = ref({
     current_page: 0,
     last_page: 0,
@@ -20,6 +21,9 @@ export function useGameRanking(gameId) {
     }
     if (period.value) {
       params.period = period.value
+    }
+    if (league.value) {
+      params.league = league.value
     }
     return get(`/games/${gameId}/ranking`, {
       params,
@@ -37,10 +41,16 @@ export function useGameRanking(gameId) {
     fetchGameRanking()
   })
 
+  watch(league, () => {
+    meta.value.current_page = 0
+    fetchGameRanking()
+  })
+
   return {
     isLoading,
     error,
     period,
+    league,
     meta,
     results,
     hasNextPage,

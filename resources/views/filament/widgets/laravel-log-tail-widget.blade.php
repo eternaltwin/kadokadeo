@@ -8,7 +8,7 @@
             Last refresh: {{ $updatedAt }}
         </div>
 
-        @if (! $logFileExists)
+        @if (!$logFileExists)
             <div style="font-size: 14px; color: #6b7280;">
                 Log file not found at <code>storage/logs/laravel.log</code>.
             </div>

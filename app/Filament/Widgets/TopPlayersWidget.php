@@ -4,11 +4,11 @@ namespace App\Filament\Widgets;
 
 use App\Models\User;
 use Carbon\Carbon;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 
 class TopPlayersWidget extends BaseWidget
@@ -30,10 +30,10 @@ class TopPlayersWidget extends BaseWidget
             )
             ->columns([
                 TextColumn::make('display_name')
-                    ->label('Joueur')
+                    ->label('Player')
                     ->searchable(),
                 TextColumn::make('completed_count')
-                    ->label('Parties complétées')
+                    ->label('Runs completed')
                     ->numeric()
                     ->sortable(),
             ])
@@ -41,10 +41,10 @@ class TopPlayersWidget extends BaseWidget
                 Filter::make('period')
                     ->form([
                         DatePicker::make('start_date')
-                            ->label('Du')
+                            ->label('From')
                             ->default(now()->subMonth()),
                         DatePicker::make('end_date')
-                            ->label('Au')
+                            ->label('To')
                             ->default(now()),
                     ])
                     ->query(fn (Builder $query, array $data) => $query
@@ -60,11 +60,12 @@ class TopPlayersWidget extends BaseWidget
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
                         if ($data['start_date'] ?? null) {
-                            $indicators[] = 'Du ' . Carbon::parse($data['start_date'])->toFormattedDateString();
+                            $indicators[] = 'From '.Carbon::parse($data['start_date'])->toFormattedDateString();
                         }
                         if ($data['end_date'] ?? null) {
-                            $indicators[] = 'Au ' . Carbon::parse($data['end_date'])->toFormattedDateString();
+                            $indicators[] = 'To '.Carbon::parse($data['end_date'])->toFormattedDateString();
                         }
+
                         return $indicators;
                     }),
             ])

@@ -15,6 +15,7 @@ class UserLightResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'etwin_id' => $this->etwin_id,
             'display_name' => $this->display_name,
         ];
     }

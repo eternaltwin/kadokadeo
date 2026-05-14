@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class Game extends Model
 {
+    use HasFactory;
+
     public const GAMES_MANIFEST_CACHE_KEY = 'gamesdata_manifest';
 
     protected $fillable = ['name', 'description', 'category_id', 'image_path', 'stars', 'is_active', 'is_official'];
@@ -23,7 +26,7 @@ class Game extends Model
         $fileName = $this->game_key.'.js';
         $file = '/gamesdata/'.$fileName;
         $filePath = public_path(ltrim($file, '/'));
-        if (! file_exists($filePath)) {
+        if (!file_exists($filePath)) {
             return null;
         }
 
@@ -32,7 +35,7 @@ class Game extends Model
         $hash = is_array($manifestEntry) ? ($manifestEntry['hash'] ?? null) : null;
         $size = is_array($manifestEntry) ? ($manifestEntry['size'] ?? null) : null;
 
-        if (! is_int($size)) {
+        if (!is_int($size)) {
             $size = filesize($filePath);
         }
 
@@ -52,7 +55,7 @@ class Game extends Model
     private static function getGamesManifest(): array
     {
         $manifestPath = public_path('gamesdata/manifest.json');
-        if (! file_exists($manifestPath)) {
+        if (!file_exists($manifestPath)) {
             return [];
         }
 
@@ -71,12 +74,12 @@ class Game extends Model
         }
 
         $manifestContent = file_get_contents($manifestPath);
-        if (! is_string($manifestContent)) {
+        if (!is_string($manifestContent)) {
             return [];
         }
 
         $decodedManifest = json_decode($manifestContent, true);
-        if (! is_array($decodedManifest)) {
+        if (!is_array($decodedManifest)) {
             return [];
         }
 
@@ -108,6 +111,16 @@ class Game extends Model
         return $this->hasMany(Run::class);
     }
 
+    public function leagueMemberships()
+    {
+        return $this->hasMany(LeagueMembership::class);
+    }
+
+    public function leaguePromotions()
+    {
+        return $this->hasMany(LeaguePromotion::class);
+    }
+
     public function dailyGames()
     {
         return $this->hasMany(DailyGame::class);
@@ -119,10 +132,15 @@ class Game extends Model
             ->orderBy('order');
     }
 
+    public function periodStars()
+    {
+        return $this->hasMany(GamePeriodStar::class);
+    }
+
     public function getStarFromScore(int $score): int
     {
         $gainedStar = -1;
-        foreach ($this->stars as $index => $threshold) {
+        foreach (($this->stars ?? []) as $index => $threshold) {
             if ($score >= $threshold) {
                 $gainedStar = $index;
             }
