@@ -147,4 +147,64 @@ class ScoreService
 
         return $result?->rank_position;
     }
+
+    public function getLeagueScoresForPromotion(Game $game, int $periodId)
+    {
+        return cache()->remember("promotion_scores_{$game->id}_{$periodId}", now()->addMinutes(10), function () use ($game, $periodId) {
+            $bestRuns = Run::query()
+                ->select('runs.*')
+                ->selectRaw('ROW_NUMBER() OVER (PARTITION BY runs.league_id, runs.user_id ORDER BY runs.score DESC, runs.play_time_seconds ASC, runs.completed_at ASC, runs.id ASC) AS user_best_rank')
+                ->where('runs.game_id', $game->id)
+                ->where('runs.period_id', $periodId)
+                ->whereNotNull('runs.score')
+                ->whereNotNull('runs.league_id')
+                ->whereNull('runs.deleted_at');
+
+            $rankedRuns = DB::query()
+                ->fromSub($bestRuns, 'best_runs')
+                ->where('best_runs.user_best_rank', 1)
+                ->select('best_runs.*')
+                ->selectRaw('ROW_NUMBER() OVER (PARTITION BY best_runs.league_id ORDER BY best_runs.score DESC, best_runs.play_time_seconds ASC, best_runs.completed_at ASC, best_runs.id ASC) AS league_rank')
+                ->selectRaw('COUNT(*) OVER (PARTITION BY best_runs.league_id) AS active_players_count');
+
+            $rows = DB::query()
+                ->fromSub($rankedRuns, 'ranked_runs')
+                ->join('leagues', 'leagues.id', '=', 'ranked_runs.league_id')
+                ->join('leagues as next_leagues', 'next_leagues.level', '=', DB::raw('leagues.level + 1'))
+                ->select([
+                    'ranked_runs.league_id',
+                    'ranked_runs.active_players_count',
+                    'ranked_runs.league_rank',
+                    'ranked_runs.score as required_score',
+                ])
+                ->selectRaw('CASE
+                    WHEN leagues.promotion_ratio_divisor IS NOT NULL
+                        AND leagues.promotion_max_slots IS NOT NULL
+                        THEN LEAST(
+                            CAST((ranked_runs.active_players_count + leagues.promotion_ratio_divisor - 1) / leagues.promotion_ratio_divisor AS INTEGER),
+                            leagues.promotion_max_slots,
+                            ranked_runs.active_players_count
+                        )
+                    WHEN leagues.promotion_ratio_divisor IS NOT NULL
+                        THEN LEAST(
+                            CAST((ranked_runs.active_players_count + leagues.promotion_ratio_divisor - 1) / leagues.promotion_ratio_divisor AS INTEGER),
+                            ranked_runs.active_players_count
+                        )
+                    WHEN leagues.promotion_max_slots IS NOT NULL
+                        THEN LEAST(leagues.promotion_max_slots, ranked_runs.active_players_count)
+                    ELSE 0
+                END AS promotion_slots')
+                ->get()
+                ->filter(fn ($row) => (int) $row->league_rank === (int) $row->promotion_slots)
+                ->values();
+
+            return $rows->mapWithKeys(function ($row) {
+                return [$row->league_id => [
+                    'required_score' => $row->required_score,
+                    'active_players_count' => $row->active_players_count,
+                    'promotion_slots' => $row->promotion_slots,
+                ]];
+            });
+        });
+    }
 }

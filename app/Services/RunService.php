@@ -101,6 +101,9 @@ class RunService
                 'source_id' => $run->id,
             ]);
         }
+        if ($run->period_id) {
+            cache()->forget("promotion_scores_{$run->game->id}_{$run->period_id}");
+        }
 
         return $run;
     }

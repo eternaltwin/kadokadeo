@@ -20,10 +20,9 @@ watchEffect(() => {
 })
 
 const starsByColor = computed(() => {
-  return Object.values(profile.value.best_stars).reduce((acc, star) => {
-    if (star !== null) {
-      acc[star] = (acc[star] || 0) + 1
-    }
+  return Object.values(profile.value.best_period_runs).reduce((acc, run) => {
+    const star = getStarId(run)
+    acc[star] = (acc[star] || 0) + 1
     return acc
   }, {})
 })
@@ -55,6 +54,11 @@ fetchGameHistory()
 function getStarImage(run) {
   const { getStarFromScore } = useGameModel(run.game)
   return getStarFromScore(run.score)
+}
+
+function getStarId(run) {
+  const { getStarIdFromScore } = useGameModel(run.game)
+  return getStarIdFromScore(run.score)
 }
 </script>
 

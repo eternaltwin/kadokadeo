@@ -15,6 +15,7 @@ const personalBest = ref(null)
 const worldsBest = ref(null)
 const currentScore = ref(0)
 const league = ref(null)
+const leaguesScores = ref({})
 const palliers = computed(() => {
   const s = []
   if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[0]) {
@@ -33,6 +34,10 @@ const palliers = computed(() => {
   if (bestScore && bestScore.user?.etwin_id !== authStore.user?.etwin_id && league.value?.level === leagueStore.paradiseLeagueId) {
     s.push({ score: bestScore.score + 1, points: null, img: '/gfx/iconFeather.gif', alt: 'Plume de Piou' })
   }
+  const leagueScore = leaguesScores.value[league.value?.level]
+  if (leagueScore && leagueScore.required_score > personalBestForPeriod.value?.score) {
+    s.push({ score: leagueScore.required_score + 1, points: null, img: `/gfx/leagues/${league.value.level + 1}.png`, alt: 'Ligue supérieure' })
+  }
   s.push({ score: 0, points: 0, img: '/gfx/iconContract.png', alt: 'Contrat' })
   s.sort((a, b) => b.score - a.score)
   return s
@@ -45,10 +50,11 @@ const notZoomedHiddenState = computed(() => (props.isZoomed ? '' : 'hidden'))
 const refreshScores = () => {
   return get(`/games/${props.game.id}/scores`).then((data) => {
     scores.value = data.data.scores
-    worldsBest.value = data.data.worldsBest
-    personalBest.value = data.data.personalBest
-    personalBestForPeriod.value = data.data.personalBestForPeriod
+    worldsBest.value = data.data.worlds_best
+    personalBest.value = data.data.personal_best
+    personalBestForPeriod.value = data.data.personal_best_for_period
     league.value = data.data.league ?? null
+    leaguesScores.value = data.data.leagues_scores ?? {}
   })
 }
 

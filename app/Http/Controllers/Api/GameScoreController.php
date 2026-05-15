@@ -32,13 +32,15 @@ class GameScoreController extends Controller implements HasMiddleware
         $personalBest = $scoreService->getUserBestScore($game, Auth::id());
         $personalBestForPeriod = $scoreService->getUserBestScore($game, Auth::id(), $currentPeriod?->id);
         $worldsBest = $scoreService->getUserBestScore($game, null);
+        $leaguesScores = $scoreService->getLeagueScoresForPromotion($game, $currentPeriod?->id);
 
         return response()->json([
             'scores' => RunResource::collection($scores),
-            'worldsBest' => $worldsBest ? RunResource::make($worldsBest) : null,
-            'personalBest' => $personalBest ? RunResource::make($personalBest) : null,
-            'personalBestForPeriod' => $personalBestForPeriod ? RunResource::make($personalBestForPeriod) : null,
+            'worlds_best' => $worldsBest ? RunResource::make($worldsBest) : null,
+            'personal_best' => $personalBest ? RunResource::make($personalBest) : null,
+            'personal_best_for_period' => $personalBestForPeriod ? RunResource::make($personalBestForPeriod) : null,
             'league' => $league,
+            'leagues_scores' => $leaguesScores,
         ]);
     }
 

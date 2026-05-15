@@ -17,17 +17,22 @@ function getStarImage(starId) {
 }
 
 export function useGameModel(game) {
-  function getStarFromScore(score) {
+  function getStarIdFromScore(score) {
     const stars = toValue(game)?.stars ?? []
     for (let i = stars.length - 1; i >= 0; i -= 1) {
       if (score >= stars[i]) {
-        return getStarImage(i)
+        return i
       }
     }
-    return GreyStar
+    return -1
+  }
+  function getStarFromScore(score) {
+    const starId = getStarIdFromScore(score)
+    return getStarImage(starId)
   }
 
   return {
     getStarFromScore,
+    getStarIdFromScore,
   }
 }
