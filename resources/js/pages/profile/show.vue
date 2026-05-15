@@ -77,15 +77,34 @@ function getStarId(run) {
         <div v-else-if="profile">
           <div v-if="item.value === 'me'">
             <h1 class="mt-0 text-center">Profil de {{ profile.data.display_name }}</h1>
-            <div v-if="feathersCount > 0" class="flex justify-center items-center gap-1 mb-4">
-              <img v-for="i in feathersCount"
-                   :key="i"
-                   src="/gfx/iconFeather.gif"
-                   alt="Plume de Piou"
-                   class="inline-block" />
-            </div>
-            <h2>Statut</h2>
+            
+            <!--<div style="width:95%;margin:0 2.5%; display: flex; justify-content: space-between;">
+              <div style="width:35%;margin-right:2.5%;background:red;">
+                <p>blabla</p><h2 style="width:100%;margin:0;">Clan</h2>
+              </div>
+              <div style="width:65%;margin: 0;background:green;">
+                <p>blabla</p>
+                <h2 style="width:100%;margin:0;">
+                  Statut 
+                  <span v-if="feathersCount > 0">
+                    <img v-for="i in feathersCount"
+                      :key="i"
+                      src="/gfx/iconFeather.gif"
+                      alt="Plume de Piou" />
+                  </span>
+                </h2>
+              </div>
+            </div>-->
 
+            <h2>Statut 
+              <span v-if="feathersCount > 0">
+                <img v-for="i in feathersCount"
+                  :key="i"
+                  src="/gfx/iconFeather.gif"
+                  alt="Plume de Piou" />
+              </span>
+            </h2>
+            
             <div class="grid md:grid-cols-2 ">
               <div class="grid grid-cols-3 justify-items-center">
                 <div class="flex items-end">
@@ -125,7 +144,7 @@ function getStarId(run) {
                   <Number :value="beginnerLeagueCount || '.'" />
                 </div>
               </div>
-
+            
               <div class="md:col-span-2 flex">
                 <div class="mx-auto relative">
                   <img src="/gfx/maxiuser_bar_bg_disabled.gif" alt="Barre de progression du profil" class="w-[355px] h-[18px]" />

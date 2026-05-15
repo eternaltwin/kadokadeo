@@ -258,8 +258,9 @@
   }
 
   #container h2 {
-    width: 100%;
+    width: 95%;
     height: 35px;
+    margin: 0 2.5%;
     padding: 4px 5px 0 40px;
     font-size: 1.5em;
     background: url('/gfx/bgTitleBlue.jpg') no-repeat;
