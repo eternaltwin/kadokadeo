@@ -83,8 +83,8 @@ class Ballon {
 
 	public function update(nb:Int):Bool {
 		var s = Timer.tmod * speed;
-		var ddx = tx - x;
-		var ddy = ty - y;
+		var ddx = Cs.q(tx - x);
+		var ddy = Cs.q(ty - y);
 		var dd = Math.sqrt(ddx * ddx + ddy * ddy);
 		var p = Math.pow(0.96, Timer.tmod);
 
@@ -116,8 +116,8 @@ class Ballon {
 			nextStep();
 		}
 
-		x += dx * s;
-		y += dy * s;
+		x = Cs.q(x + dx * s);
+		y = Cs.q(y + dy * s);
 
 		if (y > 280 * Cs.NEW_GEN_SCALE) {
 			y = 280 * Cs.NEW_GEN_SCALE - (y - 280 * Cs.NEW_GEN_SCALE);
@@ -129,18 +129,24 @@ class Ballon {
 		var n = l.length;
 		for (i in (nb + 1)...n) {
 			var b = l[i];
-			var dx = b.x - x;
-			var dy = b.y - y;
-			r = Math.sqrt(dx * dx + dy * dy);
+			var dx = Cs.q(b.x - x);
+			var dy = Cs.q(b.y - y);
+			r = Cs.q(Math.sqrt(dx * dx + dy * dy));
 			if (r < ray * 2) {
-				var a = Math.atan2(dy, dx);
-				r = (ray * 2 - r) / 2;
-				var ca = r * Math.cos(a);
-				var sa = r * Math.sin(a);
-				x -= ca;
-				y -= sa;
-				b.x += ca;
-				b.y += sa;
+				var push = Cs.q((ray * 2 - r) / 2);
+				var ca:Float;
+				var sa:Float;
+				if (r > 0) {
+					ca = Cs.q(dx / r * push);
+					sa = Cs.q(dy / r * push);
+				} else {
+					ca = push;
+					sa = 0;
+				}
+				x = Cs.q(x - ca);
+				y = Cs.q(y - sa);
+				b.x = Cs.q(b.x + ca);
+				b.y = Cs.q(b.y + sa);
 			}
 		}
 

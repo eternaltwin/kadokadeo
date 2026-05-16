@@ -13,6 +13,7 @@ class Cs {
 	public static var PLAN_INTERF:Int = 4;
 
 	public static var POINTS:Array<Int> = KKApi.aconst([100, 250, 500, 1000, 5000]);
+	public static var COLLISION_QUANT:Int = 100;
 
 	public static var LEVEL:Array<{n:Int, m:Int}> = [
 		{n: 3, m: 0},
@@ -31,4 +32,8 @@ class Cs {
 		{n: 5, m: 1},
 		{n: 15, m: 0}
 	];
+
+	public static inline function q(v:Float):Float {
+		return Math.round(v * COLLISION_QUANT) / COLLISION_QUANT;
+	}
 }

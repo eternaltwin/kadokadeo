@@ -153,7 +153,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(delta:Float):Void {
-		var mouseY = MouseManager.getY();
+		var mouseY = Cs.q(MouseManager.getY());
 		hero.ty = mouseY;
 		// hero.mc._y = mouseY;
 
@@ -177,8 +177,8 @@ class Game implements kado.GameInterface {
 				var n = getBalsLength();
 				for (i in 0...n) {
 					var b = bals[i];
-					b.tx = 150 * Cs.NEW_GEN_SCALE + Math.cos(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE;
-					b.ty = 150 * Cs.NEW_GEN_SCALE + Math.sin(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE;
+					b.tx = Cs.q(150 * Cs.NEW_GEN_SCALE + Math.cos(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
+					b.ty = Cs.q(150 * Cs.NEW_GEN_SCALE + Math.sin(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
 					b.mind = 0;
 					b.timer = 5;
 				}
@@ -189,7 +189,7 @@ class Game implements kado.GameInterface {
 					if (b.t != 3) {
 						var x = c[b.t]++;
 						x = (((x % 2) > 0) ? 1 : -1) * 15 * Cs.NEW_GEN_SCALE * x;
-						b.tx = 150 * Cs.NEW_GEN_SCALE + x;
+						b.tx = Cs.q(150 * Cs.NEW_GEN_SCALE + x);
 						b.ty = ys[b.t];
 						b.mind = 0;
 						b.timer = 5;
