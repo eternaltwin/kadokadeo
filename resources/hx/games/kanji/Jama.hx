@@ -27,6 +27,18 @@ class Jama {
 	static inline var CIGOGNE = 0;
 	static inline var BEE = 1;
 	static inline var SANGLIER = 2;
+	static inline var CIGOGNE_COL_ANCHOR_X = 92;
+	static inline var CIGOGNE_COL_TOP = -16;
+	static inline var CIGOGNE_COL_BOTTOM = 21;
+	static inline var CIGOGNE_COL_W = 235;
+	static inline var BEE_LEFT = -44;
+	static inline var BEE_RIGHT = 41;
+	static inline var BEE_TOP = -65;
+	static inline var BEE_BOTTOM = 35;
+	static inline var SANGLIER_LEFT = -91;
+	static inline var SANGLIER_RIGHT = 84;
+	static inline var SANGLIER_TOP = -88;
+	static inline var SANGLIER_BOTTOM = 14;
 
 	public function new(g:Game, p, t:Int) {
 		game = g;
@@ -94,6 +106,60 @@ class Jama {
 		}
 	}
 
+	function localBox():{
+		left:Float,
+		right:Float,
+		top:Float,
+		bottom:Float
+	} {
+		if (t == CIGOGNE) {
+			if (way) {
+				return {
+					left: -CIGOGNE_COL_W + CIGOGNE_COL_ANCHOR_X,
+					right: CIGOGNE_COL_ANCHOR_X,
+					top: CIGOGNE_COL_TOP,
+					bottom: CIGOGNE_COL_BOTTOM
+				};
+			}
+			return {
+				left: -CIGOGNE_COL_ANCHOR_X,
+				right: CIGOGNE_COL_W - CIGOGNE_COL_ANCHOR_X,
+				top: CIGOGNE_COL_TOP,
+				bottom: CIGOGNE_COL_BOTTOM
+			};
+		}
+		if (t == BEE) {
+			return {
+				left: BEE_LEFT,
+				right: BEE_RIGHT,
+				top: BEE_TOP,
+				bottom: BEE_BOTTOM
+			};
+		}
+		if (t == SANGLIER) {
+			if (way) {
+				return {
+					left: -SANGLIER_RIGHT,
+					right: -SANGLIER_LEFT,
+					top: SANGLIER_TOP,
+					bottom: SANGLIER_BOTTOM
+				};
+			}
+			return {
+				left: SANGLIER_LEFT,
+				right: SANGLIER_RIGHT,
+				top: SANGLIER_TOP,
+				bottom: SANGLIER_BOTTOM
+			};
+		}
+		return {
+			left: 0,
+			right: 0,
+			top: 0,
+			bottom: 0
+		};
+	}
+
 	function hit(hray:Float):Bool {
 		if (game.hero.mc._name == null) {
 			return false;
@@ -102,24 +168,19 @@ class Jama {
 		mc._x = x;
 		mc._y = y;
 
-		var boundSource:ASprite = (col != null) ? col : mc;
-		var ob:Rectangle = boundSource.getBounds();
-		if (ob.x < 1 && ob.y < 1) {
-			return false;
-		}
-
-		var hcX = game.hero.x + game.hero.colOffX - game.hero.colHalfW;
-		var hcY = game.hero.y + game.hero.colOffY - game.hero.colHalfH;
+		var box = localBox();
+		var hcX = Cs.q(game.hero.x + game.hero.colOffX - game.hero.colHalfW);
+		var hcY = Cs.q(game.hero.y + game.hero.colOffY - game.hero.colHalfH);
 
 		var hLeft = hcX;
-		var hRight = hcX + game.hero.colHalfW * 2;
+		var hRight = Cs.q(hcX + game.hero.colHalfW * 2);
 		var hTop = hcY;
-		var hBottom = hcY + game.hero.colHalfH * 2;
+		var hBottom = Cs.q(hcY + game.hero.colHalfH * 2);
 
-		var oLeft = ob.x + hray;
-		var oRight = ob.x + ob.width - hray;
-		var oTop = ob.y;
-		var oBottom = ob.y + ob.height;
+		var oLeft = Cs.q(x + box.left + hray);
+		var oRight = Cs.q(x + box.right - hray);
+		var oTop = Cs.q(y + box.top);
+		var oBottom = Cs.q(y + box.bottom);
 
 		if (Cs.DEBUG) {
 			game.drawBox({
@@ -138,9 +199,10 @@ class Jama {
 			return false;
 		}
 
-		hitFromAbove = hcY < (oTop + oBottom) * 0.5;
+		var oCenterY = Cs.q((oTop + oBottom) * 0.5);
+		hitFromAbove = hcY < oCenterY;
 		if (!hitFromAbove && Cs.DEBUG) {
-			trace("hit side/below - enemy center:", (oTop + oBottom) * 0.5, "hero center:", hcY);
+			trace("hit side/below - enemy center:", oCenterY, "hero center:", hcY);
 		}
 		return true;
 	}

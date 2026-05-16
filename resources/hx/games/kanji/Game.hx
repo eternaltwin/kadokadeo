@@ -30,6 +30,7 @@ class Game implements kado.GameInterface {
 
 	var bonuses:Array<Bonus>;
 	var jamas:Array<Jama>;
+	var bonusProbas:Array<Int>;
 	var nb:Int;
 
 	public var level:Int;
@@ -66,8 +67,9 @@ class Game implements kado.GameInterface {
 		level = 0;
 		avg_tmod = 0;
 
+		bonusProbas = Cs.BONUS_PROBAS_TBL.copy();
 		if (Seed.random(1000) == 0) {
-			Cs.BONUS_PROBAS_TBL[2] = 3;
+			bonusProbas[2] = 3;
 		}
 
 		stats = {
@@ -102,8 +104,8 @@ class Game implements kado.GameInterface {
 			var hit = false;
 			for (i in 0...l) {
 				var b = entities[i];
-				var dx = b._x - x;
-				var dy = b._y - y;
+				var dx = Cs.q(b._x - x);
+				var dy = Cs.q(b._y - y);
 				if (dx * dx + dy * dy < r2) {
 					hit = true;
 					break;
@@ -181,7 +183,7 @@ class Game implements kado.GameInterface {
 		if (p == null) {
 			return;
 		}
-		var t = randomProbas(Cs.BONUS_PROBAS_TBL);
+		var t = randomProbas(bonusProbas);
 		var b = new Bonus(this, p, t);
 		bonuses.push(b);
 	}

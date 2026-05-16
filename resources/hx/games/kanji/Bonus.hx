@@ -34,8 +34,8 @@ class Bonus {
 			mc._yscale = s;
 		}
 
-		var dx = game.hero.mc._x - mc._x;
-		var dy = (game.hero.mc._y - 20 * Cs.NEW_GEN_SCALE) - mc._y;
+		var dx = Cs.q(game.hero.mc._x - mc._x);
+		var dy = Cs.q((game.hero.mc._y - 20 * Cs.NEW_GEN_SCALE) - mc._y);
 		if (dx * dx + dy * dy < Cs.BONUS_RAY2) {
 			var p = game.dmanager.attach("FXVanish", Cs.PLAN_HERO + 1);
 			p.play();
