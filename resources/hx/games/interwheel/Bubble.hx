@@ -13,11 +13,11 @@ class Bubble extends Part {
 		mc = Cs.game.dm.attach("mcBubble", Game.DP_WPART);
 		super(mc);
 		frict = 0.98;
-		dec = Math.random() * 628;
-		dsp = 10 + Math.random() * 20;
-		ec = 0.5 + Math.random() * 4;
-		weight = -(0.15 + Math.random() * 0.5);
-		setScale(30 + Math.random() * 50);
+		dec = Seed.randVfx() * 628;
+		dsp = 10 + Seed.randVfx() * 20;
+		ec = 0.5 + Seed.randVfx() * 4;
+		weight = -(0.15 + Seed.randVfx() * 0.5);
+		setScale(30 + Seed.randVfx() * 50);
 		root.stop();
 
 		root.blendMode = BlendModes.SCREEN;
@@ -39,7 +39,7 @@ class Bubble extends Part {
 				vx = 0;
 				vy = 0;
 				root.nextFrame();
-				outTimer = 10 + Math.random() * 20;
+				outTimer = 10 + Seed.randVfx() * 20;
 			}
 		}
 

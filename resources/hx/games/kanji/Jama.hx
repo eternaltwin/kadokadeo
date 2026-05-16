@@ -4,6 +4,7 @@ import kanji.Game.FeatherSprite;
 import kanji.Game.FeatherMain;
 import pixi.core.math.shapes.Rectangle;
 import mt.Timer;
+import mt.bumdum.Lib;
 
 class McSprite extends ASprite {
 	public var col:ASprite;
@@ -169,18 +170,18 @@ class Jama {
 		mc._y = y;
 
 		var box = localBox();
-		var hcX = Cs.q(game.hero.x + game.hero.colOffX - game.hero.colHalfW);
-		var hcY = Cs.q(game.hero.y + game.hero.colOffY - game.hero.colHalfH);
+		var hcX = Num.q(game.hero.x + game.hero.colOffX - game.hero.colHalfW);
+		var hcY = Num.q(game.hero.y + game.hero.colOffY - game.hero.colHalfH);
 
 		var hLeft = hcX;
-		var hRight = Cs.q(hcX + game.hero.colHalfW * 2);
+		var hRight = Num.q(hcX + game.hero.colHalfW * 2);
 		var hTop = hcY;
-		var hBottom = Cs.q(hcY + game.hero.colHalfH * 2);
+		var hBottom = Num.q(hcY + game.hero.colHalfH * 2);
 
-		var oLeft = Cs.q(x + box.left + hray);
-		var oRight = Cs.q(x + box.right - hray);
-		var oTop = Cs.q(y + box.top);
-		var oBottom = Cs.q(y + box.bottom);
+		var oLeft = Num.q(x + box.left + hray);
+		var oRight = Num.q(x + box.right - hray);
+		var oTop = Num.q(y + box.top);
+		var oBottom = Num.q(y + box.bottom);
 
 		if (Cs.DEBUG) {
 			game.drawBox({
@@ -199,7 +200,7 @@ class Jama {
 			return false;
 		}
 
-		var oCenterY = Cs.q((oTop + oBottom) * 0.5);
+		var oCenterY = Num.q((oTop + oBottom) * 0.5);
 		hitFromAbove = hcY < oCenterY;
 		if (!hitFromAbove && Cs.DEBUG) {
 			trace("hit side/below - enemy center:", oCenterY, "hero center:", hcY);

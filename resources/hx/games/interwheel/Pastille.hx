@@ -1,5 +1,7 @@
 package interwheel;
 
+import mt.bumdum.Lib;
+
 class Pastille extends Element {
 	var type:Int;
 	var cn:ASprite;
@@ -18,7 +20,7 @@ class Pastille extends Element {
 
 	public override function update() {
 		super.update();
-		if (Cs.game.blob.getDist(this) < 70 * Cs.NEW_GEN_SCALE) {
+		if (Num.q(Cs.game.blob.getDist(this)) < 70 * Cs.NEW_GEN_SCALE) {
 			flRemove = true;
 			var p = new Spark(Cs.game.dm.empty(Game.DP_PART));
 			p.x = x;
@@ -28,7 +30,7 @@ class Pastille extends Element {
 			Cs.game.stats.b[type]++;
 		};
 		if (cn != null) {
-			var sc = 90 + Math.random() * 20;
+			var sc = 90 + Seed.randVfx() * 20;
 			cn._xscale = sc;
 			cn._yscale = sc;
 		}

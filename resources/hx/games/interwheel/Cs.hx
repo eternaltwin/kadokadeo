@@ -3,6 +3,7 @@ package interwheel;
 import common_haxe_avm1.KKApi;
 import pixi.core.textures.RenderTexture;
 import pixi.core.math.Matrix;
+import mt.bumdum.Lib;
 
 class Cs {
 	public static var NEW_GEN_SCALE = 3;
@@ -43,9 +44,9 @@ class Cs {
 	public static var game:Game;
 
 	public static function getDist(o:{x:Float, y:Float}, o2:{x:Float, y:Float}) {
-		var dx = o2.x - o.x;
-		var dy = o2.y - o.y;
-		return Math.sqrt(dx * dx + dy * dy);
+		var dx = Num.q(o2.x - o.x);
+		var dy = Num.q(o2.y - o.y);
+		return Num.q(Math.sqrt(dx * dx + dy * dy));
 	}
 
 	//

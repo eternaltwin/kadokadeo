@@ -6,6 +6,7 @@ import common_haxe_avm1.MouseManager;
 import haxe.io.UInt16Array;
 import kado.Seed;
 import kado.KadoKadeoManager;
+import mt.bumdum.Lib;
 import mt.DepthManager;
 import mt.Timer;
 
@@ -153,7 +154,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(delta:Float):Void {
-		var mouseY = Cs.q(MouseManager.getY());
+		var mouseY = Num.q(MouseManager.getY());
 		hero.ty = mouseY;
 		// hero.mc._y = mouseY;
 
@@ -177,8 +178,8 @@ class Game implements kado.GameInterface {
 				var n = getBalsLength();
 				for (i in 0...n) {
 					var b = bals[i];
-					b.tx = Cs.q(150 * Cs.NEW_GEN_SCALE + Math.cos(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
-					b.ty = Cs.q(150 * Cs.NEW_GEN_SCALE + Math.sin(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
+					b.tx = Num.q(150 * Cs.NEW_GEN_SCALE + Math.cos(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
+					b.ty = Num.q(150 * Cs.NEW_GEN_SCALE + Math.sin(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
 					b.mind = 0;
 					b.timer = 5;
 				}
@@ -189,7 +190,7 @@ class Game implements kado.GameInterface {
 					if (b.t != 3) {
 						var x = c[b.t]++;
 						x = (((x % 2) > 0) ? 1 : -1) * 15 * Cs.NEW_GEN_SCALE * x;
-						b.tx = Cs.q(150 * Cs.NEW_GEN_SCALE + x);
+						b.tx = Num.q(150 * Cs.NEW_GEN_SCALE + x);
 						b.ty = ys[b.t];
 						b.mind = 0;
 						b.timer = 5;

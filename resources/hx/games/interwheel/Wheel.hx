@@ -22,27 +22,27 @@ class Wheel extends Element {
 		a = 0;
 		speed = (Seed.random(2) * 2 - 1) * (0.1 + Seed.rand() * 0.1);
 		skin = "mcWheel";
-		fr = Std.random(5) + 1;
+		fr = Seed.randomVfx(5) + 1;
 		mList = new Array();
 	}
 
 	override function update() {
 		super.update();
-		a += speed * Timer.tmod;
+		a = Num.q(a + speed * Timer.tmod);
 		wh._rotation = a / 0.0174;
 		sh._rotation = wh._rotation;
 		if (Cs.game.blob.step == 1) {
-			if (Cs.game.blob.getDist(this) < ray + Blob.RAY) {
+			if (Num.q(Cs.game.blob.getDist(this)) < ray + Blob.RAY) {
 				for (o in mList) {
-					var ba = Cs.game.blob.getAng(this) + 3.14;
-					var da = Num.hMod((o.a + a) - ba, 3.14);
-					if (Math.abs(da) * ray < Cs.MINE_SPACE) {
+					var ba = Num.q(Cs.game.blob.getAng(this) + 3.14);
+					var da = Num.q(Num.hMod((o.a + a) - ba, 3.14));
+					if (Num.q(Math.abs(da) * ray) < Cs.MINE_SPACE) {
 						Cs.game.blob.explode(ba);
 						//
 						Cs.game.stats.pl++;
 						//
-						var x = x + Math.cos(a + o.a) * ray;
-						var y = y + Math.sin(a + o.a) * ray;
+						var x = Num.q(x + Math.cos(a + o.a) * ray);
+						var y = Num.q(y + Math.sin(a + o.a) * ray);
 						var mcExp = Cs.game.dm.attach("mcExplosion", Game.DP_PART);
 						mcExp._x = x;
 						mcExp._y = y;
@@ -52,51 +52,51 @@ class Wheel extends Element {
 						// PART MINE
 						for (n in 0...5) {
 							var p = new Part(Cs.game.dm.attach("partMine", Game.DP_PART));
-							var a = ba + (Math.random() * 2 - 1) * 1.57; // Math.random()*6.28
+							var a = ba + (Seed.randVfx() * 2 - 1) * 1.57; // Math.random()*6.28
 							var ray = 4;
-							var sp = 1 + Math.random() * 4;
+							var sp = 1 + Seed.randVfx() * 4;
 							var ca = Math.cos(a);
 							var sa = Math.sin(a);
 							p.x = x + ca * ray;
 							p.y = y + sa * ray;
 							p.vx = ca * sp;
 							p.vy = sa * sp;
-							p.setScale(80 + Math.random() * 40);
-							p.weight = 0.1 + Math.random() * 0.2;
+							p.setScale(80 + Seed.randVfx() * 40);
+							p.weight = 0.1 + Seed.randVfx() * 0.2;
 							p.fadeType = 0;
-							p.timer = 10 + Math.random() * 30;
-							p.vr = (Math.random() * 2 - 1) * 20;
-							p.root._rotation = Math.random() * 360;
-							p.root.gotoAndStop(Std.random(p.root._totalframes) + 1);
+							p.timer = 10 + Seed.randVfx() * 30;
+							p.vr = (Seed.randVfx() * 2 - 1) * 20;
+							p.root._rotation = Seed.randVfx() * 360;
+							p.root.gotoAndStop(Seed.randomVfx(p.root._totalframes) + 1);
 						}
 						// SMOKE
 						for (n in 0...6) {
 							var p = new Part(Cs.game.dm.attach("partSmoke", Game.DP_PART));
-							var a = Math.random() * 6.28;
-							var sp = 0.5 + Math.random() * 2;
+							var a = Seed.randVfx() * 6.28;
+							var sp = 0.5 + Seed.randVfx() * 2;
 							p.x = x;
 							p.y = y;
 							p.vx = Math.cos(a) * sp;
 							p.vy = Math.sin(a) * sp;
 							p.frict = 0.95;
-							p.setScale(80 + Math.random() * 60);
-							p.weight = -(0.1 + Math.random() * 0.3);
-							p.timer = 10 + Math.random() * 20;
-							p.vr = (Math.random() * 2 - 1) * 12;
-							p.root._rotation = Math.random() * 360;
+							p.setScale(80 + Seed.randVfx() * 60);
+							p.weight = -(0.1 + Seed.randVfx() * 0.3);
+							p.timer = 10 + Seed.randVfx() * 20;
+							p.vr = (Seed.randVfx() * 2 - 1) * 12;
+							p.root._rotation = Seed.randVfx() * 360;
 							p.updatePos();
 						}
 						// TACHE MUR
 						for (n in 0...4) {
 							var p = new Part(Cs.game.dm.attach("partWallTache", Game.DP_BG));
-							var a = ba + (Math.random() * 2 - 1) * 1.57;
-							var sp = Math.random() * 36;
+							var a = ba + (Seed.randVfx() * 2 - 1) * 1.57;
+							var sp = Seed.randVfx() * 36;
 							p.x = x + Math.cos(a) * sp;
 							p.y = y + Math.sin(a) * sp;
-							p.weight = Math.random() * 0.01;
-							p.setScale(50 + Math.random() * 50);
-							p.root._rotation = Math.random() * 360;
-							p.root.gotoAndStop(Std.random(p.root._totalframes) + 1);
+							p.weight = Seed.randVfx() * 0.01;
+							p.setScale(50 + Seed.randVfx() * 50);
+							p.root._rotation = Seed.randVfx() * 360;
+							p.root.gotoAndStop(Seed.randomVfx(p.root._totalframes) + 1);
 							p.updatePos();
 						}
 						// GROSSE TACHE
@@ -106,7 +106,7 @@ class Wheel extends Element {
 							p.y = y;
 							p.vs = 30;
 							p.sFrict = 0.65;
-							p.root._rotation = Math.random() * 360;
+							p.root._rotation = Seed.randVfx() * 360;
 							p.setScale(40);
 							p.updatePos();
 						}
@@ -123,13 +123,13 @@ class Wheel extends Element {
 						var scm = 100 / (ray * 2);
 						for (n in 0...4) {
 							var p = new Part(bdm.attach("partWallTache", 0));
-							var a = o.a + 3.14 + (Math.random() * 2 - 1) * 1.57;
-							var sp = (Math.random() * 10) * scm;
+							var a = o.a + 3.14 + (Seed.randVfx() * 2 - 1) * 1.57;
+							var sp = (Seed.randVfx() * 10) * scm;
 							p.x = bx + Math.cos(a) * sp;
 							p.y = by + Math.sin(a) * sp;
-							p.setScale((50 + Math.random() * 60) * scm);
-							p.root._rotation = Math.random() * 360;
-							p.root.gotoAndStop(Std.random(p.root._totalframes) + 1);
+							p.setScale((50 + Seed.randVfx() * 60) * scm);
+							p.root._rotation = Seed.randVfx() * 360;
+							p.root.gotoAndStop(Seed.randomVfx(p.root._totalframes) + 1);
 						}
 
 						// YEUX
@@ -151,19 +151,19 @@ class Wheel extends Element {
 		}
 
 		if (flDestroy) {
-			speed *= Math.pow(0.97, Timer.tmod);
+			speed = Num.q(speed * Math.pow(0.97, Timer.tmod));
 			// tit'gouttes
 			var ca = Math.cos(a + aBoom);
 			var sa = Math.sin(a + aBoom);
-			if (Math.random() / Timer.tmod < speed * 5) {
+			if (Seed.randVfx() / Timer.tmod < speed * 5) {
 				var p = new Part(Cs.game.dm.attach("partOil", Game.DP_PART));
-				var dist = ray - (5 + Math.random() * 5);
+				var dist = ray - (5 + Seed.randVfx() * 5);
 				p.x = x + ca * dist;
 				p.y = y + sa * dist;
-				p.weight = 0.1 + Math.random() * 0.1;
-				p.setScale(80 + Math.random() * 80);
+				p.weight = 0.1 + Seed.randVfx() * 0.1;
+				p.setScale(80 + Seed.randVfx() * 80);
 				p.fadeType = 0;
-				p.timer = 10 + Math.random() * 20;
+				p.timer = 10 + Seed.randVfx() * 20;
 				p.updatePos();
 			}
 		}
@@ -229,10 +229,10 @@ class Wheel extends Element {
 		var a:Float = 0;
 		while (true) {
 			var flBreak = true;
-			a = Seed.rand() * 6.28;
+			a = Num.q(Seed.rand() * 6.28);
 			for (o in mList) {
-				var da:Float = Math.abs(Num.hMod(o.a - a, 3.14));
-				if (da * ray < Cs.MINE_SPACE) {
+				var da:Float = Num.q(Math.abs(Num.hMod(o.a - a, 3.14)));
+				if (Num.q(da * ray) < Cs.MINE_SPACE) {
 					flBreak = false;
 					break;
 				}

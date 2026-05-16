@@ -2,6 +2,7 @@ package interwheel;
 
 import mt.Timer;
 import mt.bumdum.Phys;
+import mt.bumdum.Lib;
 
 class McPastille extends ASprite {
 	public var pastille:ASprite;
@@ -35,22 +36,22 @@ class Spark extends Phys {
 	public override function update() {
 		super.update();
 
-		distLimit += 0.05 * Timer.tmod;
-		coefLimit += 0.001 * Timer.tmod;
+		distLimit = Num.q(distLimit + 0.05 * Timer.tmod);
+		coefLimit = Num.q(coefLimit + 0.001 * Timer.tmod);
 
-		coef = Math.min(coef + 0.005 * Timer.tmod, coefLimit);
+		coef = Num.q(Math.min(coef + 0.005 * Timer.tmod, coefLimit));
 		towardSpeed(cast {x: Cs.game.blob.x, y: Cs.game.blob.y}, coef, distLimit);
 
-		if (getDist(cast {x: Cs.game.blob.x, y: Cs.game.blob.y}) < Blob.RAY + 8 * Cs.NEW_GEN_SCALE) {
+		if (Num.q(getDist(cast {x: Cs.game.blob.x, y: Cs.game.blob.y})) < Blob.RAY + 8 * Cs.NEW_GEN_SCALE) {
 			blast();
 			KadoKadeoManager.kkm.addScore(score);
 			kill();
 		}
 
-		if (Math.random() / Timer.tmod < 0.4) {
+		if (Seed.randVfx() / Timer.tmod < 0.4) {
 			var p = newStar();
-			p.vx = vx * (0.5 + (Math.random() * 2 - 1) * 0.1);
-			p.vy = vy * (0.5 + (Math.random() * 2 - 1) * 0.1);
+			p.vx = vx * (0.5 + (Seed.randVfx() * 2 - 1) * 0.1);
+			p.vy = vy * (0.5 + (Seed.randVfx() * 2 - 1) * 0.1);
 		}
 	}
 
@@ -59,8 +60,8 @@ class Spark extends Phys {
 		p.x = x;
 		p.y = y;
 		p.fadeType = 0;
-		p.timer = 10 + Math.random() * 10;
-		p.weight = 0.1 + Math.random() * 0.1;
+		p.timer = 10 + Seed.randVfx() * 10;
+		p.weight = 0.1 + Seed.randVfx() * 0.1;
 		return p;
 	}
 

@@ -21,12 +21,7 @@ class Cs {
 	public static var BONUS_POINTS = KKApi.aconst([200, 500, 3000]);
 
 	public static var BONUS_RAY2 = 600 * NEW_GEN_SCALE * NEW_GEN_SCALE;
-	public static var COLLISION_QUANT = 100;
 
 	public static var LEVEL_DELTA = 15;
 	public static var JAMA_PROBAS = [50, 35, 20, 10, 5, 4, 4, 3, 3, 2, 1];
-
-	public static inline function q(v:Float):Float {
-		return Math.round(v * COLLISION_QUANT) / COLLISION_QUANT;
-	}
 }

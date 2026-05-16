@@ -58,6 +58,12 @@ class En {
 }
 
 class Num {
+	public static var COLLISION_QUANT = 100;
+
+	public static inline function q(v:Float):Float {
+		return Math.round(v * COLLISION_QUANT) / COLLISION_QUANT;
+	}
+
 	static public function mm(a, b, c) {
 		return Math.min(Math.max(a, b), c);
 	}

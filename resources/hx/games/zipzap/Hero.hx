@@ -3,6 +3,7 @@ package zipzap;
 import common_haxe_avm1.KeyboardManager;
 import kado.Seed;
 import mt.Timer;
+import mt.bumdum.Lib;
 
 class Hero {
 	public var y:Float;
@@ -110,7 +111,7 @@ class Hero {
 
 		if (ty != null) {
 			var p = Math.pow((moving == null) ? 0.887 : 0.99, Timer.tmod);
-			y = Cs.q(y * p + ty * (1 - p));
+			y = Num.q(y * p + ty * (1 - p));
 			if (Math.abs(ty - y) < 5 * Cs.NEW_GEN_SCALE) {
 				y = ty;
 				ty = null;
@@ -123,11 +124,11 @@ class Hero {
 		}
 
 		a += Timer.tmod / (10 * steps);
-		var tx = Cs.q(x + Math.cos(a) * 5 * Cs.NEW_GEN_SCALE);
-		var ty = Cs.q(y + Math.sin(a) * 5 * Cs.NEW_GEN_SCALE);
+		var tx = Num.q(x + Math.cos(a) * 5 * Cs.NEW_GEN_SCALE);
+		var ty = Num.q(y + Math.sin(a) * 5 * Cs.NEW_GEN_SCALE);
 		var p = Math.pow(0.7, Timer.tmod);
-		var x = Cs.q(mc._x * p + tx * (1 - p));
-		var y = Cs.q(mc._y * p + ty * (1 - p));
+		var x = Num.q(mc._x * p + tx * (1 - p));
+		var y = Num.q(mc._y * p + ty * (1 - p));
 		mc._x = x;
 		mc._y = y;
 
@@ -137,8 +138,8 @@ class Hero {
 			var i = 0;
 			while (i < game.getBalsLength()) {
 				var b = game.bals[i];
-				dx = Cs.q(x - b.x + 12 * Cs.NEW_GEN_SCALE);
-				dy = Cs.q(y - b.y + 10 * Cs.NEW_GEN_SCALE);
+				dx = Num.q(x - b.x + 12 * Cs.NEW_GEN_SCALE);
+				dy = Num.q(y - b.y + 10 * Cs.NEW_GEN_SCALE);
 				if (dx * dx + dy * dy < r) {
 					game.getBallon(b);
 				}

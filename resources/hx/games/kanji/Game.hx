@@ -4,6 +4,7 @@ import common_haxe_avm1.KKApi;
 import kado.KadoKadeoManager;
 import common_haxe_avm1.KeyboardManager;
 import haxe.io.UInt16Array;
+import mt.bumdum.Lib;
 import mt.DepthManager;
 import mt.Timer;
 
@@ -104,8 +105,8 @@ class Game implements kado.GameInterface {
 			var hit = false;
 			for (i in 0...l) {
 				var b = entities[i];
-				var dx = Cs.q(b._x - x);
-				var dy = Cs.q(b._y - y);
+				var dx = Num.q(b._x - x);
+				var dy = Num.q(b._y - y);
 				if (dx * dx + dy * dy < r2) {
 					hit = true;
 					break;

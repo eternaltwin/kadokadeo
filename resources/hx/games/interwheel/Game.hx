@@ -129,29 +129,29 @@ class Game implements kado.GameInterface {
 		for (x in 0...xMax) {
 			for (y in 0...yMax) {
 				var mc = gdm.attach("mcTile", 10);
-				mc.gotoAndStop(n * 10 + Std.random(10) + 1);
+				mc.gotoAndStop(n * 10 + Seed.randomVfx(10) + 1);
 				Cs.drawMcAt(bmp, mc, x * size, y * size);
 				mc.removeMovieClip();
 			}
 		}
 		var by:Float = 100 * Cs.NEW_GEN_SCALE;
 		while (by < height) {
-			if (Math.random() < 0.2) {
+			if (Seed.randVfx() < 0.2) {
 				var link = "mcMotif";
-				var bx:Float = Std.random(Cs.mcw);
-				if (Math.random() < 0.2) {
+				var bx:Float = Seed.randomVfx(Cs.mcw);
+				if (Seed.randVfx() < 0.2) {
 					link = "mcFrise";
 					bx = Cs.mcw * 0.5;
 				}
 				var mc = gdm.attach(link, 10);
 				by += mc._height * 0.5;
-				mc.gotoAndStop(Std.random(mc._totalframes) + 1);
+				mc.gotoAndStop(Seed.randomVfx(mc._totalframes) + 1);
 				Cs.drawMcAt(bmp, mc, bx, by);
 				by += mc._height * 0.5;
 				mc.removeMovieClip();
 			}
 
-			by += Std.random(100 * Cs.NEW_GEN_SCALE);
+			by += Seed.randomVfx(100 * Cs.NEW_GEN_SCALE);
 		}
 
 		for (y in 0...yMax) {
@@ -192,8 +192,8 @@ class Game implements kado.GameInterface {
 			var flBreak = null;
 			while (true) {
 				a = -1.57 + (Seed.rand() * 2 - 1) * 1.4;
-				w.x = ow.x + Math.cos(a) * dist;
-				w.y = ow.y + Math.sin(a) * dist;
+				w.x = Num.q(ow.x + Math.cos(a) * dist);
+				w.y = Num.q(ow.y + Math.sin(a) * dist);
 				flBreak = w.x > lim && w.x < Cs.mcw - lim;
 				if (flBreak) {
 					var w2 = list[list.length - 2];
@@ -214,7 +214,7 @@ class Game implements kado.GameInterface {
 			// INTER WHEEL
 			if (Seed.rand() > c) {
 				var nw = new Wheel();
-				nw.y = (w.y + ow.y) * 0.5;
+				nw.y = Num.q((w.y + ow.y) * 0.5);
 				var tr = 0;
 				while (true) {
 					flBreak = true;
@@ -255,7 +255,7 @@ class Game implements kado.GameInterface {
 			if (Seed.rand() < y / roof) {
 				var p = new Pastille();
 				var m = Cs.SIDE + p.ray;
-				p.x = m + Seed.rand() * (Cs.mcw - 2 * m);
+				p.x = Num.q(m + Seed.rand() * (Cs.mcw - 2 * m));
 				p.y = y;
 				list.push(p);
 			}
@@ -327,8 +327,8 @@ class Game implements kado.GameInterface {
 
 		switch (step) {
 			case 0:
-				waterBoost += Cs.WATER_SPEED_INC * Timer.tmod;
-				water._y -= (Cs.WATER_SPEED + waterBoost) * Timer.tmod;
+				waterBoost = Num.q(waterBoost + Cs.WATER_SPEED_INC * Timer.tmod);
+				water._y = Num.q(water._y - (Cs.WATER_SPEED + waterBoost) * Timer.tmod);
 				blob.checkDeath();
 
 				var dx = -blob.y - maxHeight;
@@ -358,16 +358,18 @@ class Game implements kado.GameInterface {
 			var n = i + 1;
 			while (n < sparkList.length) {
 				var p1 = sparkList[n];
-				var dif = 16 - p0.getDist(cast p1);
+				var dx = Num.q(p1.x - p0.x);
+				var dy = Num.q(p1.y - p0.y);
+				var dist = Num.q(Math.sqrt(dx * dx + dy * dy));
+				var dif = Num.q(16 - dist);
 
 				if (dif > 0) {
-					var a = p0.getAng(cast p1);
-					var cx = Math.cos(a) * dif * 0.5;
-					var cy = Math.sin(a) * dif * 0.5;
-					p0.x -= cx;
-					p0.y -= cy;
-					p1.x += cx;
-					p1.y += cy;
+					var cx = dist > 0 ? Num.q(dx / dist * dif * 0.5) : Num.q(dif * 0.5);
+					var cy = dist > 0 ? Num.q(dy / dist * dif * 0.5) : 0;
+					p0.x = Num.q(p0.x - cx);
+					p0.y = Num.q(p0.y - cy);
+					p1.x = Num.q(p1.x + cx);
+					p1.y = Num.q(p1.y + cy);
 				}
 				n++;
 			}
@@ -384,11 +386,11 @@ class Game implements kado.GameInterface {
 		var fy = focus.y;
 		var ty = Cs.mch * 0.5 - fy;
 		var dy = ty - map._y;
-		svy += dy * 0.1 * Timer.tmod;
-		svy *= Math.pow(0.6, Timer.tmod);
+		svy = Num.q(svy + dy * 0.1 * Timer.tmod);
+		svy = Num.q(svy * Math.pow(0.6, Timer.tmod));
 
 		// map._y = Math.max( Cs.mch-10,map._y+svy*Timer.tmod )
-		map._y += svy * Timer.tmod;
+		map._y = Num.q(map._y + svy * Timer.tmod);
 		// bgs._y = Cs.mch + map._y * 0.1;
 
 		if (flCameraJump) {

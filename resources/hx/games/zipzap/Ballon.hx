@@ -2,6 +2,7 @@ package zipzap;
 
 import mt.deepnight.Color;
 import mt.Timer;
+import mt.bumdum.Lib;
 import kado.Seed;
 
 class Ballon {
@@ -83,8 +84,8 @@ class Ballon {
 
 	public function update(nb:Int):Bool {
 		var s = Timer.tmod * speed;
-		var ddx = Cs.q(tx - x);
-		var ddy = Cs.q(ty - y);
+		var ddx = Num.q(tx - x);
+		var ddy = Num.q(ty - y);
 		var dd = Math.sqrt(ddx * ddx + ddy * ddy);
 		var p = Math.pow(0.96, Timer.tmod);
 
@@ -116,8 +117,8 @@ class Ballon {
 			nextStep();
 		}
 
-		x = Cs.q(x + dx * s);
-		y = Cs.q(y + dy * s);
+		x = Num.q(x + dx * s);
+		y = Num.q(y + dy * s);
 
 		if (y > 280 * Cs.NEW_GEN_SCALE) {
 			y = 280 * Cs.NEW_GEN_SCALE - (y - 280 * Cs.NEW_GEN_SCALE);
@@ -129,24 +130,24 @@ class Ballon {
 		var n = l.length;
 		for (i in (nb + 1)...n) {
 			var b = l[i];
-			var dx = Cs.q(b.x - x);
-			var dy = Cs.q(b.y - y);
-			r = Cs.q(Math.sqrt(dx * dx + dy * dy));
+			var dx = Num.q(b.x - x);
+			var dy = Num.q(b.y - y);
+			r = Num.q(Math.sqrt(dx * dx + dy * dy));
 			if (r < ray * 2) {
-				var push = Cs.q((ray * 2 - r) / 2);
+				var push = Num.q((ray * 2 - r) / 2);
 				var ca:Float;
 				var sa:Float;
 				if (r > 0) {
-					ca = Cs.q(dx / r * push);
-					sa = Cs.q(dy / r * push);
+					ca = Num.q(dx / r * push);
+					sa = Num.q(dy / r * push);
 				} else {
 					ca = push;
 					sa = 0;
 				}
-				x = Cs.q(x - ca);
-				y = Cs.q(y - sa);
-				b.x = Cs.q(b.x + ca);
-				b.y = Cs.q(b.y + sa);
+				x = Num.q(x - ca);
+				y = Num.q(y - sa);
+				b.x = Num.q(b.x + ca);
+				b.y = Num.q(b.y + sa);
 			}
 		}
 

@@ -134,24 +134,24 @@ class Blob extends Phys {
 				 */
 
 				// blop
-				blop = Math.max(0.07, blop * Math.pow(0.94, Timer.tmod));
-				if (Math.random() < blop) {
+				blop = Num.q(Math.max(0.07, blop * Math.pow(0.94, Timer.tmod)));
+				if (Seed.randVfx() < blop) {
 					var p = newPart();
-					var fr = 0.4 + Math.random() * 0.4;
-					p.x += (Math.random() * 2 - 1) * 3;
-					p.y += (Math.random() * 2 - 1) * 3;
+					var fr = 0.4 + Seed.randVfx() * 0.4;
+					p.x += (Seed.randVfx() * 2 - 1) * 3;
+					p.y += (Seed.randVfx() * 2 - 1) * 3;
 					p.vx = vx * fr;
 					p.vy = vy * fr;
 
-					p.setScale(50 + Math.random() * 50 + blop * 50);
-					p.weight = 0.2 + Math.random() * 0.2;
+					p.setScale(50 + Seed.randVfx() * 50 + blop * 50);
+					p.weight = 0.2 + Seed.randVfx() * 0.2;
 				}
 
 				// water
 				if (flWater) {
 					var fr = Math.pow(0.95, Timer.tmod);
-					vx *= fr;
-					vy *= fr;
+					vx = Num.q(vx * fr);
+					vy = Num.q(vy * fr);
 				}
 
 				//
@@ -162,17 +162,17 @@ class Blob extends Phys {
 
 			case 2:
 				var a = cw.a - wa;
-				x = cw.x + Math.cos(a) * cw.ray;
-				y = cw.y + Math.sin(a) * cw.ray;
+				x = Num.q(cw.x + Math.cos(a) * cw.ray);
+				y = Num.q(cw.y + Math.sin(a) * cw.ray);
 				root._rotation = a / 0.0174;
-				inst = Math.min(inst + 0.1 * Timer.tmod, 1);
+				inst = Num.q(Math.min(inst + 0.1 * Timer.tmod, 1));
 				// var body = cast(root).bl;
 				// var pince = cast(root).pince;
 				if (checkPress())
 					jump(a);
 			case 3:
-				vy += 0.6 * Timer.tmod * Cs.NEW_GEN_SCALE;
-				vy *= Math.pow(0.92, Timer.tmod);
+				vy = Num.q(vy + 0.6 * Timer.tmod * Cs.NEW_GEN_SCALE);
+				vy = Num.q(vy * Math.pow(0.92, Timer.tmod));
 				if (checkPress()) {
 					var sens = (x < Cs.mcw * 0.5) ? 1 : -1;
 					jump(-1.57 + JUMP_SIDE_ANGLE * sens);
@@ -194,38 +194,38 @@ class Blob extends Phys {
 		checkWater();
 		if (flWater) {
 			if (step != 4)
-				wet += 0.015 * Timer.tmod;
+				wet = Num.q(wet + 0.015 * Timer.tmod);
 			// vx*=Math.pow(0.98,Timer.tmod)
 			if (vy > 0)
-				vy *= Math.pow(0.9, Timer.tmod);
-			if (Math.random() < wet) {
+				vy = Num.q(vy * Math.pow(0.9, Timer.tmod));
+			if (Seed.randVfx() < wet) {
 				var p = new Part(Cs.game.dm.attach("partTache", Game.DP_OIL));
 				p.x = x;
 				p.y = y;
-				p.vx = vx * 0.5 + (Math.random() * 2 - 1) * 1;
-				p.vy = vy * 0.5 + (Math.random() * 2 - 1) * 0.5;
-				p.setScale(100 + wet * 150 + Math.random() * 100);
+				p.vx = vx * 0.5 + (Seed.randVfx() * 2 - 1) * 1;
+				p.vy = vy * 0.5 + (Seed.randVfx() * 2 - 1) * 0.5;
+				p.setScale(100 + wet * 150 + Seed.randVfx() * 100);
 			}
-			if (Math.random() < wet) {
+			if (Seed.randVfx() < wet) {
 				var p = new Bubble(null);
-				p.x = x + Math.random() * RAY;
-				p.y = y + Math.random() * RAY;
+				p.x = x + Seed.randVfx() * RAY;
+				p.y = y + Seed.randVfx() * RAY;
 				p.vy = vy * 0.8; //-Math.random()*2
 			}
 		} else {
 			if (wet > 0) {
-				wet = Math.max(0, wet - 0.02 * Timer.tmod);
+				wet = Num.q(Math.max(0, wet - 0.02 * Timer.tmod));
 
-				if (Math.random() * 0.5 < wet) {
-					var coef = 0.2 + Math.random() * 0.4;
+				if (Seed.randVfx() * 0.5 < wet) {
+					var coef = 0.2 + Seed.randVfx() * 0.4;
 					var p = new Part(Cs.game.dm.attach("partGoutte", Game.DP_OIL));
-					p.x = x + (Math.random() * 2 - 1) * 6;
-					p.y = y + (Math.random() * 2 - 1) * 6;
+					p.x = x + (Seed.randVfx() * 2 - 1) * 6;
+					p.y = y + (Seed.randVfx() * 2 - 1) * 6;
 					p.vx = (vvx + vx) * coef;
 					p.vy = (vvy + vy) * coef;
-					p.timer = 10 + Math.random() * 10;
+					p.timer = 10 + Seed.randVfx() * 10;
 					p.fadeType = 0;
-					p.setScale(60 + wet * 80 + Math.random() * 50);
+					p.setScale(60 + wet * 80 + Seed.randVfx() * 50);
 				}
 			}
 		}
@@ -239,7 +239,7 @@ class Blob extends Phys {
 	}
 
 	public function checkWater() {
-		var flw = y - RAY > Cs.game.water._y;
+		var flw = Num.q(y - RAY) > Num.q(Cs.game.water._y);
 
 		if (flWater) {
 			if (!flw) {
@@ -258,7 +258,7 @@ class Blob extends Phys {
 		flMouseRelease = false;
 		var max = 4;
 		for (i in 0...max) {
-			var dec = Math.random() * 2 - 1;
+			var dec = Seed.randVfx() * 2 - 1;
 			var na = a + dec * 0.8;
 			var sp = 8 - Math.abs(dec) * 6;
 			var c = i / max;
@@ -266,7 +266,7 @@ class Blob extends Phys {
 			p.vx = Math.cos(na) * sp;
 			p.vy = Math.sin(na) * sp;
 			p.setScale(50 + c * 100);
-			p.timer = 10 + Math.random() * 30;
+			p.timer = 10 + Seed.randVfx() * 30;
 			p.weight = 0.2 + c * 0.2;
 		}
 
@@ -280,7 +280,7 @@ class Blob extends Phys {
 		var p = new Part(Cs.game.dm.attach("partOil", Game.DP_OIL));
 		p.x = x;
 		p.y = y;
-		p.timer = 10 + Math.random() * 10;
+		p.timer = 10 + Seed.randVfx() * 10;
 		p.fadeType = 0;
 		return p;
 	}
@@ -288,15 +288,15 @@ class Blob extends Phys {
 	public function explode(ba) {
 		var max = 32;
 		for (i in 0...max) {
-			var dec = Math.random() * 2 - 1;
+			var dec = Seed.randVfx() * 2 - 1;
 			var na = ba + dec * 0.8;
-			var sp = (14 - Math.abs(dec) * 8) * (0.3 + Math.random() * 0.7);
+			var sp = (14 - Math.abs(dec) * 8) * (0.3 + Seed.randVfx() * 0.7);
 			var c = i / max;
 			var p = newPart();
 			p.vx = Math.cos(na) * sp;
 			p.vy = Math.sin(na) * sp;
 			p.setScale(50 + c * 150);
-			p.timer = 10 + Math.random() * 20;
+			p.timer = 10 + Seed.randVfx() * 20;
 			p.weight = 0.2 + c * 0.2;
 		}
 		Cs.game.initStep(9);

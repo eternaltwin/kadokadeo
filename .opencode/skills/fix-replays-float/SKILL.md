@@ -70,25 +70,21 @@ function localBox():{left:Float, right:Float, top:Float, bottom:Float} {
 
 3. Quantifier aux points de decision
 
-- Ajouter un helper local dans `Cs.hx` du jeu, avec un pas assez fin pour limiter les regressions.
+- Utiliser bumdum.Lib.Num.q (importer bumdum.Lib et utiliser Num.q()) pour quantifier les valeurs flottantes qui influencent valeurs sensibles
 - Quantifier les valeurs juste avant les collisions, pickups, seuils de timer/position et decisions de spawn.
 - Ne pas quantifier tout aveuglement, surtout pas les effets visuels purs.
 
-Exemple:
+Voici la définition de `q`:
 
 ```hx
-public static var COLLISION_QUANT:Int = 100;
-
-public static inline function q(v:Float):Float {
-	return Math.round(v * COLLISION_QUANT) / COLLISION_QUANT;
-}
+import mt.bumdum.Lib;
 ```
 
 Usage:
 
 ```hx
-var dx = Cs.q(a.x - b.x);
-var dy = Cs.q(a.y - b.y);
+var dx = Num.q(a.x - b.x);
+var dy = Num.q(a.y - b.y);
 if (dx * dx + dy * dy < ray2) {
 	// gameplay
 }
@@ -115,13 +111,13 @@ if (dist < ray * 2) {
 Apres:
 
 ```hx
-var dist = Cs.q(Math.sqrt(dx * dx + dy * dy));
+var dist = Num.q(Math.sqrt(dx * dx + dy * dy));
 if (dist < ray * 2) {
-	var push = Cs.q((ray * 2 - dist) / 2);
-	var ca = dist > 0 ? Cs.q(dx / dist * push) : push;
-	var sa = dist > 0 ? Cs.q(dy / dist * push) : 0;
-	x = Cs.q(x - ca);
-	y = Cs.q(y - sa);
+	var push = Num.q((ray * 2 - dist) / 2);
+	var ca = dist > 0 ? Num.q(dx / dist * push) : push;
+	var sa = dist > 0 ? Num.q(dy / dist * push) : 0;
+	x = Num.q(x - ca);
+	y = Num.q(y - sa);
 }
 ```
 
@@ -133,7 +129,7 @@ if (dist < ray * 2) {
 Exemple:
 
 ```hx
-hero.ty = Cs.q(MouseManager.getY());
+hero.ty = Num.q(MouseManager.getY());
 ```
 
 6. Separer RNG gameplay et VFX
