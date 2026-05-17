@@ -49,3 +49,6 @@ f1champion.Game
 --next
 -js ./resources/js/games/zipzap.js
 zipzap.Game
+--next
+-js ./resources/js/games/travoltax.js
+travoltax.Game

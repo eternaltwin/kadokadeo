@@ -5,8 +5,8 @@
 -cp ./resources/hx/games
 -debug
 
-# -js ./resources/js/games/f1champion.js
-# f1champion.Game
+# -js ./resources/js/games/travoltax.js
+# travoltax.Game
 
 --each
 -js ./resources/js/games/atlanteine.js
@@ -53,3 +53,6 @@ f1champion.Game
 --next
 -js ./resources/js/games/zipzap.js
 zipzap.Game
+--next
+-js ./resources/js/games/travoltax.js
+travoltax.Game

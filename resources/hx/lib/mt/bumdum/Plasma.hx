@@ -1,21 +1,22 @@
 package mt.bumdum;
 
+import common_haxe_avm1.display.ASprite;
 import pixi.filters.colormatrix.ColorMatrixFilter;
 
 class Plasma extends Bmp {
 	static var list:Array<Plasma> = [];
 
-	var timer:Float = null;
-	var timerLife:Float = null;
+	public var timer:Float = null;
+	public var timerLife:Float = null;
 
-	var filters:Array<Dynamic>;
+	public var filters:Array<Dynamic>;
 
-	var ct:ColorMatrixFilter;
+	public var ct:ColorMatrixFilter;
 
-	public function new(arg0, arg1, arg2, arg3) {
-		super(arg0, arg1, arg2, true, 0, arg3);
+	public function new(mc:ASprite, ?w:Int, ?h:Int, ?q:Float) {
+		super(mc, w, h, true, 0, q);
 		list.push(this);
-		this.filters = null;
+		this.filters = [];
 	}
 
 	static public function updateAll() {
@@ -25,18 +26,18 @@ class Plasma extends Bmp {
 
 	override public function kill() {
 		list.remove(this);
-		destroy();
+		super.kill();
 	}
 
 	override public function update() {
 		if (this.ct != null) {
-			trace('FIXME CT NOT IMPLEMENTED');
-			// this.colorTransform(this.rectangle, this.ct);
+			this.applyFilterToSelf(this.ct);
 		}
 
-		for (i in filters) {
-			trace('FIXME PLASMA FILTERS NOT IMPLEMENTED');
-			// this.applyFilter(this, this.rectangle, new flash.geom.Point(0, 0), i);
+		if (filters != null) {
+			for (i in filters) {
+				this.applyFilterToSelf(i);
+			}
 		}
 
 		if (this.timer != null) {

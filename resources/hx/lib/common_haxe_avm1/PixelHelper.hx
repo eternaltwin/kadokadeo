@@ -1,10 +1,13 @@
 package common_haxe_avm1;
 
-import pixi.core.math.shapes.Rectangle;
-import pixi.core.graphics.Graphics;
 import pixi.core.display.DisplayObject;
+import pixi.core.graphics.Graphics;
 import pixi.core.math.Matrix;
+import pixi.core.math.Point;
+import pixi.core.math.shapes.Rectangle;
+import pixi.core.sprites.Sprite;
 import pixi.core.textures.RenderTexture;
+import pixi.core.textures.Texture;
 import haxe.io.UInt8Array;
 
 using Lambda;
@@ -16,16 +19,27 @@ class PixelHelper {
 	public var width:Int;
 	public var height:Int;
 
-	static public function fillRect(onto:RenderTexture, rectangle:Rectangle, col:Int) {
+	static public function clearRect(onto:RenderTexture, rectangle:Rectangle) {
 		var gfx = new Graphics();
-		gfx.beginFill(col);
+		gfx.beginFill(0x000000, 1);
+		gfx.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+		untyped gfx.blendMode = PIXI.BLEND_MODES.ERASE;
+		draw(onto, gfx, new Matrix());
+	}
+
+	static public function fillRect(onto:RenderTexture, rectangle:Rectangle, col:Int, ?alpha:Int, ?clear:Bool) {
+		if (clear) {
+			clearRect(onto, rectangle);
+		}
+		var gfx = new Graphics();
+		gfx.beginFill(col, alpha == null ? 1 : alpha / 255);
 		gfx.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 		draw(onto, gfx, new Matrix());
 	}
 
-	static public function fill(onto:RenderTexture, col:Int) {
+	static public function fill(onto:RenderTexture, col:Int, ?alpha:Int) {
 		var gfx = new Graphics();
-		gfx.beginFill(col);
+		gfx.beginFill(col, alpha == null ? 1 : alpha / 255);
 		gfx.drawRect(0, 0, onto.width, onto.height);
 		draw(onto, gfx, new Matrix());
 	}
@@ -35,7 +49,17 @@ class PixelHelper {
 	}
 
 	static public function extract(texture:RenderTexture) {
-		return new PixelHelper(untyped common_haxe_avm1.MouseManager.getApp().renderer.plugins.extract.pixels(texture), texture.width.int(), texture.height.int());
+		return new PixelHelper(untyped common_haxe_avm1.MouseManager.getApp().renderer.plugins.extract.pixels(texture), texture.width.int(),
+			texture.height.int());
+	}
+
+	static public function copyPixels(onto:RenderTexture, source:Texture, sourceRect:Rectangle, destPoint:Point) {
+		var realRect = new Rectangle(source.frame.x + sourceRect.x, source.frame.y + sourceRect.y, sourceRect.width, sourceRect.height);
+		var frame = new Texture(source.baseTexture, realRect);
+		var sprite = new Sprite(frame);
+		sprite.position.set(destPoint.x, destPoint.y);
+		draw(onto, sprite, new Matrix());
+		frame.destroy(false);
 	}
 
 	public function new(pixels:UInt8Array, width:Int, height:Int) {

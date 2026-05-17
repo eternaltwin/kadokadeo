@@ -25,6 +25,10 @@ class KKApi {
 		return (s : Int) + (a : Int);
 	}
 
+	public static function cmult(s:KKConst, a:KKConst):KKConst {
+		return (s : Int) * (a : Int);
+	}
+
 	public static function addScore(s:Int):Int {
 		score += s;
 		updateScore();
