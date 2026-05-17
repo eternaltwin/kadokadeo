@@ -78,13 +78,12 @@ function getStarId(run) {
           <div v-if="item.value === 'me'">
             <h1 class="mt-0 text-center">Profil de {{ profile.data.display_name }}</h1>
             
-            <!--<div style="width:95%;margin:0 2.5%; display: flex; justify-content: space-between;">
-              <div style="width:35%;margin-right:2.5%;background:red;">
-                <p>blabla</p><h2 style="width:100%;margin:0;">Clan</h2>
+            <div class="w-full flex">
+              <div class="w-35/100 pr-5 pl-5">
+                <h2 class="m-0">Clan</h2>
               </div>
-              <div style="width:65%;margin: 0;background:green;">
-                <p>blabla</p>
-                <h2 style="width:100%;margin:0;">
+              <div class="w-65/100 pr-5">
+                <h2 class="m-0">
                   Statut 
                   <span v-if="feathersCount > 0">
                     <img v-for="i in feathersCount"
@@ -94,16 +93,7 @@ function getStarId(run) {
                   </span>
                 </h2>
               </div>
-            </div>-->
-
-            <h2>Statut 
-              <span v-if="feathersCount > 0">
-                <img v-for="i in feathersCount"
-                  :key="i"
-                  src="/gfx/iconFeather.gif"
-                  alt="Plume de Piou" />
-              </span>
-            </h2>
+            </div>
             
             <div class="grid md:grid-cols-2 ">
               <div class="grid grid-cols-3 justify-items-center">
