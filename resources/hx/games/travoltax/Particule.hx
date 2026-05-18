@@ -42,17 +42,18 @@ class Particule extends Phys {
 					root.filters = [fl];
 
 				case 4: // GO TO OPTIONS
-					var dx = 33 * Cs.NEW_GEN_SCALE - x;
-					var dy = (71 + (Game.me.bg.optList.length - 1) * 13) * Cs.NEW_GEN_SCALE - y;
-					var ta = Math.atan2(dy, dx);
-					var da = Num.hMod(ta - a, 3.14);
-					lim *= 1.02;
-					ca *= 1.02;
-					a += Num.mm(-lim, da * ca, lim) * mt.Timer.tmod;
-					vx = Math.cos(a) * speed;
-					vy = Math.sin(a) * speed;
+					var dx = Num.q(33 * Cs.NEW_GEN_SCALE - x);
+					var dy = Num.q((71 + (Game.me.bg.optList.length - 1) * 13) * Cs.NEW_GEN_SCALE - y);
+					var ta = Num.q(Math.atan2(dy, dx));
+					var da = Num.q(Num.hMod(ta - a, 3.14));
+					lim = Num.q(lim * 1.02);
+					ca = Num.q(ca * 1.02);
+					a = Num.q(a + Num.q(Num.mm(-lim, da * ca, lim)) * mt.Timer.tmod);
+					vx = Num.q(Math.cos(a) * speed);
+					vy = Num.q(Math.sin(a) * speed);
 
-					if (Math.abs(dx) + Math.abs(dy) * 0.5 < 25 * Cs.NEW_GEN_SCALE) {
+					var dist = Num.q(Math.abs(dx) + Math.abs(dy) * 0.5);
+					if (dist < 25 * Cs.NEW_GEN_SCALE) {
 						Game.me.addOpt();
 						kill();
 					}

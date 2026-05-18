@@ -13,7 +13,7 @@ const charUrls = computed(() => {
   if (typeof props.value === 'string') {
     return props.value.split('').map((c) => `/gfx/typo/${props.color}/${c == '.' ? 'dot' : c}.gif`)
   }
-  const nbString = formatScore(props.value).replace(' ', '.')
+  const nbString = formatScore(props.value).replaceAll(' ', '.')
   return Array.from(nbString).map((c) => `/gfx/typo/${props.color}/${c == '.' ? 'dot' : c}.gif`)
 })
 </script>
