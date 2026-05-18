@@ -52,3 +52,6 @@ zipzap.Game
 --next
 -js ./resources/js/games/travoltax.js
 travoltax.Game
+--next
+-js ./resources/js/games/killbulle.js
+killbulle.Game
