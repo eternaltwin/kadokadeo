@@ -5,57 +5,57 @@
 -cp ./resources/hx/games
 -debug
 
-# -js ./resources/js/games/travoltax.js
-# travoltax.Game
-
---each
--js ./resources/js/games/atlanteine.js
-atlanteine.Game
---next
--js ./resources/js/games/chocomouche.js
-chocomouche.Game
---next
--js ./resources/js/games/kaskade2.js
-kaskade2.Game
---next
--js ./resources/js/games/interwheel.js
-interwheel.Game
---next
--js ./resources/js/games/kslash.js
-kslash.Game
---next
--js ./resources/js/games/opalus2.js
-opalus2.Game
---next
--js ./resources/js/games/xianxiang.js
-xianxiang.Game
---next
--js ./resources/js/games/synapses.js
-synapses.Game
---next
--js ./resources/js/games/ironchouquette.js
-ironchouquette.Game
---next
--js ./resources/js/games/starfang.js
-starfang.Game
---next
--js ./resources/js/games/kanji.js
-kanji.Game
---next
--js ./resources/js/games/pioupiou.js
-pioupiou.Game
---next
--js ./resources/js/games/popcorn.js
-popcorn.Game
---next
--js ./resources/js/games/f1champion.js
-f1champion.Game
---next
--js ./resources/js/games/zipzap.js
-zipzap.Game
---next
--js ./resources/js/games/travoltax.js
-travoltax.Game
---next
 -js ./resources/js/games/killbulle.js
 killbulle.Game
+
+# --each
+# -js ./resources/js/games/atlanteine.js
+# atlanteine.Game
+# --next
+# -js ./resources/js/games/chocomouche.js
+# chocomouche.Game
+# --next
+# -js ./resources/js/games/kaskade2.js
+# kaskade2.Game
+# --next
+# -js ./resources/js/games/interwheel.js
+# interwheel.Game
+# --next
+# -js ./resources/js/games/kslash.js
+# kslash.Game
+# --next
+# -js ./resources/js/games/opalus2.js
+# opalus2.Game
+# --next
+# -js ./resources/js/games/xianxiang.js
+# xianxiang.Game
+# --next
+# -js ./resources/js/games/synapses.js
+# synapses.Game
+# --next
+# -js ./resources/js/games/ironchouquette.js
+# ironchouquette.Game
+# --next
+# -js ./resources/js/games/starfang.js
+# starfang.Game
+# --next
+# -js ./resources/js/games/kanji.js
+# kanji.Game
+# --next
+# -js ./resources/js/games/pioupiou.js
+# pioupiou.Game
+# --next
+# -js ./resources/js/games/popcorn.js
+# popcorn.Game
+# --next
+# -js ./resources/js/games/f1champion.js
+# f1champion.Game
+# --next
+# -js ./resources/js/games/zipzap.js
+# zipzap.Game
+# --next
+# -js ./resources/js/games/travoltax.js
+# travoltax.Game
+# --next
+# -js ./resources/js/games/killbulle.js
+# killbulle.Game

@@ -24,7 +24,7 @@ class Blob {
 		bonus = b;
 		this.size = size;
 		speed = (5 + game.level / 20) * Cs.NEW_GEN_SCALE;
-		y = -100;
+		y = -100 * Cs.NEW_GEN_SCALE;
 		dx = 2.5;
 		dy = 1;
 		dir = Seed.random(2) * 2 - 1;
@@ -126,16 +126,16 @@ class Blob {
 		x = Num.q(x + dir * dx * s);
 		y = Num.q(y + dy * s);
 
-		if (y > Cs.MINY - size / 2) {
-			y = Cs.MINY - size / 2;
+		if (y > Cs.MINY - size * Cs.NEW_GEN_SCALE / 2) {
+			y = Cs.MINY - size * Cs.NEW_GEN_SCALE / 2;
 			dy = Num.q(-20 - Math.sqrt(size));
 		}
 
-		if (x < size / 2) {
-			x = size - x;
+		if (x < size * Cs.NEW_GEN_SCALE / 2) {
+			x = size * Cs.NEW_GEN_SCALE - x;
 			dir *= -1;
-		} else if (x > Cs.WIDTH - size / 2) {
-			x = Cs.WIDTH * 2 - size - x;
+		} else if (x > Cs.WIDTH - size * Cs.NEW_GEN_SCALE / 2) {
+			x = Cs.WIDTH * 2 - size * Cs.NEW_GEN_SCALE - x;
 			dir *= -1;
 		}
 
