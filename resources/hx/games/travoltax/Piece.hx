@@ -122,9 +122,9 @@ class Piece extends Sprite {
 		if (transTimer > 0)
 			transTimer -= mt.Timer.tmod;
 
-		var flDown = KeyboardManager.isDown(KeyboardManager.DOWN);
-		flLeft = KeyboardManager.isDown(KeyboardManager.LEFT);
-		flRight = KeyboardManager.isDown(KeyboardManager.RIGHT);
+		var flDown = KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S);
+		flLeft = KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A);
+		flRight = KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D);
 
 		if (Game.me.flInverse) {
 			var fl = flRight;
@@ -204,7 +204,7 @@ class Piece extends Sprite {
 			flTurnReady = !KeyboardManager.isDown(KeyboardManager.V) && !KeyboardManager.isDown(KeyboardManager.B) && !KeyboardManager.isDown(KeyboardManager.SPACE);
 		}
 
-		if (KeyboardManager.isDown(KeyboardManager.UP)) {
+		if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W)) {
 			if (flOptReady)
 				Game.me.useOpt();
 			// Game.me.useOpt();

@@ -51,12 +51,18 @@ class Game implements kado.GameInterface {
 	public var feathers:Array<FeatherMain>;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
-		var replayKeys = new UInt16Array(5);
+		var replayKeys = new UInt16Array(11);
 		replayKeys[0] = KeyboardManager.LEFT;
 		replayKeys[1] = KeyboardManager.RIGHT;
 		replayKeys[2] = KeyboardManager.UP;
 		replayKeys[3] = KeyboardManager.DOWN;
 		replayKeys[4] = KeyboardManager.SPACE;
+		replayKeys[5] = KeyboardManager.Q;
+		replayKeys[6] = KeyboardManager.A;
+		replayKeys[7] = KeyboardManager.D;
+		replayKeys[8] = KeyboardManager.S;
+		replayKeys[9] = KeyboardManager.Z;
+		replayKeys[10] = KeyboardManager.W;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,

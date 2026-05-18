@@ -211,11 +211,17 @@ class Game implements kado.GameInterface {
 
 		displayPushIcon();
 
-		var replayKeys = new UInt16Array(4);
+		var replayKeys = new UInt16Array(10);
 		replayKeys[0] = common_haxe_avm1.KeyboardManager.ARROW_RIGHT;
 		replayKeys[1] = common_haxe_avm1.KeyboardManager.ARROW_DOWN;
 		replayKeys[2] = common_haxe_avm1.KeyboardManager.ARROW_LEFT;
 		replayKeys[3] = common_haxe_avm1.KeyboardManager.ARROW_UP;
+		replayKeys[4] = common_haxe_avm1.KeyboardManager.D;
+		replayKeys[5] = common_haxe_avm1.KeyboardManager.S;
+		replayKeys[6] = common_haxe_avm1.KeyboardManager.Q;
+		replayKeys[7] = common_haxe_avm1.KeyboardManager.Z;
+		replayKeys[8] = common_haxe_avm1.KeyboardManager.A;
+		replayKeys[9] = common_haxe_avm1.KeyboardManager.W;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,
@@ -397,13 +403,13 @@ class Game implements kado.GameInterface {
 	// CONTROL
 	function control() {
 		var d = null;
-		if (KeyboardManager.isDown(KeyboardManager.RIGHT))
+		if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D))
 			d = 0;
-		if (KeyboardManager.isDown(KeyboardManager.DOWN))
+		if (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S))
 			d = 1;
-		if (KeyboardManager.isDown(KeyboardManager.LEFT))
+		if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A))
 			d = 2;
-		if (KeyboardManager.isDown(KeyboardManager.UP))
+		if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W))
 			d = 3;
 
 		if (pendingSwipeDir != null) {

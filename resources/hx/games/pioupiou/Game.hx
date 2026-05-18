@@ -47,12 +47,13 @@ class Game implements kado.GameInterface {
 	var meter:ASprite;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
-		var replayKeys = new UInt16Array(5);
+		var replayKeys = new UInt16Array(6);
 		replayKeys[0] = KeyboardManager.ARROW_LEFT;
 		replayKeys[1] = KeyboardManager.ARROW_RIGHT;
 		replayKeys[2] = KeyboardManager.A;
 		replayKeys[3] = KeyboardManager.Q;
 		replayKeys[4] = KeyboardManager.D;
+		replayKeys[5] = KeyboardManager.Z;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,

@@ -55,14 +55,14 @@ class Hero {
 
 		switch (state) {
 			case S_WAIT | S_MOVE:
-				if (KeyboardManager.isDown(KeyboardManager.LEFT)) {
+				if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A)) {
 					if (state == S_WAIT) {
 						frame = 29;
 					}
 					state = S_MOVE;
 					way = -1;
 					x -= Timer.tmod * speed;
-				} else if (KeyboardManager.isDown(KeyboardManager.RIGHT)) {
+				} else if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D)) {
 					if (state == S_WAIT) {
 						frame = 29;
 					}
@@ -76,7 +76,7 @@ class Hero {
 					state = S_WAIT;
 				}
 
-				if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.SPACE)) {
+				if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W) || KeyboardManager.isDown(KeyboardManager.SPACE)) {
 					jump_time = true;
 					jump_pow = 4;
 					jump_dx = (state == S_MOVE) ? (way * speed) : 0;
@@ -90,15 +90,15 @@ class Hero {
 					p._y = y;
 				}
 			case S_JUMP:
-				if (KeyboardManager.isDown(KeyboardManager.LEFT)) {
+				if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A)) {
 					way = -1;
 					jump_dx -= Timer.tmod * Cs.NEW_GEN_SCALE;
-				} else if (KeyboardManager.isDown(KeyboardManager.RIGHT)) {
+				} else if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D)) {
 					way = 1;
 					jump_dx += Timer.tmod * Cs.NEW_GEN_SCALE;
 				}
 
-				if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.SPACE)) {
+				if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W) || KeyboardManager.isDown(KeyboardManager.SPACE)) {
 					if (jump_time && jump_pow < maxpow) {
 						jump_pow *= Math.pow(1.4, Timer.tmod);
 						if (jump_pow >= maxpow) {
@@ -149,10 +149,10 @@ class Hero {
 					}
 				} else if (frame >= 40) {
 					if (frame >= 46) {
-						frame = KeyboardManager.isDown(KeyboardManager.DOWN) ? 59 : 1;
+						frame = (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S)) ? 59 : 1;
 						colOffY = -10 * Cs.NEW_GEN_SCALE;
 					}
-				} else if (KeyboardManager.isDown(KeyboardManager.DOWN)) {
+				} else if (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S)) {
 					frame = 59;
 				} else if (frame >= 25) {
 					frame -= 24;

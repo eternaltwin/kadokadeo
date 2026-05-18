@@ -96,7 +96,7 @@ class Game implements kado.GameInterface {
 	public var stats:{_o:Array<Int>, _l:Array<Int>, _g:Array<Int>};
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
-		var replayKeys = new UInt16Array(7);
+		var replayKeys = new UInt16Array(13);
 		replayKeys[0] = common_haxe_avm1.KeyboardManager.LEFT;
 		replayKeys[1] = common_haxe_avm1.KeyboardManager.RIGHT;
 		replayKeys[2] = common_haxe_avm1.KeyboardManager.DOWN;
@@ -104,6 +104,12 @@ class Game implements kado.GameInterface {
 		replayKeys[4] = common_haxe_avm1.KeyboardManager.SPACE;
 		replayKeys[5] = common_haxe_avm1.KeyboardManager.B;
 		replayKeys[6] = common_haxe_avm1.KeyboardManager.V;
+		replayKeys[7] = common_haxe_avm1.KeyboardManager.Q;
+		replayKeys[8] = common_haxe_avm1.KeyboardManager.A;
+		replayKeys[9] = common_haxe_avm1.KeyboardManager.D;
+		replayKeys[10] = common_haxe_avm1.KeyboardManager.S;
+		replayKeys[11] = common_haxe_avm1.KeyboardManager.Z;
+		replayKeys[12] = common_haxe_avm1.KeyboardManager.W;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,

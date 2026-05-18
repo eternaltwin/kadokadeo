@@ -33,10 +33,16 @@ class Game implements kado.GameInterface {
 	var flash_filter:ColorMatrixFilter;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
-		var replayKeys = new UInt16Array(3);
+		var replayKeys = new UInt16Array(9);
 		replayKeys[0] = KeyboardManager.LEFT;
 		replayKeys[1] = KeyboardManager.RIGHT;
 		replayKeys[2] = KeyboardManager.SPACE;
+		replayKeys[3] = KeyboardManager.Q;
+		replayKeys[4] = KeyboardManager.A;
+		replayKeys[5] = KeyboardManager.D;
+		replayKeys[6] = KeyboardManager.S;
+		replayKeys[7] = KeyboardManager.Z;
+		replayKeys[8] = KeyboardManager.W;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,

@@ -148,7 +148,7 @@ class Hero {
 		}
 
 		if (!lock) {
-			if (KeyboardManager.isDown(KeyboardManager.LEFT)) {
+			if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A)) {
 				if (!moving) {
 					moving = true;
 					frame = 0;
@@ -160,7 +160,7 @@ class Hero {
 				acc = Num.q(acc - 1 * Cs.NEW_GEN_SCALE * Timer.tmod);
 				if (acc < -5 * Cs.NEW_GEN_SCALE)
 					acc = -5 * Cs.NEW_GEN_SCALE;
-			} else if (KeyboardManager.isDown(KeyboardManager.RIGHT)) {
+			} else if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D)) {
 				if (!moving) {
 					moving = true;
 					frame = 0;

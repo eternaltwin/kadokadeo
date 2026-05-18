@@ -52,6 +52,21 @@ class Game implements kado.GameInterface {
 	var oil_time:Float;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
+		var replayKeys = new UInt16Array(8);
+		replayKeys[0] = KeyboardManager.ARROW_RIGHT;
+		replayKeys[1] = KeyboardManager.ARROW_LEFT;
+		replayKeys[2] = KeyboardManager.ARROW_UP;
+		replayKeys[3] = KeyboardManager.D;
+		replayKeys[4] = KeyboardManager.Q;
+		replayKeys[5] = KeyboardManager.Z;
+		replayKeys[6] = KeyboardManager.A;
+		replayKeys[7] = KeyboardManager.W;
+		KadoKadeoManager.kkm.replay.init({
+			recordedKeys: replayKeys,
+			recordInputs: true,
+			recordEvents: false,
+		});
+
 		this.mc = root;
 		dmanager = new DepthManager(root);
 		shadow = dmanager.attach("shadow", Cs.PLAN_F1);
@@ -138,19 +153,23 @@ class Game implements kado.GameInterface {
 		var dd = (oil_time > 0) ? Cs.STEER_INPUT_OIL : Cs.STEER_INPUT_DRY;
 
 		if (!lock) {
-			if (KeyboardManager.isDown(KeyboardManager.LEFT)) {
+			if (KeyboardManager.isDown(KeyboardManager.LEFT)
+				|| KeyboardManager.isDown(KeyboardManager.Q)
+				|| KeyboardManager.isDown(KeyboardManager.A)) {
 				delta -= dd * time;
 				if (delta < -max)
 					delta = -max;
 				else
 					slowDown();
-			} else if (KeyboardManager.isDown(KeyboardManager.RIGHT)) {
+			} else if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D)) {
 				delta += dd * time;
 				if (delta > max)
 					delta = max;
 				else
 					slowDown();
-			} else if (KeyboardManager.isDown(KeyboardManager.UP))
+			} else if (KeyboardManager.isDown(KeyboardManager.UP)
+				|| KeyboardManager.isDown(KeyboardManager.Z)
+				|| KeyboardManager.isDown(KeyboardManager.W))
 				level.cur_speed += Cs.NEW_GEN_SCALE;
 		}
 		delta += 0.05 * time * (Cs.MAXLIFE - lifepts) / Cs.MAXLIFE * ((Seed.random(2) == 0) ? -1 : 1);

@@ -230,11 +230,11 @@ class Hero extends Ent {
 		// if(flGround)vx = 0;
 
 		var flMove = false;
-		if (KeyboardManager.isDown(KeyboardManager.LEFT)) {
+		if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A)) {
 			setSens(-1);
 			flMove = true;
 		}
-		if (KeyboardManager.isDown(KeyboardManager.RIGHT)) {
+		if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D)) {
 			setSens(1);
 			flMove = true;
 		}
@@ -278,7 +278,7 @@ class Hero extends Ent {
 		// JUMP
 		// Log.print(flDoubleJump)
 		// Log.print(flDoubleJumpReady)
-		if (KeyboardManager.isDown(KeyboardManager.UP)) {
+		if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W)) {
 			if (flGround) {
 				flDoubleJump = true;
 				flDoubleJumpReady = false;
@@ -299,7 +299,7 @@ class Hero extends Ent {
 		}
 
 		// DOWN
-		if (flGround && KeyboardManager.isDown(KeyboardManager.DOWN) && y + 2 < Game.YMAX) {
+		if (flGround && (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S)) && y + 2 < Game.YMAX) {
 			jump();
 			boost = 0;
 			vy *= 0.65;
