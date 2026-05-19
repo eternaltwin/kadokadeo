@@ -124,7 +124,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename></filename>
+                <filename>killbulle-{n}.json</filename>
             </struct>
         </map>
         <key>multiPackMode</key>
@@ -245,6 +245,38 @@
                 <rect>79,84,157,168</rect>
                 <key>scale9Paddings</key>
                 <rect>79,84,157,168</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/blobCol/1.png</key>
+            <key type="filename">src/blobCol/10.png</key>
+            <key type="filename">src/blobCol/11.png</key>
+            <key type="filename">src/blobCol/12.png</key>
+            <key type="filename">src/blobCol/13.png</key>
+            <key type="filename">src/blobCol/14.png</key>
+            <key type="filename">src/blobCol/15.png</key>
+            <key type="filename">src/blobCol/16.png</key>
+            <key type="filename">src/blobCol/17.png</key>
+            <key type="filename">src/blobCol/18.png</key>
+            <key type="filename">src/blobCol/2.png</key>
+            <key type="filename">src/blobCol/3.png</key>
+            <key type="filename">src/blobCol/4.png</key>
+            <key type="filename">src/blobCol/5.png</key>
+            <key type="filename">src/blobCol/6.png</key>
+            <key type="filename">src/blobCol/7.png</key>
+            <key type="filename">src/blobCol/8.png</key>
+            <key type="filename">src/blobCol/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>78,84,156,168</rect>
+                <key>scale9Paddings</key>
+                <rect>78,84,156,168</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
