@@ -81,6 +81,9 @@ function getStarId(run) {
             <div class="w-full flex">
               <div class="w-35/100 pr-5 pl-5">
                 <h2 class="m-0">Clan</h2>
+                <div class="border border-solid border-white">
+                  <p class="italic text-center">Les clans ne sont pas encore disponibles.</p>
+                </div>
               </div>
               <div class="w-65/100 pr-5">
                 <h2 class="m-0">
@@ -92,6 +95,20 @@ function getStarId(run) {
                       alt="Plume de Piou" />
                   </span>
                 </h2>
+                <div class="border border-solid border-white flex flex-wrap">
+                  <div class="flex items-baseline w-16 text-nowrap">
+                    <GreenStar class="size-12" />
+                    <Number :value="`x${starsByColor[0] ?? 0}`" color="green" class="-ml-4" />
+                  </div>
+                  <div class="flex items-baseline w-16 text-nowrap">
+                    <OrangeStar class="size-12" />
+                    <Number :value="`x${starsByColor[1] ?? 0}`" color="orange" class="-ml-4" />
+                  </div>
+                  <div class="flex items-baseline w-16 text-nowrap">
+                    <RedStar class="size-12" />
+                    <Number :value="`x${starsByColor[2] ?? 0}`" color="pink" class="-ml-4" />
+                  </div>
+                </div>
               </div>
             </div>
             
