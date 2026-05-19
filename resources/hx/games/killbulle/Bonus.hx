@@ -21,7 +21,6 @@ class Bonus {
 		mc.loop = true;
 		mc._xscale = 50;
 		mc._yscale = 50;
-		mc.gotoAndStop(id + 1);
 	}
 
 	function activate():Void {
@@ -64,7 +63,7 @@ class Bonus {
 		if (y > my) {
 			y = my * 2 - y;
 			dy *= -0.5;
-			if (Math.abs(dy) < 1) {
+			if (Math.abs(dy) < 1 * Cs.NEW_GEN_SCALE) {
 				dy = 0;
 				y = my;
 			}

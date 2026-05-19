@@ -41,31 +41,6 @@ class Blob {
 	}
 
 	public function setColor(mc:ASprite):Void {
-		// var c = new Color((cast mc : Dynamic).col);
-		// var t;
-		// if (bonus == null)
-		// 	t = {
-		// 		ra: 82,
-		// 		rb: 40,
-		// 		ga: 86,
-		// 		gb: 30,
-		// 		ba: 52,
-		// 		bb: -51,
-		// 		aa: 100,
-		// 		ab: 0
-		// 	}
-		// else
-		// 	t = {
-		// 		ra: 82,
-		// 		rb: 150,
-		// 		ga: 86,
-		// 		gb: 10,
-		// 		ba: 52,
-		// 		bb: -51,
-		// 		aa: 100,
-		// 		ab: 0
-		// 	};
-		// c.setTransform(t);
 		var rb = bonus != null ? 150 : 40;
 		var gb = bonus != null ? 10 : 30;
 		var filter = new ColorMatrixFilter();
@@ -97,7 +72,7 @@ class Blob {
 		if (size >= 25 && bonus == null) {
 			var b;
 			b = new Blob(game, dsize, null);
-			b.x = x + size / 4;
+			b.x = x + size * Cs.NEW_GEN_SCALE / 4;
 			b.y = y;
 			b.dy = -Math.abs(dy);
 			b.dir = 1;
@@ -105,7 +80,7 @@ class Blob {
 			game.blobs.push(b);
 
 			b = new Blob(game, dsize, null);
-			b.x = x - size / 4;
+			b.x = x - size * Cs.NEW_GEN_SCALE / 4;
 			b.y = y;
 			b.dy = -Math.abs(dy);
 			b.dir = -1;
