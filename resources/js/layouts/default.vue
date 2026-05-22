@@ -35,7 +35,7 @@ const authStore = useAuthStore()
 
   <main id="container">
     <section id="bodySection" class="w-full flex">
-      <div class="flex-1">
+      <div class="flex-1 pl-5 pr-5">
         <slot />
       </div>
 

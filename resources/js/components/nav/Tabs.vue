@@ -20,7 +20,7 @@ function tabMenuLinkClasses(item) {
 
 <template>
   <TabGroup>
-    <TabList class="flex gap-2 h-8 relative -top-[34px] -left-1">
+    <TabList class="flex gap-2 h-8 relative -top-[34px] -left-6">
       <Tab
         v-for="(item, index) in items"
         :key="item.value ?? index"

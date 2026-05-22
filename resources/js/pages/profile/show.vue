@@ -79,13 +79,11 @@ function getStarId(run) {
             <h1 class="mt-0 text-center">Profil de {{ profile.data.display_name }}</h1>
             
             <div class="w-full flex">
-              <div class="w-35/100 pr-5 pl-5">
+              <div class="w-35/100 pr-5 border border-solid border-white">
                 <h2 class="m-0">Clan</h2>
-                <div class="border border-solid border-white">
-                  <p class="italic text-center">Les clans ne sont pas encore disponibles.</p>
-                </div>
+                <p class="italic text-center">Les clans ne sont pas encore disponibles.</p>
               </div>
-              <div class="w-65/100 pr-5">
+              <div class="w-65/100 border border-solid border-white">
                 <h2 class="m-0">
                   Statut 
                   <span v-if="feathersCount > 0">
@@ -95,79 +93,59 @@ function getStarId(run) {
                       alt="Plume de Piou" />
                   </span>
                 </h2>
-                <div class="border border-solid border-white flex flex-wrap">
-                  <div class="flex items-baseline w-16 text-nowrap">
-                    <GreenStar class="size-12" />
+                <div class="flex flex-wrap items-center">
+                  <div class="flex items-baseline ml-2 mr-2 text-nowrap">
+                    <GreenStar class="size-11" />
                     <Number :value="`x${starsByColor[0] ?? 0}`" color="green" class="-ml-4" />
                   </div>
-                  <div class="flex items-baseline w-16 text-nowrap">
-                    <OrangeStar class="size-12" />
+                  <div class="flex items-baseline ml-2 mr-2 text-nowrap">
+                    <OrangeStar class="size-11" />
                     <Number :value="`x${starsByColor[1] ?? 0}`" color="orange" class="-ml-4" />
                   </div>
-                  <div class="flex items-baseline w-16 text-nowrap">
-                    <RedStar class="size-12" />
+                  <div class="flex items-baseline ml-2 mr-2 text-nowrap">
+                    <RedStar class="size-11" />
                     <Number :value="`x${starsByColor[2] ?? 0}`" color="pink" class="-ml-4" />
                   </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="grid md:grid-cols-2 ">
-              <div class="grid grid-cols-3 justify-items-center">
-                <div class="flex items-end">
-                  <GreenStar class="size-20" />
-                  <Number :value="`x${starsByColor[0] ?? 0}`" color="green" />
-                </div>
-                <div class="flex items-end">
-                  <OrangeStar class="size-20" />
-                  <Number :value="`x${starsByColor[1] ?? 0}`" color="orange" />
-                </div>
-                <div class="flex items-end">
-                  <RedStar class="size-20" />
-                  <Number :value="`x${starsByColor[2] ?? 0}`" color="pink" />
-                </div>
-              </div>
-              <div class="grid grid-cols-3 justify-items-stretch items-center">
-                <div class="col-span-3 grid grid-cols-2 gap-4 justify-items-center items-center">
-                  <div class="text-center">
+                  <p class="flex items-center mt-0 mb-0 ml-4 mr-2 text-nowrap w-8">
                     <img src="/gfx/leagues/5.png" />
                     <Number :value="leagueCount[5] || '.'" />
-                  </div>
-                  <div class="text-center">
+                  </p>
+                  <p class="flex items-center mt-0 mb-0 ml-2 mr-2 text-nowrap w-8">
                     <img src="/gfx/leagues/4.png" />
                     <Number :value="leagueCount[4] || '.'" />
-                  </div>
+                  </p>
+                  <p class="flex items-center mt-0 mb-0 ml-2 mr-2 text-nowrap w-8">
+                    <img src="/gfx/leagues/3.png" />
+                    <Number :value="leagueCount[3] || '.'" />
+                  </p>
+                  <p class="flex items-center mt-0 mb-0 ml-2 mr-2 text-nowrap w-8">
+                    <img src="/gfx/leagues/2.png" />
+                    <Number :value="leagueCount[2] || '.'" />
+                  </p>
+                  <p class="flex items-center mt-0 mb-0 ml-2 mr-2 text-nowrap w-8">
+                    <img src="/gfx/leagues/1.png" />
+                    <Number :value="beginnerLeagueCount || '.'" />
+                  </p>
                 </div>
-                <div class="text-center">
-                  <img src="/gfx/leagues/3.png" />
-                  <Number :value="leagueCount[3] || '.'" />
-                </div>
-                <div class="text-center">
-                  <img src="/gfx/leagues/2.png" />
-                  <Number :value="leagueCount[2] || '.'" />
-                </div>
-                <div class="text-center">
-                  <img src="/gfx/leagues/1.png" />
-                  <Number :value="beginnerLeagueCount || '.'" />
-                </div>
-              </div>
-            
-              <div class="md:col-span-2 flex">
-                <div class="mx-auto relative">
-                  <img src="/gfx/maxiuser_bar_bg_disabled.gif" alt="Barre de progression du profil" class="w-[355px] h-[18px]" />
-                  <div class="absolute top-0.5 h-[18px] overflow-hidden" :style="{ width: barWidth + 'px' }">
-                    <div class="w-[355px] h-[18px] contrast-200 bg-gradient-to-r from-[#A500CD] to-[#84FF7A] via-[#F6941E] mask-[url('/gfx/maxiuser_bar_mask.png')]"></div>
-                  </div>
-                  <div class="absolute right-1.5 top-1.5 text-white text-2xs">{{ Math.floor(myStars / profile.max_stars * 100) }}</div>
+
+                <div class="flex">
+                  <!-- Lien à créer vers la page de complétion -->
+                  <RouterLink :to="'#'" class="mx-auto relative">
+                    <img src="/gfx/maxiuser_bar_bg_disabled.gif" alt="Barre de progression du profil" class="w-[355px] h-[18px]" />
+                    <div class="absolute top-0.5 h-[18px] overflow-hidden" :style="{ width: barWidth + 'px' }">
+                      <div class="w-[355px] h-[18px] contrast-200 bg-gradient-to-r from-[#A500CD] to-[#84FF7A] via-[#F6941E] mask-[url('/gfx/maxiuser_bar_mask.png')]"></div>
+                    </div>
+                    <div class="absolute right-1.5 top-1.25 text-white text-2xs">{{ Math.floor(myStars / profile.max_stars * 100) }}</div>
+                  </Routerlink>
                 </div>
               </div>
             </div>
 
-            <h2>Classements</h2>
+            <h2 class="mt-5">Classements</h2>
 
-            <table>
+            <table class="thinTitles">
               <thead>
-                <tr class="text-kado-orange uppercase text-sm *:px-2 *:text-right">
+                <tr>
                   <th>Niveau</th>
                   <th>Position</th>
                   <th>Jeu</th>
@@ -197,20 +175,21 @@ function getStarId(run) {
               </tbody>
             </table>
 
-            <h2>Historique</h2>
+            <h2 class="mt-10">Historique</h2>
 
             <GamesGameScoreTable :show-pos="false"
                                  :show-player="false"
                                  show-game
                                  :scores="historyResults" />
             <div v-if="historyHasNextPage" class="mt-4 text-center">
-              <button
-                @click="fetchGameHistory()"
-                :disabled="isHistoryLoading"
-                class="text-orange-400 underline cursor-pointer hover:text-orange-500"
-              >
-                Charger plus de résultats
-              </button>
+              <p class="text-center">
+                <input
+                  type="button" 
+                  value="Charger plus de résultats"
+                  @click="fetchGameHistory()"
+                  :disabled="isHistoryLoading"
+                  class="h-6 w-auto pt-px ml-4" /> 
+              </p>
               <Loader v-if="isHistoryLoading" />
               <MessageError v-else-if="historyError">{{ historyError }}</MessageError>
             </div>

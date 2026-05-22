@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <table class="w-full border-0 **:border-0">
+  <table class="thinTitles">
     <thead>
       <tr>
         <!-- <th scope="col">Période</th> -->

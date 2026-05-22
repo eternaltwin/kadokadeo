@@ -157,7 +157,7 @@
 
   table {
     border-collapse: collapse;
-    width: 92%;
+    width: 100%;
     margin: 15px auto;
     border: 2px solid var(--color-kado-cyan-800);
     text-align: center;
@@ -188,10 +188,6 @@
 
   table.whiteFirst tbody tr:nth-child(odd) {
     background-color: #fff;
-  }
-
-  table.thinTitles {
-    @apply w-75/100;
   }
 
   table.thinTitles th {
@@ -225,7 +221,7 @@
 
   #container h1 {
     /* Mozilla Firefox and IE doesn't support the background-clip:text; and -webkit-text-stroke properties */
-    margin: 25px 10px 20px 10px;
+    margin: 25px 0 20px 0;
     padding: 0;
     font-family:
       'Junegull-Regular',
@@ -260,7 +256,6 @@
   #container h2 {
     width: 100%;
     height: 35px;
-    margin: 0 20px;
     padding: 4px 5px 0 40px;
     font-size: 1.5em;
     background: url('/gfx/bgTitleBlue.jpg') no-repeat;
