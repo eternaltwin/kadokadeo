@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <table class="thinTitles">
+  <table class="thinTitles tableOneBackground">
     <thead>
       <tr>
         <!-- <th scope="col">Période</th> -->

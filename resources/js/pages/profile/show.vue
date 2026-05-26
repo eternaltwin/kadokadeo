@@ -1,4 +1,10 @@
 <script setup>
+/*
+TO DO LIST :
+- qualifOK à utiliser pour voir si qualifié sur le jeu ou pas (ici défini sur false)
+- mettre le lien vers les replay (colonne temps)
+- trier le tableau quand on clique sur le titre d'une colonne (exple : si je clique sur "Position", ça affiche d'abord les jeux où je suis premier ; si je reclique ceux où je suis dernier)
+*/
 import GreenStar from '@svg/greenStar.svg'
 import OrangeStar from '@svg/orangeStar.svg'
 import RedStar from '@svg/redStar.svg'
@@ -12,6 +18,7 @@ const { fetchProfile, isLoading, error } = useProfile()
 const leagueStore = useLeagueStore()
 
 const profile = ref(null)
+const qualifOk = ref(false);
 
 watchEffect(() => {
   fetchProfile(userId.value).then((data) => {
@@ -79,11 +86,11 @@ function getStarId(run) {
             <h1 class="mt-0 text-center">Profil de {{ profile.data.display_name }}</h1>
             
             <div class="w-full flex">
-              <div class="w-35/100 pr-5 border border-solid border-white">
+              <div class="w-32/100 border border-solid border-white mr-5">
                 <h2 class="m-0">Clan</h2>
                 <p class="italic text-center">Les clans ne sont pas encore disponibles.</p>
               </div>
-              <div class="w-65/100 border border-solid border-white">
+              <div class="w-68/100 border border-solid border-white">
                 <h2 class="m-0">
                   Statut 
                   <span v-if="feathersCount > 0">
@@ -143,32 +150,37 @@ function getStarId(run) {
 
             <h2 class="mt-5">Classements</h2>
 
-            <table class="thinTitles">
+            <table class="thinTitles tableOneBackground">
               <thead>
                 <tr>
-                  <th>Niveau</th>
-                  <th>Position</th>
-                  <th>Jeu</th>
-                  <th>Score</th>
+                  <th class="w-10/100">Qualif</th>
+                  <th class="w-10/100">Niveau</th>
+                  <th class="w-15/100">Position</th>
+                  <th class="w-30/100">Jeu</th>
+                  <th class="w-20/100">Score</th>
+                  <th class="w-15/100">Temps</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="run in profile.best_period_runs.sort((a, b) => a.game.name.localeCompare(b.game.name))" :key="run.id">
                   <td>
-                    <img v-if="run.league_id" :src="`/gfx/leagues/${run.league_id}.png`" />
+                    <img v-show="qualifOk" src="/gfx/iconQualifOk.gif" alt="iconQualifOk.gif" title="Qualif OK !" />
                   </td>
-                  <td class="text-right">
+                  <td>
+                    <img v-if="run.league_id" :src="`/gfx/leagues/${run.league_id}.png`" :alt="`${run.league_id}.png`" />
+                  </td>
+                  <td>
                     <Number color="orange" :value="run.league_rank" />
                   </td>
                   <td class="text-left">
                     <div class="flex items-center gap-2">
-                      <component :is="getStarImage(run)" class="size-4" />
+                      <component :is="getStarImage(run)" class="size-5" />
                       <RouterLink :to="{ name: 'games.show', params: { id: run.game.id } }">
                         {{ run.game.name }}
                       </RouterLink>
                     </div>
                   </td>
-                  <td class="text-right">
+                  <td>
                     <Number color="blue" :value="run.score" />
                   </td>
                 </tr>

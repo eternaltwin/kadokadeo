@@ -190,6 +190,10 @@
     background-color: #fff;
   }
 
+  table.tableOneBackground tbody tr {
+    background-color: var(--color-kado-cyan-200);
+  }
+
   table.thinTitles th {
     @apply uppercase text-xs font-normal;
   }

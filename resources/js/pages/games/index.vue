@@ -1,8 +1,14 @@
 <script setup>
+/*
+TO DO LIST :
+- qualifArrow à utiliser pour voir si qualifié sur le jeu ou pas (ici défini sur false)
+*/
+
 const { isLoading, fetchGames } = useGames()
 const route = useRoute()
 const games = ref([])
 const categories = ref([])
+const qualifArrow = ref(false)
 
 fetchGames().then((data) => {
   games.value = data.data
@@ -47,7 +53,7 @@ function getStarImage(game) {
     :selected-index="route.query.category ? categories.findIndex((c) => c.name === route.query.category) + 1 : 0"
   />
 
-  <div>
+  <div class="-ml-5 -mr-5">
     <GamesDailyGameBlock />
 
     <div id="gamesBoxes" class="relative min-h-48 flex flex-wrap justify-around px-2">
@@ -61,9 +67,15 @@ function getStarImage(game) {
           :title="`Jouer à ${game.name}`"
         >
           <div class="gameBoxBackground"></div>
+          
+          <div v-show="qualifArrow" class="absolute top-1.25 left-3.25 z-2">
+            <img src="/gfx/iconGameQualifGreenArrow.gif" alt="iconGameQualifGreenArrow.gif" title="Qualifié !" />
+          </div>
+
           <div class="gameBoxImg">
             <img :src="game.image_path" :alt="game.name" />
           </div>
+          
           <div class="gameBoxStar">
             <img v-if="game.user_star !== null" :src="getStarImage(game)" :alt="`star ${game.user_star}`" />
           </div>
