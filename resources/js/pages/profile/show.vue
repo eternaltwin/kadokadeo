@@ -18,7 +18,7 @@ const { fetchProfile, isLoading, error } = useProfile()
 const leagueStore = useLeagueStore()
 
 const profile = ref(null)
-const qualifOk = ref(false);
+const qualifOk = ref(false)
 
 watchEffect(() => {
   fetchProfile(userId.value).then((data) => {
@@ -75,6 +75,7 @@ function getStarId(run) {
       { label: 'moi', value: 'me' },
       { label: 'dernière période', value: 'last', disabled: true },
       { label: 'stats', value: 'stats', disabled: true },
+      { label: 'complétion', value: 'completion', disabled: false },
     ]"
   >
     <template #panel="{ item }">
@@ -209,7 +210,12 @@ function getStarId(run) {
           <div v-else-if="item.value === 'last'">
             <ProfileLastPeriod :profile="profile" />
           </div>
-          <div v-else-if="item.value === 'stats'">Stats</div>
+          <div v-else-if="item.value === 'stats'">
+            
+          </div>
+          <div v-else-if="item.value === 'completion'">
+            <ProfileCompletion :profile="profile" />
+          </div>
         </div>
       </div>
     </template>
