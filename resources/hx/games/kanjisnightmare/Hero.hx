@@ -640,12 +640,10 @@ class Hero extends Phys {
 			}
 		}
 
-		if (o != null) {
-			var flNear = o.dist < (optList[0] ? Cs.S(76) : Cs.S(52));
-			if (flNear || starLeft == 0) {
-				slash(o.mons, flNear);
-				return;
-			}
+		var flNear = o != null && o.mons != null && o.dist < (optList[0] ? Cs.S(76) : Cs.S(52));
+		if (flNear || starLeft == 0) {
+			slash(o != null ? o.mons : null, flNear);
+			return;
 		}
 
 		incStar(-1);
@@ -673,7 +671,9 @@ class Hero extends Phys {
 		if (flNear) {
 			if ((trg.x - x) * sens < 0)
 				setSens(-sens);
-			trg.cut(21);
+			if (trg.cut != null) {
+				trg.cut(21);
+			}
 			if (trg.hp > 0) {
 				vx = Cs.S(-5) * sens;
 			}

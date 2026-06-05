@@ -19,12 +19,11 @@ class Phys extends mt.bumdum.Phys {
 			var px = Num.q(x);
 			var py = Num.q(y + ray);
 			var oy = Num.q(py - vy * Timer.tmod);
-			for (i in 0...Cs.game.platList.length) {
-				var pl = Cs.game.platList[i];
+			for (pl in Cs.game.platList) {
 				var ply = Num.q(pl.y);
 				var plx = Num.q(pl.x);
 				var plr = Num.q(pl.x + pl.w);
-				if (oy < ply && py > ply && px > plx && px < plr) {
+				if (oy <= ply && py > ply && px > plx && px < plr) {
 					y = pl.y - ray;
 					land(pl);
 					break;

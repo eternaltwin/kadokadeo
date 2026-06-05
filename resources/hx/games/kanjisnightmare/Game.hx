@@ -368,6 +368,9 @@ class Game implements kado.GameInterface {
 		mc._y = 0;
 		mc.dy = (1 - mc.c) * Cs.S(50);
 		mc.type = 1;
+		#if debug
+		mc._alpha = 50;
+		#end
 
 		// mc._x = mc.x;
 
