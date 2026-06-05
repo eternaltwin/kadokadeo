@@ -427,6 +427,9 @@ class KadoKadeoManager extends Application {
 	}
 
 	public function gameOver(params:Dynamic):Void {
+		if (gameOverScreen != null) {
+			return;
+		}
 		var wasInReplay = this.replay.isPlayingReplay();
 		this.replay.stop();
 		destroyTouchOverlay();

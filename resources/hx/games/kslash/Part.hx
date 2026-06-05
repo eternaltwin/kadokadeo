@@ -5,7 +5,6 @@ import mt.Timer;
 import mt.bumdum.Phys;
 
 class Part extends Phys {
-	public var vs:Float;
 	public var flQueue:Bool;
 	public var field:Text;
 
@@ -18,11 +17,6 @@ class Part extends Phys {
 		if (sleep != null) {
 			return;
 		}
-
-		if (vs != null) {
-			scale = scale + (vs * Timer.tmod);
-		}
-
 		var ox = x;
 		var oy = y;
 

@@ -9,6 +9,7 @@ import pixi.core.textures.RenderTexture;
 import pixi.core.text.TextStyle;
 import pixi.core.text.Text;
 import pixi.core.display.Container;
+import pixi.core.display.DisplayObject;
 import pixi.core.graphics.Graphics;
 import pixi.core.math.shapes.Rectangle;
 import pixi.core.sprites.Sprite;
@@ -238,6 +239,79 @@ class ASprite extends Sprite {
 		// shapeFlag: Boolean
 		// A Boolean value specifying whether to evaluate the entire shape of the specified instance (true), or just the bounding box (false). This parameter can be specified only if the hit area is identified by using x and y coordinate parameters.
 		return (x >= _curState.x && y >= _curState.y && x <= _curState.x + this._width && y <= _curState.y + this._height);
+	}
+
+	public override function toGlobal(position:Point, ?point:Point, ?skipUpdate:Bool):Point {
+		var out = point == null ? new Point() : point;
+		out.x = position.x;
+		out.y = position.y;
+		applyCurStateChain(out, false);
+		return out;
+	}
+
+	public override function toLocal(position:Point, ?from:DisplayObject, ?point:Point):Point {
+		var global = position;
+		if (from != null) {
+			if (Std.is(from, ASprite)) {
+				global = (cast from : ASprite).toGlobal(position);
+			} else {
+				global = from.toGlobal(position);
+			}
+		}
+
+		var out = point == null ? new Point() : point;
+		out.x = global.x;
+		out.y = global.y;
+		applyCurStateChain(out, true);
+		return out;
+	}
+
+	function applyCurStateChain(point:Point, inverse:Bool):Void {
+		var chain:Array<ASprite> = [];
+		var current:Container = this;
+		while (Std.is(current, ASprite)) {
+			chain.push(cast current);
+			current = current.parent;
+		}
+
+		if (!inverse) {
+			var i = chain.length - 1;
+			while (i >= 0) {
+				chain[i].applyCurState(point);
+				i--;
+			}
+			if (current != null) {
+				current.toGlobal(new Point(point.x, point.y), point);
+			}
+			return;
+		}
+
+		if (current != null) {
+			current.toLocal(new Point(point.x, point.y), null, point);
+		}
+		for (sprite in chain) {
+			sprite.applyInverseCurState(point);
+		}
+	}
+
+	inline function applyCurState(point:Point):Void {
+		var sx = _curState.xscale;
+		var sy = _curState.yscale;
+		var cos = Math.cos(_curState.rotation);
+		var sin = Math.sin(_curState.rotation);
+		var x = point.x * sx;
+		var y = point.y * sy;
+		point.x = x * cos - y * sin + _curState.x;
+		point.y = x * sin + y * cos + _curState.y;
+	}
+
+	inline function applyInverseCurState(point:Point):Void {
+		var x = point.x - _curState.x;
+		var y = point.y - _curState.y;
+		var cos = Math.cos(_curState.rotation);
+		var sin = Math.sin(_curState.rotation);
+		point.x = (x * cos + y * sin) / _curState.xscale;
+		point.y = (-x * sin + y * cos) / _curState.yscale;
 	}
 
 	public function startDrag(lockCenter:Bool, left:Float, top:Float, right:Float, bottom:Float) {

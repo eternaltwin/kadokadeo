@@ -9,6 +9,7 @@ class Phys extends Sprite {
 	public var vy:Float;
 	public var vr:Float;
 	public var fr:Float;
+	public var vs:Float;
 	public var vsc:Float;
 	public var sleep:Float;
 	public var timer:Float;
@@ -60,6 +61,10 @@ class Phys extends Sprite {
 			vr *= Math.pow(fr, mt.Timer.tmod);
 		if (vsc != null) {
 			root._xscale *= Math.pow(vsc, mt.Timer.tmod);
+			root._yscale = root._xscale;
+		}
+		if (vs != null) {
+			root._xscale += vs * Timer.tmod;
 			root._yscale = root._xscale;
 		}
 

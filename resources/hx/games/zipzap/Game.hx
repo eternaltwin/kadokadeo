@@ -165,23 +165,23 @@ class Game implements kado.GameInterface {
 		}
 
 		var steps:Int = 7;
-		time += Timer.deltaT;
-		waitTimer += Timer.deltaT;
-		if (nblacks < 10 && time > 10) {
+		time += Timer.tmod;
+		waitTimer += Timer.tmod;
+		if (nblacks < 10 && time > 320) {
 			time = 0;
 			nblacks++;
 			bals.push(new Ballon(this, 3));
 		}
 
-		if (getBalsLength() > 6 && Seed.random(Std.int(10000 / Timer.tmod)) == 0) {
-			if (Seed.random(5) != 0 || waitTimer > 5) {
+		if (getBalsLength() > 6 && Seed.random(10000) == 0) {
+			if (Seed.random(5) != 0 || waitTimer > 160) {
 				var n = getBalsLength();
 				for (i in 0...n) {
 					var b = bals[i];
 					b.tx = Num.q(150 * Cs.NEW_GEN_SCALE + Math.cos(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
 					b.ty = Num.q(150 * Cs.NEW_GEN_SCALE + Math.sin(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
 					b.mind = 0;
-					b.timer = 5;
+					b.timer = 160;
 				}
 			} else {
 				var ys = [50 * Cs.NEW_GEN_SCALE, 150 * Cs.NEW_GEN_SCALE, 250 * Cs.NEW_GEN_SCALE];
@@ -193,7 +193,7 @@ class Game implements kado.GameInterface {
 						b.tx = Num.q(150 * Cs.NEW_GEN_SCALE + x);
 						b.ty = ys[b.t];
 						b.mind = 0;
-						b.timer = 5;
+						b.timer = 160;
 					}
 				}
 			}

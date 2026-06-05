@@ -55,3 +55,6 @@ travoltax.Game
 --next
 -js ./resources/js/games/killbulle.js
 killbulle.Game
+--next
+-js ./resources/js/games/kanjisnightmare.js
+kanjisnightmare.Game

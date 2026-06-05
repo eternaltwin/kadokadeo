@@ -86,11 +86,11 @@ class Ballon {
 		var s = Timer.tmod * speed;
 		var ddx = Num.q(tx - x);
 		var ddy = Num.q(ty - y);
-		var dd = Math.sqrt(ddx * ddx + ddy * ddy);
+		var dd = Num.q(Math.sqrt(ddx * ddx + ddy * ddy));
 		var p = Math.pow(0.96, Timer.tmod);
 
 		if (timer > 0) {
-			timer -= Timer.deltaT;
+			timer -= Timer.tmod;
 			if (timer <= 0) {
 				nextStep();
 			}

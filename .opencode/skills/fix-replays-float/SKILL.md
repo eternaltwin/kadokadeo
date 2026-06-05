@@ -145,10 +145,10 @@ hero.ty = Num.q(MouseManager.getY());
 - Ne pas ajouter de compatibilite inutile: corriger le chemin actuel de replay.
 - Ne pas regenerer manuellement les fichiers generes; compiler via la commande du projet.
 - Dans ce repo, utiliser `make compile-games` pour compiler les jeux et bundles.
+- Attention à ne pas utiliser des instructions du type: mc._x = mc.x: on prendrait une valeur interpolée plutôt que la valeur originale, ce qui peut créer des divergences dans le replay.
 
 ## Validation
 
-- Compiler avec `make compile-games`.
 - Lancer une partie live courte puis son replay.
 - Verifier au minimum:
     - meme score final

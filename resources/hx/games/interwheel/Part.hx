@@ -4,7 +4,6 @@ import mt.Timer;
 import mt.bumdum.Phys;
 
 class Part extends Phys {
-	public var vs:Float;
 	public var rFrict:Float;
 	public var sFrict:Float;
 	public var deathScore:Int;
@@ -20,10 +19,6 @@ class Part extends Phys {
 	public override function update() {
 		if (vr != null) {
 			vr *= rFrict;
-		}
-		if (vs != null) {
-			vs *= sFrict;
-			scale += vs * Timer.tmod;
 		}
 		super.update();
 	}
