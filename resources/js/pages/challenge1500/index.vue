@@ -34,8 +34,8 @@ const toggleDetails = (userId) => {
 }
 
 const loadGames = async() => {
-  const response = await get('/challenge-1500/games')
-  games.value = response.data
+  const response = await get('/games')
+  games.value = response.data.data ?? response.data
   if (games.value.length > 0 && !selectedGameId.value) {
     selectedGameId.value = games.value[0].id
   }
@@ -112,7 +112,11 @@ loadGames()
         </select>
 
         <label for="scoreInput">Score</label>
-        <input id="scoreInput" v-model.number="scoreInput" type="number" min="0" class="px-2 py-1 border border-slate-400">
+        <input id="scoreInput"
+               v-model.number="scoreInput"
+               type="number"
+               min="0"
+               class="px-2 py-1 border border-slate-400">
 
         <button class="text-orange-400 underline cursor-pointer hover:text-orange-500" @click="calculate">
           Calculer

@@ -26,11 +26,6 @@ class Challenge1500Controller extends Controller implements HasMiddleware
         return response()->json($service->getChallengeRanking(data_get($data, 'period')));
     }
 
-    public function games(Challenge1500Service $service)
-    {
-        return response()->json($service->getAvailableGames());
-    }
-
     public function calculate(Request $request, Challenge1500Service $service)
     {
         $data = $request->validate([
