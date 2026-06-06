@@ -61,3 +61,6 @@ kanjisnightmare.Game
 --next
 -js ./resources/js/games/tiananman.js
 tiananman.Game
+--next
+-js ./resources/js/games/crepuscud.js
+crepuscud.Game
