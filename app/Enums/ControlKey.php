@@ -43,7 +43,7 @@ enum ControlKey: string implements HasLabel
     case X = 'x';
     case Y = 'y';
     case Z = 'z';
-    
+
     public function getLabel(): ?string
     {
         return match ($this) {
