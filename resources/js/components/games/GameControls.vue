@@ -4,14 +4,39 @@ defineProps({
 })
 
 const keyMap = {
-  mouse1: { image: '/gfx/gameCommandLeftClic.png', title: 'Clic gauche' },
+  mouse: { image: '/gfx/controls/mouseMove.gif', title: 'Souris' },
+  mouse1: { image: '/gfx/controls/mouseLeftClic.gif', title: 'Clic gauche' },
   mouse2: { image: '', title: 'Clic droit' },
-  space: { image: '', title: 'Espace' },
-  enter: { image: '', title: 'Entrée' },
-  arrowup: { image: '', title: 'Flèche haut' },
-  arrowdown: { image: '', title: 'Flèche bas' },
-  arrowleft: { image: '', title: 'Flèche gauche' },
-  arrowright: { image: '', title: 'Flèche droite' },
+  space: { image: '/gfx/controls/keySpace.gif', title: 'Espace' },
+  enter: { image: '/gfx/controls/key.gif', title: 'Entree' },
+  arrows: { image: '/gfx/controls/keyarrow.gif', title: '4 fleches' },
+  arrowup: { image: '/gfx/controls/keyUpArrow.gif', title: 'Fleche haut' },
+  arrowdown: { image: '/gfx/controls/keyDownArrow.gif', title: 'Fleche bas' },
+  arrowleft: { image: '/gfx/controls/keyLeftArrow.gif', title: 'Fleche gauche' },
+  arrowright: { image: '/gfx/controls/keyRightArrow.gif', title: 'Fleche droite' },
+  shift: { image: '/gfx/controls/keyshift.gif', title: 'Shift' },
+  ctrl: { image: '/gfx/controls/keyctrl.gif', title: 'Ctrl' },
+  control: { image: '/gfx/controls/keyctrl.gif', title: 'Ctrl' },
+  esc: { image: '/gfx/controls/keyesc.gif', title: 'Echap' },
+  escape: { image: '/gfx/controls/keyesc.gif', title: 'Echap' },
+  p: { image: '/gfx/controls/keyp.gif', title: 'P' },
+}
+
+function getKeyView(key) {
+  const mapped = keyMap[key]
+  if (mapped) {
+    return {
+      image: mapped.image,
+      title: mapped.title,
+      text: mapped.title,
+    }
+  }
+
+  return {
+    image: '',
+    title: key?.toUpperCase?.() || key,
+    text: key?.toUpperCase?.() || key,
+  }
 }
 </script>
 
@@ -26,15 +51,26 @@ const keyMap = {
     <tbody>
       <tr v-for="control in game.controls" :key="control.id">
         <td scope="row">
-          <img v-for="key in control.keys"
-               :key="key"
-               :src="keyMap[key]?.image || ''"
-               :title="keyMap[key]?.title || ''"
-               :alt="keyMap[key]?.title || ''"
-          />
+          <template v-for="key in control.keys" :key="key">
+            <img
+              v-if="getKeyView(key).image"
+              :src="getKeyView(key).image"
+              :title="getKeyView(key).title"
+              :alt="getKeyView(key).title"
+              class="inline-block mr-1"
+            />
+            <span
+              v-else
+              :title="getKeyView(key).title"
+              class="inline-block mr-1"
+            >
+              {{ getKeyView(key).text }}
+            </span>
+          </template>
         </td>
         <td>{{ control.description }}</td>
       </tr>
     </tbody>
   </table>
 </template>
+

@@ -9,8 +9,10 @@ enum ControlKey: string implements HasLabel
     case MOUSE = 'mouse';
     case MOUSE1 = 'mouse1';
     case MOUSE2 = 'mouse2';
+    case CTRL = 'ctrl';
     case SPACE = 'space';
     case ENTER = 'enter';
+    case ARROWS = 'arrows';
     case ARROWUP = 'arrowup';
     case ARROWDOWN = 'arrowdown';
     case ARROWLEFT = 'arrowleft';
@@ -48,8 +50,10 @@ enum ControlKey: string implements HasLabel
             self::MOUSE => 'Souris',
             self::MOUSE1 => 'Clic gauche',
             self::MOUSE2 => 'Clic droit',
+            self::CTRL => 'Ctrl',
             self::SPACE => 'Espace',
             self::ENTER => 'Entrée',
+            self::ARROWS => '4 flèches',
             self::ARROWUP => 'Flèche haut',
             self::ARROWDOWN => 'Flèche bas',
             self::ARROWLEFT => 'Flèche gauche',
@@ -83,3 +87,4 @@ enum ControlKey: string implements HasLabel
         };
     }
 }
+
