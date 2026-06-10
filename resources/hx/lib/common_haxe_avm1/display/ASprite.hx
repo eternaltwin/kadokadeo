@@ -75,8 +75,8 @@ class ASprite extends Sprite {
 	public var _visible(get, set):Bool;
 	public var _x(get, set):Float;
 	public var _y(get, set):Float;
-	public var _width(get, null):Float = 17;
-	public var _height(get, null):Float = 17;
+	public var _width(get, set):Float;
+	public var _height(get, set):Float;
 	public var _name:String;
 	public var _rotation(get, set):Float;
 	public var _totalframes:Int = 0;
@@ -235,7 +235,7 @@ class ASprite extends Sprite {
 		return px != 0;
 	}
 
-	public function hitTest(x:Float, y:Float, shapeFlag:Bool) {
+	public function hitTest(x:Float, y:Float, shapeFlag:Bool = false) {
 		// shapeFlag: Boolean
 		// A Boolean value specifying whether to evaluate the entire shape of the specified instance (true), or just the bounding box (false). This parameter can be specified only if the hit area is identified by using x and y coordinate parameters.
 		return (x >= _curState.x && y >= _curState.y && x <= _curState.x + this._width && y <= _curState.y + this._height);
@@ -275,10 +275,8 @@ class ASprite extends Sprite {
 		}
 
 		if (!inverse) {
-			var i = chain.length - 1;
-			while (i >= 0) {
-				chain[i].applyCurState(point);
-				i--;
+			for (sprite in chain) {
+				sprite.applyCurState(point);
 			}
 			if (current != null) {
 				current.toGlobal(new Point(point.x, point.y), point);
@@ -289,8 +287,10 @@ class ASprite extends Sprite {
 		if (current != null) {
 			current.toLocal(new Point(point.x, point.y), null, point);
 		}
-		for (sprite in chain) {
-			sprite.applyInverseCurState(point);
+		var i = chain.length - 1;
+		while (i >= 0) {
+			chain[i].applyInverseCurState(point);
+			i--;
 		}
 	}
 
@@ -459,6 +459,16 @@ class ASprite extends Sprite {
 		return _curState.height;
 	}
 
+	public function set__width(v:Float) {
+		_curState.width = v;
+		return v;
+	}
+
+	public function set__height(v:Float) {
+		_curState.height = v;
+		return v;
+	}
+
 	public function get__rotation()
 		return (_curState.rotation / (Math.PI * 2)) * 360;
 
@@ -625,7 +635,7 @@ class ASprite extends Sprite {
 	}
 
 	public function swapDepths(with:Dynamic) {
-		if (Std.is(with, ASprite)) {
+		if (this.parent != null && Std.is(with, ASprite) && with.parent == this.parent) {
 			this.parent.swapChildren(this, with);
 		} else {
 			this._zIndex = with;
@@ -664,6 +674,13 @@ class ASprite extends Sprite {
 		a._zIndex = depth;
 		a.zsort();
 		return a;
+	}
+
+	public function attachBBox(bbox:BBox, depth:Int = 0):BBox {
+		addChild(bbox);
+		bbox._zIndex = depth;
+		bbox.zsort();
+		return bbox;
 	}
 
 	public function stop() {

@@ -309,13 +309,14 @@ class Str {
 }
 
 class Filt {
-	static public function glow(mc:DisplayObject, distance = 2, strength:Float = 1, color = 0, inner = false):GlowFilter {
+	static public function glow(mc:DisplayObject, distance = 2, strength:Float = 1, color = 0, inner = false, quality:Float = 1.0):GlowFilter {
 		var f = Type.createInstance(GlowFilter, [
 			{
 				distance: distance,
 				outerStrength: inner ? 0 : strength,
 				innerStrength: inner ? strength : 0,
-				color: color
+				color: color,
+				quality: quality
 			}
 		]);
 		if (mc.filters == null) {

@@ -58,3 +58,6 @@ killbulle.Game
 --next
 -js ./resources/js/games/kanjisnightmare.js
 kanjisnightmare.Game
+--next
+-js ./resources/js/games/tiananman.js
+tiananman.Game

@@ -77,6 +77,11 @@ class BottomBar extends ASprite {
 		}
 
 		for (i in 0...paddedScore.length) {
+			if (i >= digitSprites.length) {
+				// If there are more digits than sprites, we can choose to create new sprites or break the loop
+				// For now, we'll just break the loop to avoid errors
+				break;
+			}
 			var sprite = digitSprites[i];
 			sprite.texture = this.textures[Std.parseInt(paddedScore.charAt(i))];
 		}
