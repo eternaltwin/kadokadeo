@@ -1,0 +1,547 @@
+[
+  {
+    "Jeux": "ABC révolution",
+    "Paliers des 1500": "78000",
+    "Paliers des 1400": "55714.2857142857",
+    "Paliers des 1300": "33428.5714285715",
+    "Etoile rouge": "50438"
+  },
+  {
+    "Jeux": "Alchimie",
+    "Paliers des 1500": "1000000",
+    "Paliers des 1400": "714285.714285714",
+    "Paliers des 1300": "428571.428571429",
+    "Etoile rouge": "236810"
+  },
+  {
+    "Jeux": "Alphabounce",
+    "Paliers des 1500": "110000",
+    "Paliers des 1400": "78571.4285714286",
+    "Paliers des 1300": "47142.8571428572",
+    "Etoile rouge": "35862"
+  },
+  {
+    "Jeux": "Aqua Splash",
+    "Paliers des 1500": "180000",
+    "Paliers des 1400": "128571.428571429",
+    "Paliers des 1300": "77142.8571428572",
+    "Etoile rouge": "130786"
+  },
+  {
+    "Jeux": "Atlanteine",
+    "Game ID": "56",
+    "Paliers des 1500": "155000",
+    "Paliers des 1400": "128225.142857143",
+    "Paliers des 1300": "101450.285714286",
+    "Etoile rouge": "74612",
+    "Etoile orange": "61288",
+    "Etoile verte": "34641"
+  },
+  {
+    "Jeux": "Autrement",
+    "Paliers des 1500": "62000",
+    "Paliers des 1400": "44285.7142857143",
+    "Paliers des 1300": "26571.4285714286",
+    "Etoile rouge": "25144"
+  },
+  {
+    "Jeux": "Bactery",
+    "Paliers des 1500": "17500",
+    "Paliers des 1400": "12500",
+    "Paliers des 1300": "7500",
+    "Etoile rouge": "15294"
+  },
+  {
+    "Jeux": "Binary",
+    "Paliers des 1500": "130000",
+    "Paliers des 1400": "92857.1428571428",
+    "Paliers des 1300": "55714.2857142857",
+    "Etoile rouge": "51702"
+  },
+  {
+    "Jeux": "Cereal Punk",
+    "Paliers des 1500": "124000",
+    "Paliers des 1400": "88571.4285714286",
+    "Paliers des 1300": "53142.8571428572",
+    "Etoile rouge": "65628"
+  },
+  {
+    "Jeux": "Chakré Boudha",
+    "Paliers des 1500": "330000",
+    "Paliers des 1400": "235714.285714285",
+    "Paliers des 1300": "141428.571428571",
+    "Etoile rouge": "67353"
+  },
+  {
+    "Jeux": "Choco Mouche",
+    "Game ID": "58",
+    "Paliers des 1500": "675000",
+    "Paliers des 1400": "540457.428571429",
+    "Paliers des 1300": "405914.857142857",
+    "Etoile rouge": "264131",
+    "Etoile orange": "204101",
+    "Etoile verte": "84041"
+  },
+  {
+    "Jeux": "Cooking Lili",
+    "Paliers des 1500": "115000",
+    "Paliers des 1400": "82142.8571428572",
+    "Paliers des 1300": "49285.7142857143",
+    "Etoile rouge": "49374"
+  },
+  {
+    "Jeux": "Cosmo Crash",
+    "Paliers des 1500": "145000",
+    "Paliers des 1400": "103571.428571429",
+    "Paliers des 1300": "62142.8571428571",
+    "Etoile rouge": "46428"
+  },
+  {
+    "Jeux": "Crepuscud",
+    "Paliers des 1500": "250000",
+    "Paliers des 1400": "178571.428571429",
+    "Paliers des 1300": "107142.857142857",
+    "Etoile rouge": "139628"
+  },
+  {
+    "Jeux": "Cyclopean",
+    "Paliers des 1500": "250000",
+    "Paliers des 1400": "178571.428571429",
+    "Paliers des 1300": "107142.857142857",
+    "Etoile rouge": "119507"
+  },
+  {
+    "Jeux": "Digestomax",
+    "Paliers des 1500": "160000",
+    "Paliers des 1400": "114285.714285714",
+    "Paliers des 1300": "68571.4285714285",
+    "Etoile rouge": "111764"
+  },
+  {
+    "Jeux": "Drakhan",
+    "Paliers des 1500": "530000",
+    "Paliers des 1400": "378571.428571429",
+    "Paliers des 1300": "227142.857142857",
+    "Etoile rouge": "167238"
+  },
+  {
+    "Jeux": "El Tortuga Nemesis",
+    "Paliers des 1500": "800000",
+    "Paliers des 1400": "571428.571428571",
+    "Paliers des 1300": "342857.142857143",
+    "Etoile rouge": "92973"
+  },
+  {
+    "Jeux": "Electrolink",
+    "Paliers des 1500": "340000",
+    "Paliers des 1400": "242857.142857143",
+    "Paliers des 1300": "145714.285714286",
+    "Etoile rouge": "105552"
+  },
+  {
+    "Jeux": "Ellon in the dark",
+    "Paliers des 1500": "200000",
+    "Paliers des 1400": "142857.142857143",
+    "Paliers des 1300": "85714.2857142857",
+    "Etoile rouge": "50273"
+  },
+  {
+    "Jeux": "F1 Champion",
+    "Game ID": "25",
+    "Paliers des 1500": "36500",
+    "Paliers des 1400": "31940.8571428571",
+    "Paliers des 1300": "27381.7142857143",
+    "Etoile rouge": "23967",
+    "Etoile orange": "20543",
+    "Etoile verte": "13695"
+  },
+  {
+    "Jeux": "Flushee",
+    "Paliers des 1500": "40000",
+    "Paliers des 1400": "28571.4285714286",
+    "Paliers des 1300": "17142.8571428571",
+    "Etoile rouge": "21554"
+  },
+  {
+    "Jeux": "Happy Pti Tank",
+    "Paliers des 1500": "103000",
+    "Paliers des 1400": "73571.4285714286",
+    "Paliers des 1300": "44142.8571428572",
+    "Etoile rouge": "49887"
+  },
+  {
+    "Jeux": "Hexile",
+    "Paliers des 1500": "24500",
+    "Paliers des 1400": "17500",
+    "Paliers des 1300": "10500",
+    "Etoile rouge": "21092"
+  },
+  {
+    "Jeux": "Hypercube",
+    "Paliers des 1500": "600000",
+    "Paliers des 1400": "428571.428571429",
+    "Paliers des 1300": "257142.857142857",
+    "Etoile rouge": "61278"
+  },
+  {
+    "Jeux": "Interwheel",
+    "Game ID": "7",
+    "Paliers des 1500": "70000",
+    "Paliers des 1400": "58251.7142857143",
+    "Paliers des 1300": "46503.4285714286",
+    "Etoile rouge": "34898",
+    "Etoile orange": "28881",
+    "Etoile verte": "16847"
+  },
+  {
+    "Jeux": "Invasion",
+    "Paliers des 1500": "13500",
+    "Paliers des 1400": "9642.85714285715",
+    "Paliers des 1300": "5785.71428571429",
+    "Etoile rouge": "10845"
+  },
+  {
+    "Jeux": "Iron Chouquette",
+    "Game ID": "3",
+    "Paliers des 1500": "270000",
+    "Paliers des 1400": "207391.428571429",
+    "Paliers des 1300": "144782.857142857",
+    "Etoile rouge": "66766",
+    "Etoile orange": "50870",
+    "Etoile verte": "19076"
+  },
+  {
+    "Jeux": "Judo Commando",
+    "Paliers des 1500": "280000",
+    "Paliers des 1400": "200000",
+    "Paliers des 1300": "120000",
+    "Etoile rouge": "96848"
+  },
+  {
+    "Jeux": "Julianus",
+    "Paliers des 1500": "23000",
+    "Paliers des 1400": "16428.5714285714",
+    "Paliers des 1300": "9857.14285714286",
+    "Etoile rouge": "12745"
+  },
+  {
+    "Jeux": "K-Slash",
+    "Game ID": "4",
+    "Paliers des 1500": "118000",
+    "Paliers des 1400": "89586.2857142857",
+    "Paliers des 1300": "61172.5714285715",
+    "Etoile rouge": "24350",
+    "Etoile orange": "18552",
+    "Etoile verte": "6957"
+  },
+  {
+    "Jeux": "K-Train",
+    "Paliers des 1500": "185000",
+    "Paliers des 1400": "132142.857142857",
+    "Paliers des 1300": "79285.7142857143",
+    "Etoile rouge": "111179"
+  },
+  {
+    "Jeux": "Kanji",
+    "Game ID": "5",
+    "Paliers des 1500": "59000",
+    "Paliers des 1400": "49085.7142857143",
+    "Paliers des 1300": "39171.4285714286",
+    "Etoile rouge": "30375",
+    "Etoile orange": "24300",
+    "Etoile verte": "12150"
+  },
+  {
+    "Jeux": "Kanji Gaiden",
+    "Paliers des 1500": "74000",
+    "Paliers des 1400": "52857.1428571429",
+    "Paliers des 1300": "31714.2857142857",
+    "Etoile rouge": "36096"
+  },
+  {
+    "Jeux": "Kanji's Adventure",
+    "Paliers des 1500": "350000",
+    "Paliers des 1400": "250000",
+    "Paliers des 1300": "150000",
+    "Etoile rouge": "74800"
+  },
+  {
+    "Jeux": "Kanji's Nightmare",
+    "Paliers des 1500": "100000",
+    "Paliers des 1400": "71428.5714285714",
+    "Paliers des 1300": "42857.1428571428",
+    "Etoile rouge": "41220"
+  },
+  {
+    "Jeux": "Kaskade 2",
+    "Game ID": "52",
+    "Paliers des 1500": "400000",
+    "Paliers des 1400": "351471.714285714",
+    "Paliers des 1300": "302943.428571429",
+    "Etoile rouge": "266112",
+    "Etoile orange": "230151",
+    "Etoile verte": "158229"
+  },
+  {
+    "Jeux": "Kavern",
+    "Paliers des 1500": "82500",
+    "Paliers des 1400": "58928.5714285714",
+    "Paliers des 1300": "35357.1428571428",
+    "Etoile rouge": "59061"
+  },
+  {
+    "Jeux": "Kill Bulle",
+    "Game ID": "17",
+    "Paliers des 1500": "95000",
+    "Paliers des 1400": "78664.8571428572",
+    "Paliers des 1300": "62329.7142857143",
+    "Etoile rouge": "50436",
+    "Etoile orange": "37827",
+    "Etoile verte": "12609"
+  },
+  {
+    "Jeux": "Klinker Surprise",
+    "Paliers des 1500": "300000",
+    "Paliers des 1400": "214285.714285714",
+    "Paliers des 1300": "128571.428571428",
+    "Etoile rouge": "64444"
+  },
+  {
+    "Jeux": "Linéa",
+    "Paliers des 1500": "175000",
+    "Paliers des 1400": "125000",
+    "Paliers des 1300": "75000",
+    "Etoile rouge": "57893"
+  },
+  {
+    "Jeux": "Logic'O",
+    "Paliers des 1500": "452000",
+    "Paliers des 1400": "322857.142857143",
+    "Paliers des 1300": "193714.285714286",
+    "Etoile rouge": "234739"
+  },
+  {
+    "Jeux": "Magmax",
+    "Paliers des 1500": "70000",
+    "Paliers des 1400": "50000",
+    "Paliers des 1300": "30000",
+    "Etoile rouge": "29370"
+  },
+  {
+    "Jeux": "Manda",
+    "Paliers des 1500": "505000",
+    "Paliers des 1400": "360714.285714286",
+    "Paliers des 1300": "216428.571428572",
+    "Etoile rouge": "383822"
+  },
+  {
+    "Jeux": "Mini-Race",
+    "Paliers des 1500": "117250",
+    "Paliers des 1400": "83750",
+    "Paliers des 1300": "50250",
+    "Etoile rouge": "74068"
+  },
+  {
+    "Jeux": "Opalus",
+    "Game ID": "51",
+    "Paliers des 1500": "170000",
+    "Paliers des 1400": "151617.428571429",
+    "Paliers des 1300": "133234.857142857",
+    "Etoile rouge": "119563",
+    "Etoile orange": "105661",
+    "Etoile verte": "77855"
+  },
+  {
+    "Jeux": "Opalus Factory",
+    "Paliers des 1500": "750000",
+    "Paliers des 1400": "535714.285714286",
+    "Paliers des 1300": "321428.571428572",
+    "Etoile rouge": "132917"
+  },
+  {
+    "Jeux": "Oursouinvader",
+    "Paliers des 1500": "160000",
+    "Paliers des 1400": "114285.714285714",
+    "Paliers des 1300": "68571.4285714285",
+    "Etoile rouge": "57330"
+  },
+  {
+    "Jeux": "Pacifik",
+    "Paliers des 1500": "278000",
+    "Paliers des 1400": "198571.428571429",
+    "Paliers des 1300": "119142.857142857",
+    "Etoile rouge": "47322"
+  },
+  {
+    "Jeux": "Paradice",
+    "Paliers des 1500": "150000",
+    "Paliers des 1400": "107142.857142857",
+    "Paliers des 1300": "64285.7142857142",
+    "Etoile rouge": "78473"
+  },
+  {
+    "Jeux": "Phagocytoz",
+    "Paliers des 1500": "48000",
+    "Paliers des 1400": "34285.7142857143",
+    "Paliers des 1300": "20571.4285714286",
+    "Etoile rouge": "30000"
+  },
+  {
+    "Jeux": "Piou-Piou",
+    "Game ID": "8",
+    "Paliers des 1500": "90000",
+    "Paliers des 1400": "73213.4285714286",
+    "Paliers des 1300": "56426.8571428572",
+    "Etoile rouge": "39470",
+    "Etoile orange": "31247",
+    "Etoile verte": "14801"
+  },
+  {
+    "Jeux": "Pioutch",
+    "Paliers des 1500": "53000",
+    "Paliers des 1400": "37857.1428571429",
+    "Paliers des 1300": "22714.2857142857",
+    "Etoile rouge": "27928"
+  },
+  {
+    "Jeux": "Popcorn",
+    "Game ID": "39",
+    "Paliers des 1500": "300000",
+    "Paliers des 1400": "237120",
+    "Paliers des 1300": "174240",
+    "Etoile rouge": "110658",
+    "Etoile orange": "79920",
+    "Etoile verte": "18443"
+  },
+  {
+    "Jeux": "Punch-In !",
+    "Paliers des 1500": "361000",
+    "Paliers des 1400": "257857.142857143",
+    "Paliers des 1300": "154714.285714286",
+    "Etoile rouge": "106086"
+  },
+  {
+    "Jeux": "Puzzle-Manda",
+    "Paliers des 1500": "96000",
+    "Paliers des 1400": "68571.4285714286",
+    "Paliers des 1300": "41142.8571428572",
+    "Etoile rouge": "50743"
+  },
+  {
+    "Jeux": "Quadrikolor",
+    "Paliers des 1500": "41500",
+    "Paliers des 1400": "29642.8571428571",
+    "Paliers des 1300": "17785.7142857143",
+    "Etoile rouge": "31186"
+  },
+  {
+    "Jeux": "Razor",
+    "Paliers des 1500": "70000",
+    "Paliers des 1400": "50000",
+    "Paliers des 1300": "30000",
+    "Etoile rouge": "50766"
+  },
+  {
+    "Jeux": "Red Raid",
+    "Paliers des 1500": "154000",
+    "Paliers des 1400": "110000",
+    "Paliers des 1300": "66000",
+    "Etoile rouge": "57799"
+  },
+  {
+    "Jeux": "Safari",
+    "Paliers des 1500": "156000",
+    "Paliers des 1400": "111428.571428571",
+    "Paliers des 1300": "66857.1428571429",
+    "Etoile rouge": "35183"
+  },
+  {
+    "Jeux": "Schizo Fuzz",
+    "Paliers des 1500": "625000",
+    "Paliers des 1400": "446428.571428571",
+    "Paliers des 1300": "267857.142857143",
+    "Etoile rouge": "219885"
+  },
+  {
+    "Jeux": "Spiroule",
+    "Paliers des 1500": "200000",
+    "Paliers des 1400": "142857.142857143",
+    "Paliers des 1300": "85714.2857142857",
+    "Etoile rouge": "100837"
+  },
+  {
+    "Jeux": "Starfang",
+    "Game ID": "18",
+    "Paliers des 1500": "230000",
+    "Paliers des 1400": "168766.857142857",
+    "Paliers des 1300": "107533.714285714",
+    "Etoile rouge": "20912",
+    "Etoile orange": "15684",
+    "Etoile verte": "5228"
+  },
+  {
+    "Jeux": "Synapses",
+    "Game ID": "69",
+    "Paliers des 1500": "105000",
+    "Paliers des 1400": "92076",
+    "Paliers des 1300": "79152",
+    "Etoile rouge": "69727",
+    "Etoile orange": "59766",
+    "Etoile verte": "39844"
+  },
+  {
+    "Jeux": "Tianan Man",
+    "Paliers des 1500": "1352000",
+    "Paliers des 1400": "965714.285714285",
+    "Paliers des 1300": "579428.571428571",
+    "Etoile rouge": "193847"
+  },
+  {
+    "Jeux": "Tout-Caen",
+    "Paliers des 1500": "129000",
+    "Paliers des 1400": "92142.8571428572",
+    "Paliers des 1300": "55285.7142857143",
+    "Etoile rouge": "77007"
+  },
+  {
+    "Jeux": "Toy Maniak",
+    "Paliers des 1500": "92000",
+    "Paliers des 1400": "65714.2857142857",
+    "Paliers des 1300": "39428.5714285714",
+    "Etoile rouge": "44524"
+  },
+  {
+    "Jeux": "Travoltax",
+    "Game ID": "68",
+    "Paliers des 1500": "495000",
+    "Paliers des 1400": "386193.428571429",
+    "Paliers des 1300": "277386.857142857",
+    "Etoile rouge": "154954",
+    "Etoile orange": "114177",
+    "Etoile verte": "32622"
+  },
+  {
+    "Jeux": "Twin Spirit",
+    "Paliers des 1500": "204000",
+    "Paliers des 1400": "145714.285714286",
+    "Paliers des 1300": "87428.5714285714",
+    "Etoile rouge": "79691"
+  },
+  {
+    "Jeux": "Xian-Xiang",
+    "Paliers des 1500": "15600",
+    "Paliers des 1400": "11142.8571428571",
+    "Paliers des 1300": "6685.71428571429",
+    "Etoile rouge": "13312"
+  },
+  {
+    "Jeux": "ZipZap",
+    "Game ID": "16",
+    "Paliers des 1500": "75000",
+    "Paliers des 1400": "60655.7142857143",
+    "Paliers des 1300": "46311.4285714286",
+    "Etoile rouge": "29563",
+    "Etoile orange": "24795",
+    "Etoile verte": "15258"
+  }
+]

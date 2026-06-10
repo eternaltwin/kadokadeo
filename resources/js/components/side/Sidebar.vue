@@ -24,6 +24,9 @@ const otherGames = [
         <li class="scores grayscale">
           <RouterLink to="/" title="Mes scores">Mes scores</RouterLink>
         </li>
+        <li class="scores">
+          <RouterLink :to="{ name: 'challenge1500.index' }" title="Tournoi des 1500">Tournoi des 1500</RouterLink>
+        </li>
         <li class="account grayscale">
           <RouterLink to="/" title="Mon compte">Mon compte</RouterLink>
         </li>

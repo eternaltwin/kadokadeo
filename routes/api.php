@@ -17,6 +17,9 @@ Route::get('/daily/scores', [App\Http\Controllers\Api\GameScoreController::class
 Route::resource('/games', App\Http\Controllers\Api\GameController::class)->only(['index', 'show'])->whereNumber('game');
 Route::get('/games/{game}/scores', [App\Http\Controllers\Api\GameScoreController::class, 'index'])->whereNumber('game');
 Route::get('/games/{game}/ranking', [App\Http\Controllers\Api\GameScoreController::class, 'search'])->whereNumber('game');
+Route::get('/challenge-1500/ranking', [App\Http\Controllers\Api\Challenge1500Controller::class, 'ranking']);
+Route::get('/challenge-1500/games', [App\Http\Controllers\Api\Challenge1500Controller::class, 'games']);
+Route::get('/challenge-1500/calculate', [App\Http\Controllers\Api\Challenge1500Controller::class, 'calculate']);
 
 Route::prefix('/runs')->group(function () {
     Route::get('/{run}', [App\Http\Controllers\Api\RunController::class, 'show'])->whereUlid('run');
