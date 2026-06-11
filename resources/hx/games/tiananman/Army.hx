@@ -546,9 +546,9 @@ class Army {
 					weaponStep = 2;
 					weaponTimer = 100;
 					weaponInfos.ang = pdelta;
-					/*if (!isBlocked)
-						block(this) ; */
-					mc._p._weapon._rotation = Num.q(weaponInfos.toAng);
+					if (mc != null) {
+						mc._p._weapon._rotation = Num.q(weaponInfos.toAng);
+					}
 
 					initWeaponTarget();
 					if (weaponStep != 2 || weaponInfos == null || mc == null)
