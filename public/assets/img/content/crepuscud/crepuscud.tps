@@ -198,6 +198,21 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">src/mcBaseCanon.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.972222</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>18,9,36,18</rect>
+                <key>scale9Paddings</key>
+                <rect>18,9,36,18</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">src/mcBg.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -350,21 +365,6 @@
                 <rect>6,3,12,6</rect>
                 <key>scale9Paddings</key>
                 <rect>6,3,12,6</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/mcScore.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0,0</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>44,27,87,54</rect>
-                <key>scale9Paddings</key>
-                <rect>44,27,87,54</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
