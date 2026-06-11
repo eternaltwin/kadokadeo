@@ -1,5 +1,6 @@
 package crepuscud;
 
+import js.html.IFrameElement;
 import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
 import mt.bumdum.Part;
@@ -32,11 +33,11 @@ typedef GROUP = {id:Int};
 
 @:expose('GameCrepuscud')
 class Game implements kado.GameInterface {
-	public static var GH = 20;
-	public static var RGH = 14;
+	public static var GH = Cs.S(20);
+	public static var RGH = Cs.S(14);
 	public static var GY = 0;
 	public static var RGY = 0;
-	public static var DX = 22;
+	public static var DX = Cs.S(22);
 
 	public static var DP_BG = 0;
 	public static var DP_PLASMA = 1;
@@ -63,7 +64,7 @@ class Game implements kado.GameInterface {
 	public var brushQueueMissile:ASprite;
 
 	public var hero:HeroSprite;
-	// public var mcTarget:ASprite;
+	public var heroBase:HeroSprite;
 	public var missiles:Array<Missile>;
 	public var patriots:Array<Patriot>;
 	public var holes:Array<Float>;
@@ -79,7 +80,12 @@ class Game implements kado.GameInterface {
 	public var root:ASprite;
 	public var bg:ASprite;
 
+	public var playerTargetX:Int;
+	public var playerTargetY:Int;
+
 	public static var me:Game;
+
+	var isClickRegistered:Bool = false;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayMouseButtons = new UInt16Array(1);
@@ -98,8 +104,8 @@ class Game implements kado.GameInterface {
 
 		initBg();
 
-		GY = Cs.mch - GH;
-		RGY = Cs.mch - RGH;
+		GY = Std.int(Cs.mch - GH);
+		RGY = Std.int(Cs.mch - RGH);
 
 		flGameOver = false;
 		dif = 1;
@@ -150,14 +156,10 @@ class Game implements kado.GameInterface {
 
 	function initDecor() {
 		// BRUSHES
-		brushQueueMissile = dm.attach("queueMissile", DP_GROUND);
+		brushQueueMissile = dm.attach("queueMissile", DP_PLASMA);
 		brushQueueMissile._visible = false;
 
 		// GROUND
-		// bmpGround = new flash.display.BitmapData(Cs.mcw, GH, true, 0x00000000);
-		// true = opacité, false = pas d'opacité, 0x00000000 = couleur de remplissage (ici transparente)
-		// ici inutile
-
 		bmpGround = RenderTexture.create(Cs.mcw, GH);
 		var mc = dm.empty(DP_GROUND);
 		var gdm = new mt.DepthManager(mc);
@@ -170,23 +172,25 @@ class Game implements kado.GameInterface {
 
 		// ELEMENTS
 		var mc = dm.attach("mcGroundElement", 0);
-		var ma = 40;
+		var ma = Cs.I(40);
 		for (i in 0...24) {
-			var sc = 0.5 + Seed.rand() * 0.5;
+			trace("i " + i);
+			var sc = 0.5 + Seed.randVfx() * 0.5;
 			var m = new Matrix();
 			m.scale(sc, sc);
-			m.translate(ma + Seed.random(Cs.mcw - ma), GH - RGH);
-			mc.gotoAndStop(Seed.random(mc._totalframes) + 1);
+			m.translate(ma + Seed.randomVfx(Cs.mcw - ma), GH - RGH);
+			trace("mc._totalframes " + mc._totalframes);
+			mc.gotoAndStop(Seed.randomVfx(mc._totalframes) + 1);
 			bmpGround.draw(mc, m);
 		}
 		mc.removeMovieClip();
 
+		// HERO BASE
+		heroBase = cast gdm.attach("mcCanon", 10);
+		heroBase._y = GH - RGH;
+		heroBase._x = DX;
+
 		// HERO
-		/*
-			hero = cast dm.attach("mcCanon",DP_GROUND);
-			hero._y = RGY;
-			hero._x = DX;
-		 */
 		hero = cast gdm.attach("mcCanon", 10);
 		hero._y = GH - RGH;
 		hero._x = DX;
@@ -195,23 +199,11 @@ class Game implements kado.GameInterface {
 		mcExplode = dm.empty(DP_ONDE);
 		edm = new mt.DepthManager(mcExplode);
 		mcExplode._alpha = 25;
-
-		// TARGET
 	}
 
-	/*
-		function initTarget(){
-			mcTarget = dm.attach("mcTarget",DP_PLASMA);
-			mcTarget._x = root._xmouse;
-			mcTarget._y = root._ymouse;
-			mcTarget.stop();
-		}
-	 */
 	// UPDATE
 	public function update(delta:Float) {
 		mt.Timer.tmod /= 2; // GAME WAS BUILT WITH 2 CALLS TO mt.Timer.update
-
-		// for( i in 0...100000 ){var a = 5/8;}
 
 		switch (step) {
 			case Play:
@@ -277,7 +269,7 @@ class Game implements kado.GameInterface {
 		var dx = root._xmouse - DX;
 		var dy = root._ymouse - RGY;
 		angle = Num.mm(-1.57, Math.atan2(dy, dx), -0.05);
-		hero.gun._rotation = angle / 0.0174;
+		hero._rotation = angle / 0.0174;
 	}
 
 	// GAMEOVER
@@ -304,26 +296,11 @@ class Game implements kado.GameInterface {
 
 		incMunition(-1);
 		var p = new Patriot();
-
-		/*
-			if(mcTarget!=null){
-				p.mcTarget = mcTarget;
-				mcTarget._alpha = 50;
-				mcTarget.play();
-				mcTarget = null;
-			}
-		 */
-
-		// if( expl++ < 3 )initTarget();
 	}
 
 	// PLASMA
 	function initPlasma() {
 		plasma = new Plasma(dm.empty(DP_PLASMA), Cs.mcw, Cs.mch, 0.5);
-		// var fl = new flash.filters.BlurFilter();
-		// fl.blurX = 2;
-		// fl.blurY = 2;
-		// plasma.filters.push(fl);
 		var plasmaCt = new ColorMatrixFilter();
 		plasmaCt.matrix = [
 			1, 0, 0, 0,       0,
@@ -343,19 +320,22 @@ class Game implements kado.GameInterface {
 
 		var score = KKApi.val(sc);
 
-		var p = new Phys(dm.attach("mcScore", DP_SCORE));
+		var p = new Phys(dm.empty(DP_SCORE));
 		p.x = x;
 		p.y = y;
-		// p.vy = (score/100)*0.5;
-		// p.weight = -0.15;
-		// p.timer = 20+(score/100)*2;
-		// p.root._alpha = p.alpha = 50;
 		p.timer = 12;
 		p.fadeLimit = 5;
-
 		p.fadeType = 4;
 
 		var mc:McField = cast p.root;
+		mc.field = mc.initTextField("field", {
+			color: 0x000000,
+			align: "center",
+			font: "Pricedown",
+			size: 60,
+			stroke: "#FFFFFF",
+			strokeThickness: 4,
+		});
 		mc.field.text = Std.string(score);
 		if (cid != null) {
 			var co = Col.colToObj(Missile.COLOR[cid]);
@@ -376,20 +356,20 @@ class Game implements kado.GameInterface {
 			munitions.pop().removeMovieClip();
 		while (goal > munitions.length) {
 			var mc = Game.me.dm.attach("mcMunition", DP_INTER);
-			mc._x = 4;
-			mc._y = 283 - munitions.length * 5;
+			mc._x = Cs.I(4);
+			mc._y = Cs.S(283) - munitions.length * Cs.I(5);
 			munitions.push(mc);
 		}
 	}
 
 	public function makeHole(x:Float, y:Float, sc:Float) {
 		var mc = dm.attach("mcOnde", 0);
+		mc.play();
 		var m = new Matrix();
 		m.scale(sc, sc);
 		m.translate(Std.int(x), Std.int(y - GY));
 		mc.blendMode = untyped BlendModes.ERASE;
-		PixelHelper.draw(bmpGround, mc, m);
-		mc.blendMode = BlendModes.NORMAL;
+		bmpGround.draw(mc, m);
 		mc.removeMovieClip();
 		if (y + sc * 50 > Cs.mch + 1) {
 			initGameOver();
@@ -399,7 +379,7 @@ class Game implements kado.GameInterface {
 
 	public function getGroundHeight(x) {
 		var pixels = PixelHelper.extract(bmpGround);
-		for (y in 0...GH) {
+		for (y in 0...Std.int(GH)) {
 			if (pixels.getPixelAlpha(x, y) != 0)
 				return GY + y;
 		}
@@ -407,4 +387,59 @@ class Game implements kado.GameInterface {
 	}
 
 	public function destroy():Void {}
+
+	function updateMouseInput():Void {
+		if (!bg.useHandCursor) {
+			return;
+		}
+
+		var target = getMouseTarget();
+		setPlayerTarget(target.x, target.y);
+
+		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {
+			isClickRegistered = true;
+		}
+
+		if (MouseManager.isButtonJustReleased(MouseManager.BUTTON_LEFT)) {
+			if (isClickRegistered) {
+				resolvePress();
+			}
+			isClickRegistered = false;
+		}
+	}
+
+	inline function getMouseTarget():{x:Int, y:Int} {
+		return getClampedTarget(MouseManager.getX(), MouseManager.getY());
+	}
+
+	public inline function getPlayerTarget():{x:Float, y:Float} {
+		return {x: playerTargetX, y: playerTargetY};
+	}
+
+	function setPlayerTarget(x:Float, y:Float) {
+		var target = getClampedTarget(x, y);
+		playerTargetX = target.x;
+		playerTargetY = target.y;
+	}
+
+	inline function getClampedTarget(x:Float, y:Float):{x:Int, y:Int} {
+		var ix = Std.int(Math.round(x));
+		var iy = Std.int(Math.round(y));
+		return {
+			x: Std.int(Math.max(0, Math.min(ix, Cs.mcw))),
+			y: Std.int(Math.max(0, Math.min(iy, Cs.mch))),
+		};
+	}
+
+	function resolvePress(?x:Null<Int>, ?y:Null<Int>) {
+		if (!bg.useHandCursor) {
+			return;
+		}
+
+		if (x != null && y != null) {
+			setPlayerTarget(x, y);
+		}
+
+		// initResolve();
+	}
 }

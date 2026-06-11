@@ -1,5 +1,6 @@
 package crepuscud;
 
+import js.html.Console;
 import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
 import mt.bumdum.Lib;
@@ -16,7 +17,7 @@ class Missile extends Projectile {
 			mc = Game.me.dm.attach("mcMissile", Game.DP_MISSILE);
 		super(mc);
 
-		var speed = 0.75 + Seed.rand() * Game.me.dif * 0.5;
+		var speed = Cs.S(0.75 + Seed.rand() * Game.me.dif * 0.5);
 
 		x = Seed.rand() * Cs.mcw;
 		y = -speed * 4;
@@ -59,8 +60,6 @@ class Missile extends Projectile {
 			}
 			return;
 		}
-
-		// var m = new flash.geom.Matrix();
 	}
 
 	public function explode(pool) {
@@ -76,8 +75,8 @@ class Missile extends Projectile {
 		var cr = 8;
 		for (i in 0...max) {
 			var a = (i + Seed.rand()) / max * 6.28;
-			var ca = Math.cos(a);
-			var sa = Math.sin(a);
+			var ca = Cs.S(Math.cos(a));
+			var sa = Cs.S(Math.sin(a));
 			var speed = 1.5 + Seed.rand() * 3;
 			var p = new Phys(Game.me.dm.attach("partSquareLight", Game.DP_PARTS));
 			p.x = x + ca * speed * cr;
@@ -97,11 +96,12 @@ class Missile extends Projectile {
 
 	public function groundExplode() {
 		// HOLE
-		Game.me.makeHole(x, y, 0.15 + Seed.randVfx() * 0.05);
-		// Game.me.makeHole(x,y,0);
+		Game.me.makeHole(x, y, 0.15 + Seed.rand() * 0.05);
 
 		// FX
 		var mc = Game.me.dm.attach("fxDemiOnde", Game.DP_MISSILE);
+		mc.play();
+		mc.removeOnFrame = 9;
 		mc._x = x;
 		mc._y = y;
 

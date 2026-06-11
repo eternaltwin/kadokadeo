@@ -10,7 +10,7 @@ class Patriot extends Projectile {
 	var distanceMax:Float;
 	var parc:Float;
 
-	public var mcTarget:ASprite;
+	static public var mcTarget:ASprite;
 
 	public function new(?mc:ASprite) {
 		if (mc == null)
@@ -29,7 +29,7 @@ class Patriot extends Projectile {
 		y = Game.RGY + Math.sin(angle) * HERO_RAY;
 
 		setAngle(angle);
-		setSpeed(10);
+		setSpeed(Cs.S(10));
 
 		if (Game.me.expl < 5) {
 			mcTarget = Game.me.dm.attach("mcTarget", Game.DP_PLASMA);
@@ -63,11 +63,10 @@ class Patriot extends Projectile {
 
 		onde.pool = {n: 0, multi: multi};
 		kill();
-
-		mcTarget.removeMovieClip();
 	}
 
 	override function kill() {
+		mcTarget.removeMovieClip();
 		Game.me.patriots.remove(this);
 		super.kill();
 	}
