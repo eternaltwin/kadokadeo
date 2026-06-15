@@ -23,7 +23,7 @@ class Missile extends Projectile {
 		y = -speed * 4;
 
 		var ma = 45;
-		var tx = ma + Seed.rand() * (Cs.mcw - (ma + 5));
+		var tx = ma + Seed.rand() * (Cs.mcw - Cs.S(ma + 5));
 		var ty = Cs.mch;
 
 		var dx = tx - x;
@@ -42,7 +42,7 @@ class Missile extends Projectile {
 		setAngle(Math.atan2(dy, dx));
 
 		if (special != null)
-			speed = [3, 5, 9][special];
+			speed = Cs.S([3, 5, 9][special]);
 		setSpeed(speed + BOOST);
 
 		Game.me.missiles.push(this);

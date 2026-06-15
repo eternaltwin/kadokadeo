@@ -149,9 +149,6 @@ class Game implements kado.GameInterface {
 			bmp.draw(mc, m);
 			mc.blendMode = BlendModes.NORMAL;
 		}
-
-		bg.onPress = launchMissile; // TODO à changer, voir le .skills
-		bg.useHandCursor = false;
 	}
 
 	function initDecor() {
@@ -174,19 +171,17 @@ class Game implements kado.GameInterface {
 		var mc = dm.attach("mcGroundElement", 0);
 		var ma = Cs.I(40);
 		for (i in 0...24) {
-			trace("i " + i);
 			var sc = 0.5 + Seed.randVfx() * 0.5;
 			var m = new Matrix();
 			m.scale(sc, sc);
 			m.translate(ma + Seed.randomVfx(Cs.mcw - ma), GH - RGH);
-			trace("mc._totalframes " + mc._totalframes);
 			mc.gotoAndStop(Seed.randomVfx(mc._totalframes) + 1);
 			bmpGround.draw(mc, m);
 		}
 		mc.removeMovieClip();
 
 		// HERO BASE
-		heroBase = cast gdm.attach("mcCanon", 10);
+		heroBase = cast gdm.attach("mcBaseCanon", 10);
 		heroBase._y = GH - RGH;
 		heroBase._x = DX;
 
@@ -204,6 +199,7 @@ class Game implements kado.GameInterface {
 	// UPDATE
 	public function update(delta:Float) {
 		mt.Timer.tmod /= 2; // GAME WAS BUILT WITH 2 CALLS TO mt.Timer.update
+		updateMouseInput();
 
 		switch (step) {
 			case Play:
@@ -253,7 +249,7 @@ class Game implements kado.GameInterface {
 		}
 
 		//
-		if (!flGameOver && totalSpeed < dif * 1.5 + Missile.BOOST * 8) {
+		if (!flGameOver && (totalSpeed / Cs.NEW_GEN_SCALE) < dif * 1.5 + Missile.BOOST * 8) {
 			new Missile();
 		}
 
@@ -389,37 +385,13 @@ class Game implements kado.GameInterface {
 	public function destroy():Void {}
 
 	function updateMouseInput():Void {
-		if (!bg.useHandCursor) {
-			return;
-		}
-
-		var target = getMouseTarget();
-		setPlayerTarget(target.x, target.y);
-
 		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {
-			isClickRegistered = true;
-		}
-
-		if (MouseManager.isButtonJustReleased(MouseManager.BUTTON_LEFT)) {
-			if (isClickRegistered) {
-				resolvePress();
-			}
-			isClickRegistered = false;
+			launchMissile();
 		}
 	}
 
 	inline function getMouseTarget():{x:Int, y:Int} {
 		return getClampedTarget(MouseManager.getX(), MouseManager.getY());
-	}
-
-	public inline function getPlayerTarget():{x:Float, y:Float} {
-		return {x: playerTargetX, y: playerTargetY};
-	}
-
-	function setPlayerTarget(x:Float, y:Float) {
-		var target = getClampedTarget(x, y);
-		playerTargetX = target.x;
-		playerTargetY = target.y;
 	}
 
 	inline function getClampedTarget(x:Float, y:Float):{x:Int, y:Int} {
@@ -429,17 +401,5 @@ class Game implements kado.GameInterface {
 			x: Std.int(Math.max(0, Math.min(ix, Cs.mcw))),
 			y: Std.int(Math.max(0, Math.min(iy, Cs.mch))),
 		};
-	}
-
-	function resolvePress(?x:Null<Int>, ?y:Null<Int>) {
-		if (!bg.useHandCursor) {
-			return;
-		}
-
-		if (x != null && y != null) {
-			setPlayerTarget(x, y);
-		}
-
-		// initResolve();
 	}
 }

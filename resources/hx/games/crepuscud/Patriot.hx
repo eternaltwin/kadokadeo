@@ -9,8 +9,8 @@ class Patriot extends Projectile {
 
 	var distanceMax:Float;
 	var parc:Float;
-
-	static public var mcTarget:ASprite;
+	var mcTarget:ASprite;
+	var mcTargetTimer:Float = 0;
 
 	public function new(?mc:ASprite) {
 		if (mc == null)
@@ -32,7 +32,7 @@ class Patriot extends Projectile {
 		setSpeed(Cs.S(10));
 
 		if (Game.me.expl < 5) {
-			mcTarget = Game.me.dm.attach("mcTarget", Game.DP_PLASMA);
+			mcTarget = Game.me.root.attachMovie("mcTarget");
 			mcTarget._x = Game.me.root._xmouse;
 			mcTarget._y = Game.me.root._ymouse;
 			mcTarget._alpha = 50;
@@ -45,6 +45,14 @@ class Patriot extends Projectile {
 
 		if (parc >= distanceMax) {
 			explode();
+		}
+
+		if (mcTarget != null) {
+			mcTargetTimer += mt.Timer.tmod;
+			if (mcTargetTimer > 60) {
+				mcTarget.removeMovieClip();
+				mcTarget = null;
+			}
 		}
 	}
 
@@ -66,7 +74,9 @@ class Patriot extends Projectile {
 	}
 
 	override function kill() {
-		mcTarget.removeMovieClip();
+		if (mcTarget != null) {
+			mcTarget.removeMovieClip();
+		}
 		Game.me.patriots.remove(this);
 		super.kill();
 	}
