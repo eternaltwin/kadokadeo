@@ -18,7 +18,7 @@ class Cs {
 	public static var MISSILE_MAX = 24;
 	public static var REPLENISH_CYCLE = 30;
 
-	public static var PERFECT_RAY = 5;
+	public static var PERFECT_RAY = Cs.S(5);
 
 	public static var SCORE_MISSILE = KKApi.aconst([400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]);
 	public static var SCORE_BONUS = KKApi.aconst([1000, 3000, 8000]);

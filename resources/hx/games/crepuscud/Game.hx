@@ -389,17 +389,4 @@ class Game implements kado.GameInterface {
 			launchMissile();
 		}
 	}
-
-	inline function getMouseTarget():{x:Int, y:Int} {
-		return getClampedTarget(MouseManager.getX(), MouseManager.getY());
-	}
-
-	inline function getClampedTarget(x:Float, y:Float):{x:Int, y:Int} {
-		var ix = Std.int(Math.round(x));
-		var iy = Std.int(Math.round(y));
-		return {
-			x: Std.int(Math.max(0, Math.min(ix, Cs.mcw))),
-			y: Std.int(Math.max(0, Math.min(iy, Cs.mch))),
-		};
-	}
 }

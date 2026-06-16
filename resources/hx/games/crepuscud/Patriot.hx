@@ -5,7 +5,7 @@ import mt.bumdum.Phys;
 import mt.bumdum.Lib;
 
 class Patriot extends Projectile {
-	static var HERO_RAY = 20;
+	static var HERO_RAY = Cs.S(20);
 
 	var distanceMax:Float;
 	var parc:Float;
