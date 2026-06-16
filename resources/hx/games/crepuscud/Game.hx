@@ -262,8 +262,8 @@ class Game implements kado.GameInterface {
 	}
 
 	function moveHero() {
-		var dx = root._xmouse - DX;
-		var dy = root._ymouse - RGY;
+		var dx = MouseManager.getX() - DX;
+		var dy = MouseManager.getY() - RGY;
 		angle = Num.mm(-1.57, Math.atan2(dy, dx), -0.05);
 		hero._rotation = angle / 0.0174;
 	}

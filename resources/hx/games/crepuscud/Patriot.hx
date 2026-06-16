@@ -3,6 +3,7 @@ package crepuscud;
 import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
 import mt.bumdum.Lib;
+import common_haxe_avm1.MouseManager;
 
 class Patriot extends Projectile {
 	static var HERO_RAY = Cs.S(20);
@@ -20,8 +21,8 @@ class Patriot extends Projectile {
 
 		parc = 0;
 
-		var dx = Game.me.root._xmouse - Game.DX;
-		var dy = Game.me.root._ymouse - Game.RGY;
+		var dx = MouseManager.getX() - Game.DX;
+		var dy = MouseManager.getY() - Game.RGY;
 
 		angle = Game.me.angle;
 		distanceMax = Math.sqrt(dx * dx + dy * dy) - HERO_RAY;
@@ -33,8 +34,8 @@ class Patriot extends Projectile {
 
 		if (Game.me.expl < 5) {
 			mcTarget = Game.me.root.attachMovie("mcTarget");
-			mcTarget._x = Game.me.root._xmouse;
-			mcTarget._y = Game.me.root._ymouse;
+			mcTarget._x = MouseManager.getX();
+			mcTarget._y = MouseManager.getY();
 			mcTarget._alpha = 50;
 		}
 	}
