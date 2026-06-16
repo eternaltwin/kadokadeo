@@ -5,8 +5,8 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/tiananman.js
-tiananman.Game
+-js ./resources/js/games/crepuscud.js
+crepuscud.Game
 
 # --each
 # -js ./resources/js/games/atlanteine.js
@@ -62,3 +62,6 @@ tiananman.Game
 # --next
 # -js ./resources/js/games/kanjisnightmare.js
 # kanjisnightmare.Game
+# --next
+# -js ./resources/js/games/crepuscud.js
+# crepuscud.Game
