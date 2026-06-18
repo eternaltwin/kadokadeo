@@ -290,6 +290,8 @@ class Game implements kado.GameInterface {
 			return;
 		}
 
+		moveHero();
+
 		incMunition(-1);
 		var p = new Patriot();
 	}
