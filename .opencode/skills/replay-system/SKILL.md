@@ -107,6 +107,7 @@ KadoKadeoManager.kkm.replay.init({
 - Ne pas brancher la logique gameplay principale sur des callbacks UI souris; la lire dans `update()` pour avoir exactement la meme valeur live/replay.
 
 4. Brancher la consommation d'evenements metier (si `recordEvents = true`)
+**deprecated** : utilisation des événements de souris/clavier directement (inputs polled).
 
 - En tete de `update(delta)`:
 
