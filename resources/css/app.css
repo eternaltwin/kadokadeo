@@ -61,6 +61,11 @@
   src: url('/fonts/IronMan.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Pricedown';
+  src: url('/fonts/Pricedown.ttf') format('truetype');
+}
+
 [data-lang='fr'] {
   background: url('/gfx/langFrench.gif') no-repeat;
 }
@@ -72,6 +77,7 @@
   --font-gau: 'GAU', sans-serif;
   --font-orbitron: 'Orbitron', sans-serif;
   --font-lcd: 'LCD', sans-serif;
+  --font-pricedown: 'Pricedown', sans-serif;
 
   --text-2xs: 0.625rem;
 

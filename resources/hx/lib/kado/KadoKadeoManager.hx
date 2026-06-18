@@ -309,6 +309,7 @@ class KadoKadeoManager extends Application {
 			"Jost-Medium",
 			"LCD",
 			"IronMan",
+			"Pricedown",
 		];
 		return Promise.all(fonts.map(font -> Browser.window.document.fonts.load("16px " + font)));
 	}
