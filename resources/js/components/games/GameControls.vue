@@ -8,12 +8,12 @@ const keyMap = {
   mouse1: { image: '/gfx/controls/mouseLeftClic.gif', title: 'Clic gauche' },
   mouse2: { image: '', title: 'Clic droit' },
   space: { image: '/gfx/controls/keySpace.gif', title: 'Espace' },
-  enter: { image: '/gfx/controls/key.gif', title: 'Entree' },
-  arrows: { image: '/gfx/controls/keyarrow.gif', title: '4 fleches' },
-  arrowup: { image: '/gfx/controls/keyUpArrow.gif', title: 'Fleche haut' },
-  arrowdown: { image: '/gfx/controls/keyDownArrow.gif', title: 'Fleche bas' },
-  arrowleft: { image: '/gfx/controls/keyLeftArrow.gif', title: 'Fleche gauche' },
-  arrowright: { image: '/gfx/controls/keyRightArrow.gif', title: 'Fleche droite' },
+  enter: { image: '/gfx/controls/key.gif', title: 'Entrée' },
+  arrows: { image: '/gfx/controls/keyarrow.gif', title: '4 flèches' },
+  arrowup: { image: '/gfx/controls/keyUpArrow.gif', title: 'Flèche haut' },
+  arrowdown: { image: '/gfx/controls/keyDownArrow.gif', title: 'Flèche bas' },
+  arrowleft: { image: '/gfx/controls/keyLeftArrow.gif', title: 'Flèche gauche' },
+  arrowright: { image: '/gfx/controls/keyRightArrow.gif', title: 'Flèche droite' },
   shift: { image: '/gfx/controls/keyshift.gif', title: 'Shift' },
   ctrl: { image: '/gfx/controls/keyctrl.gif', title: 'Ctrl' },
   control: { image: '/gfx/controls/keyctrl.gif', title: 'Ctrl' },
@@ -59,11 +59,7 @@ function getKeyView(key) {
               :alt="getKeyView(key).title"
               class="inline-block mr-1"
             />
-            <span
-              v-else
-              :title="getKeyView(key).title"
-              class="inline-block mr-1"
-            >
+            <span v-else :title="getKeyView(key).title" class="inline-block mr-1">
               {{ getKeyView(key).text }}
             </span>
           </template>
@@ -73,4 +69,3 @@ function getKeyView(key) {
     </tbody>
   </table>
 </template>
-
