@@ -5,8 +5,8 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/crepuscud.js
-crepuscud.Game
+-js ./resources/js/games/flushee.js
+flushee.Game
 
 # --each
 # -js ./resources/js/games/atlanteine.js
@@ -65,3 +65,6 @@ crepuscud.Game
 # --next
 # -js ./resources/js/games/crepuscud.js
 # crepuscud.Game
+# --next
+# -js ./resources/js/games/flushee.js
+# flushee.Game

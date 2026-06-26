@@ -64,3 +64,6 @@ tiananman.Game
 --next
 -js ./resources/js/games/crepuscud.js
 crepuscud.Game
+--next
+-js ./resources/js/games/flushee.js
+flushee.Game
