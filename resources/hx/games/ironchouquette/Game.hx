@@ -474,13 +474,6 @@ class Game implements kado.GameInterface {
 		bmp.draw(mc, m);
 	}
 
-	public function plasmaPoint(x, y, color) {
-		trace('TODO: plasmaPoint', x, y, color);
-		// TODO:
-		// var bmp = plasma.layer[0].bmp;
-		// bmp.setPixel32(Std.int(x), Std.int(y), color);
-	}
-
 	public function setPq(n) {
 		pq = n;
 		plasma.removeMovieClip();

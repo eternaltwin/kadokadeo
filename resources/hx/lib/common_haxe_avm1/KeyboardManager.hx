@@ -109,7 +109,7 @@ class KeyboardManager {
 
 	static public function beginFrame():Int {
 		ensureInitialized();
-		justPressed = new IntMap();
+		justPressed.clear();
 		frameKeyChanges = [];
 		if (pendingOps.length == 0) {
 			return 0;

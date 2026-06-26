@@ -62,3 +62,6 @@ sync-database:
 compile-games:
 	docker exec -u dev kadokadeo_app haxe compile-dev.hxml
 	docker exec -u node -w /www kadokadeo_front yarn games:bundle
+
+update-libraries:
+	docker exec -u dev kadokadeo_app haxelib install --always resources/hx/install.hxml

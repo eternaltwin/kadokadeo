@@ -67,3 +67,6 @@ crepuscud.Game
 --next
 -js ./resources/js/games/flushee.js
 flushee.Game
+--next
+-js ./resources/js/games/binary.js
+binary.Game

@@ -161,20 +161,20 @@ class EndScene extends Container {
 		this.addChild(makePiouTrack());
 		this.addChild(clickToReplay());
 
-		this.interactive = true;
-		this.on("pointerdown", () -> {
-			if (tweens.filter(t -> t != null && !t.loop).length == 0) {
-				this.interactive = false;
-				emit('replay');
+	}
+
+	public function handleReplayClick():Void {
+		if (tweens.filter(t -> t != null && !t.loop).length == 0) {
+			emit('replay');
+			return;
+		}
+		for (tween in tweens) {
+			if (tween != null && !tween.loop) {
+				untyped tween._elapsedTime = tween.time - 1;
+				untyped tween.delay = 0;
+				tween.update(1, 1);
 			}
-			for (tween in tweens) {
-				if (tween != null && !tween.loop) {
-					untyped tween._elapsedTime = tween.time - 1;
-					untyped tween.delay = 0;
-					tween.update(1, 1);
-				}
-			}
-		});
+		}
 	}
 
 	public function makePanScore():Container {

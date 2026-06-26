@@ -133,6 +133,10 @@ class ReplayManager {
 		return this.isRecording;
 	}
 
+	public inline function getCurrentFrame():Int {
+		return currentFrame;
+	}
+
 	public function beginFrame():Void {
 		if (!this.isRecording && !this.isPlaying) {
 			return;

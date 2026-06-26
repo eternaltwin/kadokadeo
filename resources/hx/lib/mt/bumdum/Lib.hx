@@ -220,6 +220,13 @@ class Col {
 		return "#" + StringTools.hex(col);
 	}
 
+	static public function col2Rgba(color:Int, alpha:Float):String {
+		var r = (color >> 16) & 0xFF;
+		var g = (color >> 8) & 0xFF;
+		var b = color & 0xFF;
+		return 'rgba($r, $g, $b, $alpha)';
+	}
+
 	// WHITE IN YOUR BASE ------------------------------------ :)
 
 	public static function rgb2Hex(r:Int, g:Int, b:Int, a:Bool = false) {

@@ -114,6 +114,7 @@ class MouseManager {
 		hasCapturedCoords = false;
 		capturedX = 0;
 		capturedY = 0;
+		interactionTrackingRegistered = false;
 	}
 
 	static public function setPosition(x:Int, y:Int):Void {
@@ -175,8 +176,8 @@ class MouseManager {
 
 	static public function beginFrame():Int {
 		ensureStateInitialized();
-		justPressed = new IntMap();
-		justReleased = new IntMap();
+		justPressed.clear();
+		justReleased.clear();
 		frameButtonChanges = [];
 		var applied = 0;
 

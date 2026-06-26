@@ -172,9 +172,6 @@ class KadoKadeoManager extends Application {
 		if (hasPhysicsCrashReported) {
 			return;
 		}
-		if (common_haxe_avm1.KeyboardManager.isJustDown(common_haxe_avm1.KeyboardManager.F8)) {
-			fpsText.visible = !fpsText.visible;
-		}
 		try {
 			simulationTimeMs += dt;
 			mt.Timer.update(simulationTimeMs);
@@ -184,6 +181,7 @@ class KadoKadeoManager extends Application {
 			if (runFlow.state == Playing && game != null) {
 				pollGameTouchControls();
 				replay.beginFrame();
+				pollManagerShortcuts();
 				gameRoot.update();
 				game.update(dt);
 				replay.endFrame();
@@ -191,6 +189,11 @@ class KadoKadeoManager extends Application {
 					replayElapsedMs += dt;
 					replayOverlay.updateElapsed(replayElapsedMs);
 				}
+			} else {
+				common_haxe_avm1.KeyboardManager.beginFrame();
+				common_haxe_avm1.MouseManager.beginFrame();
+				pollManagerShortcuts();
+				pollManagerMouseInput();
 			}
 			if (gameOverScreen != null) {
 				gameOverScreen.update();
@@ -253,21 +256,51 @@ class KadoKadeoManager extends Application {
 		#end
 		startScene = new StartScene(this, params.name);
 		startScene.interactive = true;
-		startScene.once("pointerdown", e -> {
-			runFlow.transition(ContractLoading, "request-contract");
-			runFlow.requestContract((context) -> {
-				applyRunContext(context);
-				startScene.showContract(context.runDetails);
-				runFlow.transition(ReadyToStart, "contract-received");
-				startScene.interactive = true;
-				startScene.once("pointerdown", startGame);
-			}, (message) -> {
-				runFlow.transition(Intro, "contract-failed");
-				trace('Contract failed: ' + message);
-			});
-			startScene.disable();
-		});
 		this.stage.addChild(startScene);
+	}
+
+	function pollManagerShortcuts():Void {
+		if (common_haxe_avm1.KeyboardManager.isJustDown(common_haxe_avm1.KeyboardManager.F8)) {
+			fpsText.visible = !fpsText.visible;
+		}
+	}
+
+	function pollManagerMouseInput():Void {
+		if (!common_haxe_avm1.MouseManager.isButtonJustPressed(common_haxe_avm1.MouseManager.BUTTON_LEFT)) {
+			return;
+		}
+
+		switch (runFlow.state) {
+			case Intro:
+				requestContractFromIntro();
+			case ReadyToStart:
+				startGame();
+			case EndScreen:
+				if (endScene != null) {
+					endScene.handleReplayClick();
+				}
+			case _:
+		}
+	}
+
+	function requestContractFromIntro():Void {
+		if (startScene == null) {
+			return;
+		}
+
+		runFlow.transition(ContractLoading, "request-contract");
+		startScene.disable();
+		runFlow.requestContract((context) -> {
+			applyRunContext(context);
+			if (startScene != null) {
+				startScene.showContract(context.runDetails);
+				startScene.interactive = true;
+			}
+			runFlow.transition(ReadyToStart, "contract-received");
+		}, (message) -> {
+			runFlow.transition(Intro, "contract-failed");
+			trace('Contract failed: ' + message);
+		});
 	}
 
 	inline function applyRunContext(context:RunStartContext):Void {
@@ -310,6 +343,7 @@ class KadoKadeoManager extends Application {
 			"LCD",
 			"IronMan",
 			"Pricedown",
+			"Megaton",
 		];
 		return Promise.all(fonts.map(font -> Browser.window.document.fonts.load("16px " + font)));
 	}

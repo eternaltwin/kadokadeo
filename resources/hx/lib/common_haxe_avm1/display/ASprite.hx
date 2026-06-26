@@ -14,6 +14,7 @@ import pixi.core.graphics.Graphics;
 import pixi.core.math.shapes.Rectangle;
 import pixi.core.sprites.Sprite;
 import pixi.core.textures.Texture;
+import js.Browser;
 
 using Std;
 
