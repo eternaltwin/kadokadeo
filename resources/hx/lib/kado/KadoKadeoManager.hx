@@ -102,20 +102,22 @@ class KadoKadeoManager extends Application {
 		ff = new FixedFramerate(updatePhysics);
 		initDebugFpsDisplay();
 
-		untyped Ticker.system.add((delta:Float) -> {
-			var speed = replayPaused ? 0 : replaySpeed;
-			if (replayPaused) {
-				common_haxe_avm1.KeyboardManager.beginFrame();
-				common_haxe_avm1.MouseManager.beginFrame();
-			}
-			ff.onTick(untyped Ticker.system.elapsedMS * speed);
-		});
+		untyped Ticker.system.add(systemTicker);
 		this.ticker.add(() -> {
 			updateGraphics(ff.alpha);
 			updateDebugFpsDisplay();
 			pixi.core.Pixi.tweenManager.update();
 		});
 		this.replay = new ReplayManager(params?.replayData);
+	}
+
+	function systemTicker(delta:Float) {
+		var speed = replayPaused ? 0 : replaySpeed;
+		if (replayPaused) {
+			common_haxe_avm1.KeyboardManager.beginFrame();
+			common_haxe_avm1.MouseManager.beginFrame();
+		}
+		ff.onTick(untyped Ticker.system.elapsedMS * speed);
 	}
 
 	function initDebugFpsDisplay():Void {
@@ -260,8 +262,10 @@ class KadoKadeoManager extends Application {
 	}
 
 	function pollManagerShortcuts():Void {
-		if (common_haxe_avm1.KeyboardManager.isJustDown(common_haxe_avm1.KeyboardManager.F8)) {
-			fpsText.visible = !fpsText.visible;
+		if (fpsText != null) {
+			if (common_haxe_avm1.KeyboardManager.isJustDown(common_haxe_avm1.KeyboardManager.F8)) {
+				fpsText.visible = !fpsText.visible;
+			}
 		}
 	}
 
@@ -344,6 +348,7 @@ class KadoKadeoManager extends Application {
 			"IronMan",
 			"Pricedown",
 			"Megaton",
+			"Alien Encounters Solid",
 		];
 		return Promise.all(fonts.map(font -> Browser.window.document.fonts.load("16px " + font)));
 	}
@@ -505,6 +510,7 @@ class KadoKadeoManager extends Application {
 		reset();
 		destroyDebugFpsDisplay();
 		this.ticker.stop();
+		untyped Ticker.system.remove(systemTicker);
 		untyped Ticker.system.stop();
 		this.root = null;
 		super.destroy(removeView);

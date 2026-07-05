@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Games\Schemas;
 
-use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -23,7 +23,11 @@ class GameForm
                     ->options(fn () => \App\Models\Category::all()->pluck('name', 'id'))
                     ->required(),
                 TextInput::make('image_path'),
-                TextInput::make('stars'),
+                Repeater::make('stars')->simple(
+                    TextInput::make('value')
+                        ->numeric()
+                        ->required(),
+                )->minItems(3)->maxItems(3),
                 Toggle::make('is_active')
                     ->required(),
                 Toggle::make('is_official')

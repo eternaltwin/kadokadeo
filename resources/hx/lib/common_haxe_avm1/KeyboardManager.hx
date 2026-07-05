@@ -20,8 +20,11 @@ class KeyboardManager {
 	static public inline var A = 65;
 	static public inline var B = 66;
 	static public inline var D = 68;
+	static public inline var E = 69;
+	static public inline var F = 70;
 	static public inline var G = 71;
 	static public inline var Q = 81;
+	static public inline var R = 82;
 	static public inline var S = 83;
 	static public inline var V = 86;
 	static public inline var W = 87;

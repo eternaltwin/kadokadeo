@@ -70,3 +70,6 @@ flushee.Game
 --next
 -js ./resources/js/games/binary.js
 binary.Game
+--next
+-js ./resources/js/games/tubulo.js
+tubulo.Game
