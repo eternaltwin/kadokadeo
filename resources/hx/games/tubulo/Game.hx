@@ -1,5 +1,6 @@
 package tubulo;
 
+import pixi.filters.colormatrix.ColorMatrixFilter;
 import pixi.core.math.shapes.Circle;
 import common_haxe_avm1.KeyboardManager;
 import common_haxe_avm1.MouseManager;
@@ -35,7 +36,7 @@ class BgSprite extends ASprite {
 
 class TubeSprite extends ASprite {
 	public var overAnim:ASprite;
-	public var but:Rectangle;
+	public var but:Circle;
 	public var id:Int;
 	public var oldId:Int;
 	public var gridx:Int;
@@ -140,9 +141,17 @@ class Game implements kado.GameInterface {
 				mc.overAnim.loop = true;
 				mc.overAnim.play();
 				mc.overAnim._visible = false;
+				var f = new ColorMatrixFilter();
+				f.matrix = [
+					1, 0, 0, 0, 1,
+					0, 1, 0, 0, 1,
+					0, 0, 1, 0, 1,
+					0, 0, 0, 1, 0
+				];
+				mc.overAnim.filters = [f];
 
-				mc.but = new Rectangle(Cs.I(-15), Cs.I(-32), Cs.I(30), Cs.I(20));
-				// mc.getGraphics().beginFill(0xFF0000, 0.3).drawRect(mc.but.x, mc.but.y, mc.but.width, mc.but.height);
+				mc.but = new Circle(Cs.I(0), Cs.I(-19), Cs.I(14));
+				// mc.getGraphics().beginFill(0xFF0000, 0.5).drawCircle(mc.but.x, mc.but.y, mc.but.radius);
 
 				mc.id = 0;
 				mc.oldId = mc.id;
@@ -177,11 +186,14 @@ class Game implements kado.GameInterface {
 	function updateMouseEvents() {
 		if (allowClick && !isReplayMode) {
 			var hover:TubeSprite = null;
-			for (tube in tubes) {
+			var i = tubes.length - 1;
+			while (i >= 0) {
+				var tube = tubes[i];
 				if (tube.but.contains(MouseManager.getX() - tube._x, MouseManager.getY() - tube._y)) {
 					hover = tube;
 					break;
 				}
+				i--;
 			}
 
 			if (hover == null) {

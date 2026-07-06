@@ -33,15 +33,16 @@ class Bille extends Phys {
 			id = Seed.random(game.nlevels);
 		mc = game.dm.attach("bille/bille_" + (id + 1), Const.PLAN_BILLE);
 		mc.gotoAndStop(id + 1);
+		var pad = 8;
 		var w:Float = mc._width;
 		var h:Float = mc._height;
 		var cx:Float = w * 0.5;
 		var cy:Float = h * 0.5;
 		var hitPoints = [
-			cx,  0,
-			 w, cy,
-			cx,  h,
-			 0, cy
+			     cx,    -pad,
+			w + pad,      cy,
+			     cx, h + pad,
+			   -pad,      cy
 		];
 		mc.hitArea = new Polygon(hitPoints);
 		// var hitboxDebug = new Graphics();
