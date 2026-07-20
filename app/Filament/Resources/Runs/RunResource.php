@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Runs;
 use App\Filament\Resources\Runs\Pages\EditRun;
 use App\Filament\Resources\Runs\Pages\ListRuns;
 use App\Models\Run;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -36,6 +37,7 @@ class RunResource extends Resource
                 ->numeric(),
             TextInput::make('replay'),
             DateTimePicker::make('completed_at'),
+            Checkbox::make('is_cheat'),
         ]);
     }
 

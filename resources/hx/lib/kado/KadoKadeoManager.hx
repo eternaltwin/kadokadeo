@@ -1,5 +1,7 @@
 package kado;
 
+import common_haxe_avm1.kac.AntiCheat;
+import common_haxe_avm1.kac.ProtectedInt;
 import mt.DepthManager;
 import common_haxe_avm1.display.ASprite;
 import pixi.loaders.Loader;
@@ -59,7 +61,7 @@ class KadoKadeoManager extends Application {
 
 	public var sheet:pixi.core.textures.Spritesheet;
 
-	public var score:Int = 0;
+	public var score:ProtectedInt = 0;
 
 	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>, params:GameParams) {
 		super({
@@ -408,6 +410,7 @@ class KadoKadeoManager extends Application {
 		}
 		common_haxe_avm1.KeyboardManager.clearState();
 		common_haxe_avm1.MouseManager.clearState();
+		AntiCheat.reset();
 
 		if (game != null) {
 			game.destroy();
@@ -535,7 +538,7 @@ class KadoKadeoManager extends Application {
 		if (bottomBar != null) {
 			bottomBar.updateScore(score);
 		}
-		emitWindowEvent("score", {score: score});
+		emitWindowEvent("score", {score: score.get()});
 	}
 
 	private function emitWindowEvent(eventName:String, ?detail:Dynamic):Void {
@@ -549,10 +552,11 @@ class KadoKadeoManager extends Application {
 
 	private function makeEndRunHttpRequest(params:Dynamic):Promise<Dto.EndRunResponseDTO> {
 		#if !debug
-		return endRunClient.submit(runFlow.getRunDetails(), score, runFlow.currentTimestamp(), replay.encodeReplayString(), params).then((data) -> {
-			endRunDetails = data;
-			return endRunDetails;
-		});
+		return endRunClient.submit(runFlow.getRunDetails(), score, runFlow.currentTimestamp(), replay.encodeReplayString(), params, AntiCheat.getPayload())
+			.then((data) -> {
+				endRunDetails = data;
+				return endRunDetails;
+			});
 		#else
 		return Promise.resolve({
 			is_best: true,

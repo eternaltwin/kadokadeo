@@ -58,6 +58,7 @@ class RunService
             'timestamp' => 'required|integer',
             'replay' => 'nullable|string', // TODO: make a function to decode a replay.
             'data' => 'nullable|array',
+            'ac' => 'nullable|integer|min:0|max:1000000',
         ]);
 
         if ($validator->fails()) {
@@ -76,6 +77,8 @@ class RunService
         $timestamp = data_get($decoded, 'timestamp');
         $replay = data_get($decoded, 'replay');
         $data = data_get($decoded, 'data');
+        $antiCheat = data_get($decoded, 'ac', 0);
+        $isCheat = $this->isAntiCheatFlagged($antiCheat);
 
         $end = Carbon::createFromTimestamp($timestamp);
         $realEnd = now();
@@ -88,8 +91,9 @@ class RunService
         $run->score = $score;
         $run->replay = $replay;
         $run->score_details = $data;
+        $run->is_cheat = $isCheat;
         $run->save();
-        if ($run->contract_score > 0 && $run->score >= $run->contract_score) {
+        if (!$run->is_cheat && $run->contract_score > 0 && $run->score >= $run->contract_score) {
             $user = $run->user;
             $user->kado_points += $run->contract_points;
             $user->save();
@@ -110,6 +114,10 @@ class RunService
 
     public function rewardStars(Run $run)
     {
+        if ($run->is_cheat) {
+            return;
+        }
+
         if (!$run->period_id) {
             return;
         }
@@ -149,6 +157,15 @@ class RunService
             }
         }
         $userPeriodStars->save();
+    }
+
+    private function isAntiCheatFlagged(?int $antiCheat): bool
+    {
+        if (!$antiCheat) {
+            return false;
+        }
+
+        return true;
     }
 
     private function getAesKeyFromEncrypted(string $key): string
