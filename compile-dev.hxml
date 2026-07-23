@@ -5,8 +5,8 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/tubulo.js
-tubulo.Game
+-js ./resources/js/games/invasion.js
+invasion.Game
 
 # --each
 # -js ./resources/js/games/atlanteine.js

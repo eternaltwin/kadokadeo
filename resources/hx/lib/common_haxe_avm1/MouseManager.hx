@@ -44,6 +44,9 @@ class MouseManager {
 	static private var hasPolledCoords:Bool = false;
 	static private var pendingOps:Array<MouseOp> = [];
 	static private var inputLocked:Bool = false;
+	static private var bufferX:Int = 0;
+	static private var bufferY:Int = 0;
+	static private var _hasMouseMoved:Bool = false;
 
 	static public function init(context:Application):Void {
 		app = context;
@@ -115,6 +118,9 @@ class MouseManager {
 		capturedX = 0;
 		capturedY = 0;
 		interactionTrackingRegistered = false;
+		bufferX = 0;
+		bufferY = 0;
+		_hasMouseMoved = false;
 	}
 
 	static public function setPosition(x:Int, y:Int):Void {
@@ -180,6 +186,7 @@ class MouseManager {
 		justReleased.clear();
 		frameButtonChanges = [];
 		var applied = 0;
+		_hasMouseMoved = false;
 
 		if (pendingOps.length > 0) {
 			var ops = pendingOps;
@@ -188,6 +195,9 @@ class MouseManager {
 				applyCoords(op.x, op.y);
 				switch (op.type) {
 					case POSITION:
+						_hasMouseMoved = polledX != bufferX || polledY != bufferY;
+						bufferX = op.x;
+						bufferY = op.y;
 					case BUTTON_DOWN:
 						var wasDown = buttonState.exists(op.button);
 						buttonState.set(op.button, true);
@@ -458,5 +468,9 @@ class MouseManager {
 		}
 
 		return null;
+	}
+
+	static public function hasMouseMoved():Bool {
+		return _hasMouseMoved;
 	}
 }

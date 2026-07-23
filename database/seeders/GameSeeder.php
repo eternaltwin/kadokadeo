@@ -95,7 +95,7 @@ class GameSeeder extends Seeder
             ['name' => 'Travoltax', 'image_path' => '/assets/img/games/Travoltax.png', 'is_active' => false, 'stars' => [32622, 114177, 154954]],
             ['name' => 'Synapses', 'image_path' => '/assets/img/games/Synapses.png', 'is_active' => true, 'stars' => [39844, 59766, 69727]],
             ['name' => 'Paradice', 'image_path' => '/assets/img/games/Paradice.png', 'is_active' => false, 'stars' => [48291, 68413, 78473]],
-            ['name' => 'Invasion', 'image_path' => '/assets/img/games/Invasion.png', 'is_active' => false, 'stars' => [5761, 9150, 10845]],
+            ['name' => 'Invasion', 'image_path' => '/assets/img/games/Invasion.png', 'is_active' => true, 'stars' => [5761, 9150, 10845]],
             ['name' => 'Electrolink', 'image_path' => '/assets/img/games/Electrolink.png', 'is_active' => false, 'stars' => [26388, 79164, 105552]],
             ['name' => 'Toy Maniak', 'image_path' => '/assets/img/games/Toy_Maniak.png', 'is_active' => false, 'stars' => [11131, 33393, 44524]],
             ['name' => 'Drakhan', 'image_path' => '/assets/img/games/Drakhan.png', 'is_active' => false, 'stars' => [35208, 123228, 167238]],

@@ -73,3 +73,6 @@ binary.Game
 --next
 -js ./resources/js/games/tubulo.js
 tubulo.Game
+--next
+-js ./resources/js/games/invasion.js
+invasion.Game
