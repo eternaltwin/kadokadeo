@@ -14,12 +14,13 @@ class Run extends Model
     use HasUlids;
     use SoftDeletes;
 
-    protected $fillable = ['period_id', 'game_id', 'user_id', 'league_id', 'score', 'play_time_seconds', 'replay', 'completed_at', 'contract_score', 'contract_points', 'seed', 'score_details', 'daily_game_id'];
+    protected $fillable = ['period_id', 'game_id', 'user_id', 'league_id', 'score', 'play_time_seconds', 'replay', 'completed_at', 'contract_score', 'contract_points', 'seed', 'score_details', 'daily_game_id', 'is_cheat'];
 
     protected $casts = [
         'replay' => BinaryCast::class,
         'completed_at' => 'datetime',
         'score_details' => 'array',
+        'is_cheat' => 'boolean',
     ];
 
     public function game()

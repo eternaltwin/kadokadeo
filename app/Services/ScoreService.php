@@ -47,6 +47,7 @@ class ScoreService
     {
         return $game->runs()
             ->whereNotNull('score')
+            ->where('is_cheat', false)
             ->when($periodId, fn ($q) => $q->where('period_id', $periodId))
             ->when($userId, fn ($q) => $q->where('user_id', $userId))
             ->orderBy('score', 'desc')
@@ -63,6 +64,7 @@ class ScoreService
             ->selectRaw('ROW_NUMBER() OVER (PARTITION BY runs.user_id ORDER BY runs.score DESC, runs.play_time_seconds ASC, runs.completed_at ASC, runs.id ASC) AS user_run_rank')
             ->where('runs.game_id', $game->id)
             ->whereNotNull('runs.score')
+            ->where('runs.is_cheat', false)
             ->when($periodId, fn ($query) => $query->where('runs.period_id', $periodId))
             ->when($leagueId, fn ($query) => $query->where('runs.league_id', $leagueId));
     }
@@ -92,6 +94,7 @@ class ScoreService
                     ->on('runs.league_id', '=', 'user_leagues.league_id');
             })
             ->whereNotNull('runs.score')
+            ->where('runs.is_cheat', false)
             ->when($periodId, fn ($query) => $query->where('runs.period_id', $periodId))
             ->whereNull('runs.deleted_at');
 
@@ -130,6 +133,7 @@ class ScoreService
             ->select('runs.*')
             ->selectRaw('ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY score DESC, play_time_seconds ASC, completed_at ASC, id ASC) AS user_best_rank')
             ->whereNotNull('score')
+            ->where('is_cheat', false)
             ->where('daily_game_id', $game->id);
 
         $rankedBestRuns = DB::query()
@@ -157,6 +161,7 @@ class ScoreService
                 ->where('runs.game_id', $game->id)
                 ->where('runs.period_id', $periodId)
                 ->whereNotNull('runs.score')
+                ->where('runs.is_cheat', false)
                 ->whereNotNull('runs.league_id')
                 ->whereNull('runs.deleted_at');
 

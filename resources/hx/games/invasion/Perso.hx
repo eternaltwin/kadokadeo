@@ -52,7 +52,7 @@ class Perso {
 
 		fx.play();
 
-		if (!hero) {
+		if (!hero && game.state != Game.PLACE) {
 			this.goutte = cast game.dmanager.attach("goutte", Cs.PLAN_FX);
 		}
 
@@ -120,6 +120,9 @@ class Perso {
 	}
 
 	public function update() {
+		if (mc == null) {
+			return;
+		}
 		Cs.pos(mc, x, y);
 		mc._x += adx * anim_delta;
 		mc._y += ady * anim_delta;

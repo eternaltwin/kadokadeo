@@ -14,6 +14,8 @@ class RunResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $isAdmin = $request->user()?->is_admin ?? false;
+
         return [
             'id' => $this->id,
             'user' => $this->whenLoaded('user', fn () => UserLightResource::make($this->user)),
@@ -30,6 +32,7 @@ class RunResource extends JsonResource
             'replay' => $this->replay,
             'has_replay' => $this->has_replay,
             'completed_at' => $this->completed_at,
+            'is_cheat' => $this->when($isAdmin, $this->is_cheat),
         ];
     }
 }

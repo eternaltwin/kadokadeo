@@ -31,7 +31,9 @@ class Game implements kado.GameInterface {
 
 	public var level:Array<Array<Perso>>;
 	public var cases:Array<Array<ASprite>>;
+
 	public var state:Int;
+
 	public var cursor:CursorSprite;
 	public var root_mc:ASprite;
 	public var anims:Array<Perso>;
@@ -134,11 +136,11 @@ class Game implements kado.GameInterface {
 						for (y2 in 0...Cs.HEIGHT) {
 							var p = level[x2][y2];
 							if (p != null) {
-								var d = Math.pow(Math.abs(x - x2) * Math.abs(y - y2), 0.7);
+								var d = Num.q(Math.pow(Math.abs(x - x2) * Math.abs(y - y2), 0.7));
 								if (p.hero)
-									k1 += -d * 0.3;
+									k1 = Num.q(k1 - d * 0.3);
 								else
-									k2 += d;
+									k2 = Num.q(k2 + d);
 							}
 						}
 						l.push({
@@ -153,7 +155,15 @@ class Game implements kado.GameInterface {
 		}
 
 		l.sort(function(p1, p2) {
-			return Std.int((p2.k1 + p2.k2) - (p1.k1 + p1.k2));
+			var s1 = Num.q(p1.k1 + p1.k2);
+			var s2 = Num.q(p2.k1 + p2.k2);
+			if (s2 > s1)
+				return 1;
+			if (s2 < s1)
+				return -1;
+			if (p1.x != p2.x)
+				return p1.x - p2.x;
+			return p1.y - p2.y;
 		});
 		if (l.length == 0)
 			return false;
@@ -226,9 +236,11 @@ class Game implements kado.GameInterface {
 		for (i in 0...l.length) {
 			p = l[i];
 			if (p.hero) {
+				// Stat : Nombre de héros perdus durant la partie
 				stats.l++;
 				KadoKadeoManager.kkm.addScore(Cs.HERO_DEATH_POINTS);
 			} else {
+				// Stat : Comptage et répartition des monstres tués
 				stats.k[p.kind]++;
 				KadoKadeoManager.kkm.addScore(Cs.MONSTER_POINTS[p.kind]);
 			}
@@ -236,6 +248,7 @@ class Game implements kado.GameInterface {
 			level[p.x][p.y] = null;
 		}
 		if (l.length > 1) {
+			// Stat : Liste des groupes de monstres tués
 			stats.g.push(l.length - 1);
 			KadoKadeoManager.kkm.addScore(KKApi.cmult(Cs.GROUP_BONUS, KKApi.const(l.length - 1)));
 		}
@@ -311,11 +324,11 @@ class Game implements kado.GameInterface {
 		var mc = cases[x][y];
 		var p = level[x][y];
 
-		var mmouseX = MouseManager.getX();
-		var mmouseY = MouseManager.getY();
+		var mmouseX = Num.q(MouseManager.getX());
+		var mmouseY = Num.q(MouseManager.getY());
 
-		var localX = mmouseX - mc._x;
-		var localY = mmouseY - mc._y;
+		var localX = Num.q(mmouseX - mc._x);
+		var localY = Num.q(mmouseY - mc._y);
 
 		var mx = localX > localY;
 
@@ -352,10 +365,12 @@ class Game implements kado.GameInterface {
 	}
 
 	public function action(prev, out) {
-		var x = Std.int((MouseManager.getX() - Cs.DX) / Cs.SIZE);
-		var y = Std.int((MouseManager.getY() - Cs.DY) / Cs.SIZE);
+		var x = Std.int(Num.q(MouseManager.getX() - Cs.DX) / Cs.SIZE);
+		var y = Std.int(Num.q(MouseManager.getY() - Cs.DY) / Cs.SIZE);
 		if (x < 0 || y < 0 || x >= Cs.WIDTH || y >= Cs.HEIGHT) {
-			out();
+			if (out != null) {
+				out();
+			}
 			return;
 		}
 		prev(x, y);
@@ -466,7 +481,7 @@ class Game implements kado.GameInterface {
 
 	public function attack(x, y) {
 		var p = level[x][y];
-		if (p.hero != false) {
+		if (p == null || p.hero != false) {
 			return;
 		}
 		var a = checkAttack(x, y);
@@ -509,8 +524,6 @@ class Game implements kado.GameInterface {
 	}
 
 	public function end() {
-		root_mc.onMouseMove = null;
-		root_mc.onRelease = null;
 		var x, y;
 		for (x in 0...Cs.WIDTH) {
 			for (y in 0...Cs.HEIGHT) {
@@ -518,9 +531,11 @@ class Game implements kado.GameInterface {
 				if (p != null && p.cursig != Cs.SMARK) {
 					p.signal(Cs.SMARK);
 					if (p.hero) {
+						// Stat : Nombre de soldats restants en fin de partie
 						stats.s++;
 						KadoKadeoManager.kkm.addScore(Cs.HERO_KEEP_POINTS);
 					} else {
+						// Stat : Nombre de monstres restants en fin de partie
 						stats.m[p.kind]++;
 						KadoKadeoManager.kkm.addScore(Cs.MONSTER_KEEP_POINTS[p.kind]);
 					}
@@ -533,7 +548,8 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(delta:Float) {
-		updateMouseInput();
+		if (state != Game.EXIT && state != Game.END)
+			updateMouseInput();
 
 		var i = 0;
 		while (i < wait.length) {
