@@ -8,12 +8,12 @@ class COrb extends Bads {
 
 		setLevel(18);
 		setScore(Cs.C_ORB);
-		ray = 25 * Cs.NEW_GEN_SCALE;
-		y = -(ray + 5 * Cs.NEW_GEN_SCALE);
+		ray = KadoKadeoManager.I(25);
+		y = -(ray + KadoKadeoManager.I(5));
 		hp = 16;
 		bounceId = 1;
 		bList = [9];
-		trg = {x: 0., y: 70. * Cs.NEW_GEN_SCALE + Seed.rand() * 30 * Cs.NEW_GEN_SCALE}
+		trg = {x: 0., y: KadoKadeoManager.S(70) + Seed.rand() * KadoKadeoManager.I(30)}
 		waitTimer = 100;
 
 		var raf = newRafale();

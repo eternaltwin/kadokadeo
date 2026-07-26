@@ -48,22 +48,22 @@ class Bonus {
 
 	public function fall():Void {
 		dx = 0;
-		dy = 2 * Cs.NEW_GEN_SCALE;
+		dy = KadoKadeoManager.I(2);
 		x = mc._x;
 		y = mc._y;
 		game.addUpdate(update);
 	}
 
 	function update():Bool {
-		dy = Num.q(dy + 0.9 * Cs.NEW_GEN_SCALE * Timer.tmod);
+		dy = Num.q(dy + KadoKadeoManager.S(0.9) * Timer.tmod);
 		y = Num.q(y + dy * Timer.tmod);
 		x = Num.q(x + dx * Timer.tmod);
 
-		var my = Cs.MINY - 10 * Cs.NEW_GEN_SCALE;
+		var my = Cs.MINY - KadoKadeoManager.I(10);
 		if (y > my) {
 			y = my * 2 - y;
 			dy *= -0.5;
-			if (Math.abs(dy) < 1 * Cs.NEW_GEN_SCALE) {
+			if (Math.abs(dy) < KadoKadeoManager.I(1)) {
 				dy = 0;
 				y = my;
 			}
@@ -71,7 +71,7 @@ class Bonus {
 
 		var dx = Num.q(x - game.hero.x);
 		var dy = Num.q(y - game.hero.y);
-		var ray = 30 * Cs.NEW_GEN_SCALE;
+		var ray = KadoKadeoManager.I(30);
 		if (dx * dx + dy * dy < ray * ray && !game.hero.died) {
 			activate();
 			mc.removeMovieClip();

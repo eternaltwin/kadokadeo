@@ -19,7 +19,7 @@ class Soldier extends Runner {
 				stTossClimb = 12;
 				stTossSmart = 4;
 				stTossShoot = null;
-				speed = 2 * Cs.NEW_GEN_SCALE;
+				speed = KadoKadeoManager.I(2);
 				stDrop.push({w: 70, id: 4});
 			// stDrop.push({w:500,id:10});
 			case 2:
@@ -29,7 +29,7 @@ class Soldier extends Runner {
 				stTossSmart = 3;
 				stTossShoot = 10;
 				stMaxShot = 3;
-				speed = 3 * Cs.NEW_GEN_SCALE;
+				speed = KadoKadeoManager.I(3);
 				stDrop.push({w: 50, id: 4});
 				stDrop.push({w: 30, id: 5});
 				stDrop.push({w: 20, id: 8});
@@ -42,7 +42,7 @@ class Soldier extends Runner {
 				stTossShoot = 4;
 				stMaxShot = 1;
 				stShootWait = 12;
-				speed = 5 * Cs.NEW_GEN_SCALE;
+				speed = KadoKadeoManager.I(5);
 				flSpike = true;
 				stDrop.push({w: 40, id: 5});
 				stDrop.push({w: 20, id: 6});
@@ -88,7 +88,7 @@ class Soldier extends Runner {
 			} else {
 				if (stTossShoot != null && Seed.random(stTossShoot) == 0) {
 					var d = getDist(Cs.game.hero);
-					if (d < 180 * Cs.NEW_GEN_SCALE) {
+					if (d < KadoKadeoManager.I(180)) {
 						initStep(Cs.ST_SHOOT);
 					}
 				}
@@ -99,7 +99,7 @@ class Soldier extends Runner {
 	public override function shoot() {
 		var d = getDist(Cs.game.hero);
 		var a = getAng(Cs.game.hero);
-		var speed = 6 * Cs.NEW_GEN_SCALE;
+		var speed = KadoKadeoManager.I(6);
 		var max = stMaxShot;
 		for (i in 0...max) {
 			var da = (i / (max - 1) - 0.5) * 0.4;

@@ -29,7 +29,7 @@ class Hero {
 
 	public function new(g:Game) {
 		game = g;
-		x = 150 * Cs.NEW_GEN_SCALE;
+		x = KadoKadeoManager.I(150);
 		state = S_WAIT;
 		y = Cs.MAXY;
 		way = 1;
@@ -37,8 +37,8 @@ class Hero {
 		jump_pow = 0;
 		frame = 0;
 		colOffX = 0;
-		colHalfW = 10 * Cs.NEW_GEN_SCALE;
-		colHalfH = 10 * Cs.NEW_GEN_SCALE;
+		colHalfW = KadoKadeoManager.I(10);
+		colHalfH = KadoKadeoManager.I(10);
 		arrow = game.dmanager.attach("arrow", 5);
 		arrow.loop = true;
 		arrow.play();
@@ -47,15 +47,17 @@ class Hero {
 	}
 
 	public function update():Void {
-		var speed = 5 * Cs.NEW_GEN_SCALE;
-		var jspeed = 0.7 * Cs.NEW_GEN_SCALE;
+		var speed = KadoKadeoManager.I(5);
+		var jspeed = KadoKadeoManager.S(0.7);
 		var maxpow = 25;
 
 		jump_dx *= Math.pow(0.9, Timer.tmod);
 
 		switch (state) {
 			case S_WAIT | S_MOVE:
-				if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A)) {
+				if (KeyboardManager.isDown(KeyboardManager.LEFT)
+					|| KeyboardManager.isDown(KeyboardManager.Q)
+					|| KeyboardManager.isDown(KeyboardManager.A)) {
 					if (state == S_WAIT) {
 						frame = 29;
 					}
@@ -76,7 +78,10 @@ class Hero {
 					state = S_WAIT;
 				}
 
-				if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W) || KeyboardManager.isDown(KeyboardManager.SPACE)) {
+				if (KeyboardManager.isDown(KeyboardManager.UP)
+					|| KeyboardManager.isDown(KeyboardManager.Z)
+					|| KeyboardManager.isDown(KeyboardManager.W)
+					|| KeyboardManager.isDown(KeyboardManager.SPACE)) {
 					jump_time = true;
 					jump_pow = 4;
 					jump_dx = (state == S_MOVE) ? (way * speed) : 0;
@@ -90,15 +95,20 @@ class Hero {
 					p._y = y;
 				}
 			case S_JUMP:
-				if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A)) {
+				if (KeyboardManager.isDown(KeyboardManager.LEFT)
+					|| KeyboardManager.isDown(KeyboardManager.Q)
+					|| KeyboardManager.isDown(KeyboardManager.A)) {
 					way = -1;
-					jump_dx -= Timer.tmod * Cs.NEW_GEN_SCALE;
+					jump_dx -= KadoKadeoManager.S(Timer.tmod);
 				} else if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D)) {
 					way = 1;
-					jump_dx += Timer.tmod * Cs.NEW_GEN_SCALE;
+					jump_dx += KadoKadeoManager.S(Timer.tmod);
 				}
 
-				if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W) || KeyboardManager.isDown(KeyboardManager.SPACE)) {
+				if (KeyboardManager.isDown(KeyboardManager.UP)
+					|| KeyboardManager.isDown(KeyboardManager.Z)
+					|| KeyboardManager.isDown(KeyboardManager.W)
+					|| KeyboardManager.isDown(KeyboardManager.SPACE)) {
 					if (jump_time && jump_pow < maxpow) {
 						jump_pow *= Math.pow(1.4, Timer.tmod);
 						if (jump_pow >= maxpow) {
@@ -138,7 +148,7 @@ class Hero {
 		mc._x = x;
 		mc._y = y;
 		mc._xscale = 100;
-		colOffY = -20 * Cs.NEW_GEN_SCALE;
+		colOffY = -KadoKadeoManager.I(20);
 
 		switch (state) {
 			case S_WAIT:
@@ -150,7 +160,7 @@ class Hero {
 				} else if (frame >= 40) {
 					if (frame >= 46) {
 						frame = (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S)) ? 59 : 1;
-						colOffY = -10 * Cs.NEW_GEN_SCALE;
+						colOffY = -KadoKadeoManager.I(10);
 					}
 				} else if (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S)) {
 					frame = 59;

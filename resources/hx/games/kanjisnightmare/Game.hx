@@ -106,7 +106,7 @@ class Game implements kado.GameInterface {
 		});
 
 		Cs.game = this;
-		Hero.SPEED = Cs.S(6);
+		Hero.SPEED = KadoKadeoManager.I(6);
 		dm = new DepthManager(root);
 		this.root = root;
 		bg = dm.attach("mcBg", DP_BG);
@@ -124,7 +124,7 @@ class Game implements kado.GameInterface {
 
 		flMouseDead = false;
 
-		scrollSpeed = Cs.S(0.5);
+		scrollSpeed = KadoKadeoManager.S(0.5);
 		dif = 0;
 		parc = 0;
 		genPlatCoef = 10;
@@ -132,26 +132,26 @@ class Game implements kado.GameInterface {
 
 		stats = {opt: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bads: [0, 0, 0], dif: null};
 
-		scrollMin = map._x + Cs.S(300);
+		scrollMin = map._x + KadoKadeoManager.I(300);
 
 		hero = new Hero(mdm.empty(DP_HERO));
 
 		medusa = new Medusa(this);
 
-		genPlat(0, Cs.S(270), Cs.S(1000));
-		genPlat(Cs.mcw * 2, Cs.S(200), Cs.S(1000));
+		genPlat(0, KadoKadeoManager.I(270), KadoKadeoManager.I(1000));
+		genPlat(Cs.mcw * 2, KadoKadeoManager.I(200), KadoKadeoManager.I(1000));
 
 		focus = hero;
 
 		if (DEBUG_SCALE != null) {
 			root._xscale = DEBUG_SCALE;
 			root._yscale = root._xscale;
-			root._x += Cs.S(100);
+			root._x += KadoKadeoManager.I(100);
 		}
 	}
 
 	public function destroy():Void {
-		Hero.SPEED = Cs.S(6);
+		Hero.SPEED = KadoKadeoManager.I(6);
 	}
 
 	function initAuraPlasma() {
@@ -169,8 +169,8 @@ class Game implements kado.GameInterface {
 		];
 		auraPlasma.ct = fade;
 		var blur = new BlurFilter();
-		blur.blurX = Std.int(Cs.S(4));
-		blur.blurY = Std.int(Cs.S(20));
+		blur.blurX = Std.int(KadoKadeoManager.I(4));
+		blur.blurY = Std.int(KadoKadeoManager.I(20));
 		auraPlasma.filters = [cast blur];
 	}
 
@@ -240,9 +240,9 @@ class Game implements kado.GameInterface {
 			};
 		}
 
-		var dec = Cs.S(300);
+		var dec = KadoKadeoManager.I(300);
 		scrollMin = Math.min(scrollMin - scrollSpeed * Timer.tmod, map._x + dec);
-		scrollSpeed += Cs.S(0.001) * Timer.tmod;
+		scrollSpeed += KadoKadeoManager.S(0.001) * Timer.tmod;
 
 		var ox = map._x;
 		map._x = Cs.mcw * 0.5 - base.x;
@@ -292,7 +292,7 @@ class Game implements kado.GameInterface {
 
 	function scrollDecor(vx:Float) {
 		handicap -= vx;
-		var lap = Cs.S(20);
+		var lap = KadoKadeoManager.I(20);
 		while (handicap > lap) {
 			handicap -= lap;
 			if (!hero.flDeath) {
@@ -333,7 +333,7 @@ class Game implements kado.GameInterface {
 		}
 
 		// ADD SCROLL ELEMENTS
-		var lim = Cs.S(50);
+		var lim = KadoKadeoManager.I(50);
 		while (plans.length < 20 && Num.q(parc) > lim) {
 			parc -= lim;
 			addScrollElement();
@@ -366,7 +366,7 @@ class Game implements kado.GameInterface {
 		mc.w = mc._width;
 		mc._x = Cs.mcw + mc.w * 0.5;
 		mc._y = 0;
-		mc.dy = (1 - mc.c) * Cs.S(50);
+		mc.dy = (1 - mc.c) * KadoKadeoManager.I(50);
 		mc.type = 1;
 		#if debug
 		mc._alpha = 50;
@@ -448,7 +448,7 @@ class Game implements kado.GameInterface {
 				var mc = seg.attachMovie("mcTopElement", "top" + i, i + 1);
 				mc.gotoAndStop(Seed.random(mc._totalframes) + 1);
 				var px = mc._width * 0.5 + Seed.rand() * (Cs.mcw - mc._width);
-				var py = Cs.S(Seed.random(10));
+				var py = KadoKadeoManager.I(Seed.random(10));
 				mc._x = px;
 				mc._y = py;
 			}
@@ -458,25 +458,25 @@ class Game implements kado.GameInterface {
 	// PLATEFORMES
 	function genPlat(x, y, w) {
 		if (x == null)
-			x = Cs.mcw * 3 + Cs.S(8) + Cs.S(Seed.rand() * 100);
+			x = Cs.mcw * 3 + KadoKadeoManager.I(8) + KadoKadeoManager.S(Seed.rand() * 100);
 		if (y == null)
-			y = Cs.S(140) + Cs.S(Seed.rand() * 150);
+			y = KadoKadeoManager.I(140) + KadoKadeoManager.S(Seed.rand() * 150);
 		if (w == null)
-			w = Math.max(Cs.S(60), Cs.S(800) - Num.q(dif) * Cs.S(0.25)) + Cs.S(Seed.rand() * 200);
+			w = Math.max(KadoKadeoManager.I(60), KadoKadeoManager.I(800) - Num.q(dif) * KadoKadeoManager.S(0.25)) + KadoKadeoManager.S(Seed.rand() * 200);
 
 		var to = 0;
 		while (true) {
 			var flBreak = true;
 			for (i in 0...platList.length) {
 				var pl = platList[i];
-				if (Num.q(pl.x + pl.w) > Num.q(x) && Num.q(Math.abs(y - pl.y)) < Cs.S(60)) {
+				if (Num.q(pl.x + pl.w) > Num.q(x) && Num.q(Math.abs(y - pl.y)) < KadoKadeoManager.I(60)) {
 					flBreak = false;
 				}
 			}
 			if (flBreak)
 				break;
-			x = Cs.mcw * 2 + Cs.S(8) + Cs.S(Seed.rand() * 100);
-			y = Cs.S(140) + Cs.S(Seed.rand() * 150);
+			x = Cs.mcw * 2 + KadoKadeoManager.I(8) + KadoKadeoManager.S(Seed.rand() * 100);
+			y = KadoKadeoManager.I(140) + KadoKadeoManager.S(Seed.rand() * 150);
 			if (to++ > 20)
 				return;
 		}
@@ -491,8 +491,8 @@ class Game implements kado.GameInterface {
 		// var mmax = Math.min(Math.ceil(mc.w*0.01), Math.pow(dif,0.2))
 		// var max = Seed.random(int(mmax))
 		var rand = Seed.random(Std.int(Math.pow(Num.q(dif), 0.2)));
-		var max = Std.int(Math.min(Math.ceil((pl.w / Cs.NEW_GEN_SCALE) * 0.02), rand));
-		if (max == 0 && Num.q(pl.w) > Cs.S(160))
+		var max = Std.int(Math.min(Math.ceil((pl.w / KadoKadeoManager.I(1)) * 0.02), rand));
+		if (max == 0 && Num.q(pl.w) > KadoKadeoManager.I(160))
 			max++;
 		var xl:Array<Float> = [];
 		to = 0;
@@ -504,7 +504,7 @@ class Game implements kado.GameInterface {
 				px = pl.x + Seed.rand() * pl.w;
 				var flBreak = true;
 				for (k in 0...xl.length) {
-					if (Num.q(Math.abs(xl[k] - px)) < Cs.S(20)) {
+					if (Num.q(Math.abs(xl[k] - px)) < KadoKadeoManager.I(20)) {
 						flBreak = false;
 						break;
 					}
@@ -518,7 +518,7 @@ class Game implements kado.GameInterface {
 			} while (true);
 
 			if (max == 1 && platList.length == 1)
-				px = pl.x + pl.w - Cs.S(10);
+				px = pl.x + pl.w - KadoKadeoManager.I(10);
 
 			xl.push(px);
 			m.x = px;
@@ -553,11 +553,11 @@ class Game implements kado.GameInterface {
 			if (Seed.randVfx() * c > 0.2) {
 				var p = newPart("partLargeLight");
 				p.x = Seed.randVfx() * Cs.mcw + -map._x;
-				p.y = Cs.mch + Cs.S(10) + Cs.S(Seed.randVfx() * 20) - map._y;
-				p.vy = Cs.S(Seed.randVfx() * 6);
+				p.y = Cs.mch + KadoKadeoManager.I(10) + KadoKadeoManager.S(Seed.randVfx() * 20) - map._y;
+				p.vy = KadoKadeoManager.S(Seed.randVfx() * 6);
 				p.timer = 10 + Seed.randVfx() * 10;
 				p.fadeType = 0;
-				p.setScale(100 + (hero.y / Cs.NEW_GEN_SCALE) * 0.2 + Seed.randVfx() * 100);
+				p.setScale(100 + (hero.y / KadoKadeoManager.I(1)) * 0.2 + Seed.randVfx() * 100);
 				p.root.blendMode = BlendModes.ADD;
 			}
 		}
@@ -567,7 +567,7 @@ class Game implements kado.GameInterface {
 
 		// MEDUSE PLONGE
 		if (hero.flDeath) {
-			scrollMin -= Cs.S(13);
+			scrollMin -= KadoKadeoManager.I(13);
 		}
 	}
 
@@ -629,13 +629,13 @@ class Game implements kado.GameInterface {
 		var p:Part = cast new Part(mdm.empty(DP_PARTS));
 		var field = p.root.initTextField("field", {
 			font: "Arial",
-			size: 40,
+			size: 30,
 			color: 0xFFFFFF,
 			align: "center",
 		});
 		p.x = x;
 		p.y = y;
-		p.vy = Cs.S(-1);
+		p.vy = KadoKadeoManager.I(-1);
 		p.timer = 24;
 		field.text = Std.string(KKApi.val(sc));
 		Filt.glow(p.root, 4, 2, 0);

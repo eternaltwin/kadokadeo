@@ -1,10 +1,9 @@
 package flushee;
 
+import kado.KadoKadeoManager;
 import common_haxe_avm1.KKApi;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
-
 	public static var LVL_WIDTH = 6;
 	public static var LVL_HEIGHT = 7;
 
@@ -28,9 +27,9 @@ class Cs {
 	public static var ID_BONUS = NGEMS;
 	public static var ID_TOKENS = NGEMS + 1;
 
-	public static var CELL_SIZE = 36 * NEW_GEN_SCALE;
-	public static var POSX = (6 + 36) * NEW_GEN_SCALE;
+	public static var CELL_SIZE = KadoKadeoManager.I(36);
+	public static var POSX = KadoKadeoManager.I(6 + 36);
 
-	public static var POSY = (-15 + 36) * NEW_GEN_SCALE;
-	public static var YFALAISE = 275 * NEW_GEN_SCALE;
+	public static var POSY = KadoKadeoManager.I(-15 + 36);
+	public static var YFALAISE = KadoKadeoManager.I(275);
 }

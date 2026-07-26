@@ -63,8 +63,8 @@ class Hero {
 	}
 
 	function kill():Void {
-		dy = -10 * Cs.NEW_GEN_SCALE;
-		dx = (x < Cs.WIDTH / 2) ? 2 * Cs.NEW_GEN_SCALE : -2 * Cs.NEW_GEN_SCALE;
+		dy = -KadoKadeoManager.I(10);
+		dx = (x < Cs.WIDTH / 2) ? KadoKadeoManager.I(2) : -KadoKadeoManager.I(2);
 		died = true;
 		death_timer = 1.5;
 		frame = 0;
@@ -73,20 +73,20 @@ class Hero {
 
 	function hit():Void {
 		var hx = Num.q(x);
-		var hy = Num.q(y - 20 * Cs.NEW_GEN_SCALE);
-		var r = 8 * Cs.NEW_GEN_SCALE;
+		var hy = Num.q(y - KadoKadeoManager.I(20));
+		var r = KadoKadeoManager.I(8);
 		var found = false;
 		for (b in game.blobs) {
 			var dx = Num.q(b.x - hx);
 			var dy = Num.q(b.y - hy);
-			var ray = Num.q(b.size * Cs.NEW_GEN_SCALE / 2.4 + r);
+			var ray = Num.q(KadoKadeoManager.S(b.size) / 2.4 + r);
 			if (!found && dx * dx + dy * dy < ray * ray) {
 				x = b.x;
 				y = b.y;
 				kill();
 				b.mc._xscale = 50;
 				b.mc._yscale = 50;
-				b.size = 50 * Cs.NEW_GEN_SCALE;
+				b.size = KadoKadeoManager.I(50);
 
 				var e = game.dmanager.attach("animExplose", Cs.PLAN_BLOB);
 				e.play();
@@ -148,7 +148,9 @@ class Hero {
 		}
 
 		if (!lock) {
-			if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A)) {
+			if (KeyboardManager.isDown(KeyboardManager.LEFT)
+				|| KeyboardManager.isDown(KeyboardManager.Q)
+				|| KeyboardManager.isDown(KeyboardManager.A)) {
 				if (!moving) {
 					moving = true;
 					frame = 0;
@@ -157,9 +159,9 @@ class Hero {
 				dir = -1;
 				if (acc > 0)
 					acc = 0;
-				acc = Num.q(acc - 1 * Cs.NEW_GEN_SCALE * Timer.tmod);
-				if (acc < -5 * Cs.NEW_GEN_SCALE)
-					acc = -5 * Cs.NEW_GEN_SCALE;
+				acc = Num.q(acc - KadoKadeoManager.I(1) * Timer.tmod);
+				if (acc < -KadoKadeoManager.I(5))
+					acc = -KadoKadeoManager.I(5);
 			} else if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D)) {
 				if (!moving) {
 					moving = true;
@@ -169,9 +171,9 @@ class Hero {
 				dir = 1;
 				if (acc < 0)
 					acc = 0;
-				acc = Num.q(acc + 1 * Cs.NEW_GEN_SCALE * Timer.tmod);
-				if (acc > 5 * Cs.NEW_GEN_SCALE)
-					acc = 5 * Cs.NEW_GEN_SCALE;
+				acc = Num.q(acc + KadoKadeoManager.I(1) * Timer.tmod);
+				if (acc > KadoKadeoManager.I(5))
+					acc = KadoKadeoManager.I(5);
 			} else {
 				acc = Num.q(acc * Math.pow(0.8, Timer.tmod));
 				if (moving) {
@@ -195,15 +197,15 @@ class Hero {
 
 		mc.sub.gotoAndStop(1 + (Std.int(frame) % mc.sub._totalframes));
 
-		if (x <= 30 * Cs.NEW_GEN_SCALE)
-			x = 30 * Cs.NEW_GEN_SCALE;
-		else if (x >= Cs.WIDTH - 20 * Cs.NEW_GEN_SCALE)
-			x = Cs.WIDTH - 20 * Cs.NEW_GEN_SCALE;
+		if (x <= KadoKadeoManager.I(30))
+			x = KadoKadeoManager.I(30);
+		else if (x >= Cs.WIDTH - KadoKadeoManager.I(20))
+			x = Cs.WIDTH - KadoKadeoManager.I(20);
 
 		if (game.blob_timer <= 0)
 			hit();
 
-		var dy = Math.max(0, Math.sin(x * Math.PI / (17 * Cs.NEW_GEN_SCALE))) * 3 * Cs.NEW_GEN_SCALE;
+		var dy = Math.max(0, Math.sin(x * Math.PI / (KadoKadeoManager.I(17)))) * KadoKadeoManager.I(3);
 
 		mc._x = x;
 		mc._y = y - dy;

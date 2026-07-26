@@ -21,7 +21,7 @@ class Slow extends Option {
 		super();
 		Game.me.speed *= 0.3;
 
-		speed = 100 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.I(100);
 
 		list = [];
 		var max = 36;
@@ -42,8 +42,8 @@ class Slow extends Option {
 		super.update();
 
 		speed *= 0.9;
-		if (speed < 0.5 * Cs.NEW_GEN_SCALE)
-			speed = 0.5 * Cs.NEW_GEN_SCALE;
+		if (speed < KadoKadeoManager.S(0.5))
+			speed = KadoKadeoManager.S(0.5);
 
 		var a = list.copy();
 		for (mc in a)
@@ -60,7 +60,7 @@ class Slow extends Option {
 		fl.blurX = 0;
 		fl.blurY = speed * 2;
 		mc.filters = [fl];
-		if (speed < 1 * Cs.NEW_GEN_SCALE) {
+		if (speed < KadoKadeoManager.I(1)) {
 			mc.filters = [];
 			mc._xscale -= 20;
 			mc._yscale = mc._xscale;

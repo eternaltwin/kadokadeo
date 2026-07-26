@@ -8,7 +8,7 @@ class Pastille extends Element {
 
 	public function new() {
 		super();
-		ray = 20 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(20);
 		skin = "mcPastille";
 
 		type = 0;
@@ -20,7 +20,7 @@ class Pastille extends Element {
 
 	public override function update() {
 		super.update();
-		if (Num.q(Cs.game.blob.getDist(this)) < 70 * Cs.NEW_GEN_SCALE) {
+		if (Num.q(Cs.game.blob.getDist(this)) < KadoKadeoManager.I(70)) {
 			flRemove = true;
 			var p = new Spark(Cs.game.dm.empty(Game.DP_PART));
 			p.x = x;
@@ -42,7 +42,7 @@ class Pastille extends Element {
 		super.attach();
 		var o = Cs.game.eList[0];
 		for (wh in o.list) {
-			if (Cs.getDist(wh, this) < wh.ray + 20 * Cs.NEW_GEN_SCALE) {
+			if (Cs.getDist(wh, this) < wh.ray + KadoKadeoManager.I(20)) {
 				flRemove = true;
 				if (root != null) {
 					root.removeMovieClip();

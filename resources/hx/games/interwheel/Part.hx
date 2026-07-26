@@ -1,6 +1,5 @@
 package interwheel;
 
-import mt.Timer;
 import mt.bumdum.Phys;
 
 class Part extends Phys {
@@ -20,7 +19,13 @@ class Part extends Phys {
 		if (vr != null) {
 			vr *= rFrict;
 		}
+		var sc = scale;
 		super.update();
+		scale = sc;
+		if (vs != null) {
+			vs *= sFrict;
+			scale += vs;
+		}
 	}
 
 	public override function kill() {

@@ -33,11 +33,11 @@ class Shot extends Phys {
 		ca = 0.1;
 
 		decal = 0;
-		speed = 2 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.I(2);
 
 		flPierce = false;
 		flInvincible = false;
-		ray = 3 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(3);
 		damage = 0;
 		Cs.game.shotList.push(this);
 		bList = new Array();
@@ -59,7 +59,7 @@ class Shot extends Phys {
 		updateBehaviour();
 		super.update();
 
-		if (isOut(50 * Cs.NEW_GEN_SCALE))
+		if (isOut(KadoKadeoManager.I(50)))
 			kill();
 
 		/*
@@ -94,7 +94,7 @@ class Shot extends Phys {
 					updateVit();
 
 				case 5: // SWARM
-					if (Math.sqrt(vx * vx + vy * vy) < 3 * Cs.NEW_GEN_SCALE || Seed.rand() / Timer.tmod < 0.1) {
+					if (Math.sqrt(vx * vx + vy * vy) < KadoKadeoManager.I(3) || Seed.rand() / Timer.tmod < 0.1) {
 						a = Seed.random(4) * 1.57;
 						vx = Math.cos(a) * speed;
 						vy = Math.sin(a) * speed;
@@ -102,7 +102,7 @@ class Shot extends Phys {
 				case 6: // PLASMA DRAW
 					Cs.game.plasmaDraw(root, 0);
 				case 7: // ACCEL
-					speed += 0.05 * Cs.NEW_GEN_SCALE * Timer.tmod;
+					speed += KadoKadeoManager.S(0.05) * Timer.tmod;
 				case 11:
 					var max = 2 * Game.PM;
 					for (i in 0...max) {
@@ -111,7 +111,7 @@ class Shot extends Phys {
 						var r = Seed.randVfx() * 40;
 						p.x = x + Math.cos(a) * r;
 						p.y = y + Math.sin(a) * r;
-						p.vy = -(1 + Seed.randVfx() + 6) * Cs.NEW_GEN_SCALE;
+						p.vy = -KadoKadeoManager.S(1 + Seed.randVfx() + 6);
 						// p.timer = 20+Math.random()*10;
 						p.root._xscale = 150;
 						p.root._yscale = p.root._xscale;

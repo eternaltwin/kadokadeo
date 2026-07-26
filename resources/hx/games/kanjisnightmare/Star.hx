@@ -17,7 +17,7 @@ class Star extends Phys {
 		// list = Cs.game.grid[x][y].list
 		for (i in 0...Cs.game.mList.length) {
 			var m = Cs.game.mList[i];
-			if (Num.q(Math.abs(m.x - x) + Math.abs(m.y - y)) < Cs.S(20)) {
+			if (Num.q(Math.abs(m.x - x) + Math.abs(m.y - y)) < KadoKadeoManager.I(20)) {
 				m.hit(this);
 				kill();
 				break;
@@ -27,7 +27,7 @@ class Star extends Phys {
 		checkMouse();
 		checkMedusa();
 		// OUT
-		if (isOut2(Cs.S(40))) {
+		if (isOut2(KadoKadeoManager.I(40))) {
 			kill();
 		}
 	}
@@ -35,25 +35,25 @@ class Star extends Phys {
 	function checkMouse() {
 		if (!Cs.game.flMouseDead) {
 			var mouse = Cs.game.getMapMouse();
-			var xm = Num.q(mouse.x + Cs.S(8));
-			var ym = Num.q(mouse.y + Cs.S(8));
-			if (Num.q(Math.abs(x - xm) + Math.abs(y - ym)) < Cs.S(15)) {
+			var xm = Num.q(mouse.x + KadoKadeoManager.I(8));
+			var ym = Num.q(mouse.y + KadoKadeoManager.I(8));
+			if (Num.q(Math.abs(x - xm) + Math.abs(y - ym)) < KadoKadeoManager.I(15)) {
 				Cs.game.flMouseDead = true;
 				Cs.game.mouseDeadTimer = 50;
 				Cs.game.dm.root_mc.interactive = true;
 				untyped Cs.game.dm.root_mc.cursor = "none";
 
 				var p = Cs.game.newPart("mcMouse");
-				p.x = xm + Cs.S(8);
-				p.y = ym + Cs.S(8);
-				p.vy = Cs.S(-4);
+				p.x = xm + KadoKadeoManager.I(8);
+				p.y = ym + KadoKadeoManager.I(8);
+				p.vy = KadoKadeoManager.I(-4);
 				p.vx = vx * 0.5;
 				p.vr = 8 + Seed.randVfx() * 10;
 				p.timer = 30 + Seed.randVfx() * 10;
 				p.fadeType = 0;
-				p.weight = Cs.S(0.6);
+				p.weight = KadoKadeoManager.S(0.6);
 				p.flPlatCol = true;
-				p.ray = Cs.S(8);
+				p.ray = KadoKadeoManager.I(8);
 
 				kill();
 				return;
@@ -65,7 +65,7 @@ class Star extends Phys {
 		if (vx < 0) {
 			var dx = Num.q(x - Cs.game.medusa.medusa.x);
 			var dy = Num.q(y - Cs.game.medusa.medusa.y);
-			var ray = Cs.S(58);
+			var ray = KadoKadeoManager.I(58);
 			if (Cs.game.medusa.medusa.root._visible == true && dx * dx + dy * dy < ray * ray)
 				klong();
 		}
@@ -83,7 +83,7 @@ class Star extends Phys {
 		p.vr = 8 + Seed.randVfx() * 10;
 		p.timer = 30 + Seed.randVfx() * 10;
 		p.fadeType = 0;
-		p.weight = Cs.S(0.6);
+		p.weight = KadoKadeoManager.S(0.6);
 		kill();
 	}
 

@@ -13,7 +13,7 @@ class CStorm extends Bads {
 		setScore(Cs.C_STORM[lvl]);
 
 		hp = 28 + lvl * 20;
-		ray = 25 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(25);
 		bList.push(5);
 		waitTimer = 500 + lvl * 150;
 

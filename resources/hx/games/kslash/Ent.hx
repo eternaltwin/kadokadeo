@@ -47,7 +47,7 @@ class Ent {
 		vx = 0;
 		vy = 0;
 		vr = null;
-		weight = 1 * Cs.NEW_GEN_SCALE;
+		weight = KadoKadeoManager.I(1);
 		friction = 0.95;
 	}
 

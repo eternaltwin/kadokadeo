@@ -1,10 +1,10 @@
 package killbulle;
 
+import kado.KadoKadeoManager;
 import pixi.filters.colormatrix.ColorMatrixFilter;
 import kado.Seed;
 import mt.Timer;
 import mt.bumdum.Lib;
-import mt.deepnight.Color;
 
 class Blob {
 	public var game:Game;
@@ -23,12 +23,12 @@ class Blob {
 		game = g;
 		bonus = b;
 		this.size = size;
-		speed = (5 + game.level / 20) * Cs.NEW_GEN_SCALE;
-		y = -100 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.S(5 + game.level / 20);
+		y = -KadoKadeoManager.I(100);
 		dx = 2.5;
 		dy = 1;
 		dir = Seed.random(2) * 2 - 1;
-		x = game.hero.x + dir * 50 * Cs.NEW_GEN_SCALE;
+		x = game.hero.x + dir * KadoKadeoManager.I(50);
 		mc = game.dmanager.attach("blob", Cs.PLAN_BLOB);
 		col = mc.attachMovie("blobCol", "col");
 		col.play();
@@ -72,7 +72,7 @@ class Blob {
 		if (size >= 25 && bonus == null) {
 			var b;
 			b = new Blob(game, dsize, null);
-			b.x = x + size * Cs.NEW_GEN_SCALE / 4;
+			b.x = x + KadoKadeoManager.S(size) / 4;
 			b.y = y;
 			b.dy = -Math.abs(dy);
 			b.dir = 1;
@@ -80,7 +80,7 @@ class Blob {
 			game.blobs.push(b);
 
 			b = new Blob(game, dsize, null);
-			b.x = x - size * Cs.NEW_GEN_SCALE / 4;
+			b.x = x - KadoKadeoManager.S(size) / 4;
 			b.y = y;
 			b.dy = -Math.abs(dy);
 			b.dir = -1;
@@ -101,16 +101,16 @@ class Blob {
 		x = Num.q(x + dir * dx * s);
 		y = Num.q(y + dy * s);
 
-		if (y > Cs.MINY - size * Cs.NEW_GEN_SCALE / 2) {
-			y = Cs.MINY - size * Cs.NEW_GEN_SCALE / 2;
+		if (y > Cs.MINY - KadoKadeoManager.S(size) / 2) {
+			y = Cs.MINY - KadoKadeoManager.S(size) / 2;
 			dy = Num.q(-20 - Math.sqrt(size));
 		}
 
-		if (x < size * Cs.NEW_GEN_SCALE / 2) {
-			x = size * Cs.NEW_GEN_SCALE - x;
+		if (x < KadoKadeoManager.S(size) / 2) {
+			x = KadoKadeoManager.S(size) - x;
 			dir *= -1;
-		} else if (x > Cs.WIDTH - size * Cs.NEW_GEN_SCALE / 2) {
-			x = Cs.WIDTH * 2 - size * Cs.NEW_GEN_SCALE - x;
+		} else if (x > Cs.WIDTH - KadoKadeoManager.S(size) / 2) {
+			x = Cs.WIDTH * 2 - KadoKadeoManager.S(size) - x;
 			dir *= -1;
 		}
 

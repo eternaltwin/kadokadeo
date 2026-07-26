@@ -7,10 +7,10 @@ import mt.Timer;
 import mt.bumdum.Phys;
 
 class Blob extends Phys {
-	public static var GROUND_SPEED = 15 * Cs.NEW_GEN_SCALE;
-	public static var RAY = 8 * Cs.NEW_GEN_SCALE;
-	public static var WEIGHT = 0.5 * Cs.NEW_GEN_SCALE;
-	public static var JUMP = 12 * Cs.NEW_GEN_SCALE;
+	public static var GROUND_SPEED = KadoKadeoManager.I(15);
+	public static var RAY = KadoKadeoManager.I(8);
+	public static var WEIGHT = KadoKadeoManager.S(0.5);
+	public static var JUMP = KadoKadeoManager.I(12);
 
 	public static var JUMP_SIDE_ANGLE = 0.77;
 
@@ -119,8 +119,8 @@ class Blob extends Phys {
 				}
 				#if debug
 				if (checkPress()) {
-					jump(-1.57);
-					vy = -50;
+					jump(-1.58);
+					vy = -KadoKadeoManager.I(16);
 				}
 				#end
 
@@ -171,7 +171,7 @@ class Blob extends Phys {
 				if (checkPress())
 					jump(a);
 			case 3:
-				vy = Num.q(vy + 0.6 * Timer.tmod * Cs.NEW_GEN_SCALE);
+				vy = Num.q(vy + KadoKadeoManager.S(0.6));
 				vy = Num.q(vy * Math.pow(0.92, Timer.tmod));
 				if (checkPress()) {
 					var sens = (x < Cs.mcw * 0.5) ? 1 : -1;

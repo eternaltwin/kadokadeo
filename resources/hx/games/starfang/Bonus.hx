@@ -10,7 +10,7 @@ import mt.DepthManager;
 class Bonus extends Phys {
 	static var ID_MAX = 4;
 	static var BOUNCE_MAX = 5;
-	static var SPEED = 3 * Cs.NEW_GEN_SCALE;
+	static var SPEED = KadoKadeoManager.I(3);
 
 	static var SCORE = KKApi.aconst([1000, 3000, 12000]);
 	static var STATS = [
@@ -42,7 +42,7 @@ class Bonus extends Phys {
 		Cs.game.bonusList.push(this);
 		super(mc);
 		bounce = 0;
-		ray = 15 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(15);
 		dm = new DepthManager(root);
 		id = forcedId == null ? getRandomId() : forcedId;
 		var dir = forcedDir == null ? Seed.random(4) : forcedDir;
@@ -111,7 +111,7 @@ class Bonus extends Phys {
 				var mc = new Part(Cs.game.dm.empty(Game.DP_PARTS));
 				var txt = mc.root.initTextField("txt", {
 					font: "Orbitron",
-					size: 40,
+					size: 30,
 					color: 0xFFFFFF,
 					align: "center",
 				});
@@ -133,8 +133,8 @@ class Bonus extends Phys {
 			var a = Seed.randVfx() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
-			var r = 5 * Cs.NEW_GEN_SCALE + Seed.randVfx() * ray;
-			var sp = (0.5 + Seed.randVfx() * 2) * Cs.NEW_GEN_SCALE;
+			var r = KadoKadeoManager.I(5) + Seed.randVfx() * ray;
+			var sp = KadoKadeoManager.S(0.5 + Seed.randVfx() * 2);
 			p.x = x + ca * r;
 			p.y = y + sa * r;
 			p.vx = ca * sp;
@@ -146,7 +146,7 @@ class Bonus extends Phys {
 			p.fadeType = 0;
 		}
 		for (i in 0...12) {
-			var p = newPart("partLight", ray, (1 + Seed.randVfx() * 3) * Cs.NEW_GEN_SCALE);
+			var p = newPart("partLight", ray, KadoKadeoManager.S(1 + Seed.randVfx() * 3));
 			p.setScale(50 + Seed.randVfx() * 100);
 		}
 	}

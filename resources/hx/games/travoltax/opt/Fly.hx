@@ -78,7 +78,7 @@ class Fly extends Option {
 			var p = new Particule(mc);
 			p.x = Cs.MX + (pos[0] + 0.5) * Cs.SIZE;
 			p.y = Cs.MY + (pos[1] + 0.5) * Cs.SIZE;
-			p.weight = -(0.3 + Seed.randVfx() * 0.1) * Cs.NEW_GEN_SCALE;
+			p.weight = -KadoKadeoManager.S(0.3 + Seed.randVfx() * 0.1);
 			p.vr = (Seed.randVfx() * 2 - 1) * 0.5;
 			p.timer = 100 + Seed.randVfx() * 20;
 			// p.fadeType = 0;

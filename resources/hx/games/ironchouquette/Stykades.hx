@@ -653,7 +653,7 @@ class Stykades {
 			case 7: // BLOCK
 				var b = newBlock();
 				if (b != null) {
-					b.vy = 2 * Cs.NEW_GEN_SCALE;
+					b.vy = KadoKadeoManager.I(2);
 				}
 
 			case 8: // SURGROMPH
@@ -669,16 +669,16 @@ class Stykades {
 					var b = newBriaros();
 				}
 			case 17: // CUTTY
-				var m = 80 * Cs.NEW_GEN_SCALE;
+				var m = KadoKadeoManager.I(80);
 				var x = m + Seed.rand() * (Cs.mcw - 2 * m);
 				var max = 5;
 				for (i in 0...max) {
 					var c = (i / (max - 1)) * 2 - 1;
 					var b = newCutty();
 					if (b != null) {
-						b.x = x + c * 40 * Cs.NEW_GEN_SCALE;
-						b.vy = (4 - Math.abs(c) * 1) * Cs.NEW_GEN_SCALE;
-						b.seekerLimit = (Cs.mch * 0.5) + 10 * Cs.NEW_GEN_SCALE * c;
+						b.x = x + c * KadoKadeoManager.I(40);
+						b.vy = KadoKadeoManager.S(4 - Math.abs(c) * 1);
+						b.seekerLimit = (Cs.mch * 0.5) + KadoKadeoManager.I(10) * c;
 					}
 				}
 			case 18: // NES
@@ -717,11 +717,11 @@ class Stykades {
 				for (i in 0...8) {
 					var b = newBriaros();
 					if (b != null) {
-						var m = -15 * Cs.NEW_GEN_SCALE;
+						var m = -KadoKadeoManager.I(15);
 						b.x = m + Seed.random(2) * (Cs.mcw - 2 * m);
-						b.y = Cs.mch * 0.5 + 20 * Cs.NEW_GEN_SCALE;
+						b.y = Cs.mch * 0.5 + KadoKadeoManager.I(20);
 						b.beeRange[0].w = 0;
-						b.beeRange[1].yMax += 20 * Cs.NEW_GEN_SCALE;
+						b.beeRange[1].yMax += KadoKadeoManager.I(20);
 
 						b.hp = 120;
 						var raf = b.newRafale();
@@ -765,13 +765,13 @@ class Stykades {
 		if (!FL_CREATE_LOCK && Cs.game.badsList.length > BADS_LIMIT)
 			return null;
 		var b = Type.createInstance(_class, params);
-		var m = 15 * Cs.NEW_GEN_SCALE;
+		var m = KadoKadeoManager.I(15);
 		if (b.x == -100) {
 			b.x = m + Seed.rand() * (Cs.mcw - 2 * m);
 		}
 		// b.y = -20
 		if (b.vy == 0) {
-			b.vy = 3 * Cs.NEW_GEN_SCALE;
+			b.vy = KadoKadeoManager.I(3);
 		}
 		if (b.outSafeTimer == null) {
 			b.outSafeTimer = 100;
@@ -861,8 +861,8 @@ class Stykades {
 		FL_CREATE_LOCK = true;
 		// BASE
 		var b = newBad(CStorm, [lvl]);
-		b.setPart(newBad(CStormSide, [lvl, -1]), -25 * Cs.NEW_GEN_SCALE, 0);
-		b.setPart(newBad(CStormSide, [lvl, 1]), 25 * Cs.NEW_GEN_SCALE, 0);
+		b.setPart(newBad(CStormSide, [lvl, -1]), -KadoKadeoManager.I(25), 0);
+		b.setPart(newBad(CStormSide, [lvl, 1]), KadoKadeoManager.I(25), 0);
 
 		return b;
 		FL_CREATE_LOCK = false;

@@ -107,7 +107,7 @@ KadoKadeoManager.kkm.replay.init({
 - Ne pas brancher la logique gameplay principale sur des callbacks UI souris; la lire dans `update()` pour avoir exactement la meme valeur live/replay.
 
 4. Brancher la consommation d'evenements metier (si `recordEvents = true`)
-**deprecated** : utilisation des événements de souris/clavier directement (inputs polled).
+   **deprecated** : utilisation des événements de souris/clavier directement (inputs polled).
 
 - En tete de `update(delta)`:
 
@@ -171,6 +171,11 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
     - `resources/hx/games/chocomouche/Game.hx`
 - Inputs + evenements metier:
     - `resources/hx/games/opalus2/Game.hx`
+
+## Points d'attention importants
+
+- Lorsque le jeu est en recordEvent et possède une grille où x et y sont inférieurs à 8 (entre 0 et 7), on peut utiliser recordEvent({k: 0-3, x: 0-7, y: 0-7}) pour encoder un event en un seul octet (k<<6 | x<<3 | y). Cela permet de réduire la taille du replay.
+- Si le jeu est en recordEvent mais n'est pas dans une grille, utiliser un autre valeur que "k" dans l'objet recordé.
 
 ## Checklist finale
 

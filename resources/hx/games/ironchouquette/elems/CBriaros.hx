@@ -10,7 +10,7 @@ class CBriaros extends Bads {
 
 		hp = 6;
 
-		vy = -Seed.rand() * 5 * Cs.NEW_GEN_SCALE;
+		vy = -Seed.rand() * KadoKadeoManager.I(5);
 
 		var raf = newRafale();
 		raf.addShot(1, [3, 0.6], 100, 1);
@@ -19,23 +19,26 @@ class CBriaros extends Bads {
 		bList = [6, 7];
 		frict = 0.9;
 
-		var m = 20 * Cs.NEW_GEN_SCALE;
+		var m = KadoKadeoManager.I(20);
 		beeRange = [
 			{
 				w: 6,
 				xMin: m,
 				xMax: Cs.mcw - m,
 				yMin: m,
-				yMax: 120 * Cs.NEW_GEN_SCALE
+				yMax: KadoKadeoManager.I(120)
 			},
 			{
 				w: 1,
 				xMin: m,
 				xMax: Cs.mcw - m,
 				yMin: Cs.mch * 0.5,
-				yMax: Cs.mch - 76 * Cs.NEW_GEN_SCALE
+				yMax: Cs.mch - KadoKadeoManager.I(76)
 			},
 		];
-		acc = {c: 0.1 * Cs.NEW_GEN_SCALE, lim: 1 * Cs.NEW_GEN_SCALE};
+		acc = {
+			c: KadoKadeoManager.S(0.1),
+			lim: KadoKadeoManager.I(1)
+		};
 	}
 }

@@ -413,10 +413,10 @@ class Game implements kado.GameInterface {
 		var totalScore = KKApi.const(0);
 		for (b in work) {
 			var prc = Math.max(0, coef * 200 - 100);
-			b.glow._xscale = b.glow._yscale = 100 + c * 12 * Cs.NEW_GEN_SCALE;
+			b.glow._xscale = b.glow._yscale = 100 + c * KadoKadeoManager.I(12);
 			Col.setPercentColor(b.root, prc, 0xFFFFFF);
 			// b.root.filters = [];
-			// Filt.glow(b.root, cast c * 12 * Cs.NEW_GEN_SCALE, c * 4, 0xFFFFFF);
+			// Filt.glow(b.root, cast c * KadoKadeoManager.I(12), c * 4, 0xFFFFFF);
 			if (coef == 1) {
 				var sc = Cs.SCORE_BALL[b.color];
 				totalScore = KKApi.cadd(totalScore, sc);
@@ -623,8 +623,8 @@ class Game implements kado.GameInterface {
 		var max = 3;
 		for (i in 0...max) {
 			var mc = Game.me.dm.attach("mcTurn", Game.DP_FG);
-			mc._x = 16 * Cs.NEW_GEN_SCALE; // Cs.mcw*0.5 + ((i/(max-1))*2-1)*36;
-			mc._y = (220 + i * 28) * Cs.NEW_GEN_SCALE;
+			mc._x = KadoKadeoManager.I(16); // Cs.mcw*0.5 + ((i/(max-1))*2-1)*36;
+			mc._y = KadoKadeoManager.I(220 + i * 28);
 			mc.gotoAndStop(2);
 			missList.push(mc);
 		}
@@ -655,15 +655,15 @@ class Game implements kado.GameInterface {
 		p.y = y;
 		var field = p.root.initTextField('field', {
 			font: "Megaton",
-			size: 40,
+			size: 36,
 			color: 0xFFFFFF,
 			align: "center",
 			stroke: Col.getWeb(col),
-			strokeThickness: 4 * Cs.NEW_GEN_SCALE
+			strokeThickness: KadoKadeoManager.I(4)
 		});
 		field.text = Std.string(n);
-		p.weight = -(0.2 + Seed.randVfx() * 0.1) * Cs.NEW_GEN_SCALE;
-		p.vy = 2 * Cs.NEW_GEN_SCALE;
+		p.weight = KadoKadeoManager.S(-(0.2 + Seed.randVfx() * 0.1));
+		p.vy = KadoKadeoManager.I(2);
 		p.timer = 25;
 		p.sleep = Seed.randVfx() * 2;
 		p.root.stop();

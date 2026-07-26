@@ -1,16 +1,15 @@
 package binary;
 
+import kado.KadoKadeoManager;
 import common_haxe_avm1.KKApi;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
 
-	public static var mcw = 300 * NEW_GEN_SCALE;
-	public static var mch = 300 * NEW_GEN_SCALE;
-
-	public static var CS = 40 * NEW_GEN_SCALE;
-	public static var MX = 50.0 * NEW_GEN_SCALE;
-	public static var MY = 50.0 * NEW_GEN_SCALE;
+	public static var CS = KadoKadeoManager.I(40);
+	public static var MX = KadoKadeoManager.S(50.0);
+	public static var MY = KadoKadeoManager.S(50.0);
 	public static var XMAX = 5; // 6;
 	public static var YMAX = 5; // 8;
 
@@ -29,8 +28,8 @@ class Cs {
 	public static function init() {
 		COLOR_MAX = 4;
 		COMBO_LIMIT = 4;
-		MX = 50.0 * NEW_GEN_SCALE;
-		MY = 50.0 * NEW_GEN_SCALE;
+		MX = KadoKadeoManager.S(50.0);
+		MY = KadoKadeoManager.S(50.0);
 		MX += CS * 0.5;
 		MY += CS * 0.5;
 	}

@@ -86,7 +86,7 @@ class Bonus extends Sprite {
 				for (i in 0...12) {
 					var p = Cs.game.newPart("partSpark");
 					var a = Seed.randVfx() * 6.28;
-					var d = Seed.randVfx() * Cs.S(6 + 18 * (1 - (i / 24)));
+					var d = Seed.randVfx() * KadoKadeoManager.S(6 + 18 * (1 - (i / 24)));
 					p.x = root._x + Math.cos(a) * d;
 					p.y = root._y + Math.sin(a) * d;
 					p.timer = 10 + Seed.randVfx() * 10;
@@ -117,7 +117,7 @@ class Bonus extends Sprite {
 						p.x = root._x;
 						p.y = root._y;
 						var a = ((i + 0.5 * n) / max) * 6.28;
-						var speed = Cs.S(3 + n * 2);
+						var speed = KadoKadeoManager.I(3 + n * 2);
 						p.vx += Math.cos(a) * speed;
 						p.vy += Math.sin(a) * speed;
 						p.timer = 26 + Seed.randVfx() * 4 - n * 10;

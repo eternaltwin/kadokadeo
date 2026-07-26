@@ -23,17 +23,17 @@ class CCarrier extends Bads {
 		setLevel(10);
 		setScore(Cs.C0);
 		hp = 3;
-		ray = 20 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(20);
 		waitTimer = 300;
 
-		speed = 6 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.I(6);
 		a = 1.57;
 		va = 0.5;
 		turnCoef = 0.15;
 		flOrient = true;
 		bList = [3];
 		onTargetReach = () -> {
-			chooseNewTarget(20 * Cs.NEW_GEN_SCALE, Cs.mcw - 20 * Cs.NEW_GEN_SCALE, 30 * Cs.NEW_GEN_SCALE, 190 * Cs.NEW_GEN_SCALE);
+			chooseNewTarget(KadoKadeoManager.I(20), Cs.mcw - KadoKadeoManager.I(20), KadoKadeoManager.I(30), KadoKadeoManager.I(190));
 		};
 		onTargetReach();
 		bonusId = Bonus.getRandomId();

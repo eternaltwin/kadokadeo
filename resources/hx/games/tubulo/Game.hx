@@ -102,9 +102,9 @@ class Game implements kado.GameInterface {
 		bg.field = bg.initTextField("field", {
 			font: "Alien Encounters Solid",
 			align: "right",
-			size: 70,
+			size: 50,
 			color: 0xFFFFFF,
-			strokeThickness: 12,
+			strokeThickness: 9,
 			stroke: "0x5A8929"
 		});
 		bg.field.x = Cs.S(300);

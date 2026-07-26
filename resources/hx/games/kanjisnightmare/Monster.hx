@@ -7,7 +7,7 @@ import kado.KadoKadeoManager;
 import mt.Timer;
 
 class Monster extends Phys {
-	static var WEIGHT = Cs.S(1);
+	static var WEIGHT = KadoKadeoManager.I(1);
 
 	public var flSpike:Bool;
 	public var flCol:Bool;
@@ -31,12 +31,12 @@ class Monster extends Phys {
 		super(mc);
 		Cs.game.mList.push(this);
 
-		ray = Cs.S(10);
+		ray = KadoKadeoManager.I(10);
 
 		flSpike = false;
 		hp = 10;
 		score = Cs.C0;
-		speed = Cs.S(3);
+		speed = KadoKadeoManager.I(3);
 		stDrop = [{w: 100, id: 1}, {w: 20, id: 2}, {w: 1, id: 3}];
 
 		flCol = true;
@@ -61,7 +61,7 @@ class Monster extends Phys {
 			case 2: // FALL
 				weight = WEIGHT;
 				plat = null;
-				vy = -(Cs.S(4 + Seed.rand() * 5));
+				vy = -(KadoKadeoManager.S(4 + Seed.rand() * 5));
 				vr = (Seed.randVfx() * 2 - 1) * 18;
 		}
 	}
@@ -91,7 +91,7 @@ class Monster extends Phys {
 		}
 		updateFlash();
 
-		if ((y > Cs.S(600) && Cs.game.hero.y < Hero.DL)) {
+		if ((y > KadoKadeoManager.I(600) && Cs.game.hero.y < Hero.DL)) {
 			kill();
 		}
 	}
@@ -109,7 +109,7 @@ class Monster extends Phys {
 			case 0:
 				hp = 10;
 				score = Cs.C30;
-				speed = Cs.S(2);
+				speed = KadoKadeoManager.I(2);
 				stDrop.push({w: 70, id: 4});
 				stDrop.push({w: 4, id: 6});
 				stDrop.push({w: 1, id: 8});
@@ -119,7 +119,7 @@ class Monster extends Phys {
 			case 1:
 				hp = 30;
 				score = Cs.C100;
-				speed = Cs.S(3);
+				speed = KadoKadeoManager.I(3);
 				stDrop.push({w: 40, id: 4});
 				stDrop.push({w: 30, id: 5});
 				stDrop.push({w: 15, id: 6});
@@ -133,7 +133,7 @@ class Monster extends Phys {
 			case 2:
 				hp = 60;
 				score = Cs.C200;
-				speed = Cs.S(4);
+				speed = KadoKadeoManager.I(4);
 				flSpike = true;
 				stDrop.push({w: 40, id: 5});
 				stDrop.push({w: 20, id: 20});
@@ -193,14 +193,14 @@ class Monster extends Phys {
 				var p = new Part(Cs.game.mdm.attach("partMonster" + (stLevel + 1), a[i]));
 				p.x = x;
 				p.y = y;
-				p.vx = vx - (i * 2 - 1) * Cs.S(2);
-				p.vy = vy - Cs.S(2.5 + Seed.randVfx() * 2);
+				p.vx = vx - (i * 2 - 1) * KadoKadeoManager.I(2);
+				p.vy = vy - KadoKadeoManager.S(2.5 + Seed.randVfx() * 2);
 				p.vr = (Seed.randVfx() * 2 - 1) * 2;
 				p.timer = 40 + Seed.randVfx() * 10;
-				p.weight = Cs.S(0.3);
+				p.weight = KadoKadeoManager.S(0.3);
 				p.root.gotoAndStop(2 - i);
 				p.flPlatCol = true;
-				p.ray = Cs.S(6);
+				p.ray = KadoKadeoManager.I(6);
 				p.root._xscale = 100 * sens;
 			}
 		} else {
@@ -219,11 +219,11 @@ class Monster extends Phys {
 	}
 
 	function throwMonster(a, p) {
-		var vitx = Num.q(Math.cos(a) * Cs.S(p));
-		var vity = Num.q(Math.sin(a) * Cs.S(p) - Cs.S(3));
+		var vitx = Num.q(Math.cos(a) * KadoKadeoManager.I(p));
+		var vity = Num.q(Math.sin(a) * KadoKadeoManager.I(p) - KadoKadeoManager.I(3));
 		if (step == 0) {
 			vity = Math.min(0, vity);
-			if (Num.q(vity) < Cs.S(-2)) {
+			if (Num.q(vity) < KadoKadeoManager.I(-2)) {
 				initStep(1);
 			} else {
 				return;

@@ -7,7 +7,7 @@ import mt.Timer;
 import mt.bumdum.Lib;
 
 class Grapin {
-	static var BASEY = Cs.MINY - 30 * Cs.NEW_GEN_SCALE;
+	static var BASEY = Cs.MINY - KadoKadeoManager.I(30);
 
 	public var game:Game;
 	public var mc:ASprite;
@@ -27,7 +27,7 @@ class Grapin {
 		cordes = [];
 		x = game.hero.x;
 		y = BASEY;
-		speed = 8 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.I(8);
 		mc._xscale = 100;
 		mc._yscale = 100;
 	}
@@ -52,7 +52,7 @@ class Grapin {
 			mc._yscale = mc._xscale;
 		} else
 			mc._y -= speed * Timer.tmod;
-		if (mc._y > 320 * Cs.NEW_GEN_SCALE || mc._y < -20 * Cs.NEW_GEN_SCALE)
+		if (mc._y > KadoKadeoManager.I(320) || mc._y < -KadoKadeoManager.I(20))
 			mc.removeMovieClip();
 		return cordes.length > 0 || mc._name != null;
 	}
@@ -64,7 +64,7 @@ class Grapin {
 		var gx = Num.q(x);
 		var gy = Num.q(y);
 		for (b in game.blobs) {
-			var s = Std.int(b.size * Cs.NEW_GEN_SCALE / 2);
+			var s = Std.int(KadoKadeoManager.S(b.size) / 2);
 			var bx = Num.q(b.x);
 			var by = Num.q(b.y);
 			if (gx >= bx - s && gx <= bx + s && gy <= by + s) {
@@ -95,14 +95,14 @@ class Grapin {
 	public function update():Bool {
 		y = Num.q(y - speed * Timer.tmod);
 
-		var ncordes = 1 + Std.int((BASEY - y) / (25 * Cs.NEW_GEN_SCALE));
+		var ncordes = 1 + Std.int((BASEY - y) / (KadoKadeoManager.I(25)));
 		for (i in 0...ncordes) {
 			var c = cordes[i];
 			if (c == null) {
 				c = game.dmanager.attach("corde", Cs.PLAN_CORDE);
 				c.loop = true;
 				c.play();
-				c._y = BASEY - 25 * Cs.NEW_GEN_SCALE * (i - 1);
+				c._y = BASEY - KadoKadeoManager.I(25) * (i - 1);
 				c._xscale = 100;
 				cordes.push(c);
 			}
@@ -116,8 +116,8 @@ class Grapin {
 		mc._x = x;
 		mc._y = y;
 
-		if ((y < -100 * Cs.NEW_GEN_SCALE) || h) {
-			if (y < -100 * Cs.NEW_GEN_SCALE)
+		if ((y < -KadoKadeoManager.I(100)) || h) {
+			if (y < -KadoKadeoManager.I(100))
 				mc.removeMovieClip();
 			game.addUpdate(destroyCordes);
 			return false;

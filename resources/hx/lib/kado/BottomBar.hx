@@ -28,23 +28,23 @@ class BottomBar extends ASprite {
 	public function makeBottomBar():Void {
 		bb = Sprite.from("bottom_bar.png");
 		bb.x = 0;
-		bb.y = kkm.renderer.height - 68;
+		bb.y = kkm.renderer.height - KadoKadeoManager.S(22.6);
 		this.addChild(bb);
 
 		contractText = new pixi.core.text.Text(Std.string(runDetails != null ? runDetails.contract_points : 0), {
 			fill: 0x206c7f,
 			fontFamily: 'Fredoka Bold',
-			fontSize: 40,
+			fontSize: 30,
 			align: 'left',
 		});
 		contractText.anchor.set(0.5);
-		contractText.x = 40;
-		contractText.y = 38;
+		contractText.x = KadoKadeoManager.I(13);
+		contractText.y = KadoKadeoManager.I(13);
 		bb.addChild(contractText);
 
 		var contractBarGrey = new ASprite("progress", this.kkm.sheet);
-		contractBarGrey.x = 150;
-		contractBarGrey.y = 25;
+		contractBarGrey.x = KadoKadeoManager.I(50);
+		contractBarGrey.y = KadoKadeoManager.I(8);
 		contractBarGrey.gotoAndStop(1);
 		bb.addChild(contractBarGrey);
 
@@ -53,8 +53,8 @@ class BottomBar extends ASprite {
 		contractMask.drawRect(0, 0, 0, 30);
 
 		contractBar = new ASprite("progress", this.kkm.sheet);
-		contractBar.x = 150;
-		contractBar.y = 25;
+		contractBar.x = KadoKadeoManager.I(50);
+		contractBar.y = KadoKadeoManager.I(8);
 		contractBar.gotoAndStop(2);
 		contractBar.mask = contractMask;
 		contractBar.addChild(contractMask);
@@ -62,10 +62,10 @@ class BottomBar extends ASprite {
 
 		var kadoIcon = Sprite.from("kado_icon.png");
 		kadoIcon.anchor.set(0.5);
-		kadoIcon.x = 100;
-		kadoIcon.y = 40;
-		kadoIcon.width = 40;
-		kadoIcon.height = 40;
+		kadoIcon.x = KadoKadeoManager.I(33);
+		kadoIcon.y = KadoKadeoManager.I(13);
+		kadoIcon.width = KadoKadeoManager.I(13);
+		kadoIcon.height = KadoKadeoManager.I(13);
 		bb.addChild(kadoIcon);
 	}
 
@@ -109,8 +109,8 @@ class BottomBar extends ASprite {
 		}
 		for (i in 0...7) {
 			var digitSprite = Sprite.from("score/figure_0.svg");
-			digitSprite.x = 550 + i * 43;
-			digitSprite.y = 65;
+			digitSprite.x = KadoKadeoManager.I(183) + i * KadoKadeoManager.I(14);
+			digitSprite.y = KadoKadeoManager.I(22);
 			digitSprites.push(digitSprite);
 			bb.addChild(digitSprite);
 		}

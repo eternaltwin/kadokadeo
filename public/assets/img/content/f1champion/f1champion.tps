@@ -4,7 +4,7 @@
         <key>fileFormatVersion</key>
         <int>6</int>
         <key>texturePackerVersion</key>
-        <string>7.12.0</string>
+        <string>8.1.0</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -144,6 +144,8 @@
         <true/>
         <key>trimSpriteNames</key>
         <false/>
+        <key>enableCacheBusting</key>
+        <false/>
         <key>prependSmartFolderName</key>
         <false/>
         <key>autodetectAnimations</key>
@@ -174,9 +176,11 @@
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">src/bg.png</key>
+            <key type="filename">src/tex1.png</key>
+            <key type="filename">src/tex2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0.142857</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -287,22 +291,6 @@
                 <rect>13,14,26,28</rect>
                 <key>scale9Paddings</key>
                 <rect>13,14,26,28</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/tex1.png</key>
-            <key type="filename">src/tex2.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0,0</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>225,450,450,900</rect>
-                <key>scale9Paddings</key>
-                <rect>225,450,450,900</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

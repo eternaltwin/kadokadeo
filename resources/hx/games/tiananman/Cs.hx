@@ -2,14 +2,12 @@ package tiananman;
 
 import pixi.filters.colormatrix.ColorMatrixFilter;
 import common_haxe_avm1.KKApi;
-import mt.bumdum.Sprite;
 import mt.bumdum.Lib;
 
 class Cs {
 	// GAME SIZE
-	public static var NEW_GEN_SCALE = 3;
-	public static var mcw = [0.0, 300.0 * NEW_GEN_SCALE];
-	public static var mch = [20.0 * NEW_GEN_SCALE, 300.0 * NEW_GEN_SCALE];
+	public static var mcw = [0.0, KadoKadeoManager.S(300)];
+	public static var mch = [KadoKadeoManager.S(20), KadoKadeoManager.S(300)];
 
 	public static var LEADER_LIFE = 1;
 	public static var FOLLOWERS_LIFE = 15;
@@ -19,14 +17,14 @@ class Cs {
 	public static var repopArmyDelay = 15.0;
 	public static var repopFollowDelay = 50.0;
 
-	public static var HIDE_START = s(30);
-	public static var HIDE_END = s(5);
-	public static var MIN_DELTA_QUEUE = s(5);
+	public static var HIDE_START = KadoKadeoManager.I(30);
+	public static var HIDE_END = KadoKadeoManager.I(5);
+	public static var MIN_DELTA_QUEUE = KadoKadeoManager.I(5);
 
 	public static var ARMY_MAX = 6;
 	public static var GRAB_MAX = 2;
 
-	public static var DELTA_FOLLOW = s(12.0);
+	public static var DELTA_FOLLOW = KadoKadeoManager.S(12.0);
 	public static var MAX_LEADERTRACE = 50;
 
 	public static var FOLLOW_POINTS = KKApi.const(800);
@@ -41,7 +39,7 @@ class Cs {
 	public static var bloodCt = new ColorMatrixFilter();
 
 	public static function outOfBounds(x:Float, y:Float, ?d:Float = 0.0):Bool {
-		d = s(d);
+		d = KadoKadeoManager.S(d);
 		var qx = Num.q(x);
 		var qy = Num.q(y);
 		return qx < mcw[0] + d || qx > mcw[1] - d || qy < mch[0] + d || qy > mch[1] - d;
@@ -97,7 +95,7 @@ class Cs {
 		return Math.pow(2, 10 * --p) * Math.cos(20 * p * Math.PI * pa / 3);
 	}
 
-	static public function s(base:Float):Float {
-		return base * NEW_GEN_SCALE;
+	static public function s(v:Float):Float {
+		return KadoKadeoManager.S(v);
 	}
 }

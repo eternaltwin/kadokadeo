@@ -33,8 +33,8 @@ class Hero {
 		});
 		mc.stopOnFrame = [33, 50];
 		a = 0;
-		x = 25 * Cs.NEW_GEN_SCALE;
-		y = 150 * Cs.NEW_GEN_SCALE;
+		x = KadoKadeoManager.I(25);
+		y = KadoKadeoManager.I(150);
 		mc._x = x;
 		mc._y = y;
 		r = Seed.random(4) + 3;
@@ -43,7 +43,7 @@ class Hero {
 	public function action():Void {
 		if (!lock) {
 			lock = true;
-			moving = (x < 150 * Cs.NEW_GEN_SCALE) ? 1 : -1;
+			moving = (x < KadoKadeoManager.I(150)) ? 1 : -1;
 			mc.gotoAndPlay(30);
 			game.last = null;
 		}
@@ -51,21 +51,21 @@ class Hero {
 
 	public function doGameOver():Void {
 		gameOver = true;
-		a = -1 * Cs.NEW_GEN_SCALE;
+		a = -KadoKadeoManager.I(1);
 		mc.gotoAndStop(50);
 	}
 
 	public function update(steps:Int):Void {
-		var dx = 20 * Cs.NEW_GEN_SCALE / steps;
-		var dy = ((moving != null) ? 5 : 10) * Cs.NEW_GEN_SCALE / steps;
+		var dx = KadoKadeoManager.I(20) / steps;
+		var dy = KadoKadeoManager.S((moving != null) ? 5 : 10) / steps;
 
 		if (gameOver) {
-			a += 0.03 * Timer.tmod * Cs.NEW_GEN_SCALE;
-			x += ((mc._xscale < 0) ? -1 : 1) * Timer.tmod / 2 * Cs.NEW_GEN_SCALE;
+			a += KadoKadeoManager.S(0.03 * Timer.tmod);
+			x += ((mc._xscale < 0) ? -1 : 1) * Timer.tmod / KadoKadeoManager.I(2);
 			y += a * Timer.tmod;
 
-			if (y > 280 * Cs.NEW_GEN_SCALE) {
-				y = 280 * Cs.NEW_GEN_SCALE - (y - 280 * Cs.NEW_GEN_SCALE);
+			if (y > KadoKadeoManager.I(280)) {
+				y = KadoKadeoManager.I(280) - (y - KadoKadeoManager.I(280));
 				a = -Math.abs(a) * 0.8;
 				r = Seed.random(10) - 4;
 			}
@@ -78,31 +78,31 @@ class Hero {
 
 		if (KeyboardManager.isDown(KeyboardManager.UP)) {
 			y -= dy * Timer.tmod;
-			if (y < 20 * Cs.NEW_GEN_SCALE) {
-				y = 20 * Cs.NEW_GEN_SCALE;
+			if (y < KadoKadeoManager.I(20)) {
+				y = KadoKadeoManager.I(20);
 			}
 		} else if (KeyboardManager.isDown(KeyboardManager.DOWN)) {
 			y += dy * Timer.tmod;
-			if (y > 285 * Cs.NEW_GEN_SCALE) {
-				y = 285 * Cs.NEW_GEN_SCALE;
+			if (y > KadoKadeoManager.I(285)) {
+				y = KadoKadeoManager.I(285);
 			}
 		}
 		if (moving != null) {
 			x += moving * dx * Timer.tmod;
-			if (x > 275 * Cs.NEW_GEN_SCALE || x < 25 * Cs.NEW_GEN_SCALE) {
-				if (x > 275 * Cs.NEW_GEN_SCALE) {
-					x = 275 * Cs.NEW_GEN_SCALE;
+			if (x > KadoKadeoManager.I(275) || x < KadoKadeoManager.I(25)) {
+				if (x > KadoKadeoManager.I(275)) {
+					x = KadoKadeoManager.I(275);
 				} else {
-					x = 25 * Cs.NEW_GEN_SCALE;
+					x = KadoKadeoManager.I(25);
 				}
-				mc._xscale = (x > 150 * Cs.NEW_GEN_SCALE) ? -100 : 100;
+				mc._xscale = (x > KadoKadeoManager.I(150)) ? -100 : 100;
 				mc.gotoAndPlay(40);
 				moving = null;
 			}
 		} else {
 			if (KeyboardManager.isDown(KeyboardManager.SPACE)
-				|| (KeyboardManager.isDown(KeyboardManager.RIGHT) && x < 150 * Cs.NEW_GEN_SCALE)
-				|| (KeyboardManager.isDown(KeyboardManager.LEFT) && x > 150 * Cs.NEW_GEN_SCALE)) {
+				|| (KeyboardManager.isDown(KeyboardManager.RIGHT) && x < KadoKadeoManager.I(150))
+				|| (KeyboardManager.isDown(KeyboardManager.LEFT) && x > KadoKadeoManager.I(150))) {
 				action();
 			} else {
 				lock = false;
@@ -110,36 +110,36 @@ class Hero {
 		}
 
 		if (ty != null) {
-			var p = Math.pow((moving == null) ? 0.887 : 0.99, Timer.tmod);
+			var p = Math.pow((moving == null) ? 0.7 : 0.99, Timer.tmod);
 			y = Num.q(y * p + ty * (1 - p));
-			if (Math.abs(ty - y) < 5 * Cs.NEW_GEN_SCALE) {
+			if (Math.abs(ty - y) < KadoKadeoManager.I(5)) {
 				y = ty;
 				ty = null;
 			}
-			if (y < 20 * Cs.NEW_GEN_SCALE) {
-				y = 20 * Cs.NEW_GEN_SCALE;
-			} else if (y > 285 * Cs.NEW_GEN_SCALE) {
-				y = 285 * Cs.NEW_GEN_SCALE;
+			if (y < KadoKadeoManager.I(20)) {
+				y = KadoKadeoManager.I(20);
+			} else if (y > KadoKadeoManager.I(285)) {
+				y = KadoKadeoManager.I(285);
 			}
 		}
 
 		a += Timer.tmod / (10 * steps);
-		var tx = Num.q(x + Math.cos(a) * 5 * Cs.NEW_GEN_SCALE);
-		var ty = Num.q(y + Math.sin(a) * 5 * Cs.NEW_GEN_SCALE);
+		var tx = Num.q(x + Math.cos(a) * KadoKadeoManager.I(5));
+		var ty = Num.q(y + Math.sin(a) * KadoKadeoManager.I(5));
 		var p = Math.pow(0.7, Timer.tmod);
-		var x = Num.q(mc._x * p + tx * (1 - p));
-		var y = Num.q(mc._y * p + ty * (1 - p));
-		mc._x = x;
-		mc._y = y;
+		var gfxX = Num.q(mc._x * p + tx * (1 - p));
+		var gfxY = Num.q(mc._y * p + ty * (1 - p));
+		mc._x = gfxX;
+		mc._y = gfxY;
 
 		if (moving != null) {
-			var r = Ballon.ray + 5 * Cs.NEW_GEN_SCALE;
+			var r = Ballon.ray + KadoKadeoManager.I(5);
 			r = r * r;
 			var i = 0;
 			while (i < game.getBalsLength()) {
 				var b = game.bals[i];
-				dx = Num.q(x - b.x + 12 * Cs.NEW_GEN_SCALE);
-				dy = Num.q(y - b.y + 10 * Cs.NEW_GEN_SCALE);
+				dx = Num.q(this.x - b.x + KadoKadeoManager.I(12));
+				dy = Num.q(this.y - b.y + KadoKadeoManager.I(10));
 				if (dx * dx + dy * dy < r) {
 					game.getBallon(b);
 				}

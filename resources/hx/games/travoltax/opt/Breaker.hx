@@ -40,7 +40,7 @@ class Breaker extends Option {
 		// LASER
 		mcLaser = Game.me.dm.attach("mcLaser", Game.DP_PARTS);
 		mcLaser._x = Cs.mcw * 0.5;
-		mcLaser._y = -10 * Cs.NEW_GEN_SCALE;
+		mcLaser._y = -KadoKadeoManager.I(10);
 	}
 
 	public override function update() {

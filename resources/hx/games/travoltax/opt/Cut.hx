@@ -97,9 +97,9 @@ class Cut extends Option { // }
 			var p = new Part(Game.me.dm.attach("partPix", Game.DP_PARTS));
 			p.x = Cs.MX + Seed.randVfx() * Cs.XMAX * Cs.SIZE;
 			p.y = Cs.MY + ey * Cs.SIZE;
-			p.vx = Seed.randVfx() * 15 * Cs.NEW_GEN_SCALE;
+			p.vx = Seed.randVfx() * KadoKadeoManager.I(15);
 			p.bhl = [BhHoriLine];
-			p.timer = 20 + p.vx / Cs.NEW_GEN_SCALE;
+			p.timer = 20 + p.vx / KadoKadeoManager.I(1);
 			p.setScale(50);
 		}
 	}
@@ -111,9 +111,9 @@ class Cut extends Option { // }
 		// 	return;
 		// }
 
-		mcPart._x += 1 * Cs.NEW_GEN_SCALE * mt.Timer.tmod;
-		mcPart._y += 0.2 * Cs.NEW_GEN_SCALE * mt.Timer.tmod;
-		mcPart._alpha -= 2 * mt.Timer.tmod * Cs.NEW_GEN_SCALE;
+		mcPart._x += KadoKadeoManager.I(1) * mt.Timer.tmod;
+		mcPart._y += KadoKadeoManager.S(0.2) * mt.Timer.tmod;
+		mcPart._alpha -= KadoKadeoManager.S(2 * mt.Timer.tmod);
 
 		/*
 			trace("alpha:"+mcPart._alpha);

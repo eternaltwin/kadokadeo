@@ -4,7 +4,7 @@
         <key>fileFormatVersion</key>
         <int>6</int>
         <key>texturePackerVersion</key>
-        <string>7.12.0</string>
+        <string>8.0.2</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -124,7 +124,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename></filename>
+                <filename>zipzap-{n}.json</filename>
             </struct>
         </map>
         <key>multiPackMode</key>
@@ -143,6 +143,8 @@
         <key>autoAliasEnabled</key>
         <true/>
         <key>trimSpriteNames</key>
+        <false/>
+        <key>enableCacheBusting</key>
         <false/>
         <key>prependSmartFolderName</key>
         <false/>

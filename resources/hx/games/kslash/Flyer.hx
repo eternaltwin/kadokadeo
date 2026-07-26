@@ -59,8 +59,8 @@ class Flyer extends Monster {
 		var a = Math.atan2(dy, dx);
 		var dist = Math.sqrt(dx * dx + dy * dy);
 
-		var c = 0.1 * Cs.NEW_GEN_SCALE;
-		var lim = 0.4 * Cs.NEW_GEN_SCALE;
+		var c = KadoKadeoManager.S(0.1);
+		var lim = KadoKadeoManager.S(0.4);
 
 		vx += Math.min(Math.max(-lim, Math.cos(a) * dist * c), lim);
 		vy += Math.min(Math.max(-lim, Math.sin(a) * dist * c), lim);
@@ -71,7 +71,7 @@ class Flyer extends Monster {
 		var dy = Cs.game.hero.root._y - root._y;
 
 		var a = Math.atan2(dy, dx);
-		var dist = Math.min(Math.sqrt(dx * dx + dy * dy), 160 * Cs.NEW_GEN_SCALE);
+		var dist = Math.min(Math.sqrt(dx * dx + dy * dy), KadoKadeoManager.I(160));
 		trg = {
 			x: root._x + Math.cos(a) * dist,
 			y: root._y + Math.sin(a) * dist

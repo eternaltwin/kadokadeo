@@ -36,7 +36,7 @@ class Element extends Phys {
 		Game.me.elements.push(this);
 		var mc = Game.me.dm.attach("mcElement", Game.DP_ELEMENTS);
 		super(mc);
-		ray = 4 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(4);
 		aura = 0;
 		x = (Seed.rand() * Cs.mcw - 4 * ray);
 		y = (Seed.rand() * Cs.mch - 4 * ray);
@@ -177,7 +177,7 @@ class Element extends Phys {
 					var mc = layer.dm.attach("mcBranch", 0);
 					mc._x = x;
 					mc._y = y;
-					mc._xscale = dist / Cs.NEW_GEN_SCALE;
+					mc._xscale = dist / KadoKadeoManager.I(1);
 					mc._rotation = Math.atan2(dy, dx) / 0.0174;
 					mc.gotoAndPlay(1);
 

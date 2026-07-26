@@ -33,11 +33,11 @@ typedef GROUP = {id:Int};
 
 @:expose('GameCrepuscud')
 class Game implements kado.GameInterface {
-	public static var GH = Cs.S(20);
-	public static var RGH = Cs.S(14);
+	public static var GH = KadoKadeoManager.S(20);
+	public static var RGH = KadoKadeoManager.S(14);
 	public static var GY = 0;
 	public static var RGY = 0;
-	public static var DX = Cs.S(22);
+	public static var DX = KadoKadeoManager.S(22);
 
 	public static var DP_BG = 0;
 	public static var DP_PLASMA = 1;
@@ -169,7 +169,7 @@ class Game implements kado.GameInterface {
 
 		// ELEMENTS
 		var mc = dm.attach("mcGroundElement", 0);
-		var ma = Cs.I(40);
+		var ma = KadoKadeoManager.I(40);
 		for (i in 0...24) {
 			var sc = 0.5 + Seed.randVfx() * 0.5;
 			var m = new Matrix();
@@ -249,7 +249,7 @@ class Game implements kado.GameInterface {
 		}
 
 		//
-		if (!flGameOver && (totalSpeed / Cs.NEW_GEN_SCALE) < dif * 1.5 + Missile.BOOST * 8) {
+		if (!flGameOver && (totalSpeed / KadoKadeoManager.I(1)) < dif * 1.5 + Missile.BOOST * 8) {
 			new Missile();
 		}
 
@@ -330,7 +330,7 @@ class Game implements kado.GameInterface {
 			color: 0x000000,
 			align: "center",
 			font: "Pricedown",
-			size: 60,
+			size: 45,
 			stroke: "#FFFFFF",
 			strokeThickness: 4,
 		});
@@ -354,8 +354,8 @@ class Game implements kado.GameInterface {
 			munitions.pop().removeMovieClip();
 		while (goal > munitions.length) {
 			var mc = Game.me.dm.attach("mcMunition", DP_INTER);
-			mc._x = Cs.I(4);
-			mc._y = Cs.S(283) - munitions.length * Cs.I(5);
+			mc._x = KadoKadeoManager.I(4);
+			mc._y = KadoKadeoManager.S(283) - munitions.length * KadoKadeoManager.I(5);
 			munitions.push(mc);
 		}
 	}

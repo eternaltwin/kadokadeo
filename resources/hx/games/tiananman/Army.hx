@@ -733,7 +733,7 @@ class Army {
 		weaponInfos.target._bBox = weaponInfos.target.attachBBox(new BBox(Cs.s(-20), Cs.s(-20), Cs.s(40), Cs.s(40)));
 		weaponInfos.target._field = mcTarget.initTextField("targetField", {
 			font: 'Arial',
-			size: 36,
+			size: 28,
 			align: 'center',
 			color: 0xF2D604,
 		});

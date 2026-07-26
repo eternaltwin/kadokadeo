@@ -20,12 +20,15 @@ class CShield extends Bads {
 		setLevel(13);
 		setScore(Cs.C_SHIELD);
 		hp = 10;
-		ray = 27 * Cs.NEW_GEN_SCALE;
-		shieldLim = 120 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(27);
+		shieldLim = KadoKadeoManager.I(120);
 
-		var m = 20 * Cs.NEW_GEN_SCALE;
+		var m = KadoKadeoManager.I(20);
 		bList = [6, 10];
-		acc = {c: 0.1 * Cs.NEW_GEN_SCALE, lim: 1 * Cs.NEW_GEN_SCALE}
+		acc = {
+			c: KadoKadeoManager.S(0.1),
+			lim: KadoKadeoManager.I(1)
+		}
 		frict = 0.92;
 		beeRange = [
 			{
@@ -33,7 +36,7 @@ class CShield extends Bads {
 				xMin: m,
 				xMax: Cs.mcw - m,
 				yMin: m,
-				yMax: 170 * Cs.NEW_GEN_SCALE
+				yMax: KadoKadeoManager.I(170)
 			},
 		];
 	}

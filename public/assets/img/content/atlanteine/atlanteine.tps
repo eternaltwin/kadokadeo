@@ -4,7 +4,7 @@
         <key>fileFormatVersion</key>
         <int>6</int>
         <key>texturePackerVersion</key>
-        <string>7.12.0</string>
+        <string>8.0.2</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -143,6 +143,8 @@
         <key>autoAliasEnabled</key>
         <true/>
         <key>trimSpriteNames</key>
+        <false/>
+        <key>enableCacheBusting</key>
         <false/>
         <key>prependSmartFolderName</key>
         <false/>
@@ -341,7 +343,6 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/mcDalle/0.png</key>
             <key type="filename">src/mcDalle/1.png</key>
             <key type="filename">src/mcDalle/10.png</key>
             <key type="filename">src/mcDalle/11.png</key>
@@ -360,7 +361,7 @@
             <key type="filename">src/mcDalle/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.084507,0.0434783</point_f>
+                <point_f>0.142857,0.142857</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -493,7 +494,7 @@
             <key type="filename">src/mcOut/9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.03125,0.0625</point_f>
+                <point_f>0.5,0.5</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -554,7 +555,7 @@
             <key type="filename">src/mcStartDalle.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>0.5,0.5</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -567,10 +568,24 @@
                 <false/>
             </struct>
             <key type="filename">src/mcTeleport/0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>5,5,10,10</rect>
+                <key>scale9Paddings</key>
+                <rect>5,5,10,10</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">src/mcTeleport/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.1,0.0333333</point_f>
+                <point_f>0.5,0.5</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>

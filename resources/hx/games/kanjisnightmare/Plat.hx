@@ -41,11 +41,12 @@ class Plat extends Sprite {
 
 		gfx.textMask.clear()
 			.beginFill(0xFFFFFF)
-			.drawRect(Cs.S(-2.5 + 19), Cs.S(-2.5), w - Cs.S(19 * 2) + Cs.S(5), Cs.S(30 + 2.5))
+			.drawRect(KadoKadeoManager.S(-2.5 + 19), KadoKadeoManager.S(-2.5), w - KadoKadeoManager.I(19 * 2) + KadoKadeoManager.I(5),
+				KadoKadeoManager.S(30 + 2.5))
 			.endFill();
 		// gfx.mask.scale.x = (w - 38) / 100;
-		gfx.cornerStart._x = Cs.S(19);
-		gfx.cornerEnd._x = w - Cs.S(19);
+		gfx.cornerStart._x = KadoKadeoManager.I(19);
+		gfx.cornerEnd._x = w - KadoKadeoManager.I(19);
 
 		updatePos();
 	}
@@ -58,7 +59,7 @@ class Plat extends Sprite {
 	public function explode(sx:Float) {
 		var flKill = false;
 		var wx = Num.q(sx - x);
-		if (Num.q(w - wx) < Cs.S(100)) {
+		if (Num.q(w - wx) < KadoKadeoManager.I(100)) {
 			flKill = true;
 			wx = w;
 		}
@@ -69,9 +70,9 @@ class Plat extends Sprite {
 			for (i in 0...Std.int(wx * 0.1)) {
 				var p = Cs.game.newPart("partDust");
 				p.x = x + Seed.randVfx() * wx;
-				p.y = y + Seed.randVfx() * Cs.S(8);
+				p.y = y + Seed.randVfx() * KadoKadeoManager.I(8);
 				p.setScale(100 + Seed.randVfx() * 100);
-				p.weight = Cs.S(0.1 + Seed.randVfx() * 0.3);
+				p.weight = KadoKadeoManager.S(0.1 + Seed.randVfx() * 0.3);
 				p.timer = 20 + Seed.randVfx() * 10;
 				p.fadeType = 0;
 			}
@@ -79,21 +80,21 @@ class Plat extends Sprite {
 			// PLAT
 			var dig = wx;
 			var xd = x;
-			while (Num.q(dig) > Cs.S(30)) {
-				var ww = Num.mm(Cs.S(30), Seed.randVfx() * dig, Cs.S(100));
+			while (Num.q(dig) > KadoKadeoManager.I(30)) {
+				var ww = Num.mm(KadoKadeoManager.I(30), Seed.randVfx() * dig, KadoKadeoManager.I(100));
 
 				var p = new Part(Cs.game.mdm.empty(Game.DP_PLAT));
 				p.x = xd + ww * 0.5;
-				p.y = y + Cs.S(5);
+				p.y = y + KadoKadeoManager.I(5);
 				var dm = new DepthManager(p.root);
 				var pl = new Plat(dm.empty(0));
 				pl.x = -ww * 0.5;
-				pl.setPlat(pl.x, Cs.S(-5), ww);
+				pl.setPlat(pl.x, KadoKadeoManager.I(-5), ww);
 				pl.root = null;
 				pl.kill();
 
-				p.weight = Cs.S(0.2 + Seed.randVfx() * 0.2);
-				p.vr = (Seed.randomVfx(2) * 2 - 1) * (0.5 + Seed.randVfx() * (Math.max(4 - (ww / Cs.NEW_GEN_SCALE) * 0.05, 0)));
+				p.weight = KadoKadeoManager.S(0.2 + Seed.randVfx() * 0.2);
+				p.vr = (Seed.randomVfx(2) * 2 - 1) * (0.5 + Seed.randVfx() * (Math.max(4 - (ww / KadoKadeoManager.I(1)) * 0.05, 0)));
 				p.timer = 30 + Seed.randVfx() * 10;
 
 				xd += ww;

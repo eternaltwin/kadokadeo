@@ -3,8 +3,7 @@ package kslash;
 import common_haxe_avm1.KKApi;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
-	public static var SIZE = 24 * NEW_GEN_SCALE;
+	public static var SIZE = KadoKadeoManager.I(24);
 	public static var PLAT_ECART = 4;
 
 	public static inline var ST_NORMAL = 0;
@@ -17,8 +16,8 @@ class Cs {
 	public static inline var OPT_FLAMES = 1;
 	public static inline var OPT_SCROLL = 2;
 
-	public static var mcw = 300 * NEW_GEN_SCALE;
-	public static var mch = 300 * NEW_GEN_SCALE;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
 
 	public static var game:Game;
 

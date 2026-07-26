@@ -68,8 +68,8 @@ class Bonus {
 					p.x = root._x + Math.cos(a) * d;
 					p.y = root._y + Math.sin(a) * d;
 					p.timer = 10 + Seed.randVfx() * 10;
-					p.sleep = Math.max(0, Math.pow(i * 30, 0.6) - 8);
-					p.scale = 30 + Seed.randVfx() * 100 - p.sleep * 2;
+					p.sleep = Math.max(0, Math.pow(i * 30, 0.5) - 8);
+					p.scale = Seed.randVfx() * 100 - p.sleep * 2;
 					p.fadeType = 0;
 					p.root._visible = false;
 				}
@@ -91,7 +91,7 @@ class Bonus {
 						p.x = root._x;
 						p.y = root._y;
 						var a = ((i + 0.5 * n) / max) * 6.28;
-						var speed = (3 + n * 2) * Cs.NEW_GEN_SCALE;
+						var speed = KadoKadeoManager.S(3 + n * 2);
 						p.vx += Math.cos(a) * speed;
 						p.vy += Math.sin(a) * speed;
 						p.timer = 26 + Seed.randVfx() * 4 - n * 10;
@@ -109,15 +109,16 @@ class Bonus {
 		var p = Cs.game.newPart(null);
 		p.x = root._x;
 		p.y = root._y;
-		p.vy = -1 * Cs.NEW_GEN_SCALE;
+		p.vy = -KadoKadeoManager.I(1);
 		p.timer = 24;
 		p.field = p.root.initTextField('field', {
 			font: "Impact",
-			size: 50,
+			size: 36,
 			color: 0xFFFFFF,
 			stroke: "#000000",
-			strokeThickness: 7,
+			strokeThickness: 5,
 			align: "center",
+			y: -KadoKadeoManager.I(10)
 		});
 		p.field.text = Std.string(n);
 	}

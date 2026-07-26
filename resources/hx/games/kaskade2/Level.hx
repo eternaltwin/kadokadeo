@@ -141,7 +141,7 @@ class Level {
 	}
 
 	public function animate() {
-		var ds:Float = 10 * Timer.tmod * Const.NEW_GEN_SCALE;
+		var ds:Float = KadoKadeoManager.S(10 * Timer.tmod);
 		var x = Const.LVL_WIDTH - 1;
 		while (x >= 0) {
 			var y = Const.LVL_HEIGHT - 1;

@@ -1,10 +1,8 @@
 package tubulo;
 
 import common_haxe_avm1.KKApi;
-import mt.bumdum.Sprite;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
 	public static var BW = Cs.I(21);
 	public static var BH = Cs.I(10);
 
@@ -40,10 +38,10 @@ class Cs {
 	}
 
 	public static function S(value:Float) {
-		return value * NEW_GEN_SCALE;
+		return KadoKadeoManager.S(value);
 	}
 
 	public static function I(value:Int) {
-		return Std.int(value * NEW_GEN_SCALE);
+		return KadoKadeoManager.I(value);
 	}
 }

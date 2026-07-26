@@ -30,7 +30,7 @@ const authStore = useAuthStore()
 
   <Error style="width: 890px; margin: 20px 60px 40px 60px; font-size: 0.85em">
     Kadokadéo est en alpha! Il le restera jusqu'à avoir un site complet.<br />
-    Les replays des jeux ont été réinitialisés le 14 mai 2026.<br />
+    Les replays des jeux ont été réinitialisés le 27 juillet 2026. Tous les jeux ont été optimisés.<br />
   </Error>
 
   <main id="container">

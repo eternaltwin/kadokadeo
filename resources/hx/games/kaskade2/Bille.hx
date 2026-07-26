@@ -113,7 +113,7 @@ class Bille extends Phys {
 	}
 
 	public function gravityMain() {
-		var s:Float = 10 * Timer.tmod * Const.NEW_GEN_SCALE;
+		var s:Float = KadoKadeoManager.S(10 * Timer.tmod);
 		if (gx > 0) {
 			if (gx >= s)
 				gx -= s;

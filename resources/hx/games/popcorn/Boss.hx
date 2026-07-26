@@ -9,7 +9,7 @@ class Boss extends Phys {
 	static var FR_END_LAUNCH = 56;
 
 	static var LIFE = 7;
-	static var MARGIN = 60 * Cs.NEW_GEN_SCALE;
+	static var MARGIN = KadoKadeoManager.I(60);
 
 	var invert:Float;
 
@@ -60,17 +60,17 @@ class Boss extends Phys {
 
 		frame = 0;
 		sens = 1;
-		speed = 4 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.I(4);
 		popTimer = 0;
 
 		x = Cs.mcw * 0.5;
-		y = Cs.HEIGHT - 250 * Cs.NEW_GEN_SCALE;
+		y = Cs.HEIGHT - KadoKadeoManager.I(250);
 
 		step = 0;
 		dif = 0;
 
-		escCoef = 0.08 * Cs.NEW_GEN_SCALE; // 0.06;
-		escLim = 0.08 * Cs.NEW_GEN_SCALE;
+		escCoef = KadoKadeoManager.S(0.08); // 0.06;
+		escLim = KadoKadeoManager.S(0.08);
 		escPop = 0;
 
 		startTimer = 100;
@@ -83,8 +83,8 @@ class Boss extends Phys {
 		lifeList = new Array();
 		for (i in 0...life) {
 			var mc = Cs.game.gdm.attach("mcHeart", 6);
-			mc._x = 12 * Cs.NEW_GEN_SCALE + i * 16 * Cs.NEW_GEN_SCALE;
-			mc._y = 13 * Cs.NEW_GEN_SCALE;
+			mc._x = KadoKadeoManager.I(12) + i * KadoKadeoManager.I(16);
+			mc._y = KadoKadeoManager.I(13);
 			mc.stop();
 			lifeList.push(mc);
 		}
@@ -127,8 +127,8 @@ class Boss extends Phys {
 				launch = Math.min(launch + 5 * Timer.tmod, FR_END_LAUNCH);
 				if (launch == FR_END_LAUNCH) {
 					step = 2;
-					var sp = Cs.game.genPopcorn(x - 44 * Cs.NEW_GEN_SCALE * (100 / root._xscale), y - 34 * Cs.NEW_GEN_SCALE);
-					sp.vx = sens * Seed.rand() * 6 * Cs.NEW_GEN_SCALE;
+					var sp = Cs.game.genPopcorn(x - KadoKadeoManager.I(44) * (100 / root._xscale), y - KadoKadeoManager.I(34));
+					sp.vx = sens * Seed.rand() * KadoKadeoManager.I(6);
 				}
 				root.gotoAndStop(Std.int(launch) + 1);
 				move();
@@ -151,12 +151,12 @@ class Boss extends Phys {
 					root._visible = true;
 				}
 				x = Num.mm(MARGIN, x, Cs.mcw - MARGIN);
-				vy -= 0.1 * Cs.NEW_GEN_SCALE;
+				vy -= KadoKadeoManager.S(0.1);
 			// y = Math.min(Cs.game.hero.y-24, y)
 			case 4: // END;
 				if (root._currentframe < FR_END_LAUNCH)
 					root.gotoAndPlay(animFrame.get("die"));
-				vy += 0.5 * Cs.NEW_GEN_SCALE;
+				vy += KadoKadeoManager.S(0.5);
 				// vy *= Math.pow(0.95,Timer.tmod)
 
 				// if( y > Cs.HEIGHT+100 )kill();
@@ -167,7 +167,7 @@ class Boss extends Phys {
 
 	public function move():Void {
 		// HORIZONTAL
-		speed += 0.003 * Cs.NEW_GEN_SCALE; // 0.001;
+		speed += KadoKadeoManager.S(0.003); // 0.001;
 		var tvx = sens * speed;
 		var dvx = tvx - vx;
 		vx += dvx * 0.2 * Timer.tmod;
@@ -180,7 +180,7 @@ class Boss extends Phys {
 
 		// VERTICAL
 		var hy = Math.min(Cs.game.hero.y, Cs.game.ly);
-		var ty = Math.max(hy - 215 * Cs.NEW_GEN_SCALE, 100 * Cs.NEW_GEN_SCALE);
+		var ty = Math.max(hy - KadoKadeoManager.I(215), KadoKadeoManager.I(100));
 		var dy = ty - y;
 		var boost = dy * escCoef; // 0.06;
 		var acc = Math.min(escLim, Math.abs(boost));
@@ -207,15 +207,15 @@ class Boss extends Phys {
 		var a = getAng({x: piou.x, y: piou.y});
 		var ca = Math.cos(a);
 		var sa = Math.sin(a);
-		vx -= ca * 10 * Cs.NEW_GEN_SCALE;
-		vy -= sa * 10 * Cs.NEW_GEN_SCALE;
-		piou.vx = ca * 5 * Cs.NEW_GEN_SCALE;
-		piou.vy = sa * 5 * Cs.NEW_GEN_SCALE;
+		vx -= ca * KadoKadeoManager.I(10);
+		vy -= sa * KadoKadeoManager.I(10);
+		piou.vx = ca * KadoKadeoManager.I(5);
+		piou.vy = sa * KadoKadeoManager.I(5);
 
 		// UPDATE LIFE
 		life--;
-		escCoef += 0.02 * Cs.NEW_GEN_SCALE;
-		escLim += 0.03 * Cs.NEW_GEN_SCALE;
+		escCoef += KadoKadeoManager.S(0.02);
+		escLim += KadoKadeoManager.S(0.03);
 		for (i in 0...lifeList.length) {
 			var mc = lifeList[i];
 			var frame = 1;

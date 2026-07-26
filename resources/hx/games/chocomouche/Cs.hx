@@ -2,27 +2,27 @@ package chocomouche;
 
 class Cs {
 	// GAME SIZE
-	public static var mcw = 900;
-	public static var mch = 900;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
 
 	// BOARD
 	static public var GRID_WIDTH = 8;
 	static public var GRID_HEIGHT = 9;
 
-	static public var SLOT_SIZE = 90;
+	static public var SLOT_SIZE = KadoKadeoManager.I(30);
 
 	/*public static var GRID_X = 43.5 ;
 		public static var GRID_Y = 35 ; */
-	public static var GRID_X = 138;
-	public static var GRID_Y = 81;
+	public static var GRID_X = KadoKadeoManager.I(46);
+	public static var GRID_Y = KadoKadeoManager.I(27);
 
 	public static var GRID_ALPHA = 0;
 
-	public static var TIME_X = 330;
-	public static var TIME_Y = 861;
+	public static var TIME_X = KadoKadeoManager.I(110);
+	public static var TIME_Y = KadoKadeoManager.I(287);
 
-	public static var LIFE_X = 18;
-	public static var LIFE_Y = GRID_Y + GRID_HEIGHT * SLOT_SIZE - 108;
+	public static var LIFE_X = KadoKadeoManager.I(6);
+	public static var LIFE_Y = GRID_Y + GRID_HEIGHT * SLOT_SIZE - KadoKadeoManager.I(36);
 
 	public static var bombs = [10, 10, 11, 11, 12, 12, 12, 13, 13, 13, 15];
 

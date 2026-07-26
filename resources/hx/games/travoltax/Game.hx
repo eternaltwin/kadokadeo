@@ -144,16 +144,16 @@ class Game implements kado.GameInterface {
 
 		var mask = cadreNext.getGraphics();
 		mask.beginFill(0xffffff);
-		mask.drawRect(-60 * Cs.NEW_GEN_SCALE, -25 * Cs.NEW_GEN_SCALE, 55 * Cs.NEW_GEN_SCALE, 50 * Cs.NEW_GEN_SCALE);
+		mask.drawRect(-KadoKadeoManager.I(60), -KadoKadeoManager.I(25), KadoKadeoManager.I(55), KadoKadeoManager.I(50));
 		mask.endFill();
 		cadreNext.mask = mask;
 
-		cadreNext._x = 67 * Cs.NEW_GEN_SCALE;
-		cadreNext._y = 32 * Cs.NEW_GEN_SCALE;
+		cadreNext._x = KadoKadeoManager.I(67);
+		cadreNext._y = KadoKadeoManager.I(32);
 		bg.cdm = new DepthManager(cadreNext);
 		var cadreOpts = bg.createEmptyMovieClip();
 		bg.odm = new DepthManager(cadreOpts);
-		cadreOpts._y = 65 * Cs.NEW_GEN_SCALE;
+		cadreOpts._y = KadoKadeoManager.I(65);
 		bg.nextList = [];
 		bg.optList = [];
 
@@ -278,7 +278,7 @@ class Game implements kado.GameInterface {
 			} else if (flOk && fall > 0) {
 				var line = getLine(y);
 				// line.sleep = fall*2 + 5 + py*2;
-				line.speed = 5 * Cs.NEW_GEN_SCALE;
+				line.speed = KadoKadeoManager.I(5);
 				line.ty = y + fall;
 			} else if (!flOk) {
 				fall++;
@@ -348,7 +348,7 @@ class Game implements kado.GameInterface {
 						var p = new Part(dm.attach("partPix", DP_PARTS));
 						p.x = Cs.MX + Seed.randVfx() * (Cs.XMAX * Cs.SIZE);
 						p.y = mc._y; // + Cs.SIZE*0.5;
-						p.weight = -(0.5 + Seed.randVfx()) * Cs.NEW_GEN_SCALE;
+						p.weight = -KadoKadeoManager.S(0.5 + Seed.randVfx());
 						p.timer = 10 + Seed.randVfx();
 						p.bhl = [BhVertiLine];
 						p.coef = 1;
@@ -384,16 +384,16 @@ class Game implements kado.GameInterface {
 		var p = new Phys(Game.me.dm.empty(DP_INTER));
 		p.x = x;
 		p.y = y;
-		p.vy = -3 * Cs.NEW_GEN_SCALE;
+		p.vy = -KadoKadeoManager.I(3);
 		p.frict = 0.9;
 		p.timer = 30;
 		var field = p.root.initTextField('field', {
 			font: 'Arial',
-			size: 40,
+			size: 30,
 			color: 0xFFFFFF,
 			align: 'center',
 			stroke: ["#25A73F", "#0089C4", "#F9179F"][id],
-			strokeThickness: 2 * Cs.NEW_GEN_SCALE,
+			strokeThickness: KadoKadeoManager.I(2),
 		});
 		field.text = Std.string(KKApi.val(score));
 	}
@@ -447,7 +447,8 @@ class Game implements kado.GameInterface {
 
 		var next = new Piece(bg.cdm.empty(0), pieceList[1], true);
 		next.ty = 0;
-		next.y = 120;
+		next.y = KadoKadeoManager.I(40);
+		next.x = -KadoKadeoManager.I(33);
 		next.setScale(70);
 		bg.nextList.push(next);
 
@@ -477,9 +478,9 @@ class Game implements kado.GameInterface {
 		var sp = new Particule(dm.empty(DP_INTER));
 		sp.root.getGraphics()
 			.beginFill(0xFFFFFF)
-			.drawCircle(0, 0, 3 * Cs.NEW_GEN_SCALE)
+			.drawCircle(0, 0, KadoKadeoManager.I(3))
 			.endFill();
-		sp.speed = (9 + Seed.rand() * 4) * Cs.NEW_GEN_SCALE;
+		sp.speed = KadoKadeoManager.S(9 + Seed.rand() * 4);
 		sp.a = 1.57 + (Seed.rand() * 2 - 1) * 0.2;
 		sp.ca = 0.12 + Seed.rand() * 0.05;
 		sp.lim = 0.25;
@@ -497,11 +498,11 @@ class Game implements kado.GameInterface {
 		mc.play();
 		mc.field = mc.initTextField('field', {
 			font: 'Arial',
-			size: 24,
+			size: 18,
 			color: 0xFFFFFF,
 		});
-		mc.field.x = 15 * Cs.NEW_GEN_SCALE;
-		mc.field.y = 0 * Cs.NEW_GEN_SCALE;
+		mc.field.x = KadoKadeoManager.I(15);
+		mc.field.y = KadoKadeoManager.I(0);
 		mc.field.text = Cs.OPTION_INFOS[id].name;
 		// mc.bg._visible = false;
 		mc.id = id;
@@ -515,10 +516,10 @@ class Game implements kado.GameInterface {
 	}
 
 	public function updateOptPos() {
-		var y = 6 * Cs.NEW_GEN_SCALE;
+		var y = KadoKadeoManager.I(6);
 		for (mc in bg.optList) {
 			mc._y = y;
-			y += 13 * Cs.NEW_GEN_SCALE;
+			y += KadoKadeoManager.I(13);
 		}
 	}
 
@@ -558,8 +559,8 @@ class Game implements kado.GameInterface {
 		];
 		plasma.ct = plasmaCt;
 		var fl = new BlurFilter();
-		fl.blurX = Std.int(4 * pq * Cs.NEW_GEN_SCALE);
-		fl.blurY = Std.int(4 * pq * Cs.NEW_GEN_SCALE);
+		fl.blurX = Std.int(4 * KadoKadeoManager.S(pq));
+		fl.blurY = Std.int(4 * KadoKadeoManager.S(pq));
 		plasma.filters = [cast fl];
 	}
 
@@ -661,7 +662,7 @@ class Game implements kado.GameInterface {
 			var dx = (Seed.randVfx() * 2 - 1) * Cs.SIZE * 0.5;
 			var dy = (Seed.randVfx() * 2 - 1) * Cs.SIZE * 0.5;
 			var a = Math.atan2(dy, dx);
-			var sp = Seed.randVfx() * 3 * Cs.NEW_GEN_SCALE;
+			var sp = Seed.randVfx() * KadoKadeoManager.I(3);
 			p.x = Cs.MX + x * Cs.SIZE + dx;
 			p.y = Cs.MY + y * Cs.SIZE + dy;
 			p.vx = Math.cos(a) * sp;
@@ -708,15 +709,15 @@ class Game implements kado.GameInterface {
 		mc.bg = mc.attachMovie("mcContrat", "bg", 0);
 		mc.field = mc.initTextField('field', {
 			font: 'Arial',
-			size: 30,
+			size: 24,
 			color: 0xFFFFFF,
 			align: "center",
 			stroke: "#000000",
 			strokeThickness: 2,
 		});
 		mc.field.style.letterSpacing = 5;
-		mc.field.x = 35 * Cs.NEW_GEN_SCALE;
-		mc.field.y = 1 * Cs.NEW_GEN_SCALE;
+		mc.field.x = KadoKadeoManager.I(35);
+		mc.field.y = KadoKadeoManager.I(1);
 		mc.field.text = Std.string(KKApi.val(Cs.getContratScore(id)));
 		Col.setPercentColor(mc.bg, 100, Col.objToCol(col));
 
@@ -732,7 +733,7 @@ class Game implements kado.GameInterface {
 		col.r = Std.int(Math.max(col.r + inc, 0));
 		col.g = Std.int(Math.max(col.g + inc, 0));
 		col.b = Std.int(Math.max(col.b + inc, 0));
-		// Filt.glow(mc.field, 2 * Cs.NEW_GEN_SCALE, 10, Col.objToCol(col));
+		// Filt.glow(mc.field, KadoKadeoManager.I(2), 10, Col.objToCol(col));
 
 		//
 		contrats[id] = mc;
@@ -755,9 +756,9 @@ class Game implements kado.GameInterface {
 
 		for (i in 0...32) {
 			var sp = new Part(dm.attach("partPix", DP_INTER));
-			sp.x = mc._x + Seed.randVfx() * 70 * Cs.NEW_GEN_SCALE;
+			sp.x = mc._x + Seed.randVfx() * KadoKadeoManager.I(70);
 			sp.y = mc._y + Seed.randVfx() * Cs.SIZE;
-			sp.vx = (Seed.randVfx() * 2 - 1) * 10 * Cs.NEW_GEN_SCALE;
+			sp.vx = (Seed.randVfx() * 2 - 1) * KadoKadeoManager.I(10);
 			sp.timer = 10 + Seed.randVfx() * 10;
 			sp.frict = 0.8;
 			sp.bhl = [BhHoriLine];
@@ -769,7 +770,7 @@ class Game implements kado.GameInterface {
 		var p = new Particule(Game.me.dm.attach("partSquare", Game.DP_PARTS));
 		p.frict = 0.95;
 		p.timer = 10 + Seed.randVfx() * 30;
-		p.weight = (0.05 + Seed.randVfx() * 0.05) * Cs.NEW_GEN_SCALE;
+		p.weight = KadoKadeoManager.S(0.05 + Seed.randVfx() * 0.05);
 		p.setScale(100 + Seed.randVfx() * 50);
 		p.fadeType = 0;
 		p.bhl = [1];

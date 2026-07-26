@@ -1,5 +1,6 @@
 package flushee;
 
+import kado.KadoKadeoManager;
 import kado.Seed;
 import mt.Timer;
 
@@ -26,7 +27,7 @@ class Particule {
 		scale = Seed.randomVfx(50) + 70;
 		ds = 0;
 		time = (0.4 + Seed.randomVfx(100) / 100) / 2;
-		speed = (3 + Seed.randomVfx(10) / 10) * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.S(3 + Seed.randomVfx(10) / 10);
 		dx = (Seed.randomVfx(100) - 50) / 50;
 		dy = -Seed.randomVfx(100) / 50;
 		px = x + dx * speed * 2;
@@ -35,8 +36,8 @@ class Particule {
 
 	public function update():Bool {
 		var s = speed * Timer.tmod;
-		speed += Timer.tmod / 10 * Cs.NEW_GEN_SCALE;
-		dy += 0.07 * Timer.tmod * Cs.NEW_GEN_SCALE;
+		speed += Timer.tmod / KadoKadeoManager.I(10);
+		dy += KadoKadeoManager.S(0.07 * Timer.tmod);
 		px += dx * s;
 		py += dy * s;
 		if (time > 0) {

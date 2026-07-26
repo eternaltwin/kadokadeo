@@ -15,10 +15,10 @@ class CBlackron extends Bads {
 		react2.loop = true;
 		react2.play();
 
-		react1._x = -11 * Cs.NEW_GEN_SCALE;
-		react1._y = 2 * Cs.NEW_GEN_SCALE;
-		react2._x = 11 * Cs.NEW_GEN_SCALE;
-		react2._y = 2 * Cs.NEW_GEN_SCALE;
+		react1._x = -KadoKadeoManager.I(11);
+		react1._y = KadoKadeoManager.I(2);
+		react2._x = KadoKadeoManager.I(11);
+		react2._y = KadoKadeoManager.I(2);
 		react2._xscale = -100;
 
 		setLevel(2.5);

@@ -115,10 +115,9 @@ class Game implements kado.GameInterface {
 	static var SCORE_BLUE = KKApi.const(1000);
 	static var SCORE_PINK = KKApi.const(12000);
 
-	public static var NEW_GEN_SCALE = 3;
-	public static var mcw = 300 * NEW_GEN_SCALE;
-	public static var mch = 300 * NEW_GEN_SCALE;
-	public static var SIZE = 20 * NEW_GEN_SCALE;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
+	public static var SIZE = KadoKadeoManager.I(20);
 
 	static var SPEED = 0.7; // 0.4;
 	static var ZOOM_SPEED = 0.1; // 0.05;
@@ -407,9 +406,13 @@ class Game implements kado.GameInterface {
 			d = 0;
 		if (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S))
 			d = 1;
-		if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A))
+		if (KeyboardManager.isDown(KeyboardManager.LEFT)
+			|| KeyboardManager.isDown(KeyboardManager.Q)
+			|| KeyboardManager.isDown(KeyboardManager.A))
 			d = 2;
-		if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W))
+		if (KeyboardManager.isDown(KeyboardManager.UP)
+			|| KeyboardManager.isDown(KeyboardManager.Z)
+			|| KeyboardManager.isDown(KeyboardManager.W))
 			d = 3;
 
 		if (pendingSwipeDir != null) {
@@ -479,8 +482,8 @@ class Game implements kado.GameInterface {
 		x = last.x;
 		y = last.y;
 
-		// Filt.glow(ball.root, 2 * NEW_GEN_SCALE, 2, 0xFFFFFF);
-		// Filt.glow(ball.root, 20 * NEW_GEN_SCALE, 1, 0xFFFF00);
+		// Filt.glow(ball.root, KadoKadeoManager.I(2), 2, 0xFFFFFF);
+		// Filt.glow(ball.root, KadoKadeoManager.I(20), 1, 0xFFFF00);
 
 		ball.x = (x + 0.5) * SIZE;
 		ball.y = (y + 0.5) * SIZE;
@@ -606,7 +609,7 @@ class Game implements kado.GameInterface {
 	function checkGhostCol() {
 		for (g in ghostList) {
 			var dist = ball.getDist({x: g.x, y: g.y});
-			if (dist < 10 * NEW_GEN_SCALE) {
+			if (dist < KadoKadeoManager.I(10)) {
 				g.explode();
 				killBall();
 				ball.kill();
@@ -670,7 +673,7 @@ class Game implements kado.GameInterface {
 		step = Spawn;
 		bvy = 0;
 		mcBall = cast ball.root;
-		mcBall.ball.smc._y = -80 * NEW_GEN_SCALE;
+		mcBall.ball.smc._y = KadoKadeoManager.I(-80);
 		mcBall.shadow._alpha = 0;
 		tc = 0;
 
@@ -700,7 +703,7 @@ class Game implements kado.GameInterface {
 				}
 			}
 		}
-		mcBall.shadow._alpha = 100 + mcBall.ball.smc._y * 2 * NEW_GEN_SCALE;
+		mcBall.shadow._alpha = 100 + mcBall.ball.smc._y * KadoKadeoManager.I(2);
 
 		// SPAWN COEF
 		tc = Math.min(tc + 0.1 * mt.Timer.tmod, 1);
@@ -726,12 +729,12 @@ class Game implements kado.GameInterface {
 					p.root.play();
 					p.root.stopOnFrame = [8];
 					var a = i / max * 6.28;
-					var ray = 18 * NEW_GEN_SCALE;
+					var ray = KadoKadeoManager.I(18);
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
 					var sp = 0.5 + Seed.randVfx() * 1.5;
-					p.x = mcw - 20 * NEW_GEN_SCALE + ca * ray;
-					p.y = mch - 20 * NEW_GEN_SCALE + sa * ray;
+					p.x = mcw - KadoKadeoManager.I(20) + ca * ray;
+					p.y = mch - KadoKadeoManager.I(20) + sa * ray;
 					// p.weight = -(0.1 + Seed.randVfx() * 0.3);
 					p.vx = ca * sp;
 					p.vy = sa * sp;
@@ -739,7 +742,7 @@ class Game implements kado.GameInterface {
 					p.fadeType = 0;
 					p.frict = 0.9;
 					p.root.blendMode = BlendModes.ADD;
-					p.setScale(200 * NEW_GEN_SCALE);
+					p.setScale(KadoKadeoManager.I(200));
 					p.updatePos();
 					p.vr = (Seed.randVfx() * 2 - 1) * 30;
 					p.root._rotation = Seed.randVfx() * 360;
@@ -783,7 +786,7 @@ class Game implements kado.GameInterface {
 						var p = new Phys(dm.empty(DP_PARTS));
 						p.x = mc._x + SIZE * 0.5;
 						p.y = mc._y + SIZE * 0.5;
-						p.vy = -5 * NEW_GEN_SCALE;
+						p.vy = KadoKadeoManager.I(-5);
 						p.frict = 0.7;
 						p.timer = 20;
 						// p.root.gotoAndStop(Seed.randomVfx(p.root._totalframes) + 1);
@@ -792,12 +795,12 @@ class Game implements kado.GameInterface {
 							color: 0xFFFFFF,
 							align: "center",
 							font: "Impact",
-							size: 36,
+							size: 30,
 							x: 0,
-							y: -11 * NEW_GEN_SCALE
+							y: KadoKadeoManager.I(-11)
 						});
 						mcf.field.text = Std.string(KKApi.val(SCORE_BLOCK));
-						Filt.glow(p.root, 2 * NEW_GEN_SCALE, 2, 0);
+						Filt.glow(p.root, KadoKadeoManager.I(2), 2, 0);
 						var mcScore = p.root;
 						mcScore.initTextField('field', {
 							color: 0xFFFFFF,
@@ -814,14 +817,14 @@ class Game implements kado.GameInterface {
 							var p = new Phys(dm.attach("partBlock", DP_PARTS));
 							p.x = mc._x + SIZE * 0.5;
 							p.y = mc._y + SIZE * 0.5;
-							p.vx = (Seed.randVfx() * 2 - 1) * 2 * NEW_GEN_SCALE;
-							p.vy = -(1 + Seed.randVfx() * 2) * NEW_GEN_SCALE;
-							p.weight = 0.1 + Seed.randVfx() * 0.1 * NEW_GEN_SCALE;
+							p.vx = (Seed.randVfx() * 2 - 1) * KadoKadeoManager.I(2);
+							p.vy = KadoKadeoManager.S(-(1 + Seed.randVfx() * 2));
+							p.weight = 0.1 + Seed.randVfx() * KadoKadeoManager.S(0.1);
 							p.fadeType = 0;
 							p.timer = 10 + Seed.randVfx() * 10;
-							p.vr = (Seed.randVfx() * 2 - 1) * 20 * NEW_GEN_SCALE;
+							p.vr = (Seed.randVfx() * 2 - 1) * KadoKadeoManager.I(20);
 							p.root._rotation = Seed.randVfx() * 360;
-							Filt.glow(p.root, 3 * NEW_GEN_SCALE, 2, 0);
+							Filt.glow(p.root, KadoKadeoManager.I(3), 2, 0);
 							if (i == max * 0.5)
 								dm.over(mcScore);
 						}
@@ -900,15 +903,15 @@ class Game implements kado.GameInterface {
 			p.root.play();
 			var c = levelTimer / levelTimerMax;
 			var a = c * 6.28 - 1.57;
-			var ray = 16 * NEW_GEN_SCALE;
-			p.x = mcw - 20 * NEW_GEN_SCALE + Math.cos(a) * ray;
-			p.y = mch - 20 * NEW_GEN_SCALE + Math.sin(a) * ray;
+			var ray = KadoKadeoManager.I(16);
+			p.x = mcw - KadoKadeoManager.I(20) + Math.cos(a) * ray;
+			p.y = mch - KadoKadeoManager.I(20) + Math.sin(a) * ray;
 			p.weight = -(0.1 + Seed.randVfx() * 0.3);
 			p.vx = (Seed.randVfx() * 2 - 1) * 0.5;
 			p.timer = 10 + Seed.randVfx() * 10;
 			p.fadeType = 0;
 			p.root.blendMode = BlendModes.ADD;
-			p.setScale(150 * NEW_GEN_SCALE);
+			p.setScale(KadoKadeoManager.I(150));
 			p.updatePos();
 
 			//
@@ -1300,9 +1303,11 @@ class Game implements kado.GameInterface {
 						elements[x][y] = mc;
 					case TELEPORT:
 						var mc = dm.attach("mcTeleport", DP_ROCK);
-						mc._x = x * SIZE;
-						mc._y = y * SIZE;
+						mc._x = x * SIZE + SIZE / 2;
+						mc._y = y * SIZE + SIZE / 2 - KadoKadeoManager.I(2);
 						mc._xscale = mc._yscale = SIZE / 30 * 100;
+						mc.play();
+						mc.loop = true;
 
 						elements[x][y] = mc;
 					case OUT:
@@ -1311,13 +1316,13 @@ class Game implements kado.GameInterface {
 						// Empty circle hole from nearby ground textures
 						var mask = new Graphics();
 						mask.beginFill(0xffffff);
-						mask.drawCircle(x * SIZE + 34, y * SIZE + 32, 36);
+						mask.drawCircle(x * SIZE + KadoKadeoManager.I(12), y * SIZE + KadoKadeoManager.I(11), KadoKadeoManager.I(12));
 						mask.endFill();
 						mask.blendMode = untyped BlendModes.ERASE;
 						map.mcGround.bmp.draw(mask, new Matrix());
 
-						mc._x = x * SIZE;
-						mc._y = y * SIZE;
+						mc._x = x * SIZE + SIZE / 2;
+						mc._y = y * SIZE + SIZE / 2 - KadoKadeoManager.I(2);
 
 						mcOut = mc;
 						dm.over(map.mcGround);
@@ -1341,12 +1346,12 @@ class Game implements kado.GameInterface {
 						if (tacheFrame < 12) {
 							var tache = new ASprite("tache");
 							tache.gotoAndStop(Math.floor(tacheFrame / 3) + 1);
-							tache.position.set((11) * NEW_GEN_SCALE, (8.5) * NEW_GEN_SCALE);
+							tache.position.set(KadoKadeoManager.I(11), KadoKadeoManager.S(8.5));
 							c.addChild(tache);
 						} else if (tacheFrame < 16) {
 							var zarbi = new ASprite("formeZarbi");
 							zarbi.gotoAndStop(Seed.random(zarbi._totalframes) + 1);
-							zarbi.position.set(5 * NEW_GEN_SCALE, 1.5 * NEW_GEN_SCALE);
+							zarbi.position.set(KadoKadeoManager.I(5), KadoKadeoManager.S(1.5));
 							zarbi.filters = [
 								new DropShadowFilter({
 									blur: 0,
@@ -1365,7 +1370,7 @@ class Game implements kado.GameInterface {
 						}
 
 						var m = new Matrix();
-						// Fixes pixel interpolation. Math is (SIZE * NEW_GEN_SCALE - 1) = 59 (but hardcoded because it depends on the image)
+						// Fixes pixel interpolation. Math is (SIZE - 1) = 59 (but hardcoded because it depends on the image)
 						m.translate(x * SIZE, y * SIZE);
 
 						map.mcGround.bmp.draw(c, m);
@@ -1425,8 +1430,8 @@ class Game implements kado.GameInterface {
 		// START DALLE
 		var p = nList[nList.length - 1];
 		var mc = dm.attach("mcStartDalle", DP_GROUND);
-		mc._x = 7 + p.x * SIZE + 7;
-		mc._y = 7 + p.y * SIZE + 7;
+		mc._x = p.x * SIZE + SIZE / 2;
+		mc._y = p.y * SIZE + SIZE / 2;
 		elements[p.x][p.y] = mc;
 	}
 
@@ -1543,10 +1548,10 @@ class Game implements kado.GameInterface {
 			color: 0xFFFFFF,
 			align: "center",
 			font: "Impact",
-			size: 36,
+			size: 26,
 			bold: false,
-			x: -62,
-			y: -82
+			x: -KadoKadeoManager.I(20),
+			y: -KadoKadeoManager.I(28)
 		});
 		mcTimer._x = mcw;
 		mcTimer._y = mch;
@@ -1554,15 +1559,15 @@ class Game implements kado.GameInterface {
 		mcTimer.ring = new Graphics();
 		mcTimer.addChild(mcTimer.ring);
 
-		Filt.glow(mcTimer, 10 * NEW_GEN_SCALE, 1, 0xFFFFFF);
+		Filt.glow(mcTimer, KadoKadeoManager.I(10), 1, 0xFFFFFF);
 	}
 
 	function drawRing(p:Float) {
 		mcTimer.ring.clear();
 
-		var cx = -60, cy = -60;
-		var r = 36; // rayon au milieu du trait
-		var thickness = 18;
+		var cx = -KadoKadeoManager.I(20), cy = -KadoKadeoManager.I(20);
+		var r = KadoKadeoManager.I(12); // rayon au milieu du trait
+		var thickness = KadoKadeoManager.I(6);
 
 		var start = -Math.PI / 2;
 		var end = start + Math.PI * 2 * p;

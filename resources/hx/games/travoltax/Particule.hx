@@ -32,7 +32,7 @@ class Particule extends Phys {
 					}
 
 				case 2: // DESTROY ON OUT
-					if (y < -30 * Cs.NEW_GEN_SCALE)
+					if (y < -KadoKadeoManager.I(30))
 						kill();
 
 				case 3: // BLUR Y
@@ -42,8 +42,8 @@ class Particule extends Phys {
 					root.filters = [fl];
 
 				case 4: // GO TO OPTIONS
-					var dx = 33 * Cs.NEW_GEN_SCALE - x;
-					var dy = (71 + (Game.me.bg.optList.length - 1) * 13) * Cs.NEW_GEN_SCALE - y;
+					var dx = KadoKadeoManager.I(33) - x;
+					var dy = KadoKadeoManager.I(71 + (Game.me.bg.optList.length - 1) * 13) - y;
 					var ta = Math.atan2(dy, dx);
 					var da = Num.hMod(ta - a, 3.14);
 					lim *= 1.02;
@@ -54,7 +54,7 @@ class Particule extends Phys {
 					var qdx = Num.q(dx);
 					var qdy = Num.q(dy);
 					var dist = Num.q(Math.abs(qdx) + Math.abs(qdy) * 0.5);
-					if (dist < 25 * Cs.NEW_GEN_SCALE) {
+					if (dist < KadoKadeoManager.I(25)) {
 						Game.me.addOpt();
 						kill();
 					}

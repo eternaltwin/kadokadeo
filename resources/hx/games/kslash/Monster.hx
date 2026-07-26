@@ -37,7 +37,7 @@ class Monster extends Ent {
 
 		hp = 10;
 		score = Cs.C0;
-		stClimb = 21 * Cs.NEW_GEN_SCALE;
+		stClimb = KadoKadeoManager.I(21);
 
 		initStep(Cs.ST_FLY);
 	}
@@ -108,13 +108,13 @@ class Monster extends Ent {
 	public function cut(n) {
 		KadoKadeoManager.kkm.addScore(Cs.C50);
 		harm(n);
-		throwMonster(1.57 - (1.57 * Cs.game.hero.sens), 10 * Cs.NEW_GEN_SCALE);
+		throwMonster(1.57 - (1.57 * Cs.game.hero.sens), KadoKadeoManager.I(10));
 	}
 
 	public function hit(shot:Star) {
 		KadoKadeoManager.kkm.addScore(Cs.C10);
 		harm(shot.damage);
-		throwMonster(Math.atan2(shot.vy, shot.vx), 2 * Cs.NEW_GEN_SCALE);
+		throwMonster(Math.atan2(shot.vy, shot.vx), KadoKadeoManager.I(2));
 	}
 
 	public function harm(n) {
@@ -153,7 +153,7 @@ class Monster extends Ent {
 
 	public function throwMonster(a, p) {
 		var vitx = Math.cos(a) * p;
-		var vity = Math.sin(a) * p - 3 * Cs.NEW_GEN_SCALE;
+		var vity = Math.sin(a) * p - KadoKadeoManager.I(3);
 		if (flGround) {
 			vity = Math.min(0, vity);
 			if (vity < 0)
@@ -177,8 +177,8 @@ class Monster extends Ent {
 
 	public function jumpFront(dist) {
 		initStep(Cs.ST_FLY);
-		vy = -10 * Cs.NEW_GEN_SCALE;
-		vx = Math.pow(dist * 24 * Cs.NEW_GEN_SCALE, 0.6) * sens;
+		vy = -KadoKadeoManager.I(10);
+		vx = Math.pow(dist * KadoKadeoManager.I(24), 0.6) * sens;
 	}
 
 	// ON

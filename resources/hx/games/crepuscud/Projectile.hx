@@ -20,7 +20,7 @@ class Projectile extends Phys {
 		mc._x = x;
 		mc._y = y;
 		mc._rotation = angle / 0.0174;
-		mc._xscale = speed * mt.Timer.tmod / Cs.NEW_GEN_SCALE;
+		mc._xscale = speed * mt.Timer.tmod / KadoKadeoManager.I(1);
 		Col.setColor(mc, qcol);
 		Game.me.brushQueueMissile._visible = true;
 		Game.me.plasma.drawMc(mc);

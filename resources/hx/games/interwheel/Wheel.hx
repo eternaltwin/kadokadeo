@@ -39,11 +39,10 @@ class Wheel extends Element {
 					if (Num.q(Math.abs(da) * ray) < Cs.MINE_SPACE) {
 						Cs.game.blob.explode(ba);
 						//
-						Cs.game.stats.pl++;
-						//
 						var x = Num.q(x + Math.cos(a + o.a) * ray);
 						var y = Num.q(y + Math.sin(a + o.a) * ray);
 						var mcExp = Cs.game.dm.attach("mcExplosion", Game.DP_PART);
+						mcExp.play();
 						mcExp._x = x;
 						mcExp._y = y;
 						mcExp._xscale = 50;
@@ -84,6 +83,7 @@ class Wheel extends Element {
 							p.timer = 10 + Seed.randVfx() * 20;
 							p.vr = (Seed.randVfx() * 2 - 1) * 12;
 							p.root._rotation = Seed.randVfx() * 360;
+							p.root.play();
 							p.updatePos();
 						}
 						// TACHE MUR
@@ -150,23 +150,23 @@ class Wheel extends Element {
 			};
 		}
 
-		if (flDestroy) {
-			speed = Num.q(speed * Math.pow(0.97, Timer.tmod));
-			// tit'gouttes
-			var ca = Math.cos(a + aBoom);
-			var sa = Math.sin(a + aBoom);
-			if (Seed.randVfx() / Timer.tmod < speed * 5) {
-				var p = new Part(Cs.game.dm.attach("partOil", Game.DP_PART));
-				var dist = ray - (5 + Seed.randVfx() * 5);
-				p.x = x + ca * dist;
-				p.y = y + sa * dist;
-				p.weight = 0.1 + Seed.randVfx() * 0.1;
-				p.setScale(80 + Seed.randVfx() * 80);
-				p.fadeType = 0;
-				p.timer = 10 + Seed.randVfx() * 20;
-				p.updatePos();
-			}
-		}
+		// if (flDestroy) {
+		// 	speed = Num.q(speed * Math.pow(0.97, Timer.tmod));
+		// 	// tit'gouttes
+		// 	var ca = Math.cos(a + aBoom);
+		// 	var sa = Math.sin(a + aBoom);
+		// 	if (Seed.randVfx() / Timer.tmod < speed * 5) {
+		// 		var p = new Part(Cs.game.dm.attach("partOil", Game.DP_PART));
+		// 		var dist = ray - (5 + Seed.randVfx() * 5);
+		// 		p.x = x + ca * dist;
+		// 		p.y = y + sa * dist;
+		// 		p.weight = 0.1 + Seed.randVfx() * 0.1;
+		// 		p.setScale(80 + Seed.randVfx() * 80);
+		// 		p.fadeType = 0;
+		// 		p.timer = 10 + Seed.randVfx() * 20;
+		// 		p.updatePos();
+		// 	}
+		// }
 	}
 
 	public override function attach() {
@@ -177,7 +177,7 @@ class Wheel extends Element {
 
 		sh = Cs.game.dm.attach("mcMask", Game.DP_SHADE);
 		sh._x = x;
-		sh._y = y + 6 * Cs.NEW_GEN_SCALE;
+		sh._y = y + KadoKadeoManager.I(6);
 		sh._alpha = 20;
 		sh.gotoAndStop(fr);
 
@@ -190,25 +190,34 @@ class Wheel extends Element {
 		light = dm.attach("mcWheelLight", 0);
 		light.gotoAndStop(fr);
 
-		wh._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
-		wh._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
-		sh._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
-		sh._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
+		wh._xscale = ray * 2 / KadoKadeoManager.I(1);
+		wh._yscale = ray * 2 / KadoKadeoManager.I(1);
+		sh._xscale = ray * 2 / KadoKadeoManager.I(1);
+		sh._yscale = ray * 2 / KadoKadeoManager.I(1);
 		dust._xscale = ray;
 		dust._yscale = ray;
 		if (fr == 2) {
-			light._xscale = ray * 2 / Cs.NEW_GEN_SCALE;
-			light._yscale = ray * 2 / Cs.NEW_GEN_SCALE;
+			light._xscale = ray * 2 / KadoKadeoManager.I(1);
+			light._yscale = ray * 2 / KadoKadeoManager.I(1);
 		}
 
 		var wdm = new DepthManager(wh);
+		var wheelScale = wh._xscale;
+		var mineVisualScale = Math.max(50, Math.min(wheelScale, 80));
+		var mineLocalScale = mineVisualScale * 100 / wheelScale;
 		for (o in mList) {
 			var c = 100 / wh._xscale;
 			o.mc = wdm.attach("mcMine", 0); // Std.attachMC(root,"mcMine"+i,i)//
+			// o.mc.getGraphics()
+			// 	.clear()
+			// 	.beginFill(0xFF0000, 0.5)
+			// 	.drawCircle(0, 0, c * 100 / KadoKadeoManager.I(1))
+			// 	.endFill();
+
 			o.mc._x = Math.cos(o.a) * ray * c;
 			o.mc._y = Math.sin(o.a) * ray * c;
-			o.mc._xscale = c * 100 * 2 / Cs.NEW_GEN_SCALE;
-			o.mc._yscale = c * 100 * 2 / Cs.NEW_GEN_SCALE;
+			o.mc._xscale = mineLocalScale;
+			o.mc._yscale = o.mc._xscale;
 			o.mc._rotation = o.a / 0.0174;
 		}
 		var skin = wdm.attach("mcWheelBase", 0);

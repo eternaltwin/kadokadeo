@@ -8,7 +8,7 @@ import kado.Seed;
 class Ballon {
 	static var speed:Float = 0.05;
 	static var factor:Float = 1.3;
-	public static var ray:Float = 15 * factor * Cs.NEW_GEN_SCALE;
+	public static var ray:Float = KadoKadeoManager.S(15 * factor);
 
 	var game:Game;
 	var mc:ASprite;
@@ -32,8 +32,8 @@ class Ballon {
 		this.t = t;
 		mc = game.dmanager.attach("ballon", Cs.PLAN_BALLON);
 		mc.gotoAndStop(t + 1);
-		x = Seed.random(300 * Cs.NEW_GEN_SCALE);
-		y = -(20 * Cs.NEW_GEN_SCALE + Seed.random(300 * Cs.NEW_GEN_SCALE));
+		x = Seed.random(KadoKadeoManager.I(300));
+		y = -(KadoKadeoManager.I(20) + Seed.random(KadoKadeoManager.I(300)));
 		dx = 0;
 		dy = 0;
 		nextStep();
@@ -45,8 +45,8 @@ class Ballon {
 	}
 
 	function nextStep():Void {
-		tx = Seed.random(200 * Cs.NEW_GEN_SCALE) + 50 * Cs.NEW_GEN_SCALE;
-		ty = Seed.random(200 * Cs.NEW_GEN_SCALE) + 50 * Cs.NEW_GEN_SCALE;
+		tx = Seed.random(KadoKadeoManager.I(200)) + KadoKadeoManager.I(50);
+		ty = Seed.random(KadoKadeoManager.I(200)) + KadoKadeoManager.I(50);
 		mind = ray * 2;
 	}
 
@@ -99,17 +99,17 @@ class Ballon {
 		dx = dx * p + ddx * (1 - p);
 		dy = dy * p + ddy * (1 - p);
 
-		var r:Float = 1 * Cs.NEW_GEN_SCALE;
-		if (x < 40 * Cs.NEW_GEN_SCALE) {
+		var r:Float = KadoKadeoManager.I(1);
+		if (x < KadoKadeoManager.I(40)) {
 			dx += r;
 		}
-		if (y < 40 * Cs.NEW_GEN_SCALE) {
+		if (y < KadoKadeoManager.I(40)) {
 			dy += r;
 		}
-		if (x > 260 * Cs.NEW_GEN_SCALE) {
+		if (x > KadoKadeoManager.I(260)) {
 			dx -= r;
 		}
-		if (y > 260 * Cs.NEW_GEN_SCALE) {
+		if (y > KadoKadeoManager.I(260)) {
 			dy -= r;
 		}
 
@@ -120,8 +120,8 @@ class Ballon {
 		x = Num.q(x + dx * s);
 		y = Num.q(y + dy * s);
 
-		if (y > 280 * Cs.NEW_GEN_SCALE) {
-			y = 280 * Cs.NEW_GEN_SCALE - (y - 280 * Cs.NEW_GEN_SCALE);
+		if (y > KadoKadeoManager.I(280)) {
+			y = KadoKadeoManager.I(280) - (y - KadoKadeoManager.I(280));
 			dy = -Math.abs(dy);
 			dx *= -1;
 		}

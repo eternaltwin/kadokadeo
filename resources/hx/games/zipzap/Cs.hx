@@ -1,11 +1,8 @@
 package zipzap;
 
 import common_haxe_avm1.KKApi;
-import kado.KadoKadeoManager;
 
 class Cs {
-	public static var NEW_GEN_SCALE:Int = 3;
-
 	public static var PLAN_BG:Int = 0;
 	public static var PLAN_BALLON:Int = 1;
 	public static var PLAN_HERO:Int = 2;
