@@ -4,14 +4,14 @@ defineProps({
 })
 
 const keyMap = {
-  mouse1: { image: '/gfx/gameCommandLeftClic.png', title: 'Clic gauche' },
-  mouse2: { image: '', title: 'Clic droit' },
-  space: { image: '', title: 'Espace' },
+  mouse1: { image: '/gfx/controls/mouseLeftClic.gif', title: 'Clic gauche' },
+  mouse2: { image: '/gfx/controls/mouseMove.gif', title: 'Déplacer la souris' },
+  space: { image: '/gfx/controls/keySpace.gif', title: 'Espace' },
   enter: { image: '', title: 'Entrée' },
-  arrowup: { image: '', title: 'Flèche haut' },
-  arrowdown: { image: '', title: 'Flèche bas' },
-  arrowleft: { image: '', title: 'Flèche gauche' },
-  arrowright: { image: '', title: 'Flèche droite' },
+  arrowup: { image: '/gfx/controls/keyUpArrow.gif', title: 'Flèche haut' },
+  arrowdown: { image: '/gfx/controls/keyDownArrow.gif', title: 'Flèche bas' },
+  arrowleft: { image: '/gfx/controls/keyRightArrow.gif', title: 'Flèche gauche' },
+  arrowright: { image: '/gfx/controls/keyLeftArrow.gif', title: 'Flèche droite' },
 }
 </script>
 
