@@ -205,7 +205,7 @@ class Game implements kado.GameInterface {
 				if (flBreak)
 					break;
 			}
-			w.addMine();
+			// w.addMine();
 			while (Seed.rand() + 0.4 < c) {
 				w.addMine();
 			}
