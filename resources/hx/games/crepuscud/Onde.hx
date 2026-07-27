@@ -26,7 +26,7 @@ class Onde extends Sprite {
 		var mc = Game.me.dm.attach("mcImpact", Game.DP_PARTS);
 		mc._x = x;
 		mc._y = y;
-		mc._xscale = mc._yscale = size / KadoKadeoManager.I(8);
+		mc._xscale = mc._yscale = size * 8 / KadoKadeoManager.I(1);
 		mc.play();
 		mc.removeOnFrame = 15;
 	}
