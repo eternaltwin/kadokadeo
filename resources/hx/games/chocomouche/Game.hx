@@ -291,7 +291,7 @@ class Game implements kado.GameInterface {
 		for (i in 0...life) {
 			var mc = dm.attach("life", DP_INFOS);
 			mc._x = Cs.LIFE_X;
-			mc._y = Cs.LIFE_Y - lives.length * (60 + 3); // => (life_width + ecart);
+			mc._y = Cs.LIFE_Y - lives.length * (KadoKadeoManager.I(20) + KadoKadeoManager.I(1)); // => (life_width + ecart);
 			Filt.glow(mc, 2, 3, 0xFFFFFF);
 			lives.push(mc);
 		}
@@ -351,11 +351,11 @@ class Game implements kado.GameInterface {
 	function initTime() {
 		mcTime = cast Game.me.dm.empty(Game.DP_INFOS);
 		mcTime.getGraphics().beginFill(0);
-		mcTime.getGraphics().drawRect(0, 0, 238, 16);
+		mcTime.getGraphics().drawRect(0, 0, KadoKadeoManager.I(79), KadoKadeoManager.I(5));
 		mcTime._timeLeft = mcTime.attachMovie("timeLeft");
-		mcTime._timeLeft._y = -3;
+		mcTime._timeLeft._y = -KadoKadeoManager.I(1);
 		mcTime._x = Cs.TIME_X;
-		mcTime._y = Cs.TIME_Y + 3;
+		mcTime._y = Cs.TIME_Y + KadoKadeoManager.I(1);
 		resetTime();
 	}
 
@@ -410,7 +410,7 @@ class Game implements kado.GameInterface {
 
 			mcWarning = dm.empty(DP_FX);
 			mcWarning.getGraphics().beginFill(0xFF2222, 0.5);
-			mcWarning.getGraphics().drawRect(0, 0, 900, 900);
+			mcWarning.getGraphics().drawRect(0, 0, Cs.mcw, Cs.mch);
 			mcWarning._alpha = 0;
 			mcWarning.blendMode = OVERLAY;
 			mcWarning.tween = pixi.core.Pixi.tweenManager.createTween(mcWarning);
@@ -439,11 +439,11 @@ class Game implements kado.GameInterface {
 			mcLevel.initTextField("_field", {
 				font: "Verdana",
 				align: "center",
-				x: Std.int(153 + 150 / 2),
-				y: 132,
+				x: Std.int(KadoKadeoManager.I(51) + KadoKadeoManager.I(50) / 2),
+				y: KadoKadeoManager.I(44),
 				bold: true,
 				color: 0xE5BD78,
-				size: 99,
+				size: 66,
 			});
 			mcLevel._field.filters = [
 				new BevelFilter({
@@ -456,9 +456,9 @@ class Game implements kado.GameInterface {
 			Filt.glow(mcLevel._field, 3, 3, 0x9A3D18);
 			mcLevel._field.text = Std.string(level + 1);
 			var s = new Phys(mcLevel);
-			s.x = 1100;
-			s.y = 300;
-			s.vx = -72;
+			s.x = KadoKadeoManager.I(366);
+			s.y = KadoKadeoManager.I(100);
+			s.vx = -KadoKadeoManager.I(24);
 			s.frict = 0.92;
 			s.timer = 60;
 		} else {

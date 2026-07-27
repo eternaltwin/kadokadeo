@@ -1,16 +1,17 @@
 package starfang;
 
+import kado.KadoKadeoManager;
 import mt.bumdum.Part;
 import common_haxe_avm1.KKApi;
 
 @:publicFields
 class Asteroid extends Bads {
 	static var SIZE = [
-		6 * Cs.NEW_GEN_SCALE,
-		12 * Cs.NEW_GEN_SCALE,
-		25 * Cs.NEW_GEN_SCALE,
-		50 * Cs.NEW_GEN_SCALE,
-		100 * Cs.NEW_GEN_SCALE
+		KadoKadeoManager.I(6),
+		KadoKadeoManager.I(12),
+		KadoKadeoManager.I(25),
+		KadoKadeoManager.I(50),
+		KadoKadeoManager.I(100)
 	];
 
 	var type:Int;
@@ -28,7 +29,7 @@ class Asteroid extends Bads {
 		super(mc);
 		destructPoint = 1;
 		division = 2;
-		speed = 1.5 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.S(1.5);
 		hp = 1;
 		bonusReserved = false;
 	}
@@ -56,7 +57,7 @@ class Asteroid extends Bads {
 			for (i in 0...3) {
 				var p = getRandomPart(type + 1);
 				var a = ang + (Seed.randVfx() * 2 - 1) * 1.57;
-				var sp = (0.5 + Seed.randVfx() * 3) * Cs.NEW_GEN_SCALE;
+				var sp = KadoKadeoManager.S(0.5 + Seed.randVfx() * 3);
 				p.x = x;
 				p.y = y;
 				p.vx = vx + Math.cos(a) * sp;

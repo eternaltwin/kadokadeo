@@ -14,6 +14,7 @@ Principe :
 - tout random purement visuel doit aussi être seedé avec un seed différent pour ne pas impacter la logique du jeu
 
 Utiliser la classe `Seed` (`resources/hx/lib/kado/Seed.hx`) comme point d’entrée du random seedé.
+Tu peux ajouter l'import `import kado.Seed;` dans le fichier import.hx si ce n'est pas déjà fait.
 
 Helpers `Seed` :
 

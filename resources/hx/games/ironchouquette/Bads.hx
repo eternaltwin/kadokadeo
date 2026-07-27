@@ -85,13 +85,13 @@ class Bads extends Phys {
 		a = 1.57;
 		va = 0.1;
 		turnCoef = 0.1;
-		speed = 3 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.I(3);
 
 		hp = 2;
 
 		dif = 1;
 		mid = 0;
-		ray = 16 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(16);
 		level = 0;
 
 		shootRate = 30;
@@ -102,9 +102,9 @@ class Bads extends Phys {
 		ond = {
 			decal: 314,
 			speed: 16,
-			amp: 0.1 * Cs.NEW_GEN_SCALE,
-			by: 50 * Cs.NEW_GEN_SCALE,
-			vx: 3 * Cs.NEW_GEN_SCALE,
+			amp: KadoKadeoManager.S(0.1),
+			by: KadoKadeoManager.I(50),
+			vx: KadoKadeoManager.I(3),
 			sens: 1,
 			svy: 0
 		}
@@ -149,7 +149,7 @@ class Bads extends Phys {
 		if (outSafeTimer > 0) {
 			outSafeTimer -= Timer.tmod;
 		} else {
-			var lim:Float = 10 * Cs.NEW_GEN_SCALE;
+			var lim:Float = KadoKadeoManager.I(10);
 			if (ray != null)
 				lim += ray;
 			if (rect != null)
@@ -195,7 +195,7 @@ class Bads extends Phys {
 						var a = Seed.randVfx() * 6.28;
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
-						var sp = (3 + Seed.randVfx() * 3) * Cs.NEW_GEN_SCALE;
+						var sp = KadoKadeoManager.S(3 + Seed.randVfx() * 3);
 						p.x = x + ca * ray;
 						p.y = y + sa * ray;
 						p.vx = ca * sp + vx;
@@ -346,7 +346,7 @@ class Bads extends Phys {
 
 					vx = Math.cos(a) * speed;
 					vy = Math.sin(a) * speed;
-					if (getDist(trg) < 50 * Cs.NEW_GEN_SCALE) {
+					if (getDist(trg) < KadoKadeoManager.I(50)) {
 						onTargetReach();
 					}
 
@@ -369,7 +369,7 @@ class Bads extends Phys {
 						ond.decal = (ond.decal + ond.speed * Timer.tmod) % 628;
 						y = ond.by + Math.sin(ond.decal / 100) * (ond.amp * 100);
 						x += ond.vx * ond.sens * Timer.tmod;
-						var m = 10 * Cs.NEW_GEN_SCALE;
+						var m = KadoKadeoManager.I(10);
 						if (x < (ray + m) || x > Cs.mcw - (ray + m)) {
 							ond.sens *= -1;
 							x = Num.mm(ray + m, x, Cs.mcw - (ray + m));
@@ -389,7 +389,7 @@ class Bads extends Phys {
 
 					var dx = trg.x - x;
 					var dy = trg.y - y;
-					if (Math.abs(dx) + Math.abs(dy) < 20 * Cs.NEW_GEN_SCALE + ray) {
+					if (Math.abs(dx) + Math.abs(dy) < KadoKadeoManager.I(20) + ray) {
 						trg = null;
 					}
 
@@ -398,7 +398,7 @@ class Bads extends Phys {
 					var pa = 0.3;
 					var da = Num.hMod(getAng({x: Cs.game.hero.x, y: Cs.game.hero.y}) - 1.57, 3.14);
 
-					if (Math.abs(da) < pa && getDist({x: Cs.game.hero.x, y: Cs.game.hero.y}) < 100 * Cs.NEW_GEN_SCALE) {
+					if (Math.abs(da) < pa && getDist({x: Cs.game.hero.x, y: Cs.game.hero.y}) < KadoKadeoManager.I(100)) {
 						flameTimer = 8;
 					}
 					if (flameTimer > 0) {
@@ -408,7 +408,7 @@ class Bads extends Phys {
 						var a = 1.57 + (Seed.rand() * 2 - 1) * pa;
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
-						var sp = (5 + Seed.rand() * 3) * Cs.NEW_GEN_SCALE;
+						var sp = KadoKadeoManager.S(5 + Seed.rand() * 3);
 						shot.x = x + ca * ray;
 						shot.y = y + sa * ray;
 						shot.vx = ca * sp;
@@ -442,7 +442,7 @@ class Bads extends Phys {
 							vy = 0;
 						}
 					} else {
-						vy -= 0.3 * Cs.NEW_GEN_SCALE;
+						vy -= KadoKadeoManager.S(0.3);
 						shootTimer = 200;
 					}
 
@@ -570,7 +570,7 @@ class Bads extends Phys {
 				var txt = p.root.initTextField('field', {
 					font: "GAU",
 					align: "center",
-					size: 60,
+					size: 45,
 					color: 0xFFFFFF,
 					stroke: '#0000FF',
 					strokeThickness: 6,
@@ -604,8 +604,8 @@ class Bads extends Phys {
 			var a = Seed.randVfx() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
-			var ray = 8 * Cs.NEW_GEN_SCALE;
-			var sp = (3 + Seed.randVfx() * 5) * Cs.NEW_GEN_SCALE;
+			var ray = KadoKadeoManager.I(8);
+			var sp = KadoKadeoManager.S(3 + Seed.randVfx() * 5);
 			p.x = x + ca * ray;
 			p.y = y + sa * ray;
 			p.vx = ca * sp;
@@ -678,7 +678,7 @@ class Bads extends Phys {
 
 	public function chooseNewTarget(xMin, xMax, yMin, yMax) {
 		if (waitTimer <= 0) {
-			trg = {x: x, y: -200. * Cs.NEW_GEN_SCALE};
+			trg = {x: x, y: KadoKadeoManager.S(-200)};
 			return;
 		}
 

@@ -277,12 +277,12 @@ class Level {
 		while (i < bonuses.length) {
 			var b = bonuses[i];
 			if (game.hero.state != Hero.DEATH
-				&& distMC({x: b.mc._x + Cs.BLK_WIDTH / 2, y: b.mc._y + Cs.BLK_WIDTH / 2}, {x: game.hero.mc._x, y: game.hero.mc._y}) < 30 * Cs.NEW_GEN_SCALE) {
+				&& distMC({x: b.mc._x + Cs.BLK_WIDTH / 2, y: b.mc._y + Cs.BLK_WIDTH / 2}, {x: game.hero.mc._x, y: game.hero.mc._y}) < KadoKadeoManager.I(30)) {
 				var mc = game.dmanager.attach("FXVanish" + (b.type + 1), Cs.PLAN_FX);
 				mc.removeOnFrame = 60;
 				mc.play();
-				mc._x = b.mc._x + 16 * Cs.NEW_GEN_SCALE;
-				mc._y = b.mc._y + 16 * Cs.NEW_GEN_SCALE;
+				mc._x = b.mc._x + KadoKadeoManager.I(16);
+				mc._y = b.mc._y + KadoKadeoManager.I(16);
 				KadoKadeoManager.kkm.addScore(Cs.BONUS_POINTS[b.type]);
 				game.data.b[b.type]++;
 				b.destroy();
@@ -291,7 +291,7 @@ class Level {
 			}
 
 			if (b.falling) {
-				b.mc._y += 5 * Cs.NEW_GEN_SCALE * Timer.tmod;
+				b.mc._y += KadoKadeoManager.I(5) * Timer.tmod;
 			}
 			var p = getPos(b.mc._x, b.mc._y);
 			if (!b.falling && tbl[p.x][p.y] != null) {
@@ -317,7 +317,7 @@ class Level {
 		}
 
 		if (target_y != base_y) {
-			game.scroll._y += Timer.tmod * 5 * Cs.NEW_GEN_SCALE;
+			game.scroll._y += Timer.tmod * KadoKadeoManager.I(5);
 			if (game.scroll._y > Cs.BLK_HEIGHT) {
 				game.scroll._y = 0;
 				game.scroll.updateState();

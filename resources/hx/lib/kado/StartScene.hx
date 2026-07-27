@@ -32,8 +32,8 @@ class StartScene extends Container {
 		this.addChild(overlay);
 
 		this.panel = new Panel(kkm);
-		panel.width = 650;
-		panel.height = 250;
+		panel.width = KadoKadeoManager.I(216);
+		panel.height = KadoKadeoManager.I(83);
 		panel.x = (kkm.renderer.width - panel.width) / 2;
 		panel.y = (kkm.renderer.height - panel.height) / 2;
 		panel.visible = false;
@@ -46,20 +46,20 @@ class StartScene extends Container {
 	public function makeBottomBar():Void {
 		var bb = Sprite.from("bottom_bar.png");
 		bb.x = 0;
-		bb.y = kkm.renderer.height - 68;
+		bb.y = kkm.renderer.height - KadoKadeoManager.I(23);
 		this.addChild(bb);
 
 		this.clicToStartText = new pixi.core.text.Text("CLIQUER POUR COMMENCER", {
 			fontFamily: 'Fredoka Bold',
-			fontSize: 45,
+			fontSize: 35,
 			fill: 0xFF6400,
 			align: 'center',
 			stroke: 0xFFFFFF,
-			strokeThickness: 10,
+			strokeThickness: 8,
 			letterSpacing: 2
 		});
 		this.clicToStartText.x = (kkm.renderer.width - this.clicToStartText.width) / 2;
-		this.clicToStartText.y = kkm.renderer.height - 66;
+		this.clicToStartText.y = kkm.renderer.height - KadoKadeoManager.I(22);
 		this.addChild(this.clicToStartText);
 	}
 
@@ -83,14 +83,14 @@ class StartScene extends Container {
 
 		var text = new pixi.core.text.Text('CONNEXION AU\nSERVEUR EN COURS...', {
 			fontFamily: 'Fredoka Bold',
-			fontSize: 42,
+			fontSize: 30,
 			fill: 0x78c3c9,
 			align: 'center',
 		});
 		panel.clearContent();
 		panel.addContentDisplayObject(text);
 		text.x = (panel.width - text.width) / 2;
-		text.y = 70;
+		text.y = KadoKadeoManager.I(23);
 	}
 
 	public function showContract(contract:Dto.RunDTO):Void {
@@ -98,51 +98,51 @@ class StartScene extends Container {
 		panel.clearContent();
 		var scoreToBeat = new pixi.core.text.Text('SCORE À BATTRE', {
 			fontFamily: 'Fredoka Bold',
-			fontSize: 40,
+			fontSize: 30,
 			fill: 0x78c8c8,
 			align: 'left',
 		});
 		panel.addContentDisplayObject(scoreToBeat);
-		scoreToBeat.x = 30;
-		scoreToBeat.y = 70;
+		scoreToBeat.x = KadoKadeoManager.I(10);
+		scoreToBeat.y = KadoKadeoManager.I(23);
 
 		var contractPoints = new pixi.core.text.Text('POINTS', {
 			fontFamily: 'Fredoka Bold',
-			fontSize: 40,
+			fontSize: 30,
 			fill: 0x78c8c8,
 			align: 'left',
 		});
 		panel.addContentDisplayObject(contractPoints);
-		contractPoints.x = 450;
-		contractPoints.y = 70;
+		contractPoints.x = KadoKadeoManager.I(150);
+		contractPoints.y = KadoKadeoManager.I(23);
 
 		var verticalBar = new Graphics();
-		verticalBar.beginFill(0xd3d3d3).drawRect(400, 70, 8, 150).endFill();
+		verticalBar.beginFill(0xd3d3d3).drawRect(KadoKadeoManager.I(133), KadoKadeoManager.I(23), KadoKadeoManager.I(3), KadoKadeoManager.I(50)).endFill();
 		panel.addContentDisplayObject(verticalBar);
 
 		var scoreToBeatValue = new pixi.core.text.Text(Std.string(contract.contract_score), {
 			fontFamily: 'Fredoka Bold',
-			fontSize: 50,
+			fontSize: 40,
 			fill: 0x0798FF,
 			align: 'center',
 		});
-		scoreToBeatValue.x = 200 - scoreToBeatValue.width / 2;
-		scoreToBeatValue.y = 140;
+		scoreToBeatValue.x = KadoKadeoManager.I(66) - scoreToBeatValue.width / 2;
+		scoreToBeatValue.y = KadoKadeoManager.I(46);
 		panel.addContentDisplayObject(scoreToBeatValue);
 
 		var contractPointsValue = new pixi.core.text.Text(Std.string(contract.contract_points), {
 			fontFamily: 'Fredoka Bold',
-			fontSize: 50,
+			fontSize: 40,
 			fill: 0x0798FF,
 			align: 'right',
 		});
-		contractPointsValue.x = 550 - contractPointsValue.width;
-		contractPointsValue.y = 140;
+		contractPointsValue.x = KadoKadeoManager.I(183) - contractPointsValue.width;
+		contractPointsValue.y = KadoKadeoManager.I(46);
 		panel.addContentDisplayObject(contractPointsValue);
 
 		var kImg = new Sprite(Texture.from('kado_icon.png'));
-		kImg.x = 580;
-		kImg.y = 175;
+		kImg.x = KadoKadeoManager.I(193);
+		kImg.y = KadoKadeoManager.I(58);
 		kImg.scale.set(0.5);
 		panel.addContentDisplayObject(kImg);
 	}

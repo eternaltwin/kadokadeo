@@ -105,7 +105,7 @@ class Game implements kado.GameInterface {
 		var r2 = r * r;
 		while (ntrys-- > 0) {
 			if (bx == null) {
-				x = Seed.random(300 * Cs.NEW_GEN_SCALE - r * 2) + r;
+				x = Seed.random(KadoKadeoManager.I(300) - r * 2) + r;
 			}
 			y = Seed.random(Cs.MAXY - r * 2) + r;
 			var hit = false;
@@ -148,7 +148,7 @@ class Game implements kado.GameInterface {
 					mc._alpha = 10 * mc.t;
 				}
 				var c = (mc._currentframe * 2 - mc._totalframes) / mc._totalframes;
-				mc._y += (0.5 + Math.abs(c) * 1) * Cs.NEW_GEN_SCALE;
+				mc._y += KadoKadeoManager.S(0.5 + Math.abs(c) * 1);
 				if (mc.t == 0) {
 					mc.removeMovieClip();
 					f.fList.splice(j--, 1);
@@ -174,19 +174,19 @@ class Game implements kado.GameInterface {
 		death.play();
 		death.removeOnFrame = 16;
 		death._x = hero.x;
-		death._y = hero.y - 15 * Cs.NEW_GEN_SCALE;
+		death._y = hero.y - KadoKadeoManager.I(15);
 
 		death = dmanager.attach("fall", Cs.PLAN_HERO);
 		death.play();
 		death.loop = true;
-		death_y = -5 * Cs.NEW_GEN_SCALE;
+		death_y = -KadoKadeoManager.I(5);
 		death._x = hero.x;
 		death._y = hero.y;
-		hero.jump_dx = (hero.x < 150 * Cs.NEW_GEN_SCALE) ? Cs.NEW_GEN_SCALE : -Cs.NEW_GEN_SCALE;
+		hero.jump_dx = (hero.x < KadoKadeoManager.I(150)) ? KadoKadeoManager.I(1) : -KadoKadeoManager.I(1);
 	}
 
 	function genBonus():Void {
-		var p = genPlace(5 * Cs.NEW_GEN_SCALE + Std.int(Math.sqrt(Cs.BONUS_RAY2)), null);
+		var p = genPlace(KadoKadeoManager.I(5) + Std.int(Math.sqrt(Cs.BONUS_RAY2)), null);
 		if (p == null) {
 			return;
 		}
@@ -207,7 +207,7 @@ class Game implements kado.GameInterface {
 
 	function genJama():Void {
 		var w = Seed.random(2) == 0;
-		var p = genPlace(40 * Cs.NEW_GEN_SCALE, w ? 320 * Cs.NEW_GEN_SCALE : -20 * Cs.NEW_GEN_SCALE);
+		var p = genPlace(KadoKadeoManager.I(40), w ? KadoKadeoManager.I(320) : -KadoKadeoManager.I(20));
 		if (p == null) {
 			return;
 		}
@@ -262,8 +262,8 @@ class Game implements kado.GameInterface {
 		if (game_over) {
 			death._x += hero.jump_dx * Timer.tmod;
 			death._y += death_y * Timer.tmod;
-			death_y += Timer.tmod * Cs.NEW_GEN_SCALE;
-			if (death._y > 330 * Cs.NEW_GEN_SCALE) {
+			death_y += KadoKadeoManager.S(Timer.tmod);
+			if (death._y > KadoKadeoManager.I(330)) {
 				stats.l = level;
 				stats.t = Std.int(avg_tmod * 100);
 				KadoKadeoManager.kkm.gameOver(stats);

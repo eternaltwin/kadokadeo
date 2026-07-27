@@ -64,15 +64,15 @@ class Hero extends Phys {
 		flWarp = false;
 		mc.attachMovie("mcHeroBody", "mcHeroBody", 2);
 		var eye = mc.attachMovie("mcHeroEye", "mcHeroEye", 4);
-		eye._x = 8.5 * Cs.NEW_GEN_SCALE;
+		eye._x = KadoKadeoManager.S(8.5);
 		flame = mc.attachMovie("flame", "flame", 1);
-		flame._x = -11 * Cs.NEW_GEN_SCALE;
+		flame._x = -KadoKadeoManager.I(11);
 		flame.loop = true;
 		flame.play();
 
 		turnSpeed = 0.15;
-		accel = 0.5 * Cs.NEW_GEN_SCALE;
-		ray = 10 * Cs.NEW_GEN_SCALE;
+		accel = KadoKadeoManager.S(0.5);
+		ray = KadoKadeoManager.I(10);
 		angle = 0;
 		frict = 0.98;
 		weaponSelected = 0;
@@ -94,20 +94,20 @@ class Hero extends Phys {
 			{mc: root.attachMovie("wing1", "wing1", 3), flame: root.attachMovie("flame", "wing1flame", 1), trg: 0}
 		];
 		// wings[0].mc._visible = false;
-		wings[0].mc.pivot = new Point(7.5 * Cs.NEW_GEN_SCALE, 0);
-		wings[0].mc._x = 6.5 * Cs.NEW_GEN_SCALE;
-		wings[0].mc._y = -1 * Cs.NEW_GEN_SCALE;
-		wings[0].flame._x = 10 * Cs.NEW_GEN_SCALE;
-		wings[0].flame._y = -1 * Cs.NEW_GEN_SCALE;
+		wings[0].mc.pivot = new Point(KadoKadeoManager.S(7.5), 0);
+		wings[0].mc._x = KadoKadeoManager.S(6.5);
+		wings[0].mc._y = -KadoKadeoManager.I(1);
+		wings[0].flame._x = KadoKadeoManager.I(10);
+		wings[0].flame._y = -KadoKadeoManager.I(1);
 		wings[0].flame._rotation = 25;
 		wings[0].flame.scale.set(0.47, 0.63);
 		wings[0].flame.loop = true;
 		wings[0].flame.play();
-		wings[1].mc.pivot = new Point(7.5 * Cs.NEW_GEN_SCALE, 0);
-		wings[1].mc._x = 6.5 * Cs.NEW_GEN_SCALE;
-		wings[1].mc._y = 1 * Cs.NEW_GEN_SCALE;
-		wings[1].flame._x = 10 * Cs.NEW_GEN_SCALE;
-		wings[1].flame._y = 1 * Cs.NEW_GEN_SCALE;
+		wings[1].mc.pivot = new Point(KadoKadeoManager.S(7.5), 0);
+		wings[1].mc._x = KadoKadeoManager.S(6.5);
+		wings[1].mc._y = KadoKadeoManager.I(1);
+		wings[1].flame._x = KadoKadeoManager.I(10);
+		wings[1].flame._y = KadoKadeoManager.I(1);
 		wings[1].flame._rotation = -25;
 		wings[1].flame.scale.set(0.47, -0.63);
 		wings[1].flame.loop = true;
@@ -248,15 +248,15 @@ class Hero extends Phys {
 					var a = ec * ((i / (max - 1)) * 2 - 1);
 					if (max == 1)
 						a = 0;
-					var sp:Float = 6 * Cs.NEW_GEN_SCALE;
+					var sp:Float = KadoKadeoManager.I(6);
 					var fr = 1;
 					var t = 50;
 					if (a != 0) {
-						sp = 6 * Cs.NEW_GEN_SCALE / (1 + Math.abs(a));
+						sp = KadoKadeoManager.I(6) / (1 + Math.abs(a));
 						fr = 2;
 						t = 38;
 					}
-					var shot = newShot(fr, sp, a, ray + 15 * Cs.NEW_GEN_SCALE);
+					var shot = newShot(fr, sp, a, ray + KadoKadeoManager.I(15));
 					shot.root.loop = true;
 					shot.damage = 1;
 					shot.timer = t;
@@ -265,7 +265,7 @@ class Hero extends Phys {
 				cd = 18;
 
 			case 1:
-				var shot = newShot(4, 12 * Cs.NEW_GEN_SCALE, 0, ray + 8 * Cs.NEW_GEN_SCALE);
+				var shot = newShot(4, KadoKadeoManager.I(12), 0, ray + KadoKadeoManager.I(8));
 				shot.root.onFrame.set(8, function() {
 					shot.root.gotoAndPlay(4);
 				});
@@ -276,14 +276,14 @@ class Hero extends Phys {
 				shot.timer = 50 + Seed.rand() * 10;
 				shot.a += Math.sin(shot.decal / 100) * 0.5;
 				shot.orient();
-				shot.ray = 8 * Cs.NEW_GEN_SCALE;
+				shot.ray = KadoKadeoManager.I(8);
 				shot.updatePos();
 				cd = 11 / (2 + power);
 
 			case 2:
 				for (n in 0...2) {
 					var sens = n * 2 - 1;
-					var shot = newShot(5, 8 * Cs.NEW_GEN_SCALE, sens * 0.5, ray + 8 * Cs.NEW_GEN_SCALE);
+					var shot = newShot(5, KadoKadeoManager.I(8), sens * 0.5, ray + KadoKadeoManager.I(8));
 					shot.root.stopOnFrame = [7];
 					shot.root.onFrame.set(13, function() {
 						shot.kill();
@@ -292,7 +292,7 @@ class Hero extends Phys {
 					shot.ft = 2;
 					shot.flWarp = true;
 					shot.timer = 32;
-					shot.ray = (6 + power * 3) * Cs.NEW_GEN_SCALE;
+					shot.ray = KadoKadeoManager.S(6 + power * 3);
 					shot.root._yscale = 100 + power * 50;
 					shot.flPierce = true;
 					shot.damage = 0.75 + power * 0.75;
@@ -300,8 +300,8 @@ class Hero extends Phys {
 				}
 
 			case 3:
-				var shot = newShot(7 + power, 7 * Cs.NEW_GEN_SCALE, (Seed.rand() * 2 - 1) * 0.2, ray + 6 * Cs.NEW_GEN_SCALE);
-				var ec = 1 * Cs.NEW_GEN_SCALE;
+				var shot = newShot(7 + power, KadoKadeoManager.I(7), (Seed.rand() * 2 - 1) * 0.2, ray + KadoKadeoManager.I(6));
+				var ec = KadoKadeoManager.I(1);
 				shot.timer = 12 + Seed.rand() * 10 + power * 5;
 				shot.x += (Seed.rand() * 2 - 1) * ec;
 				shot.y += (Seed.rand() * 2 - 1) * ec;
@@ -312,8 +312,8 @@ class Hero extends Phys {
 					var a = angle + (Seed.randVfx() * 2 - 1) * 0.2;
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
-					var r = ray + 5 * Cs.NEW_GEN_SCALE;
-					var sp = (2 + Seed.randVfx() * 10) * Cs.NEW_GEN_SCALE;
+					var r = ray + KadoKadeoManager.I(5);
+					var sp = KadoKadeoManager.S(2 + Seed.randVfx() * 10);
 					p.x = x + ca * r;
 					p.y = y + sa * r;
 					p.vx = ca * sp;
@@ -323,10 +323,10 @@ class Hero extends Phys {
 				}
 
 			case 4:
-				var shot = newShot(12, 6 * Cs.NEW_GEN_SCALE, (Seed.rand() * 2 - 1) * 0.2, ray + 16 * Cs.NEW_GEN_SCALE);
+				var shot = newShot(12, KadoKadeoManager.I(6), (Seed.rand() * 2 - 1) * 0.2, ray + KadoKadeoManager.I(16));
 				shot.timer = 36;
 				// shot.damage = 1
-				shot.ray = 9 * Cs.NEW_GEN_SCALE;
+				shot.ray = KadoKadeoManager.I(9);
 				shot.bList = [3];
 				shot.ca = 0.08;
 				shot.va = 0.1;
@@ -339,8 +339,8 @@ class Hero extends Phys {
 					var a = angle + (Seed.randVfx() * 2 - 1) * 0.4;
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
-					var r = ray + 5 * Cs.NEW_GEN_SCALE;
-					var sp = (1 + Seed.randVfx() * 5) * Cs.NEW_GEN_SCALE;
+					var r = ray + KadoKadeoManager.I(5);
+					var sp = KadoKadeoManager.S(1 + Seed.randVfx() * 5);
 					p.x = x + ca * r;
 					p.y = y + sa * r;
 					p.vx = ca * sp;
@@ -354,8 +354,8 @@ class Hero extends Phys {
 					var a = angle + (Seed.randVfx() * 2 - 1) * 0.2;
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
-					var r = ray + 5 * Cs.NEW_GEN_SCALE;
-					var sp = (1 + Seed.randVfx() * 5) * Cs.NEW_GEN_SCALE;
+					var r = ray + KadoKadeoManager.I(5);
+					var sp = KadoKadeoManager.S(1 + Seed.randVfx() * 5);
 					p.x = x + ca * r;
 					p.y = y + sa * r;
 					p.vx = ca * sp;
@@ -439,7 +439,7 @@ class Hero extends Phys {
 					ny = Seed.rand() * Cs.mch;
 					for (i in 0...Cs.game.badsList.length) {
 						var b = Cs.game.badsList[i];
-						if (b.getDist({x: nx, y: ny}) < 150 * Cs.NEW_GEN_SCALE - ntry * 2 * Cs.NEW_GEN_SCALE) {
+						if (b.getDist({x: nx, y: ny}) < KadoKadeoManager.I(150) - ntry * KadoKadeoManager.I(2)) {
 							flBreak = false;
 						}
 					}
@@ -454,7 +454,7 @@ class Hero extends Phys {
 
 			case 4: // HYPERTHRUST;
 				hyperThrustTimer = 60;
-				var sp = 26 * Cs.NEW_GEN_SCALE;
+				var sp = KadoKadeoManager.I(26);
 				vx = Math.cos(angle) * sp;
 				vy = Math.sin(angle) * sp;
 				mcHyperThrust = dm.attach("mcHyperThrust", 1);
@@ -470,7 +470,7 @@ class Hero extends Phys {
 				am = 25;
 
 			case 5: // SWARM;
-				var shot = newShot(6, 10 * Cs.NEW_GEN_SCALE, 0, ray + 10 * Cs.NEW_GEN_SCALE);
+				var shot = newShot(6, KadoKadeoManager.I(10), 0, ray + KadoKadeoManager.I(10));
 				shot.timer = 100;
 				shot.root.gotoAndPlay(Seed.randomVfx(5) + 1);
 				shot.root.loop = true;
@@ -490,11 +490,11 @@ class Hero extends Phys {
 			var info = magicBallList[i];
 			var dx = info.trg.x - info.sx;
 			var dy = info.trg.y - info.sy;
-			info.pos += 8 * Cs.NEW_GEN_SCALE * Timer.tmod;
+			info.pos += KadoKadeoManager.I(8) * Timer.tmod;
 			var c = info.pos / info.max;
 			if (c < 1) {
 				info.mc._x = info.sx + dx * c;
-				info.mc._y = info.sy + dy * c - Math.sin(c * 3.14) * 60 * Cs.NEW_GEN_SCALE;
+				info.mc._y = info.sy + dy * c - Math.sin(c * 3.14) * KadoKadeoManager.I(60);
 
 				var ddx = info.mc._x - info.opx;
 				var ddy = info.mc._y - info.opy;
@@ -570,16 +570,16 @@ class Hero extends Phys {
 	}
 
 	function newRocket(speed:Float, side, sleep) {
-		var shot = newShot(3, speed * Cs.NEW_GEN_SCALE, side * 1.8, ray);
+		var shot = newShot(3, KadoKadeoManager.S(speed), side * 1.8, ray);
 		shot.thruster = {
-			vx: Math.cos(angle) * 0.8 * Cs.NEW_GEN_SCALE,
-			vy: Math.sin(angle) * 0.8 * Cs.NEW_GEN_SCALE,
+			vx: Math.cos(angle) * KadoKadeoManager.S(0.8),
+			vy: Math.sin(angle) * KadoKadeoManager.S(0.8),
 			sleep: sleep,
 		}
 		shot.frict = 0.95;
 		shot.damage = 1;
 		shot.root._rotation = root._rotation;
-		shot.ray = 8 * Cs.NEW_GEN_SCALE;
+		shot.ray = KadoKadeoManager.I(8);
 		shot.timer = 80 + sleep;
 		shot.ft = 1;
 		shot.flWarp = true;
@@ -598,7 +598,7 @@ class Hero extends Phys {
 	function newPlasmaWave() {}
 
 	public function explode() {
-		fxOnde(ray * 2 + 20 * Cs.NEW_GEN_SCALE);
+		fxOnde(ray * 2 + KadoKadeoManager.I(20));
 		throwDebris(10, 1);
 		kill();
 	}
@@ -644,7 +644,7 @@ class Hero extends Phys {
 	public function launchSparks(ang, max, vvx:Float) {
 		for (i in 0...max) {
 			var p = new Part(Cs.game.dm.attach("partSpark", Game.DP_UNDERPARTS));
-			var r = (ray + 5 * Cs.NEW_GEN_SCALE + i * 4 * Cs.NEW_GEN_SCALE);
+			var r = (ray + KadoKadeoManager.I(5) + i * KadoKadeoManager.I(4));
 			var ca = Math.cos((angle - 3.14) + ang);
 			var sa = Math.sin((angle - 3.14) + ang);
 
@@ -653,18 +653,18 @@ class Hero extends Phys {
 
 			//*
 			var a = Seed.randVfx() * 6.28;
-			var d = Seed.randVfx() * 16 * Cs.NEW_GEN_SCALE;
+			var d = Seed.randVfx() * KadoKadeoManager.I(16);
 			var dx = Math.cos(a) * d;
 			var dy = Math.sin(a) * d;
 			p.x += dx;
 			p.y += dy;
-			p.root._x -= dx + (Seed.randVfx() * 2 - 1) * 2 * Cs.NEW_GEN_SCALE;
-			p.root._y -= dy + (Seed.randVfx() * 2 - 1) * 2 * Cs.NEW_GEN_SCALE;
+			p.root._x -= dx + (Seed.randVfx() * 2 - 1) * KadoKadeoManager.I(2);
+			p.root._y -= dy + (Seed.randVfx() * 2 - 1) * KadoKadeoManager.I(2);
 			p.root.play();
 			//*/
 
-			p.vx = ca * 1.5 * Cs.NEW_GEN_SCALE * max; //-(vx*0.5+vvx)
-			p.vy = sa * 1.5 * Cs.NEW_GEN_SCALE * max; //-vy*0.5
+			p.vx = ca * KadoKadeoManager.S(1.5) * max; //-(vx*0.5+vvx)
+			p.vy = sa * KadoKadeoManager.S(1.5) * max; //-vy*0.5
 
 			p.vr = 20 * (Seed.randVfx() * 2 - 1);
 			p.timer = 10 + Seed.randVfx() * 10;

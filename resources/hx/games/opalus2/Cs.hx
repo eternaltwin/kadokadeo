@@ -3,11 +3,10 @@ package opalus2;
 import common_haxe_avm1.KKApi;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
-	public static var mcw = 300 * NEW_GEN_SCALE;
-	public static var mch = 300 * NEW_GEN_SCALE;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
 
-	public static var SIZE = 20 * NEW_GEN_SCALE;
+	public static var SIZE = KadoKadeoManager.I(20);
 	public static var GRID_MAX = 15;
 
 	public static var DIR = [[0, 1], [1, 0], [0, -1], [-1, 0]];

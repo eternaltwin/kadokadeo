@@ -1,5 +1,6 @@
 package flushee;
 
+import kado.KadoKadeoManager;
 import mt.Timer;
 
 class Gem {
@@ -74,8 +75,8 @@ class Gem {
 
 	public function explode():Void {
 		t = EXPLODE;
-		px = mc._x + 18 * Cs.NEW_GEN_SCALE;
-		py = mc._y + 18 * Cs.NEW_GEN_SCALE;
+		px = mc._x + KadoKadeoManager.I(18);
+		py = mc._y + KadoKadeoManager.I(18);
 		time = 0;
 		mc.gotoAndPlay(1);
 		game.moves.push(this);
@@ -116,7 +117,7 @@ class Gem {
 		var p = Math.pow(0.7, Timer.tmod);
 		px = px * p + tx * (1 - p);
 		py = py * p + ty * (1 - p);
-		if (Math.abs(px - tx) + Math.abs(py - ty) < 2 * Cs.NEW_GEN_SCALE) {
+		if (Math.abs(px - tx) + Math.abs(py - ty) < KadoKadeoManager.I(2)) {
 			px = tx;
 			py = ty;
 			mc.gotoAndStop(1);
@@ -147,7 +148,7 @@ class Gem {
 
 	function updateGravity():Bool {
 		var fl = true;
-		py += Timer.tmod * 10 * Cs.NEW_GEN_SCALE;
+		py += Timer.tmod * KadoKadeoManager.I(10);
 		if (py >= Cs.CELL_SIZE) {
 			py = Cs.CELL_SIZE;
 			fl = false;
@@ -158,7 +159,7 @@ class Gem {
 
 	function updateFall():Bool {
 		var fl = true;
-		py -= Timer.tmod * 10 * Cs.NEW_GEN_SCALE;
+		py -= Timer.tmod * KadoKadeoManager.I(10);
 		if (py <= 0) {
 			py = 0;
 			fl = false;

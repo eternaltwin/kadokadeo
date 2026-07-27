@@ -19,8 +19,8 @@ class Tanker extends Runner {
 		stClimbWait = 12; // 16
 		stTossClimb = 6; // 12
 		stTossSmart = 2;
-		stClimb = 36 * Cs.NEW_GEN_SCALE;
-		speed = 4 * Cs.NEW_GEN_SCALE;
+		stClimb = KadoKadeoManager.I(36);
+		speed = KadoKadeoManager.I(4);
 		stDrop.push({w: 40, id: 1});
 		stDrop.push({w: 10, id: 2});
 		stDrop.push({w: 30, id: 5});
@@ -37,9 +37,9 @@ class Tanker extends Runner {
 				p.root.loop = true;
 				p.root.play();
 				p.vx = -shot.vx * 0.75;
-				p.vy = shot.vy - 3 * Cs.NEW_GEN_SCALE;
+				p.vy = shot.vy - KadoKadeoManager.I(3);
 				p.timer = 20 + Seed.randVfx() * 10;
-				p.weight = 0.4 * Cs.NEW_GEN_SCALE;
+				p.weight = KadoKadeoManager.S(0.4);
 				return;
 			}
 		}
@@ -50,7 +50,7 @@ class Tanker extends Runner {
 		if ((Cs.game.hero.x - x) * sens < 0) {
 			super.cut(n);
 		} else {
-			throwMonster(1.57 - (1.57 * Cs.game.hero.sens), 12 * Cs.NEW_GEN_SCALE);
+			throwMonster(1.57 - (1.57 * Cs.game.hero.sens), KadoKadeoManager.I(12));
 		}
 	}
 

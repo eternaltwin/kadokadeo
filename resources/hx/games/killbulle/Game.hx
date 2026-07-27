@@ -171,7 +171,7 @@ class Game implements kado.GameInterface {
 		var p = Math.pow(0.9, Timer.tmod);
 		camera_x = Num.q(camera_x * p + hero.x * (1 - p));
 
-		root._x = -Math.min(Math.max(camera_x - 150 * Cs.NEW_GEN_SCALE, 0), Cs.WIDTH - 300 * Cs.NEW_GEN_SCALE);
+		root._x = -Math.min(Math.max(camera_x - KadoKadeoManager.I(150), 0), Cs.WIDTH - KadoKadeoManager.I(300));
 		bg._x = -root._x / 3;
 
 		if (blob_timer <= 0) {

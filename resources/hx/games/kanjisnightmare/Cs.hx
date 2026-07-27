@@ -1,13 +1,10 @@
 package kanjisnightmare;
 
 import common_haxe_avm1.KKApi;
-import common_haxe_avm1.display.ASprite;
-import pixi.filters.extras.GlowFilter;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
-	public static var mcw = 300 * NEW_GEN_SCALE;
-	public static var mch = 300 * NEW_GEN_SCALE;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
 
 	public static var game:Game;
 
@@ -23,8 +20,4 @@ class Cs {
 	public static var C1000 = KKApi.const(1000);
 	public static var C5000 = KKApi.const(5000);
 	public static var C8000 = KKApi.const(8000);
-
-	public static inline function S(v:Float):Float {
-		return v * NEW_GEN_SCALE;
-	}
 }

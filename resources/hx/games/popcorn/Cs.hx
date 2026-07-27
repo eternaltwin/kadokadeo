@@ -6,11 +6,10 @@ import pixi.core.textures.RenderTexture;
 import common_haxe_avm1.KKApi;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
-	public static var mcw = 300 * NEW_GEN_SCALE;
-	public static var mch = 300 * NEW_GEN_SCALE;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
 
-	public static var HEIGHT = 900 * NEW_GEN_SCALE; // 1000;
+	public static var HEIGHT = KadoKadeoManager.I(900); // 1000;
 	public static var MARGIN = 0;
 
 	public static var COMBO = KKApi.aconst([25, 50, 75, 100, 150, 200, 300, 400, 500]);

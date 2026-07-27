@@ -21,6 +21,7 @@ import pixi.core.ticker.Ticker;
 @:expose("KadoKadeo")
 class KadoKadeoManager extends Application {
 	public static var kkm:KadoKadeoManager;
+	public static var NEW_GEN_SCALE = 2;
 
 	public var canvas:CanvasElement;
 
@@ -63,11 +64,19 @@ class KadoKadeoManager extends Application {
 
 	public var score:ProtectedInt = 0;
 
+	public static function S(n:Float):Float {
+		return n * NEW_GEN_SCALE;
+	}
+
+	public static function I(n:Int):Int {
+		return n * NEW_GEN_SCALE;
+	}
+
 	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>, params:GameParams) {
 		super({
 			view: canvas,
-			width: 900,
-			height: 960,
+			width: 600,
+			height: 640,
 			backgroundColor: 0x80c0e6e9
 		});
 
@@ -76,8 +85,8 @@ class KadoKadeoManager extends Application {
 		this.params = params;
 		this.endRunClient = new KadoEndRun(crypto);
 		this.runFlow = new KadoRunFlow(params);
-		canvas.width = 900;
-		canvas.height = 960;
+		canvas.width = 600;
+		canvas.height = 640;
 		this.root = new ASprite();
 		this.dm = new DepthManager(root);
 		this.stage.addChild(root);

@@ -4,7 +4,7 @@ import pixi.core.graphics.Graphics;
 import pixi.core.math.Point;
 
 class Level {
-	public static var DELTA = 300 * Cs.NEW_GEN_SCALE;
+	public static var DELTA = KadoKadeoManager.I(300);
 
 	var game:Game;
 	var dmanager:DepthManager;
@@ -48,8 +48,8 @@ class Level {
 		pos = 0;
 		speed = Cs.MINSPEED;
 		cur_speed = 0;
-		wallspacing = 110 * Cs.NEW_GEN_SCALE;
-		frequency = {min: 150 * Cs.NEW_GEN_SCALE, max: 200 * Cs.NEW_GEN_SCALE};
+		wallspacing = KadoKadeoManager.I(110);
+		frequency = {min: KadoKadeoManager.I(150), max: KadoKadeoManager.I(200)};
 
 		scroll = game.dmanager.empty(Cs.PLAN_BG);
 		dmanager = new DepthManager(scroll);
@@ -97,9 +97,9 @@ class Level {
 
 		var fmin = frequency.min;
 		var fampl = Std.int(frequency.max - frequency.min);
-		var ampl = 40 * Cs.NEW_GEN_SCALE;
+		var ampl = KadoKadeoManager.I(40);
 
-		var y = 650 * Cs.NEW_GEN_SCALE + fmin;
+		var y = KadoKadeoManager.I(650) + fmin;
 
 		if (points_up.length > 0 && points_up[points_up.length - 1].y < y)
 			y = points_up[points_up.length - 1].y;
@@ -108,15 +108,15 @@ class Level {
 
 		y -= fmin;
 
-		var space = 150 * Cs.NEW_GEN_SCALE - wallspacing;
+		var space = KadoKadeoManager.I(150) - wallspacing;
 		var delta:Float = 0;
 
 		if (Seed.random(3) == 0)
-			delta = wallspacing - 140 * Cs.NEW_GEN_SCALE;
+			delta = wallspacing - KadoKadeoManager.I(140);
 
 		if (Seed.random(5) == 0) {
-			ampl = Std.int(Math.min(100 * cur_speed / Cs.MINSPEED, 150) * Cs.NEW_GEN_SCALE);
-			space = 40 * Cs.NEW_GEN_SCALE;
+			ampl = KadoKadeoManager.I(Std.int(Math.min(100 * cur_speed / Cs.MINSPEED, 150)));
+			space = KadoKadeoManager.I(40);
 			delta = 0;
 		}
 
@@ -148,8 +148,8 @@ class Level {
 
 	function point(mc:ASprite, x:Float, y:Float, color:Int) {
 		mc.moveTo(x, y);
-		mc.lineStyle(5 * Cs.NEW_GEN_SCALE, color, 1);
-		mc.lineTo(x + 0.5 * Cs.NEW_GEN_SCALE, y + 0.5 * Cs.NEW_GEN_SCALE);
+		mc.lineStyle(KadoKadeoManager.I(5), color, 1);
+		mc.lineTo(x + KadoKadeoManager.S(0.5), y + KadoKadeoManager.S(0.5));
 	}
 
 	function curve(mc:Graphics, p1:{
@@ -187,13 +187,13 @@ class Level {
 				var p1 = points_up[i - 1];
 				var p2 = points_up[i];
 				p1 = {
-					x: p1.x - 4 * Cs.NEW_GEN_SCALE,
+					x: p1.x - KadoKadeoManager.I(4),
 					y: p1.y,
 					tx: p1.tx,
 					ty: p1.ty
 				};
 				p2 = {
-					x: p2.x - 4 * Cs.NEW_GEN_SCALE,
+					x: p2.x - KadoKadeoManager.I(4),
 					y: p2.y,
 					tx: p2.tx,
 					ty: p2.ty
@@ -221,13 +221,13 @@ class Level {
 				var p1 = points_down[i - 1];
 				var p2 = points_down[i];
 				p1 = {
-					x: p1.x + 4 * Cs.NEW_GEN_SCALE,
+					x: p1.x + KadoKadeoManager.I(4),
 					y: p1.y,
 					tx: p1.tx,
 					ty: p1.ty
 				};
 				p2 = {
-					x: p2.x + 4 * Cs.NEW_GEN_SCALE,
+					x: p2.x + KadoKadeoManager.I(4),
 					y: p2.y,
 					tx: p2.tx,
 					ty: p2.ty
@@ -262,14 +262,14 @@ class Level {
 		if (Timer.tmod > 10)
 			Timer.tmod = 10;
 
-		if (wallspacing > 50 * Cs.NEW_GEN_SCALE)
-			wallspacing -= 0.01 * Timer.tmod * Cs.NEW_GEN_SCALE;
+		if (wallspacing > KadoKadeoManager.I(50))
+			wallspacing -= KadoKadeoManager.S(0.01 * Timer.tmod);
 
-		speed += 0.002 * Timer.tmod * Cs.NEW_GEN_SCALE;
+		speed += KadoKadeoManager.S(0.002 * Timer.tmod);
 		var ps = Math.pow(0.96, Timer.tmod);
 		cur_speed = cur_speed * ps + (1 - ps) * speed;
-		if (cur_speed > 22 * Cs.NEW_GEN_SCALE)
-			cur_speed = 22 * Cs.NEW_GEN_SCALE;
+		if (cur_speed > KadoKadeoManager.I(22))
+			cur_speed = KadoKadeoManager.I(22);
 		var dp = cur_speed * Timer.tmod;
 		pos += dp;
 		if (pos > DELTA) {

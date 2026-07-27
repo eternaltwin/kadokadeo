@@ -47,8 +47,8 @@ class Hero {
 	public function new(g:Game) {
 		game = g;
 		state = NORMAL;
-		x = 150 * Cs.NEW_GEN_SCALE;
-		y = 200 * Cs.NEW_GEN_SCALE;
+		x = KadoKadeoManager.I(150);
+		y = KadoKadeoManager.I(200);
 		r = 0;
 		sens = 1;
 		frame = 0;
@@ -62,7 +62,7 @@ class Hero {
 	}
 
 	function getPos():{x:Int, y:Int} {
-		return game.level.getPos(x, y + Cs.BLK_HEIGHT - Cs.NEW_GEN_SCALE);
+		return game.level.getPos(x, y + Cs.BLK_HEIGHT - KadoKadeoManager.I(1));
 	}
 
 	function recal(x:Null<Int>, y:Null<Int>):Void {
@@ -154,7 +154,7 @@ class Hero {
 				mc._alpha = 10 * mc.t;
 			}
 			var c = (mc._currentframe * 2 - mc._totalframes) / mc._totalframes;
-			mc._y += (0.5 + Math.abs(c) * 1) * Cs.NEW_GEN_SCALE;
+			mc._y += KadoKadeoManager.S(0.5 + Math.abs(c) * 1);
 			if (mc.t == 0) {
 				mc.removeMovieClip();
 				f.fList.splice(j--, 1);
@@ -172,18 +172,18 @@ class Hero {
 		if (isEnd) {
 			return;
 		}
-		var climb_speed = 8 * Cs.NEW_GEN_SCALE;
-		var fall_speed = 20 * Cs.NEW_GEN_SCALE;
+		var climb_speed = KadoKadeoManager.I(8);
+		var fall_speed = KadoKadeoManager.I(20);
 
 		var p = getPos();
 
-		var minX = p.x * Cs.BLK_WIDTH + Cs.DELTA_X + 10 * Cs.NEW_GEN_SCALE;
-		var maxX = (p.x + 1) * Cs.BLK_WIDTH + Cs.DELTA_X - 10 * Cs.NEW_GEN_SCALE;
+		var minX = p.x * Cs.BLK_WIDTH + Cs.DELTA_X + KadoKadeoManager.I(10);
+		var maxX = (p.x + 1) * Cs.BLK_WIDTH + Cs.DELTA_X - KadoKadeoManager.I(10);
 
 		if (p.x == 0) {
-			minX += 9 * Cs.NEW_GEN_SCALE;
+			minX += KadoKadeoManager.I(9);
 		} else if (p.x == Cs.LVL_WIDTH - 1) {
-			maxX -= 9 * Cs.NEW_GEN_SCALE;
+			maxX -= KadoKadeoManager.I(9);
 		}
 
 		if (p.x > 0 && tbl(p.x - 1, p.y) == null) {
@@ -202,9 +202,9 @@ class Hero {
 			case NORMAL:
 				if (tbl(p.x, p.y - 1) == null) {
 					if (isLeftPressed()) {
-						x -= 5 * Cs.NEW_GEN_SCALE * Timer.tmod;
+						x -= KadoKadeoManager.I(5) * Timer.tmod;
 					} else if (isRightPressed()) {
-						x += 5 * Cs.NEW_GEN_SCALE * Timer.tmod;
+						x += KadoKadeoManager.I(5) * Timer.tmod;
 					}
 					state = FALLING;
 				} else if (isLeftPressed()) {
@@ -212,7 +212,7 @@ class Hero {
 					flRun = true;
 					r = Math.max(-5, r - Timer.tmod);
 					if (x > minX) {
-						x -= 5 * Cs.NEW_GEN_SCALE * Timer.tmod;
+						x -= KadoKadeoManager.I(5) * Timer.tmod;
 						if (x <= minX) {
 							x = minX;
 						}
@@ -227,7 +227,7 @@ class Hero {
 					flRun = true;
 					r = Math.min(r + Timer.tmod, 5);
 					if (x < maxX) {
-						x += 5 * Cs.NEW_GEN_SCALE * Timer.tmod;
+						x += KadoKadeoManager.I(5) * Timer.tmod;
 						if (x >= maxX) {
 							x = maxX;
 						}
@@ -272,7 +272,7 @@ class Hero {
 				r -= 10 * Timer.tmod;
 				if (r <= 0) {
 					r = 0;
-					x -= 11 * Cs.NEW_GEN_SCALE;
+					x -= KadoKadeoManager.I(11);
 					state = NORMAL;
 				}
 			case CLIMB_RIGHT:
@@ -296,7 +296,7 @@ class Hero {
 				r += 10 * Timer.tmod;
 				if (r >= 0) {
 					r = 0;
-					x += 11 * Cs.NEW_GEN_SCALE;
+					x += KadoKadeoManager.I(11);
 					state = NORMAL;
 				}
 			case DEATH:
@@ -335,9 +335,9 @@ class Hero {
 
 		switch (state) {
 			case CLIMB_LEFT | END_CLIMB_LEFT:
-				mc._x = x - 8 * Cs.NEW_GEN_SCALE;
+				mc._x = x - KadoKadeoManager.I(8);
 			case CLIMB_RIGHT | END_CLIMB_RIGHT:
-				mc._x = x + 8 * Cs.NEW_GEN_SCALE;
+				mc._x = x + KadoKadeoManager.I(8);
 			case _:
 				mc._x = x;
 		}

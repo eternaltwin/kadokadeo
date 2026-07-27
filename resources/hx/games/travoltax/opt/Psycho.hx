@@ -45,7 +45,7 @@ class Psycho extends Option {
 
 		// decal = (decal + 23 * mt.Timer.tmod) % 628;
 		// decal2 = (decal2 + 5 * mt.Timer.tmod) % 628;
-		// var sp = (5 + Math.cos(decal2 * 0.01) * 3) * Cs.NEW_GEN_SCALE;
+		// var sp = KadoKadeoManager.S(5 + Math.cos(decal2 * 0.01) * 3);
 		// var vx = Std.int(Math.cos(decal * 0.01) * sp);
 		// var vy = Std.int(Math.sin(decal * 0.01) * sp);
 

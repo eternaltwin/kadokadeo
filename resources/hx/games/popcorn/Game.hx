@@ -30,7 +30,7 @@ class GpListSprite extends ASprite {
 
 @:expose('GamePopcorn')
 class Game implements kado.GameInterface {
-	public static var LIMIT = 290 * Cs.NEW_GEN_SCALE;
+	public static var LIMIT = KadoKadeoManager.I(290);
 
 	public static var DP_BASE = 0;
 	public static var DP_BG = 4;
@@ -43,7 +43,7 @@ class Game implements kado.GameInterface {
 
 	static var DEBUG = false;
 
-	static var SCROLL_DECAL = -50 * Cs.NEW_GEN_SCALE;
+	static var SCROLL_DECAL = -KadoKadeoManager.I(50);
 
 	public var step:Int;
 
@@ -105,8 +105,8 @@ class Game implements kado.GameInterface {
 		animator = new Array();
 		gpList = new Array();
 
-		ly = Cs.HEIGHT - 30 * Cs.NEW_GEN_SCALE;
-		scrollSpeed = 100 * Cs.NEW_GEN_SCALE;
+		ly = Cs.HEIGHT - KadoKadeoManager.I(30);
+		scrollSpeed = KadoKadeoManager.I(100);
 
 		var replayKeys = new UInt16Array(9);
 		replayKeys[0] = KeyboardManager.LEFT;
@@ -152,7 +152,7 @@ class Game implements kado.GameInterface {
 			for (n in 0...2) {
 				var pl:GamePlanLayer = cast gdm.empty(3);
 				pl.c = 1.3;
-				var bmp = RenderTexture.create(70 * Cs.NEW_GEN_SCALE, Std.int(Cs.HEIGHT * pl.c));
+				var bmp = RenderTexture.create(KadoKadeoManager.I(70), Std.int(Cs.HEIGHT * pl.c));
 				pl.attachBitmap(bmp, 0);
 				plan.push(pl);
 				pl._x = n * Cs.mcw;
@@ -169,7 +169,7 @@ class Game implements kado.GameInterface {
 						Cs.draw(bmp, mc);
 						mc.removeMovieClip();
 					}
-					y += 100 * Cs.NEW_GEN_SCALE;
+					y += KadoKadeoManager.I(100);
 				}
 			}
 		}
@@ -182,7 +182,7 @@ class Game implements kado.GameInterface {
 					var pl:GamePlanLayer = cast gdm.empty(1);
 					pl.c = info[i].c;
 					var h = Std.int(Cs.HEIGHT * pl.c) + Cs.mch;
-					var bmp = RenderTexture.create(50 * Cs.NEW_GEN_SCALE, h);
+					var bmp = RenderTexture.create(KadoKadeoManager.I(50), h);
 					pl.attachBitmap(bmp, 0);
 					plan.push(pl);
 					pl._x = n * Cs.mcw;
@@ -196,7 +196,7 @@ class Game implements kado.GameInterface {
 						mc.gotoAndStop(Seed.random(mc._totalframes) + 1);
 						Cs.draw(bmp, mc);
 						mc.removeMovieClip();
-						y += 100 * Cs.NEW_GEN_SCALE * pl.c;
+						y += KadoKadeoManager.I(100) * pl.c;
 					}
 				}
 			}
@@ -213,10 +213,10 @@ class Game implements kado.GameInterface {
 				initDecor();
 			case 1: // ;
 				hero = new Hero(null);
-				hero.bouncer.setPos(Cs.mcw * 0.5, Cs.HEIGHT - 20 * Cs.NEW_GEN_SCALE);
+				hero.bouncer.setPos(Cs.mcw * 0.5, Cs.HEIGHT - KadoKadeoManager.I(20));
 
 				boss = new Boss(null);
-				boss.y = Cs.HEIGHT - 320 * Cs.NEW_GEN_SCALE;
+				boss.y = Cs.HEIGHT - KadoKadeoManager.I(320);
 				map._y = -Cs.HEIGHT + Cs.mch;
 
 				focus = hero;
@@ -252,7 +252,7 @@ class Game implements kado.GameInterface {
 							};
 							Cs.game.initStep(9);
 						}
-						x += 3 * Cs.NEW_GEN_SCALE;
+						x += KadoKadeoManager.I(3);
 					}
 				}
 
@@ -281,16 +281,16 @@ class Game implements kado.GameInterface {
 		while (x < Cs.mcw) {
 			if (!isFree(x, yLim))
 				list.push(x);
-			x += 3 * Cs.NEW_GEN_SCALE;
+			x += KadoKadeoManager.I(3);
 		}
 		for (i in 0...3) {
 			var p = newPart("partLight");
 			p.x = list[Seed.randomVfx(list.length)];
 			p.y = yLim;
-			p.weight = -(0.1 + Seed.randVfx() * 0.5) * Cs.NEW_GEN_SCALE;
+			p.weight = -KadoKadeoManager.S(0.1 + Seed.randVfx() * 0.5);
 			p.timer = 10 + Seed.randVfx() * 10;
 			p.setScale(100 + Seed.randVfx() * 150);
-			p.vy = -1 * Cs.NEW_GEN_SCALE;
+			p.vy = -KadoKadeoManager.I(1);
 			p.root.loop = true;
 			p.root.play();
 		}
@@ -308,11 +308,11 @@ class Game implements kado.GameInterface {
 			mc.timer = 24;
 			var scoremc = mc.root.initTextField("score", {
 				font: "Impact",
-				size: 55,
+				size: 45,
 				color: 0xFFFFFF,
 				align: "center",
 				stroke: "#000000",
-				strokeThickness: 6
+				strokeThickness: 4
 			});
 			scoremc.text = Std.string(KKApi.val(score));
 			KadoKadeoManager.kkm.addScore(score);
@@ -383,10 +383,10 @@ class Game implements kado.GameInterface {
 				// Log.print(c)
 			}
 
-			var margin = 10 * Cs.NEW_GEN_SCALE;
+			var margin = KadoKadeoManager.I(10);
 			for (i in 0...gpList.length) {
 				var mc = gpList[i];
-				mc._y -= 5 * Cs.NEW_GEN_SCALE * mc.size + (1 - c) * 50 * Cs.NEW_GEN_SCALE;
+				mc._y -= KadoKadeoManager.I(5) * mc.size + (1 - c) * KadoKadeoManager.I(50);
 				if (mc._y < -margin) {
 					mc._y += Cs.mch + 2 * margin;
 				}
@@ -474,16 +474,15 @@ class Game implements kado.GameInterface {
 	}
 
 	public function stampPopcorn(x:Float, y:Float, rot:Float):Void {
-		var scale = Cs.NEW_GEN_SCALE;
 		var a = rot * 0.017453292519943295;
 		var ca = Math.cos(a);
 		var sa = Math.sin(a);
 		for (c in POPCORN_SHAPE) {
-			var lx = c.x * scale;
-			var ly = c.y * scale;
+			var lx = KadoKadeoManager.S(c.x);
+			var ly = KadoKadeoManager.S(c.y);
 			var wx = x + lx * ca - ly * sa;
 			var wy = y + lx * sa + ly * ca;
-			stampCircle(wx, wy, c.r * scale);
+			stampCircle(wx, wy, KadoKadeoManager.S(c.r));
 		}
 	}
 

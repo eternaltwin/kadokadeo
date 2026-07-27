@@ -32,11 +32,11 @@ class Grap extends Sprite {
 				x = Num.q(x + vx * Timer.tmod);
 				y = Num.q(y + vy * Timer.tmod);
 
-				var flCol = Num.q(y) < Cs.S(10);
+				var flCol = Num.q(y) < KadoKadeoManager.I(10);
 
 				for (n in 0...Cs.game.platList.length) {
 					var pl = Cs.game.platList[n];
-					var py = Num.q(pl.y + Cs.S(12));
+					var py = Num.q(pl.y + KadoKadeoManager.I(12));
 					var px = Num.q(x);
 					if (py < Num.q(oy) && py > Num.q(y) && px > Num.q(pl.x) && px < Num.q(pl.x + pl.w)) {
 						flCol = true;
@@ -48,7 +48,7 @@ class Grap extends Sprite {
 				if (flCol) {
 					flFly = false;
 
-					var ray = Cs.S(12);
+					var ray = KadoKadeoManager.I(12);
 					var speed = Num.q(Math.sqrt(vx * vx + vy * vy));
 					if (speed > 0) {
 						x = Num.q(x - (vx / speed) * ray);

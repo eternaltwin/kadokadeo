@@ -36,7 +36,7 @@ class Hunter extends Sprite {
 		x = Seed.rand() * Cs.mcw;
 		y = Seed.rand() * Cs.mch;
 
-		speed = 10 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.I(10);
 		initQueuePool();
 
 		initPlay();
@@ -44,9 +44,9 @@ class Hunter extends Sprite {
 			color: Cs.HUNTER_COLORS[col],
 			align: "center",
 			font: "Impact",
-			size: 36,
+			size: 26,
 		});
-		scoreField.y = -20;
+		scoreField.y = -KadoKadeoManager.I(7);
 	}
 
 	override function update() {
@@ -85,7 +85,7 @@ class Hunter extends Sprite {
 		queueLife[i] = 9.0;
 		mc._x = x;
 		mc._y = y;
-		mc._xscale = len / Cs.NEW_GEN_SCALE;
+		mc._xscale = len / KadoKadeoManager.I(1);
 		mc._rotation = rot;
 		mc._visible = true;
 		mc.gotoAndPlay(1);
@@ -113,7 +113,7 @@ class Hunter extends Sprite {
 		var dx = trg.x - x;
 		var dy = trg.y - y;
 		var dist2 = dx * dx + dy * dy;
-		var minDist = 20 * Cs.NEW_GEN_SCALE;
+		var minDist = KadoKadeoManager.I(20);
 		var minDist2 = minDist * minDist;
 
 		if (dist2 > minDist2) {
@@ -143,7 +143,7 @@ class Hunter extends Sprite {
 	}
 
 	function newTrg() {
-		var ray = 20 * Cs.NEW_GEN_SCALE;
+		var ray = KadoKadeoManager.I(20);
 		trg = {
 			x: ray + Seed.rand() * (Cs.mcw - 2 * ray),
 			y: ray + Seed.rand() * (Cs.mch - 2 * ray)

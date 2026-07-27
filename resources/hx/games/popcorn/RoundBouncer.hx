@@ -4,7 +4,7 @@ import mt.bumdum.Lib.Num;
 import mt.Timer;
 
 class RoundBouncer extends Bouncer {
-	static var RAY = 6 * Cs.NEW_GEN_SCALE;
+	static var RAY = KadoKadeoManager.I(6);
 
 	var pList:Array<{x:Int, y:Int}>;
 

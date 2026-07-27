@@ -57,14 +57,14 @@ class Game implements kado.GameInterface {
 		dmanager = new DepthManager(root);
 		bg = dmanager.attach("bg", Cs.PLAN_BG);
 		counter = dmanager.attach("compteur", Cs.PLAN_INTERF);
-		counter._x = 300 * Cs.NEW_GEN_SCALE;
+		counter._x = KadoKadeoManager.I(300);
 		var txt = counter.initTextField("field", {
 			font: "IronMan",
-			size: 40,
+			size: 30,
 			color: 0xFFFFFF,
 			align: "right",
 		});
-		txt.x = -20 * Cs.NEW_GEN_SCALE;
+		txt.x = -KadoKadeoManager.I(20);
 		bals = [];
 		time = 0;
 		nblacks = 0;
@@ -178,19 +178,19 @@ class Game implements kado.GameInterface {
 				var n = getBalsLength();
 				for (i in 0...n) {
 					var b = bals[i];
-					b.tx = Num.q(150 * Cs.NEW_GEN_SCALE + Math.cos(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
-					b.ty = Num.q(150 * Cs.NEW_GEN_SCALE + Math.sin(i / n * Math.PI * 2) * 100 * Cs.NEW_GEN_SCALE);
+					b.tx = Num.q(KadoKadeoManager.I(150) + Math.cos(i / n * Math.PI * 2) * KadoKadeoManager.I(100));
+					b.ty = Num.q(KadoKadeoManager.I(150) + Math.sin(i / n * Math.PI * 2) * KadoKadeoManager.I(100));
 					b.mind = 0;
 					b.timer = 160;
 				}
 			} else {
-				var ys = [50 * Cs.NEW_GEN_SCALE, 150 * Cs.NEW_GEN_SCALE, 250 * Cs.NEW_GEN_SCALE];
+				var ys = [KadoKadeoManager.I(50), KadoKadeoManager.I(150), KadoKadeoManager.I(250)];
 				var c = [0, 0, 0];
 				for (b in bals) {
 					if (b.t != 3) {
 						var x = c[b.t]++;
-						x = (((x % 2) > 0) ? 1 : -1) * 15 * Cs.NEW_GEN_SCALE * x;
-						b.tx = Num.q(150 * Cs.NEW_GEN_SCALE + x);
+						x = (((x % 2) > 0) ? 1 : -1) * KadoKadeoManager.I(15) * x;
+						b.tx = Num.q(KadoKadeoManager.I(150) + x);
 						b.ty = ys[b.t];
 						b.mind = 0;
 						b.timer = 160;

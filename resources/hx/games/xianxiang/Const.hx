@@ -3,15 +3,13 @@ package xianxiang;
 import common_haxe_avm1.KKApi;
 
 class Const {
-	public static var NEW_GEN_SCALE = 3;
-
 	public static var LVL_WIDTH = 6;
 	public static var LVL_HEIGHT = 7;
 
-	public static var BASE_X = 23 * NEW_GEN_SCALE;
-	public static var BASE_Y = 20 * NEW_GEN_SCALE;
-	public static var CARD_WIDTH = 43 * NEW_GEN_SCALE;
-	public static var CARD_HEIGHT = 34 * NEW_GEN_SCALE;
+	public static var BASE_X = KadoKadeoManager.I(23);
+	public static var BASE_Y = KadoKadeoManager.I(20);
+	public static var CARD_WIDTH = KadoKadeoManager.I(43);
+	public static var CARD_HEIGHT = KadoKadeoManager.I(34);
 
 	public static var auto = 0;
 	public static var PLAN_BG = auto++;

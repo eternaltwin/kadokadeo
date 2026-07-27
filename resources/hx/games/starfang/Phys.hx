@@ -1,5 +1,6 @@
 package starfang;
 
+import kado.KadoKadeoManager;
 import mt.bumdum.Part;
 import mt.bumdum.Lib.PointWithGetter;
 
@@ -73,7 +74,7 @@ class Phys extends mt.bumdum.Phys {
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
 			var c = 0.5 + Seed.randVfx() * 0.5;
-			var sp = 3 * Cs.NEW_GEN_SCALE;
+			var sp = KadoKadeoManager.I(3);
 
 			p.x = x + ca * c * ray;
 			p.y = y + sa * c * ray;

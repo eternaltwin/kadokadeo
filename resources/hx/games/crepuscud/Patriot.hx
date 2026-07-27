@@ -1,12 +1,9 @@
 package crepuscud;
 
-import mt.bumdum.Sprite;
-import mt.bumdum.Phys;
-import mt.bumdum.Lib;
 import common_haxe_avm1.MouseManager;
 
 class Patriot extends Projectile {
-	static var HERO_RAY = Cs.S(20);
+	static var HERO_RAY = KadoKadeoManager.I(20);
 
 	var distanceMax:Float;
 	var parc:Float;
@@ -30,7 +27,7 @@ class Patriot extends Projectile {
 		y = Game.RGY + Math.sin(angle) * HERO_RAY;
 
 		setAngle(angle);
-		setSpeed(Cs.S(10));
+		setSpeed(KadoKadeoManager.I(10));
 
 		if (Game.me.expl < 5) {
 			mcTarget = Game.me.root.attachMovie("mcTarget");

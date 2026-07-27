@@ -77,9 +77,9 @@ class Game implements kado.GameInterface {
 	public static var DP_UNDERPARTS = 3;
 	public static var DP_BG = 2;
 
-	public static var SCROLL_SPEED = 0.0001 * Cs.NEW_GEN_SCALE; // 5//10;
-	public static var SCROLL_SPEED_MAX = 6 * Cs.NEW_GEN_SCALE; // 5//10;
-	public static var PLASMA_CACHE = 100 * Cs.NEW_GEN_SCALE;
+	public static var SCROLL_SPEED = KadoKadeoManager.S(0.0001); // 5//10;
+	public static var SCROLL_SPEED_MAX = KadoKadeoManager.S(6); // 5//10;
+	public static var PLASMA_CACHE = KadoKadeoManager.S(100);
 
 	public static var PM = 1;
 
@@ -180,8 +180,8 @@ class Game implements kado.GameInterface {
 			case 0:
 				// CHOUQUETTE
 				chouquette = new Phys(dm.attach("mcChouquette", DP_BADS));
-				chouquette.x = Cs.mcw * 0.5 - 5 * Cs.NEW_GEN_SCALE;
-				chouquette.y = Cs.mch + 10 * Cs.NEW_GEN_SCALE;
+				chouquette.x = Cs.mcw * 0.5 - KadoKadeoManager.I(5);
+				chouquette.y = Cs.mch + KadoKadeoManager.I(10);
 				chouquette.frict = 0.92;
 				chouquette.root.loop = true;
 				chouquette.root.play();
@@ -190,22 +190,22 @@ class Game implements kado.GameInterface {
 				untyped chouquette.zap.play();
 
 				// KIDNAPPERS
-				knTurnRay = 10 * Cs.NEW_GEN_SCALE;
+				knTurnRay = KadoKadeoManager.I(10);
 				knTurnDecal = 0;
 				knTurnSpeed = 0;
 				kidnappers = new Array();
 				for (i in 0...3) {
 					var sp = new Phys(dm.attach("mcKidnapper", DP_BADS));
 					kidnappers.push(sp);
-					sp.x = -100 * Cs.NEW_GEN_SCALE;
-					sp.y = -100 * Cs.NEW_GEN_SCALE;
+					sp.x = -KadoKadeoManager.I(100);
+					sp.y = -KadoKadeoManager.I(100);
 					sp.updatePos();
 				}
 
 				// BASE
 				var pl = dm.attach("mcPlanet", DP_BG);
 				pl._x = Cs.mcw;
-				pl._y = 160 * Cs.NEW_GEN_SCALE;
+				pl._y = KadoKadeoManager.I(160);
 				baseList = [pl, new Base2(dm.empty(DP_BG)), new Base1(dm.empty(DP_PARTS))];
 
 				//
@@ -244,11 +244,11 @@ class Game implements kado.GameInterface {
 		switch (step) {
 			case 0:
 				if (chouquette.y > Cs.mch * 0.5) {
-					chouquette.vy -= 0.3 * Cs.NEW_GEN_SCALE * Timer.tmod;
+					chouquette.vy -= KadoKadeoManager.S(0.3) * Timer.tmod;
 				} else {
 					initStep(1);
 				}
-				knTurnRay += 0.35 * Cs.NEW_GEN_SCALE * Timer.tmod;
+				knTurnRay += KadoKadeoManager.S(0.35) * Timer.tmod;
 				updateKidnappers();
 				timer = 60;
 			case 1:
@@ -256,8 +256,8 @@ class Game implements kado.GameInterface {
 				if (timer > 0) {
 					timer -= Timer.tmod;
 				} else {
-					chouquette.vy -= 0.8 * Cs.NEW_GEN_SCALE * Timer.tmod;
-					if (chouquette.y < -100 * Cs.NEW_GEN_SCALE) {
+					chouquette.vy -= KadoKadeoManager.S(0.8) * Timer.tmod;
+					if (chouquette.y < -KadoKadeoManager.I(100)) {
 						while (kidnappers.length > 0)
 							kidnappers.pop().kill();
 						chouquette.kill();
@@ -484,18 +484,18 @@ class Game implements kado.GameInterface {
 	public function updateScroll() {
 		if (gfxMode < 3) {
 			SCROLL_SPEED *= 0.95;
-			if (SCROLL_SPEED < 0.5 * Cs.NEW_GEN_SCALE)
+			if (SCROLL_SPEED < KadoKadeoManager.S(0.5))
 				SCROLL_SPEED = 0;
 		} else {
 			if (step > 1) {
-				SCROLL_SPEED = Math.min(SCROLL_SPEED + 0.01 * Cs.NEW_GEN_SCALE * Timer.tmod, SCROLL_SPEED_MAX);
+				SCROLL_SPEED = Math.min(SCROLL_SPEED + KadoKadeoManager.S(0.01) * Timer.tmod, SCROLL_SPEED_MAX);
 			}
 		}
 
 		bg._y += SCROLL_SPEED;
 		if (bg._y > 0) {
 			// bg._y -= 1800 * Cs.NEW_GEN_SCALE;
-			bg._y -= 2700;
+			bg._y -= KadoKadeoManager.I(900);
 			bg._prevState.y = bg._y - SCROLL_SPEED; // Hack to avoid weird scroll (interpolation) when the bg is repositionned
 		}
 
@@ -505,7 +505,7 @@ class Game implements kado.GameInterface {
 			if (b._y == 0)
 				b._y = Cs.mch;
 			b._y += SCROLL_SPEED;
-			if (b._y > Cs.mch + 100 * Cs.NEW_GEN_SCALE) {
+			if (b._y > Cs.mch + KadoKadeoManager.I(100)) {
 				b.removeMovieClip();
 				baseList.splice(i, 1);
 				continue;
@@ -623,7 +623,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function destroy():Void {
-		SCROLL_SPEED = 0.0001 * Cs.NEW_GEN_SCALE;
+		SCROLL_SPEED = KadoKadeoManager.S(0.0001);
 		Stykades.monsterLevel = 0;
 		Stykades.waveTimer = 150;
 		Stykades.nextWave = 300;

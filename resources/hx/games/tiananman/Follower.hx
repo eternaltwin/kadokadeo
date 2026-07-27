@@ -75,7 +75,7 @@ class Follower {
 			mcPoints = cast Game.me.mdm.empty(Game.DP_POINTS);
 			mcPoints._field = mcPoints.initTextField("_field", {
 				font: "Arial",
-				size: 30,
+				size: 22,
 				color: 0xFFFF66,
 				align: "center",
 				strokeThickness: Std.int(Cs.s(2)),

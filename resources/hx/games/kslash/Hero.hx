@@ -16,11 +16,11 @@ class HeroSprite extends ASprite {
 }
 
 class Hero extends Ent {
-	static var SPEED = 5 * Cs.NEW_GEN_SCALE;
-	static var JUMP_EXTEND = 3 * Cs.NEW_GEN_SCALE;
-	static var JUMP_START = 8 * Cs.NEW_GEN_SCALE;
+	static var SPEED = KadoKadeoManager.I(5);
+	static var JUMP_EXTEND = KadoKadeoManager.I(3);
+	static var JUMP_START = KadoKadeoManager.I(8);
 
-	static var STAR_SPEED = 14 * Cs.NEW_GEN_SCALE; // 10
+	static var STAR_SPEED = KadoKadeoManager.I(14); // 10
 	// static var BLADE_SIZE = 48
 	static var QUEUE_SPACE = 5;
 
@@ -78,7 +78,7 @@ class Hero extends Ent {
 		rootSprite.bfx2 = rootSprite.attachMovie("heroBfx2", "bfx2");
 		x = Std.int(Game.XMAX * 0.5);
 		y = 1;
-		weight = 0.7 * Cs.NEW_GEN_SCALE + 0.2;
+		weight = KadoKadeoManager.S(0.7) + 0.2;
 		flMoving = false;
 		cooldown = 0;
 		star = 0;
@@ -107,7 +107,7 @@ class Hero extends Ent {
 			case Cs.ST_DEATH:
 				root.gotoAndStop(animFrame.get("death"));
 				nextAnim = null;
-				vy = -8 * Cs.NEW_GEN_SCALE;
+				vy = -KadoKadeoManager.I(8);
 				vx *= 0.5;
 				flCol = false;
 				flInvicible = true;
@@ -137,7 +137,7 @@ class Hero extends Ent {
 						nextAnim = "fly_down";
 				}
 			case Cs.ST_DEATH:
-				var yLim = (Cs.mch * 2) - 18 * Cs.NEW_GEN_SCALE;
+				var yLim = (Cs.mch * 2) - KadoKadeoManager.I(18);
 				if (root._y > yLim) {
 					vy *= -1.25;
 					if (!flGameOver) {
@@ -191,19 +191,19 @@ class Hero extends Ent {
 				for (m in list) {
 					var dist = getDist(m);
 
-					if (dist < 24 * Cs.NEW_GEN_SCALE) {
+					if (dist < KadoKadeoManager.I(24)) {
 						if (sTimer == null) {
 							if (step == Cs.ST_FLY && !m.flSpike) {
 								var da = Math.abs(1.57 - getAng(m));
 								if (da < 1.3) {
 									if (vy > 0) {
-										vy = -8 * Cs.NEW_GEN_SCALE;
+										vy = -KadoKadeoManager.I(8);
 										m.harm(21);
 									}
 									return;
 								}
 							}
-							if (dist < 18 * Cs.NEW_GEN_SCALE) {
+							if (dist < KadoKadeoManager.I(18)) {
 								initStep(Cs.ST_DEATH);
 							}
 						} else {
@@ -217,7 +217,7 @@ class Hero extends Ent {
 
 	public function checkBonus() {
 		for (b in Cs.game.bList) {
-			if (getDist(cast b) < 24 * Cs.NEW_GEN_SCALE) {
+			if (getDist(cast b) < KadoKadeoManager.I(24)) {
 				b.take();
 			}
 		}
@@ -230,7 +230,9 @@ class Hero extends Ent {
 		// if(flGround)vx = 0;
 
 		var flMove = false;
-		if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.Q) || KeyboardManager.isDown(KeyboardManager.A)) {
+		if (KeyboardManager.isDown(KeyboardManager.LEFT)
+			|| KeyboardManager.isDown(KeyboardManager.Q)
+			|| KeyboardManager.isDown(KeyboardManager.A)) {
 			setSens(-1);
 			flMove = true;
 		}
@@ -244,8 +246,8 @@ class Hero extends Ent {
 				vx = SPEED * sens;
 			} else if (flDoubleJump) {
 				var dvx = SPEED * sens - vx;
-				var lim = 0.25 * Cs.NEW_GEN_SCALE;
-				vx += Math.min(Math.max(-lim, dvx * 0.1 * Cs.NEW_GEN_SCALE), lim); // vx = SPEED*sens;
+				var lim = KadoKadeoManager.S(0.25);
+				vx += Math.min(Math.max(-lim, dvx * KadoKadeoManager.S(0.1)), lim); // vx = SPEED*sens;
 			}
 			if (!flMoving) {
 				flMoving = true;
@@ -278,7 +280,9 @@ class Hero extends Ent {
 		// JUMP
 		// Log.print(flDoubleJump)
 		// Log.print(flDoubleJumpReady)
-		if (KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.Z) || KeyboardManager.isDown(KeyboardManager.W)) {
+		if (KeyboardManager.isDown(KeyboardManager.UP)
+			|| KeyboardManager.isDown(KeyboardManager.Z)
+			|| KeyboardManager.isDown(KeyboardManager.W)) {
 			if (flGround) {
 				flDoubleJump = true;
 				flDoubleJumpReady = false;
@@ -380,7 +384,7 @@ class Hero extends Ent {
 		var dx = trg.root._x - root._x;
 		var dy = (trg.root._y - root._y) * 1.5;
 		var dist = Math.sqrt(dx * dx + dy * dy);
-		var flNear = dist < (Cs.game.optList[Cs.OPT_KATANA] ? 72 * Cs.NEW_GEN_SCALE : 48 * Cs.NEW_GEN_SCALE); // BLADE_SIZE
+		var flNear = dist < (Cs.game.optList[Cs.OPT_KATANA] ? KadoKadeoManager.I(72) : KadoKadeoManager.I(48)); // BLADE_SIZE
 		if (flNear || star == 0) {
 			slash(trg, flNear);
 			return;
@@ -490,7 +494,7 @@ class Hero extends Ent {
 	public function initSupa() {
 		sTimer = 500;
 		blink = 0;
-		SPEED = 9 * Cs.NEW_GEN_SCALE;
+		SPEED = KadoKadeoManager.I(9);
 	}
 
 	public function updateSupa() {
@@ -515,7 +519,7 @@ class Hero extends Ent {
 		if (sTimer < 0) {
 			sTimer = null;
 			prc = 0;
-			SPEED = 5 * Cs.NEW_GEN_SCALE;
+			SPEED = KadoKadeoManager.I(5);
 		}
 		Col.setPercentColor(root, prc, 0xFFDDFF);
 	}

@@ -156,7 +156,7 @@ class Game implements kado.GameInterface {
 			lvl = 0;
 
 		influxMax = 0;
-		influxSpeed = 1 * Cs.NEW_GEN_SCALE;
+		influxSpeed = KadoKadeoManager.I(1);
 
 		action = updatePlay;
 
@@ -169,14 +169,14 @@ class Game implements kado.GameInterface {
 			max = 4;
 		for (i in 0...max) {
 			var h = new Hunter(i + 1);
-			h.speed = Math.min((1 + lvl) * Cs.NEW_GEN_SCALE, 15 * Cs.NEW_GEN_SCALE);
+			h.speed = Math.min(KadoKadeoManager.I(1 + lvl), KadoKadeoManager.I(15));
 		}
 
 		// ELEMENTS
 		var max = Cs.CEL_MAX;
 		for (i in 0...max) {
 			var el = new Element();
-			el.initMove(Seed.rand() * 6.28, 1 * Cs.NEW_GEN_SCALE);
+			el.initMove(Seed.rand() * 6.28, KadoKadeoManager.I(1));
 		}
 
 		//
@@ -264,7 +264,7 @@ class Game implements kado.GameInterface {
 				color: 0xFFFFFF,
 				align: "center",
 				font: "Impact",
-				size: 172,
+				size: 130,
 			});
 			txt.text = Std.string(counter);
 			txt.y = -txt.height / 2;
@@ -347,7 +347,7 @@ class Game implements kado.GameInterface {
 		if (winner.col == 0 || FL_INFINITE) {
 			winner.layer.initTunnel(-bdx, -bdy);
 
-			var margin = 50 * Cs.NEW_GEN_SCALE;
+			var margin = KadoKadeoManager.I(50);
 			sx = bdx;
 			sy = bdy;
 
@@ -392,12 +392,12 @@ class Game implements kado.GameInterface {
 			color: 0xFF0000,
 			align: "center",
 			font: "Impact",
-			size: 36,
+			size: 30,
 			stroke: "#FFFFFF",
 			strokeThickness: 5,
 		});
 		field.text = Std.string(n);
-		p.weight = -(0.1 + Seed.randVfx() * 0.1) * Cs.NEW_GEN_SCALE;
+		p.weight = -KadoKadeoManager.S(0.1 + Seed.randVfx() * 0.1);
 		// p.vy = 2;
 		p.timer = 20;
 		p.fadeLimit = 5;
@@ -457,7 +457,7 @@ class Game implements kado.GameInterface {
 
 		mc.blendMode = pixi.core.Pixi.BlendModes.ADD;
 
-		// Filt.blur(mc, 2 * Cs.NEW_GEN_SCALE, 2 * Cs.NEW_GEN_SCALE);
+		// Filt.blur(mc, KadoKadeoManager.I(2), KadoKadeoManager.I(2));
 		// mc._alpha = 25;
 	}
 

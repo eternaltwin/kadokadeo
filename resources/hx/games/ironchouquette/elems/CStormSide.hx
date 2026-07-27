@@ -12,7 +12,7 @@ class CStormSide extends Bads {
 		flSide = true;
 		root._xscale = sens * 100;
 		hp = 8 + lvl * 6;
-		ray = 20 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(20);
 
 		//
 		var raf = newRafale();

@@ -47,7 +47,7 @@ class Medusa {
 		this.game = game;
 		// BODY
 		medusaBody = cast new Phys(game.mdm.empty(Game.DP_MEDUSA));
-		medusaBody.x = Cs.S(-2000);
+		medusaBody.x = KadoKadeoManager.I(-2000);
 		medusaBody.body = medusaBody.root.attachMovie("mcMedusaBody", "body", 1);
 		medusaBody.neck = medusaBody.root.attachMovie("mcMedusaNeck", "neck", 0);
 
@@ -60,8 +60,8 @@ class Medusa {
 		medusa.x = -game.scrollMin;
 		medusa.head = cast medusa.root;
 		medusa.head.eatZone = medusa.head.createEmptyMovieClip();
-		medusa.head.eatZone._y = Cs.S(50);
-		// medusa.head.eatZone.getGraphics().beginFill(0xFFFFFF, 0.5).drawRect(0, 0, Cs.S(20), Cs.S(20));
+		medusa.head.eatZone._y = KadoKadeoManager.I(50);
+		// medusa.head.eatZone.getGraphics().beginFill(0xFFFFFF, 0.5).drawRect(0, 0, KadoKadeoManager.I(20), KadoKadeoManager.I(20));
 
 		// ARMS
 		medusaArms = [];
@@ -82,7 +82,7 @@ class Medusa {
 			medusaArms.push(sp);
 			// sp.x = 1200;
 			// sp.y = 500;
-			// sp.ab._y = Cs.S(250);
+			// sp.ab._y = KadoKadeoManager.I(250);
 			if (i == 0)
 				Col.setPercentColor(sp.root, 50, 0x9D1E91);
 		}
@@ -95,7 +95,7 @@ class Medusa {
 
 	function createRedLight():ASprite {
 		var mc = game.dm.empty(Game.DP_FRONT);
-		var radius = Std.int(Cs.S(300));
+		var radius = Std.int(KadoKadeoManager.I(300));
 		var size = radius * 2;
 		var canvas = Browser.document.createCanvasElement();
 		canvas.width = size;
@@ -125,29 +125,29 @@ class Medusa {
 
 		// EAT
 		if (game.hero.flEat) {
-			medusa.vx += Cs.S(2 * Timer.tmod);
-			medusa.vy += Cs.S(1.5 * Timer.tmod);
+			medusa.vx += KadoKadeoManager.S(2 * Timer.tmod);
+			medusa.vy += KadoKadeoManager.S(1.5 * Timer.tmod);
 			var frame = Math.max(1, medusa.head._currentframe - 3);
 			medusa.head.gotoAndStop(frame);
 
 			medusa.head._rotation += 1;
-			var lim = Cs.S(166) * (medusa.head._currentframe / 30);
+			var lim = KadoKadeoManager.I(166) * (medusa.head._currentframe / 30);
 			if (Num.q(game.hero.y) > Num.q(lim) && Num.q(game.hero.vy) > 0) {
-				game.hero.y = Cs.S(166);
+				game.hero.y = KadoKadeoManager.I(166);
 				game.hero.vy *= -0.5;
 			}
 		} else {
-			var limit = Cs.S(300);
+			var limit = KadoKadeoManager.I(300);
 			var danger = game.scrollMin + game.hero.x;
 			var c = danger / limit;
-			var ty = (game.hero.y + game.hero.vy * 2) - (1 - c) * Cs.S(180);
+			var ty = (game.hero.y + game.hero.vy * 2) - (1 - c) * KadoKadeoManager.I(180);
 
 			mcRedLight._alpha = 100 - c * 100;
 			mcRedLight._xscale = 500 - c * 200;
 			mcRedLight._yscale = mcRedLight._xscale;
 
 			medusa.x = -game.scrollMin;
-			var lim = Cs.S(2);
+			var lim = KadoKadeoManager.I(2);
 			var dy = ty - medusa.y;
 			medusa.vy += Num.mm(-lim, dy * 0.15, lim);
 
@@ -169,7 +169,7 @@ class Medusa {
 					medusa.head.gotoAndStop(frame);
 				}
 
-				medusa.head._rotation = (dy / Cs.NEW_GEN_SCALE) * 0.1 + (medusa.vy / Cs.NEW_GEN_SCALE) * 0.5;
+				medusa.head._rotation = (dy / KadoKadeoManager.I(1)) * 0.1 + (medusa.vy / KadoKadeoManager.I(1)) * 0.5;
 
 				if (Num.q(c) < 0.5) {
 					var cc = (c / 0.5) * 0.1;
@@ -183,9 +183,9 @@ class Medusa {
 					game.hero.releaseGrap();
 
 					game.hero.setSens(game.hero.sens);
-					game.hero.vx = Cs.S(-6);
+					game.hero.vx = KadoKadeoManager.I(-6);
 					game.hero.vy -= medusa.vy;
-					game.hero.weight = Cs.S(-4);
+					game.hero.weight = KadoKadeoManager.I(-4);
 
 					var hx = game.hero.x + game.map._x;
 					var hy = game.hero.y + game.map._y;
@@ -205,15 +205,15 @@ class Medusa {
 
 		// MAIN
 		var trg = {
-			x: medusa.x - Cs.S(40),
-			y: medusa.y + Cs.S(50)
+			x: medusa.x - KadoKadeoManager.I(40),
+			y: medusa.y + KadoKadeoManager.I(50)
 		}
-		medusaBody.toward(trg, 0.2, Std.int(Cs.S(100)));
+		medusaBody.toward(trg, 0.2, Std.int(KadoKadeoManager.I(100)));
 
 		var a = medusaBody.getAng({x: medusa.x, y: medusa.y});
 		var dist = medusaBody.getDist({x: medusa.x, y: medusa.y});
 		medusaBody.neck._rotation = a / 0.0174 - medusaBody.root._rotation;
-		medusaBody.neck._xscale = dist / Cs.NEW_GEN_SCALE;
+		medusaBody.neck._xscale = dist / KadoKadeoManager.I(1);
 		medusaBody.root._rotation = (medusaBody.neck._rotation + 45) * 0.5;
 
 		// ARMS
@@ -225,8 +225,8 @@ class Medusa {
 			//
 			rotArm(arm.b);
 			rotArm(arm.ab);
-			moveToEdge(arm.ab, arm.b, Cs.S(255), 1.57);
-			moveToEdge(arm.h, arm.ab, Cs.S(258), 0);
+			moveToEdge(arm.ab, arm.b, KadoKadeoManager.I(255), 1.57);
+			moveToEdge(arm.h, arm.ab, KadoKadeoManager.I(258), 0);
 
 			// CHECK PLAT
 			var hp = arm.root.toGlobal(new Point(arm.h._x, arm.h._y));
@@ -236,13 +236,15 @@ class Medusa {
 			if (Num.q(hp.y) > Cs.mch && arm.h._currentframe == 2)
 				arm.h.gotoAndStop("1");
 
-			hp.x += Cs.S(70) - game.map._x;
-			hp.y += Cs.S(70) - game.map._y;
+			hp.x += KadoKadeoManager.I(70) - game.map._x;
+			hp.y += KadoKadeoManager.I(70) - game.map._y;
 
 			if (Num.q(hp.x + game.map._x) > 0 && Num.q(hp.y + game.map._y) < Cs.mcw) {
 				for (n in 0...game.platList.length) {
 					var pl = game.platList[n];
-					if (Num.q(hp.x) > Num.q(pl.x) && Num.q(hp.x) < Num.q(pl.x + pl.w) && Num.q(Math.abs(hp.y - pl.y)) < Cs.S(16)) {
+					if (Num.q(hp.x) > Num.q(pl.x)
+						&& Num.q(hp.x) < Num.q(pl.x + pl.w)
+						&& Num.q(Math.abs(hp.y - pl.y)) < KadoKadeoManager.I(16)) {
 						arm.b.vr -= 6;
 						pl.explode(hp.x);
 						break;
@@ -255,7 +257,7 @@ class Medusa {
 			return;
 
 		// HEAD DESTRUCT PLAT
-		var hray = Cs.S(120);
+		var hray = KadoKadeoManager.I(120);
 		for (n in 0...game.platList.length) {
 			var pl = game.platList[n];
 			if (pl == null)
@@ -263,23 +265,23 @@ class Medusa {
 			if (Num.q(medusa.x + hray) > Num.q(pl.x)
 				&& Num.q(medusa.x - hray) < Num.q(pl.x + pl.w)
 				&& Num.q(Math.abs(medusa.y - pl.y)) < Num.q(hray * 1.2)) {
-				pl.explode(medusa.x + hray + Cs.S(30) + Seed.rand() * Cs.S(50));
+				pl.explode(medusa.x + hray + KadoKadeoManager.I(30) + Seed.rand() * KadoKadeoManager.I(50));
 			}
 		}
 
 		// RECAL HEAD
-		if (Num.q(medusa.y) < Cs.S(80)) {
+		if (Num.q(medusa.y) < KadoKadeoManager.I(80)) {
 			for (i in 0...Std.int(-medusa.vy)) {
 				var p = game.newPart("partDust");
-				p.x = medusa.x + Seed.randVfx() * Cs.S(120);
-				p.y = Cs.S(16);
-				p.weight = Cs.S(0.2 + Seed.randVfx() * 0.3);
-				p.vx = (Seed.randVfx() * 2 - 1) * Cs.S(6);
+				p.x = medusa.x + Seed.randVfx() * KadoKadeoManager.I(120);
+				p.y = KadoKadeoManager.I(16);
+				p.weight = KadoKadeoManager.S(0.2 + Seed.randVfx() * 0.3);
+				p.vx = (Seed.randVfx() * 2 - 1) * KadoKadeoManager.I(6);
 				p.timer = 10 + Seed.randVfx() * 30;
 				p.fadeType = 0;
 			}
 			// RECAL
-			medusa.y = Cs.S(80);
+			medusa.y = KadoKadeoManager.I(80);
 			medusa.vy = 0;
 		}
 	}

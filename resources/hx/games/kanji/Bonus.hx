@@ -36,7 +36,7 @@ class Bonus {
 		}
 
 		var dx = Num.q(game.hero.mc._x - mc._x);
-		var dy = Num.q((game.hero.mc._y - 20 * Cs.NEW_GEN_SCALE) - mc._y);
+		var dy = Num.q((game.hero.mc._y - KadoKadeoManager.I(20)) - mc._y);
 		if (dx * dx + dy * dy < Cs.BONUS_RAY2) {
 			var p = game.dmanager.attach("FXVanish", Cs.PLAN_HERO + 1);
 			p.play();

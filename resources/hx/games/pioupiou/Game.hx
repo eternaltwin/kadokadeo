@@ -67,16 +67,16 @@ class Game implements kado.GameInterface {
 		dmanager = new DepthManager(scroll);
 		interf = new DepthManager(rootDm.empty(2));
 		meter = interf.attach("meter", 10);
-		meter._x = 20 * Cs.NEW_GEN_SCALE;
-		meter._y = (300 - 3) * Cs.NEW_GEN_SCALE;
+		meter._x = KadoKadeoManager.I(20);
+		meter._y = KadoKadeoManager.I(300 - 3);
 		txt = meter.initTextField("field", {
 			font: "Junegull-Regular",
-			size: 50,
+			size: 40,
 			color: 0xFFFFFF,
 			align: "center",
 		});
-		txt.x = 25 * Cs.NEW_GEN_SCALE;
-		txt.y = -20 * Cs.NEW_GEN_SCALE;
+		txt.x = KadoKadeoManager.I(25);
+		txt.y = KadoKadeoManager.I(-20);
 
 		setMeter(0);
 		level = new Level(this);

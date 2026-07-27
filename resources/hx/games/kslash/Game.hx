@@ -146,14 +146,14 @@ class Game implements kado.GameInterface {
 		inter = cast dm.attach("inter", DP_INTER);
 		var txt = inter.initTextField("fieldStar", {
 			font: "Impact",
-			size: 40,
+			size: 30,
 			color: 0x000000,
 			align: "left",
 			stroke: "#FFFFFF",
 			strokeThickness: 3,
 		});
-		txt.x = 60;
-		txt.y = 6;
+		txt.x = KadoKadeoManager.I(20);
+		txt.y = KadoKadeoManager.I(2);
 
 		mList = new Array();
 		sList = new Array();
@@ -183,7 +183,7 @@ class Game implements kado.GameInterface {
 					m = dm.attach("bgFront", DP_FRONT);
 				} else {
 					m = dm.attach("bgBack", DP_BACK);
-					oy = 1350;
+					oy = KadoKadeoManager.I(450);
 				}
 				m.gotoAndStop(i + 1);
 				var c = (m._width - Cs.mcw) / Cs.mcw;
@@ -260,13 +260,13 @@ class Game implements kado.GameInterface {
 			var g = (new Graphics()).beginFill(0xFFFFFF).drawRect(0, -5, 3000, Cs.SIZE + 10);
 			g.blendMode = untyped BlendModes.ERASE;
 			m = new Matrix();
-			m.translate(Cs.SIZE * (o.x + o.w) - 19 * Cs.NEW_GEN_SCALE, Cs.SIZE * o.y);
+			m.translate(Cs.SIZE * (o.x + o.w) - KadoKadeoManager.I(19), Cs.SIZE * o.y);
 			rt.draw(g, m);
 
 			var c = new ASprite("corner");
 			c.gotoAndStop(flNight ? 2 : 1);
 			m = new Matrix();
-			m.translate(Cs.SIZE * (o.x + o.w) - 20 * Cs.NEW_GEN_SCALE, Cs.SIZE * o.y);
+			m.translate(Cs.SIZE * (o.x + o.w) - KadoKadeoManager.I(20), Cs.SIZE * o.y);
 			rt.draw(c, m);
 			c.removeMovieClip();
 
@@ -429,7 +429,7 @@ class Game implements kado.GameInterface {
 				var mc = dm.attach("mcIcon", DP_INTER);
 				mc.gotoAndStop(i + 1);
 				mc._x = x;
-				x -= 20 * Cs.NEW_GEN_SCALE;
+				x -= KadoKadeoManager.I(20);
 				iconList.push(mc);
 			}
 		}

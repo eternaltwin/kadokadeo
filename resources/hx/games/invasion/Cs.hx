@@ -3,8 +3,6 @@ package invasion;
 import common_haxe_avm1.KKApi;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
-
 	public static var WIDTH = 7;
 	public static var HEIGHT = 7;
 	public static var BORDERSIZE = S(12);
@@ -41,10 +39,10 @@ class Cs {
 	}
 
 	public static inline function S(v:Float):Float {
-		return v * NEW_GEN_SCALE;
+		return KadoKadeoManager.S(v);
 	}
 
 	public static inline function I(v:Int):Int {
-		return v * NEW_GEN_SCALE;
+		return KadoKadeoManager.I(v);
 	}
 }

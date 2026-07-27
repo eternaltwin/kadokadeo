@@ -11,14 +11,14 @@ class CCutty extends Bads {
 		reactor1.loop = true;
 		reactor1.play();
 		reactor1._rotation = -90;
-		reactor1._x = -7 * Cs.NEW_GEN_SCALE;
+		reactor1._x = KadoKadeoManager.I(-7);
 
 		var reactor2 = root.attachMovie("badReactor");
 		reactor2._visible = false;
 		reactor2.loop = true;
 		reactor2.play();
 		reactor2._rotation = -90;
-		reactor2._x = -7 * Cs.NEW_GEN_SCALE;
+		reactor2._x = KadoKadeoManager.I(-7);
 		reactor2._xscale = -100;
 
 		root.onFrame.set(7, function() {
@@ -37,7 +37,7 @@ class CCutty extends Bads {
 		va = 0.07;
 		turnCoef = 0.1;
 		bounceId = 0;
-		speed = 4.5 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.S(4.5);
 		bList = [8];
 	}
 }

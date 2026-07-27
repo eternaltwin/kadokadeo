@@ -7,7 +7,7 @@ import mt.Timer;
 class Corn extends Phys {
 	static var FRAME_MAX = 100;
 
-	static var RAY = 5 * Cs.NEW_GEN_SCALE;
+	static var RAY = KadoKadeoManager.I(5);
 
 	var jumpTimer:Float;
 	var frame:Float;
@@ -20,7 +20,7 @@ class Corn extends Phys {
 		Cs.game.cList.push(this);
 		super(mc);
 
-		weight = (0.14 + Seed.rand() * (0.1 + Cs.game.boss.escPop)) * Cs.NEW_GEN_SCALE;
+		weight = KadoKadeoManager.S(0.14 + Seed.rand() * (0.1 + Cs.game.boss.escPop));
 		frict = 0.95;
 
 		step = 0;
@@ -60,7 +60,7 @@ class Corn extends Phys {
 				} else if (bouncer is RoundBouncer) {
 					var b:RoundBouncer = cast bouncer;
 					while (b.isRoundFree(bouncer.px, bouncer.py) != null) {
-						bouncer.px = Std.int(Num.mm((RAY + 3 * Cs.NEW_GEN_SCALE), bouncer.px, Cs.mcw - (RAY + 3 * Cs.NEW_GEN_SCALE)));
+						bouncer.px = Std.int(Num.mm((RAY + KadoKadeoManager.I(3)), bouncer.px, Cs.mcw - (RAY + KadoKadeoManager.I(3))));
 						bouncer.py--;
 					}
 				}
@@ -78,7 +78,7 @@ class Corn extends Phys {
 				if (Cs.game.hero.trg == this) {
 					Cs.game.hero.releaseJump();
 				} else {
-					Cs.game.ly = Math.min(Cs.game.ly, y - 30 * Cs.NEW_GEN_SCALE);
+					Cs.game.ly = Math.min(Cs.game.ly, y - KadoKadeoManager.I(30));
 					vx = 0;
 					vy = 0;
 					weight = 0;
@@ -97,7 +97,7 @@ class Corn extends Phys {
 			var a = Seed.randVfx() * 6.28;
 			var ca = Math.cos(a);
 			var sa = Math.sin(a);
-			var sp = (0.5 + Seed.randVfx() * 2) * Cs.NEW_GEN_SCALE;
+			var sp = KadoKadeoManager.S(0.5 + Seed.randVfx() * 2);
 
 			p.x = x + ca * RAY * Seed.randVfx();
 			p.y = y + sa * RAY * Seed.randVfx();
@@ -105,7 +105,7 @@ class Corn extends Phys {
 			p.vy = sa * sp + by * 0.5;
 			p.setScale(50 + Seed.randVfx() * 50);
 			p.timer = 10 + Seed.randVfx() * 10;
-			p.weight = (0.05 + Seed.randVfx() * 0.1) * Cs.NEW_GEN_SCALE;
+			p.weight = KadoKadeoManager.S(0.05 + Seed.randVfx() * 0.1);
 			p.fadeType = 0;
 			p.root.gotoAndStop(Seed.randomVfx(root._totalframes) + 1);
 		}

@@ -11,14 +11,14 @@ class McJumpCircle extends ASprite {
 
 class Hero extends Phys {
 	static var WALK_FRAME_MAX = 12;
-	static var FLIGHT_CONTROL = 0.35 * Cs.NEW_GEN_SCALE;
+	static var FLIGHT_CONTROL = KadoKadeoManager.S(0.35);
 
-	static var RAY = 5 * Cs.NEW_GEN_SCALE;
+	static var RAY = KadoKadeoManager.I(5);
 	static var SP_FRICT = 0.7;
-	static var ACC = 3 * Cs.NEW_GEN_SCALE;
+	static var ACC = KadoKadeoManager.I(3);
 
-	static var CLIMB_MAX = 24 * Cs.NEW_GEN_SCALE;
-	static var CLIMB_SPEED = 2 * Cs.NEW_GEN_SCALE;
+	static var CLIMB_MAX = KadoKadeoManager.I(24);
+	static var CLIMB_SPEED = KadoKadeoManager.I(2);
 
 	public var step:Int;
 	public var animFrame:Map<String, Int> = new Map();
@@ -85,8 +85,8 @@ class Hero extends Phys {
 
 		switch (step) {
 			case 0: // FLY;
-				weight = 0.5 * Cs.NEW_GEN_SCALE;
-				x = Num.mm((RAY + 3 * Cs.NEW_GEN_SCALE), x, Cs.mcw - (RAY + 3 * Cs.NEW_GEN_SCALE));
+				weight = KadoKadeoManager.S(0.5);
+				x = Num.mm((RAY + KadoKadeoManager.I(3)), x, Cs.mcw - (RAY + KadoKadeoManager.I(3)));
 				bouncer = new RoundBouncer(this);
 				bouncer.onBounceAngle = this.col;
 			// root.gotoAndStop(2);
@@ -105,7 +105,7 @@ class Hero extends Phys {
 
 	override public function update():Void {
 		super.update();
-		var lim = RAY + 4 * Cs.NEW_GEN_SCALE;
+		var lim = RAY + KadoKadeoManager.I(4);
 		switch (step) {
 			case 0: // FLY;
 
@@ -114,7 +114,7 @@ class Hero extends Phys {
 					if (trg == null) {
 						// COL CORN
 						for (sp in Cs.game.cList) {
-							if ((sp.bouncer != null || sp.step == 0) && getDist({x: sp.x, y: sp.y}) < 16 * Cs.NEW_GEN_SCALE) {
+							if ((sp.bouncer != null || sp.step == 0) && getDist({x: sp.x, y: sp.y}) < KadoKadeoManager.I(16)) {
 								initJump();
 								trg = sp;
 								vx = 0;
@@ -126,7 +126,7 @@ class Hero extends Phys {
 						}
 
 						// COL BOSS
-						if (Cs.game.boss.step < 3 && getDist({x: Cs.game.boss.x, y: Cs.game.boss.y}) < 32 * Cs.NEW_GEN_SCALE) {
+						if (Cs.game.boss.step < 3 && getDist({x: Cs.game.boss.x, y: Cs.game.boss.y}) < KadoKadeoManager.I(32)) {
 							Cs.game.boss.hit();
 						}
 
@@ -240,8 +240,8 @@ class Hero extends Phys {
 							b.py--;
 						}
 					}
-					vx = sens * 3 * Cs.NEW_GEN_SCALE;
-					vy = -3 * Cs.NEW_GEN_SCALE;
+					vx = sens * KadoKadeoManager.I(3);
+					vy = -KadoKadeoManager.I(3);
 					root.gotoAndStop(animFrame.get("fly"));
 					flOrient = true;
 				} else {
@@ -259,9 +259,9 @@ class Hero extends Phys {
 
 		// CORN
 		for (sp in Cs.game.cList) {
-			if (sp.bouncer != null && getDist({x: sp.x, y: sp.y}) < 16 * Cs.NEW_GEN_SCALE) {
-				sp.vx += 5 * sens * Cs.NEW_GEN_SCALE;
-				sp.vy -= 2 * Cs.NEW_GEN_SCALE;
+			if (sp.bouncer != null && getDist({x: sp.x, y: sp.y}) < KadoKadeoManager.I(16)) {
+				sp.vx += 5 * KadoKadeoManager.I(sens);
+				sp.vy -= KadoKadeoManager.I(2);
 			}
 		}
 
@@ -283,14 +283,14 @@ class Hero extends Phys {
 			// jumpAngle *= 0.9
 
 			// POWEER
-			jumpPower += 5 * Cs.NEW_GEN_SCALE * Timer.tmod;
+			jumpPower += KadoKadeoManager.I(5) * Timer.tmod;
 			jumpPower *= Math.pow(0.8, Timer.tmod);
 
 			// TRG
 			if (trg != null) {
 				var a = jumpAngle - 1.57;
-				var dx = Math.cos(a) * 6 * Cs.NEW_GEN_SCALE;
-				var dy = Math.sin(a) * 6 * Cs.NEW_GEN_SCALE;
+				var dx = Math.cos(a) * KadoKadeoManager.I(6);
+				var dy = Math.sin(a) * KadoKadeoManager.I(6);
 				if (bouncer != null) {
 					bouncer.setPos(trg.x + dx, trg.y + dy);
 				}
@@ -308,7 +308,7 @@ class Hero extends Phys {
 			jumpCircle.cran._y = y;
 
 			// AUTO RELEASE
-			if (jumpPower > 18 * Cs.NEW_GEN_SCALE)
+			if (jumpPower > KadoKadeoManager.I(18))
 				releaseJump();
 		}
 	}
@@ -321,8 +321,8 @@ class Hero extends Phys {
 					sens = -1;
 				if (isRightDown())
 					sens = 1;
-				vy = -10 * Cs.NEW_GEN_SCALE;
-				vx += sens * 3 * Cs.NEW_GEN_SCALE;
+				vy = -KadoKadeoManager.I(10);
+				vx += sens * KadoKadeoManager.I(3);
 				extraJump--;
 
 				var mc:GameAnimSprite = cast Cs.game.dm.attach("mcImpact", Game.DP_PART);
@@ -347,7 +347,7 @@ class Hero extends Phys {
 	}
 
 	public function releaseJump():Void {
-		if (jumpPower > 5 * Cs.NEW_GEN_SCALE) {
+		if (jumpPower > KadoKadeoManager.I(5)) {
 			initStep(0);
 
 			if (bouncer != null && bouncer is RoundBouncer) {

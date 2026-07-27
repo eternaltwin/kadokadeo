@@ -22,8 +22,8 @@ class Wave {
 		path = new Array();
 		for (i in 0...mp.length) {
 			path[i] = mp[i].copy();
-			path[i][0] = Std.int(path[i][0] * Cs.NEW_GEN_SCALE);
-			path[i][1] = Std.int(path[i][1] * Cs.NEW_GEN_SCALE);
+			path[i][0] = KadoKadeoManager.I(path[i][0]);
+			path[i][1] = KadoKadeoManager.I(path[i][1]);
 		}
 
 		// if(Std.random(2)==0)flipPath();
@@ -44,8 +44,8 @@ class Wave {
 
 		//
 		bList = new Array();
-		speed = sp * Cs.NEW_GEN_SCALE;
-		ecart = 30 * Cs.NEW_GEN_SCALE;
+		speed = KadoKadeoManager.S(sp);
+		ecart = KadoKadeoManager.I(30);
 		//
 		score = Cs.C500;
 	}

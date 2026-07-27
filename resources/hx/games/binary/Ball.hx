@@ -1,5 +1,6 @@
 package binary;
 
+import kado.KadoKadeoManager;
 import pixi.core.Pixi.BlendModes;
 import pixi.core.textures.Texture;
 import pixi.core.sprites.Sprite;
@@ -30,7 +31,7 @@ class Ball {
 		dm = new mt.DepthManager(root);
 		skin = dm.attach("mcBall2", 2);
 		glow = dm.empty(0);
-		var s = drawRadialGradientCircle(18 * Cs.NEW_GEN_SCALE, 20 * Cs.NEW_GEN_SCALE, 0xFFFFFF);
+		var s = drawRadialGradientCircle(KadoKadeoManager.I(18), KadoKadeoManager.I(20), 0xFFFFFF);
 		glow.addChild(s);
 
 		mcShade = Game.me.sdm.attach("mcShade", 1);
@@ -51,8 +52,8 @@ class Ball {
 		root._x = Cs.getX(x);
 		root._y = Cs.getY(y);
 
-		mcShade._x = root._x + 5 * Cs.NEW_GEN_SCALE;
-		mcShade._y = root._y + 5 * Cs.NEW_GEN_SCALE;
+		mcShade._x = root._x + KadoKadeoManager.I(5);
+		mcShade._y = root._y + KadoKadeoManager.I(5);
 	}
 
 	public function setColor(?col) {
@@ -123,7 +124,7 @@ class Ball {
 
 	static function getParticleGlowTexture():Texture {
 		if (particleGlowTexture == null) {
-			var radius = 8 * Cs.NEW_GEN_SCALE;
+			var radius = KadoKadeoManager.I(8);
 			var size = Std.int(radius * 2);
 			var canvas = js.Browser.document.createCanvasElement();
 			canvas.width = size;
@@ -173,12 +174,12 @@ class Ball {
 			for (y in 0...4) {
 				var p = new mt.bumdum.Phys(Game.me.dm.attach("partExplode", Game.DP_FX));
 				var a = Seed.randVfx() * 6.28;
-				var sp = Seed.randVfx() * 3 * Cs.NEW_GEN_SCALE;
+				var sp = Seed.randVfx() * KadoKadeoManager.I(3);
 				var cr = Seed.randVfx() * 20;
-				p.x = root._x + (x - 2) * 14 * Cs.NEW_GEN_SCALE;
-				p.y = root._y + (y - 2) * 14 * Cs.NEW_GEN_SCALE;
-				p.weight = -(0.05 + Seed.randVfx() * 0.05) * Cs.NEW_GEN_SCALE;
-				p.vy = (1 + Seed.randVfx()) * Cs.NEW_GEN_SCALE;
+				p.x = root._x + (x - 2) * KadoKadeoManager.I(14);
+				p.y = root._y + (y - 2) * KadoKadeoManager.I(14);
+				p.weight = KadoKadeoManager.S(-(0.05 + Seed.randVfx() * 0.05));
+				p.vy = KadoKadeoManager.S(1 + Seed.randVfx());
 				p.timer = 10 + Seed.randVfx() * 30;
 				p.frict = 0.9;
 				p.fadeType = 0;
@@ -194,7 +195,7 @@ class Ball {
 		for (i in 0...8) {
 			var p = new mt.bumdum.Phys(Game.me.dm.attach("partLight", Game.DP_FX));
 			var a = Seed.randVfx() * 6.28;
-			var sp = Seed.randVfx() * 4 * Cs.NEW_GEN_SCALE;
+			var sp = Seed.randVfx() * KadoKadeoManager.I(4);
 			p.vx = Math.cos(a) * sp;
 			p.vy = Math.sin(a) * sp;
 			p.x = root._x + p.vx * cr;

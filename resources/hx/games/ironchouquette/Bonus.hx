@@ -6,7 +6,7 @@ import mt.bumdum.Lib;
 
 class Bonus extends Phys {
 	public static var ID_MAX = 4;
-	public static var SPEED = 3 * Cs.NEW_GEN_SCALE;
+	public static var SPEED = KadoKadeoManager.I(3);
 	public static var SCORE = KKApi.aconst([1000, 3000, 12000]);
 
 	public static var WP_PLASMA = 0;
@@ -37,7 +37,7 @@ class Bonus extends Phys {
 	public function new(mc, ?forcedId:Int, ?forcedDir:Int) {
 		Cs.game.bonusList.push(this);
 
-		ray = 15 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(15);
 		id = forcedId == null ? getRandomId() : forcedId;
 		// id = 3;
 		var dir = forcedDir == null ? Seed.random(2) : forcedDir;

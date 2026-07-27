@@ -13,35 +13,38 @@ class CGergin extends Bads {
 		setLevel(22);
 		setScore(Cs.C_GERGIN);
 		hp = 30;
-		rect = {rw: 20 * Cs.NEW_GEN_SCALE, rh: 26 * Cs.NEW_GEN_SCALE}
+		rect = {rw: KadoKadeoManager.I(20), rh: KadoKadeoManager.I(26)}
 		if (last == null) {
 			follow = root.attachMovie("gerginTurret", 2);
-			follow._x = -11 * Cs.NEW_GEN_SCALE;
+			follow._x = -KadoKadeoManager.I(11);
 			react = root.attachMovie("gerginReactor", 0);
 			react.loop = true;
 			react.play();
 			react._visible = false;
-			react._x = -23 * Cs.NEW_GEN_SCALE;
+			react._x = -KadoKadeoManager.I(23);
 
 			bList = [6];
-			acc = {c: 0.1 * Cs.NEW_GEN_SCALE, lim: 1 * Cs.NEW_GEN_SCALE}
+			acc = {
+				c: KadoKadeoManager.S(0.1),
+				lim: KadoKadeoManager.I(1)
+			};
 			frict = 0.9;
-			var m = 40 * Cs.NEW_GEN_SCALE;
+			var m = KadoKadeoManager.I(40);
 			beeRange = [
 				{
 					w: 6,
 					xMin: m,
 					xMax: Cs.mcw - m * 2,
 					yMin: m,
-					yMax: 90 * Cs.NEW_GEN_SCALE
+					yMax: KadoKadeoManager.I(90)
 				},
 			];
 		} else {
-			last.setPart(this, 40 * Cs.NEW_GEN_SCALE, 0);
+			last.setPart(this, KadoKadeoManager.I(40), 0);
 			var raf = newRafale();
 			raf.addShot(1, [3, 0.15], 7, 12);
 			raf.cooldown = 48;
-			raf.dy = 25 * Cs.NEW_GEN_SCALE;
+			raf.dy = KadoKadeoManager.I(25);
 
 			var f = () -> {
 				last.bList = [3];
@@ -59,13 +62,13 @@ class CGergin extends Bads {
 				va = 1;
 				trg = {
 					x: Cs.mcw * 0.5,
-					y: 40. * Cs.NEW_GEN_SCALE
+					y: KadoKadeoManager.S(40)
 				};
 				weapons = [];
 				var r = newRafale();
 				r.addShot(4, [3, 0.9], 5, 12);
 				r.cooldown = 48;
-				r.dy = 25 * Cs.NEW_GEN_SCALE;
+				r.dy = KadoKadeoManager.I(25);
 			}
 
 			last.onDeath = f2;

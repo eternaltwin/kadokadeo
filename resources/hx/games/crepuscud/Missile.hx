@@ -17,13 +17,13 @@ class Missile extends Projectile {
 			mc = Game.me.dm.attach("mcMissile", Game.DP_MISSILE);
 		super(mc);
 
-		var speed = Cs.S(0.75 + Seed.rand() * Game.me.dif * 0.5);
+		var speed = KadoKadeoManager.S(0.75 + Seed.rand() * Game.me.dif * 0.5);
 
 		x = Seed.rand() * Cs.mcw;
 		y = -speed * 4;
 
 		var ma = 45;
-		var tx = ma + Seed.rand() * (Cs.mcw - Cs.S(ma + 5));
+		var tx = ma + Seed.rand() * (Cs.mcw - KadoKadeoManager.I(ma + 5));
 		var ty = Cs.mch;
 
 		var dx = tx - x;
@@ -42,7 +42,7 @@ class Missile extends Projectile {
 		setAngle(Math.atan2(dy, dx));
 
 		if (special != null)
-			speed = Cs.S([3, 5, 9][special]);
+			speed = KadoKadeoManager.I([3, 5, 9][special]);
 		setSpeed(speed + BOOST);
 
 		Game.me.missiles.push(this);
@@ -75,8 +75,8 @@ class Missile extends Projectile {
 		var cr = 8;
 		for (i in 0...max) {
 			var a = (i + Seed.rand()) / max * 6.28;
-			var ca = Cs.S(Math.cos(a));
-			var sa = Cs.S(Math.sin(a));
+			var ca = KadoKadeoManager.S(Math.cos(a));
+			var sa = KadoKadeoManager.S(Math.sin(a));
 			var speed = 1.5 + Seed.rand() * 3;
 			var p = new Phys(Game.me.dm.attach("partSquareLight", Game.DP_PARTS));
 			p.x = x + ca * speed * cr;

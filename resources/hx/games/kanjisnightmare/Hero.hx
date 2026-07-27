@@ -27,17 +27,17 @@ class Hero extends Phys {
 	public inline static var DEATH = 2;
 	public inline static var KICK = 3;
 
-	public static var DL = Cs.S(560);
-	static var CEIL = Cs.S(30);
-	static var WEIGHT = Cs.S(0.5);
+	public static var DL = KadoKadeoManager.I(560);
+	static var CEIL = KadoKadeoManager.I(30);
+	static var WEIGHT = KadoKadeoManager.S(0.5);
 
-	public static var SPEED:Float = Cs.S(6);
-	static var JUMP_EXTEND = Cs.S(3);
-	static var JUMP_START = Cs.S(6);
-	static var GSPEED = Std.int(Cs.S(40)); // 30;
+	public static var SPEED:Float = KadoKadeoManager.I(6);
+	static var JUMP_EXTEND = KadoKadeoManager.I(3);
+	static var JUMP_START = KadoKadeoManager.I(6);
+	static var GSPEED = Std.int(KadoKadeoManager.I(40)); // 30;
 
-	static var GP_DIST = Cs.S(30);
-	static var GP_POWER = Cs.S(0.6);
+	static var GP_DIST = KadoKadeoManager.I(30);
+	static var GP_POWER = KadoKadeoManager.S(0.6);
 
 	static var FL_MOUSE_CONTROL = false;
 	static var FL_EXTRA_JUMP = false;
@@ -107,7 +107,7 @@ class Hero extends Phys {
 		flDeath = false;
 		flEat = false;
 
-		ray = Cs.S(12);
+		ray = KadoKadeoManager.I(12);
 		cooldown = 0;
 		kunaiMax = 3;
 		kunaiLeft = kunaiMax;
@@ -263,8 +263,8 @@ class Hero extends Phys {
 						}
 						var st = [[4, 0x7E2301], [2, 0xFEAA8B]];
 						for (i in 0...2) {
-							Cs.game.mcLine.lineStyle(Cs.S(st[i][0]), st[i][1], 100);
-							Cs.game.mcLine.moveTo(x, y - Cs.S(15)); // traceLine();
+							Cs.game.mcLine.lineStyle(KadoKadeoManager.I(st[i][0]), st[i][1], 100);
+							Cs.game.mcLine.moveTo(x, y - KadoKadeoManager.I(15)); // traceLine();
 							Cs.game.mcLine.lineTo(gp.x, gp.y); // traceLine();
 						}
 						// root._rotation = (a/0.0174 + 90 )*0.3;
@@ -274,7 +274,7 @@ class Hero extends Phys {
 						var dy = gp.y - y;
 						var angle = Math.atan2(dy, dx * sens);
 
-						root._rotation = (vx / Cs.NEW_GEN_SCALE) * 0.5;
+						root._rotation = (vx / KadoKadeoManager.I(1)) * 0.5;
 
 						// var mc:Dynamic = cast root;
 
@@ -302,7 +302,7 @@ class Hero extends Phys {
 				var px = Num.q(x);
 				if (px < Num.q(plat.x) || px > Num.q(plat.x + plat.w)) {
 					initStep(FLY);
-					vy = Cs.S(-2);
+					vy = KadoKadeoManager.I(-2);
 					plat = null;
 				}
 
@@ -312,8 +312,8 @@ class Hero extends Phys {
 		}
 
 		// RECAL
-		if (Num.q(x) < Num.q(Cs.S(13) - Cs.game.scrollMin)) {
-			x = Cs.S(13) - Cs.game.scrollMin;
+		if (Num.q(x) < Num.q(KadoKadeoManager.I(13) - Cs.game.scrollMin)) {
+			x = KadoKadeoManager.I(13) - Cs.game.scrollMin;
 		}
 		// ANIM
 		if (nextAnim != null) {
@@ -366,7 +366,7 @@ class Hero extends Phys {
 			case FLY:
 				if (!flBall) {
 					var dvx = SPEED * pitch - vx;
-					var lim = Cs.S(0.5); // 0.25;
+					var lim = KadoKadeoManager.S(0.5); // 0.25;
 					var coef = 0.1;
 					vx += Math.min(Math.max(-lim, dvx * coef), lim);
 				}
@@ -429,7 +429,7 @@ class Hero extends Phys {
 				}
 				if (flDown) {
 					jump();
-					vy = Cs.S(-2.5);
+					vy = KadoKadeoManager.S(-2.5);
 					boost = 0;
 					checkGroundSafe = 16;
 				}
@@ -485,13 +485,13 @@ class Hero extends Phys {
 		for (i in 0...Cs.game.mList.length) {
 			var m = Cs.game.mList[i];
 			var distSq = getDeterministicDistSq(m.x, m.y);
-			var hitRay = Cs.S(26);
+			var hitRay = KadoKadeoManager.I(26);
 
 			if (m.flCol && distSq < hitRay * hitRay) {
 				if (auraTimer != null) {
 					m.knockOut();
 					m.vx = vx * 2;
-					m.vy = -(Cs.S(7) + Cs.S(Seed.rand() * 4));
+					m.vy = -(KadoKadeoManager.I(7) + KadoKadeoManager.S(Seed.rand() * 4));
 					m.flCol = false;
 					Cs.game.genScore(m.x, m.y, Cs.C200);
 					return;
@@ -501,8 +501,8 @@ class Hero extends Phys {
 					// var da  = Math.abs(getAng(m)-1.57)
 
 					if (vy > 0) {
-						vy = Cs.S(-7);
-						y = m.y - Cs.S(20);
+						vy = KadoKadeoManager.I(-7);
+						y = m.y - KadoKadeoManager.I(20);
 						m.harm(21, false);
 						fillKunai();
 						if (step == KICK) {
@@ -515,7 +515,7 @@ class Hero extends Phys {
 						return;
 					}
 				}
-				var harmRay = Cs.S(18);
+				var harmRay = KadoKadeoManager.I(18);
 				if (noColTimer == null && distSq < harmRay * harmRay) {
 					harm();
 				}
@@ -527,7 +527,7 @@ class Hero extends Phys {
 		var i = 0;
 		while (i < Cs.game.bonusList.length) {
 			var sp = Cs.game.bonusList[i];
-			var pickupRay = Cs.S(20);
+			var pickupRay = KadoKadeoManager.I(20);
 			if (getDeterministicDistSq(sp.x, sp.y) < pickupRay * pickupRay) {
 				sp.take();
 				i--;
@@ -564,9 +564,9 @@ class Hero extends Phys {
 
 		for (i in 0...3) {
 			var p = Cs.game.newPart("partDust");
-			p.x = x + (Seed.randVfx() * 2 - 1) * Cs.S(14);
-			p.y = y + Cs.S(12 + Seed.randVfx() * 24);
-			p.weight = Cs.S(0.1 + Seed.randVfx() * 0.3);
+			p.x = x + (Seed.randVfx() * 2 - 1) * KadoKadeoManager.I(14);
+			p.y = y + KadoKadeoManager.S(12 + Seed.randVfx() * 24);
+			p.weight = KadoKadeoManager.S(0.1 + Seed.randVfx() * 0.3);
 			p.setScale(50 + Seed.randVfx() * 70);
 			p.timer = 20 + Seed.randVfx() * 10;
 		}
@@ -595,7 +595,7 @@ class Hero extends Phys {
 				gp = new Grap(Cs.game.mdm.attach("mcKunai", Game.DP_HERO));
 				gp.x = x;
 				gp.y = y;
-				gp.vx = Math.cos(a) + (vx / Cs.NEW_GEN_SCALE) * 0.05;
+				gp.vx = Math.cos(a) + (vx / KadoKadeoManager.I(1)) * 0.05;
 				gp.vy = Math.sin(a);
 				gp.speed = GSPEED;
 				gp.flFly = true;
@@ -611,7 +611,7 @@ class Hero extends Phys {
 
 	function shoot() {
 		var o = getNextMonster();
-		var speed = Cs.S(16);
+		var speed = KadoKadeoManager.I(16);
 
 		var a = sens * 1.57 - 1.57;
 
@@ -626,7 +626,7 @@ class Hero extends Phys {
 			a = getAng({x: trg.x, y: trg.y});
 		}
 
-		var dsLim = Cs.S(60);
+		var dsLim = KadoKadeoManager.I(60);
 		if (o != null && step == GROUND && o.dist < dsLim) {
 			var list = getMonsterList();
 			var dx = o.mons.x - x;
@@ -640,7 +640,7 @@ class Hero extends Phys {
 			}
 		}
 
-		var flNear = o != null && o.mons != null && o.dist < (optList[0] ? Cs.S(76) : Cs.S(52));
+		var flNear = o != null && o.mons != null && o.dist < (optList[0] ? KadoKadeoManager.I(76) : KadoKadeoManager.I(52));
 		if (flNear || starLeft == 0) {
 			slash(o != null ? o.mons : null, flNear);
 			return;
@@ -675,7 +675,7 @@ class Hero extends Phys {
 				trg.cut(21);
 			}
 			if (trg.hp > 0) {
-				vx = Cs.S(-5) * sens;
+				vx = KadoKadeoManager.I(-5) * sens;
 			}
 		}
 	}
@@ -692,7 +692,7 @@ class Hero extends Phys {
 			var dx = m.x - x;
 			var dy = m.y - y;
 
-			if (dy > Cs.S(20) && dy < Cs.S(220) && Math.abs(dx) < Cs.S(80)) {
+			if (dy > KadoKadeoManager.I(20) && dy < KadoKadeoManager.I(220) && Math.abs(dx) < KadoKadeoManager.I(80)) {
 				var dist = Math.abs(dx) + Math.abs(dy);
 				if (dist < distMin) {
 					mons = m;
@@ -703,7 +703,7 @@ class Hero extends Phys {
 
 		if (mons != null) {
 			var trg = {x: mons.x, y: mons.y};
-			var sp = Cs.S(16);
+			var sp = KadoKadeoManager.I(16);
 
 			var dy = mons.y - y;
 			var c = dy / sp;
@@ -737,7 +737,7 @@ class Hero extends Phys {
 		mc.play();
 		mc._x = x;
 		mc._y = y;
-		Cs.game.genScore(x, y - Cs.S(25), Cs.C1000);
+		Cs.game.genScore(x, y - KadoKadeoManager.I(25), Cs.C1000);
 	}
 
 	//
@@ -820,7 +820,7 @@ class Hero extends Phys {
 
 	function updateKick() {
 		setSens(1);
-		var bmp = getSnapshot(Cs.S(60));
+		var bmp = getSnapshot(KadoKadeoManager.I(60));
 		var mc = Cs.game.mdm.empty(Game.DP_MONS);
 		mc.attachBitmap(bmp, 0);
 		var p = new Part(mc);
@@ -850,18 +850,18 @@ class Hero extends Phys {
 			initStep(FLY);
 			for (i in 0...50) {
 				var p = Cs.game.newPart("mcCombi");
-				p.x = x + (Seed.randVfx() * 2 - 1) * Cs.S(4);
-				p.y = y + Cs.S(10 - i * 4);
+				p.x = x + (Seed.randVfx() * 2 - 1) * KadoKadeoManager.I(4);
+				p.y = y + KadoKadeoManager.I(10 - i * 4);
 				p.vx = vx * (1.2 + Seed.randVfx() * 0.8);
-				p.vy = vy * (1.2 + Seed.randVfx() * 0.8) - Cs.S(2 + Seed.randVfx() * 7);
-				p.timer = 50 + Cs.S(Seed.randVfx() * 10);
-				p.weight = Cs.S(0.1 + Seed.randVfx() * 0.2);
+				p.vy = vy * (1.2 + Seed.randVfx() * 0.8) - KadoKadeoManager.S(2 + Seed.randVfx() * 7);
+				p.timer = 50 + KadoKadeoManager.S(Seed.randVfx() * 10);
+				p.weight = KadoKadeoManager.S(0.1 + Seed.randVfx() * 0.2);
 				p.vr = (Seed.randVfx() * 2 - 1) * 6;
 
 				p.root.gotoAndStop(i + 1);
 				if (i + 1 == p.root._totalframes) {
 					p.flPlatCol = true;
-					p.ray = Cs.S(10);
+					p.ray = KadoKadeoManager.I(10);
 					p.vr *= 3;
 					break;
 				}
@@ -869,8 +869,8 @@ class Hero extends Phys {
 		} else {
 			initStep(DEATH);
 		}
-		vy -= Cs.S(5);
-		vx -= Cs.S(3);
+		vy -= KadoKadeoManager.I(5);
+		vx -= KadoKadeoManager.I(3);
 	}
 
 	public function hpUp() {
@@ -890,10 +890,10 @@ class Hero extends Phys {
 		mcStarCount = cast Cs.game.dm.attach("mcStarCount", Game.DP_INTER);
 		mcStarCount.field = mcStarCount.initTextField("field", {
 			font: "Arial",
-			size: 30,
+			size: 22,
 			color: 0xFFFFFF,
 		});
-		mcStarCount.field.x = Cs.S(15);
+		mcStarCount.field.x = KadoKadeoManager.I(15);
 		// Cs.glow(mcStarCount.field, 2, 2, 0);
 		updateInterface();
 	}
@@ -905,11 +905,11 @@ class Hero extends Phys {
 				kList[i] = Cs.game.dm.attach("mcInterKunai", Game.DP_INTER);
 				untyped kList[i].smc = kList[i].attachMovie("mcInterKunaiKunai", "smc");
 				mc = kList[i];
-				mc._x = i * Cs.S(12);
+				mc._x = i * KadoKadeoManager.I(12);
 			}
 			mc.smc._alpha = (kunaiLeft > i) ? 100 : 10;
 		}
-		mcStarCount._x = kunaiMax * Cs.S(12) + Cs.S(2);
+		mcStarCount._x = kunaiMax * KadoKadeoManager.I(12) + KadoKadeoManager.I(2);
 		updateInterfaceField();
 	}
 
@@ -926,7 +926,7 @@ class Hero extends Phys {
 				var mc = Cs.game.dm.attach("mcIcon", Game.DP_INTER);
 				mc.gotoAndStop(i + 1);
 				mc._x = x;
-				x -= Cs.S(20);
+				x -= KadoKadeoManager.I(20);
 				iconList.push(mc);
 			}
 		}
@@ -957,7 +957,7 @@ class Hero extends Phys {
 	}
 
 	function getNextMonster():{mons:Monster, dist:Float} {
-		var distMin:Float = Cs.S(250);
+		var distMin:Float = KadoKadeoManager.I(250);
 		var mons:Monster = null;
 		for (i in 0...Cs.game.mList.length) {
 			var m = Cs.game.mList[i];
@@ -972,9 +972,9 @@ class Hero extends Phys {
 
 		if (!Cs.game.flMouseDead && mons == null) {
 			var mouse = Cs.game.getMapMouse();
-			var mp = new PointWrapper({x: mouse.x + Cs.S(7), y: mouse.y + Cs.S(7)});
+			var mp = new PointWrapper({x: mouse.x + KadoKadeoManager.I(7), y: mouse.y + KadoKadeoManager.I(7)});
 			var dist = getDeterministicDist(mp.x, mp.y);
-			if (dist < Cs.S(140) && dist > Cs.S(50))
+			if (dist < KadoKadeoManager.I(140) && dist > KadoKadeoManager.I(50))
 				return {mons: cast mp, dist: dist};
 		}
 		return null;

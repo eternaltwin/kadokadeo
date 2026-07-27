@@ -54,8 +54,8 @@ class Game implements kado.GameInterface {
 		var pf = dmanager.attach("plateforme", Cs.PLAN_INTERF);
 		var hs = dmanager.attach("herbShade", 0);
 		pcount = dmanager.attach("playCount", Cs.PLAN_INTERF);
-		pcount._x = 70 * Cs.NEW_GEN_SCALE; // 150
-		pcount._y = 10 * Cs.NEW_GEN_SCALE; // 280
+		pcount._x = KadoKadeoManager.I(70); // 150
+		pcount._y = KadoKadeoManager.I(10); // 280
 		pf._x = Cs.POSX;
 		pf._y = Cs.YFALAISE;
 		hs._x = Cs.POSX;
@@ -96,7 +96,7 @@ class Game implements kado.GameInterface {
 		cur = g;
 		cur.group = null;
 		cur.py = g.mc._y;
-		cur_side = (cur.mc._x < 150 * Cs.NEW_GEN_SCALE);
+		cur_side = (cur.mc._x < KadoKadeoManager.I(150));
 	}
 
 	function makeGroupsRec(b:Gem, x:Int, y:Int, g:Array<Gem>):Void {
@@ -373,8 +373,8 @@ class Game implements kado.GameInterface {
 
 	function attachGloup(n:Int):Void {
 		var mc = dmanager.attach("bloub", Cs.PLAN_INTERF);
-		mc._x = (cur.x > 0) ? (16 * Cs.NEW_GEN_SCALE + Cs.POSX - Cs.CELL_SIZE) : (300 - 45 + 25) * Cs.NEW_GEN_SCALE;
-		mc._y = 300 * Cs.NEW_GEN_SCALE;
+		mc._x = (cur.x > 0) ? (KadoKadeoManager.I(16) + Cs.POSX - Cs.CELL_SIZE) : KadoKadeoManager.I(300 - 45 + 25);
+		mc._y = KadoKadeoManager.I(300);
 		mc.play();
 		mc.removeOnFrame = 63;
 
@@ -392,7 +392,7 @@ class Game implements kado.GameInterface {
 		});
 		b.removeOnFrame = 16;
 		b._x = Cs.POSX;
-		b._y = Cs.YFALAISE - 6 * Cs.NEW_GEN_SCALE;
+		b._y = Cs.YFALAISE - KadoKadeoManager.I(6);
 	}
 
 	public function update(delta:Float):Void {
@@ -426,7 +426,7 @@ class Game implements kado.GameInterface {
 			i++;
 		}
 
-		var side = (MouseManager.getX() < 150 * Cs.NEW_GEN_SCALE);
+		var side = (MouseManager.getX() < KadoKadeoManager.I(150));
 		var cy = Std.int(Math.max(Math.min((MouseManager.getY() - Cs.POSY) / Cs.CELL_SIZE, Cs.LVL_HEIGHT - 1), 0));
 		recordHover(side, cy);
 
@@ -440,7 +440,7 @@ class Game implements kado.GameInterface {
 
 		var ty:Float;
 		if (side != cur_side || KKApi.val(tokens) == 0 || cur.id >= Cs.ID_BONUS)
-			ty = 350 * Cs.NEW_GEN_SCALE;
+			ty = KadoKadeoManager.I(350);
 		else
 			ty = Cs.POSY + Cs.CELL_SIZE * cy;
 
@@ -449,7 +449,7 @@ class Game implements kado.GameInterface {
 		cur.y = cy;
 		cur.py = cur.py * p + ty * (1 - p);
 
-		if (Math.abs(cur.py - ty) < 2 * Cs.NEW_GEN_SCALE || (ty == 350 * Cs.NEW_GEN_SCALE && cur.py > 300 * Cs.NEW_GEN_SCALE)) {
+		if (Math.abs(cur.py - ty) < KadoKadeoManager.I(2) || (ty == KadoKadeoManager.I(350) && cur.py > KadoKadeoManager.I(300))) {
 			cur.py = ty;
 			wait_fall = false;
 			if (cur.id == Cs.ID_BONUS) {

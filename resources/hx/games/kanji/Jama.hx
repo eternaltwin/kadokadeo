@@ -28,18 +28,18 @@ class Jama {
 	static inline var CIGOGNE = 0;
 	static inline var BEE = 1;
 	static inline var SANGLIER = 2;
-	static inline var CIGOGNE_COL_ANCHOR_X = 92;
-	static inline var CIGOGNE_COL_TOP = -16;
-	static inline var CIGOGNE_COL_BOTTOM = 21;
-	static inline var CIGOGNE_COL_W = 235;
-	static inline var BEE_LEFT = -44;
-	static inline var BEE_RIGHT = 41;
-	static inline var BEE_TOP = -65;
-	static inline var BEE_BOTTOM = 35;
-	static inline var SANGLIER_LEFT = -91;
-	static inline var SANGLIER_RIGHT = 84;
-	static inline var SANGLIER_TOP = -88;
-	static inline var SANGLIER_BOTTOM = 14;
+	static var CIGOGNE_COL_ANCHOR_X = KadoKadeoManager.I(30);
+	static var CIGOGNE_COL_TOP = -KadoKadeoManager.I(5);
+	static var CIGOGNE_COL_BOTTOM = KadoKadeoManager.I(7);
+	static var CIGOGNE_COL_W = KadoKadeoManager.I(78);
+	static var BEE_LEFT = -KadoKadeoManager.S(14.5);
+	static var BEE_RIGHT = KadoKadeoManager.S(13.5);
+	static var BEE_TOP = -KadoKadeoManager.S(21);
+	static var BEE_BOTTOM = KadoKadeoManager.S(11);
+	static var SANGLIER_LEFT = -KadoKadeoManager.I(30);
+	static var SANGLIER_RIGHT = KadoKadeoManager.I(28);
+	static var SANGLIER_TOP = -KadoKadeoManager.I(27);
+	static var SANGLIER_BOTTOM = KadoKadeoManager.I(4);
 
 	public function new(g:Game, p, t:Int) {
 		game = g;
@@ -69,35 +69,35 @@ class Jama {
 				col = mc.col;
 				if (way) {
 					mc._xscale = -100;
-					x += 20 * Cs.NEW_GEN_SCALE;
+					x += KadoKadeoManager.I(20);
 				} else {
-					x -= 20 * Cs.NEW_GEN_SCALE;
+					x -= KadoKadeoManager.I(20);
 				}
-				speed = (1 + 0.3 * game.level) * Cs.NEW_GEN_SCALE;
+				speed = KadoKadeoManager.S(1 + 0.3 * game.level);
 			case BEE:
-				sx = (50 + Math.min(game.level, 5) * 10) * Cs.NEW_GEN_SCALE;
+				sx = KadoKadeoManager.S(50 + Math.min(game.level, 5) * 10);
 				if (sy + sx > Cs.MAXX) {
 					sy = Cs.MAXX - sx;
 				}
 				if (sy - sx < 0) {
 					sy = sx;
 				}
-				speed = (0.4 + 0.2 * game.level) * Cs.NEW_GEN_SCALE;
+				speed = KadoKadeoManager.S(0.4 + 0.2 * game.level);
 				if (way) {
 					mc._xscale = -100;
 				}
 			case SANGLIER:
 				y = Cs.MAXY;
 				sx = 0;
-				speed = 8 * Cs.NEW_GEN_SCALE;
+				speed = KadoKadeoManager.I(8);
 				mc.stop();
 				time = -2.7 + game.level * 0.15;
 
 				tmp = game.dmanager.attach("prev", 6);
 				tmp.play();
 				tmp.removeOnFrame = 45;
-				tmp._x = x + (way ? -20 : 20) * Cs.NEW_GEN_SCALE;
-				tmp._y = y - 10 * Cs.NEW_GEN_SCALE;
+				tmp._x = x + KadoKadeoManager.I(way ? -20 : 20);
+				tmp._y = y - KadoKadeoManager.I(10);
 
 				if (way) {
 					mc._xscale = -100;
@@ -221,7 +221,7 @@ class Jama {
 		switch (t) {
 			case CIGOGNE:
 				x += speed * Timer.tmod * (way ? -1 : 1);
-				if (hit(10 * Cs.NEW_GEN_SCALE)) {
+				if (hit(KadoKadeoManager.I(10))) {
 					if (hitFromAbove) {
 						var p = Math.abs(game.hero.jump_pow);
 						p *= 0.7;
@@ -266,16 +266,16 @@ class Jama {
 						game.kill();
 					}
 				}
-				if (x > 340 * Cs.NEW_GEN_SCALE || x < -40 * Cs.NEW_GEN_SCALE) {
+				if (x > KadoKadeoManager.I(340) || x < -KadoKadeoManager.I(40)) {
 					ret = remove();
 				}
 			case BEE:
 				x += speed * Timer.tmod * (way ? -1 : 1);
 				y = Math.sin(time) * sx + sy;
-				if (hit(5 * Cs.NEW_GEN_SCALE)) {
+				if (hit(KadoKadeoManager.I(5))) {
 					game.kill();
 				}
-				if (x > 320 * Cs.NEW_GEN_SCALE || x < -20 * Cs.NEW_GEN_SCALE) {
+				if (x > KadoKadeoManager.I(320) || x < -KadoKadeoManager.I(20)) {
 					ret = remove();
 				}
 			case SANGLIER:
@@ -284,10 +284,10 @@ class Jama {
 					sx += Timer.tmod;
 					mc.gotoAndStop(Std.int(sx % mc._totalframes) + 1);
 					x += speed * Timer.tmod * (way ? -1 : 1);
-					if (hit(10 * Cs.NEW_GEN_SCALE)) {
+					if (hit(KadoKadeoManager.I(10))) {
 						game.kill();
 					}
-					if (x > 340 * Cs.NEW_GEN_SCALE || x < -40 * Cs.NEW_GEN_SCALE) {
+					if (x > KadoKadeoManager.I(340) || x < -KadoKadeoManager.I(40)) {
 						ret = remove();
 					}
 				}

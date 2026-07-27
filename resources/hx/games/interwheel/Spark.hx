@@ -42,7 +42,7 @@ class Spark extends Phys {
 		coef = Num.q(Math.min(coef + 0.005 * Timer.tmod, coefLimit));
 		towardSpeed(cast {x: Cs.game.blob.x, y: Cs.game.blob.y}, coef, distLimit);
 
-		if (Num.q(getDist(cast {x: Cs.game.blob.x, y: Cs.game.blob.y})) < Blob.RAY + 8 * Cs.NEW_GEN_SCALE) {
+		if (Num.q(getDist(cast {x: Cs.game.blob.x, y: Cs.game.blob.y})) < Blob.RAY + KadoKadeoManager.I(8)) {
 			blast();
 			KadoKadeoManager.kkm.addScore(score);
 			kill();

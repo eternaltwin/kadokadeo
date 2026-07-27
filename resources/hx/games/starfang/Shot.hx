@@ -28,7 +28,7 @@ class Shot extends Phys {
 		root.stop();
 		flPierce = false;
 		flInvincible = false;
-		ray = 4 * Cs.NEW_GEN_SCALE;
+		ray = KadoKadeoManager.I(4);
 		damage = 0;
 		ft = 0;
 		Cs.game.shotList.push(this);
@@ -57,8 +57,8 @@ class Shot extends Phys {
 					timer = null;
 					switch (ft) {
 						case 1:
-							fxOnde(ray * 2 + 40 * Cs.NEW_GEN_SCALE);
-							fxExplode(ray * 2 + 20 * Cs.NEW_GEN_SCALE);
+							fxOnde(ray * 2 + KadoKadeoManager.I(40));
+							fxExplode(ray * 2 + KadoKadeoManager.I(20));
 							kill();
 
 						case 2:
@@ -72,7 +72,7 @@ class Shot extends Phys {
 		}
 		checkCols();
 		updateBehaviour();
-		if (isOut(100 * Cs.NEW_GEN_SCALE))
+		if (isOut(KadoKadeoManager.I(100)))
 			kill();
 
 		// Cs.game.plasmaDraw(root,0)
@@ -115,7 +115,7 @@ class Shot extends Phys {
 					updateVit();
 
 				case 5: // SWARM;
-					if (Math.sqrt(vx * vx + vy * vy) < 3 * Cs.NEW_GEN_SCALE || Seed.rand() / Timer.tmod < 0.1) {
+					if (Math.sqrt(vx * vx + vy * vy) < KadoKadeoManager.I(3) || Seed.rand() / Timer.tmod < 0.1) {
 						a = Seed.random(4) * 1.57;
 						vx = Math.cos(a) * speed;
 						vy = Math.sin(a) * speed;
@@ -225,7 +225,7 @@ class Shot extends Phys {
 					for (i in 0...list.length) {
 						var b = list[i];
 						if (b != bad) {
-							if (getDist({x: b.x, y: b.y}) < b.ray + ray + 36 * Cs.NEW_GEN_SCALE) {
+							if (getDist({x: b.x, y: b.y}) < b.ray + ray + KadoKadeoManager.I(36)) {
 								b.hit(this);
 							}
 						}

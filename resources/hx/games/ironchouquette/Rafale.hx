@@ -66,7 +66,7 @@ class Rafale {
 		switch (type) {
 			case 0: // FRONT (  speed, skin, ray )
 				shot = newShot(a[1]);
-				shot.vy = a[0] * Cs.NEW_GEN_SCALE;
+				shot.vy = KadoKadeoManager.S(a[0]);
 				if (a[2] != null)
 					shot.ray = a[2];
 
@@ -117,8 +117,8 @@ class Rafale {
 
 	public function newAngledShot(skin, speed, a) {
 		var shot = newShot(skin);
-		shot.vx = Math.cos(a) * speed * Cs.NEW_GEN_SCALE;
-		shot.vy = Math.sin(a) * speed * Cs.NEW_GEN_SCALE;
+		shot.vx = Math.cos(a) * KadoKadeoManager.S(speed);
+		shot.vy = Math.sin(a) * KadoKadeoManager.S(speed);
 		return shot;
 	}
 }

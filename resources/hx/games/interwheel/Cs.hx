@@ -6,12 +6,11 @@ import pixi.core.math.Matrix;
 import mt.bumdum.Lib;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
-	public static var mcw = 300 * NEW_GEN_SCALE;
-	public static var mch = 300 * NEW_GEN_SCALE;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
 
-	public static var SIDE = 10 * NEW_GEN_SCALE;
-	public static var SPACE = 8 * NEW_GEN_SCALE;
+	public static var SIDE = KadoKadeoManager.I(10);
+	public static var SPACE = KadoKadeoManager.I(8);
 
 	public static var VIEW_WHEEL = 50;
 	public static var START_WHEEL_ID = 10;
@@ -23,20 +22,20 @@ class Cs {
 	public static var WHEEL_SPEED_MAX = 0.25;
 	public static var WHEEL_SPEED_RANDOM = 0.05;
 
-	public static var WHEEL_DIST_MIN = 60 * NEW_GEN_SCALE;
-	public static var WHEEL_DIST_MAX = 120 * NEW_GEN_SCALE;
+	public static var WHEEL_DIST_MIN = KadoKadeoManager.I(60);
+	public static var WHEEL_DIST_MAX = KadoKadeoManager.I(120);
 
-	public static var WHEEL_RAY_MIN = 8 * NEW_GEN_SCALE;
-	public static var WHEEL_RAY_MAX = 32 * NEW_GEN_SCALE;
+	public static var WHEEL_RAY_MIN = KadoKadeoManager.I(8);
+	public static var WHEEL_RAY_MAX = KadoKadeoManager.I(32);
 	public static var WHEEL_RAY_RANDOM = 50;
 	public static var MINE_SPACE = 36;
 
 	public static var DIF_RANDOMIZER = 0.1;
 
 	public static var WATER_TIMER = 0;
-	public static var WATER_SPEED = 1 * NEW_GEN_SCALE;
+	public static var WATER_SPEED = KadoKadeoManager.I(1);
 	public static var WATER_SPEED_INC = 0.0003;
-	public static var DROWN_LIMIT = 100 * NEW_GEN_SCALE;
+	public static var DROWN_LIMIT = KadoKadeoManager.I(100);
 
 	// SCORE
 	public static var SCORE_PASTILLE = KKApi.aconst([250, 1000, 5000]); // KKApi.const(150)

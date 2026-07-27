@@ -756,7 +756,7 @@ class Game implements kado.GameInterface {
 	function updateMoves() {
 		var d = bTimer.getDist();
 		var nb = Std.int(Math.max(1, d / Cs.s(14)));
-		var mod = mt.Timer.tmod + (d / Cs.NEW_GEN_SCALE) * 0.035;
+		var mod = mt.Timer.tmod + (d / KadoKadeoManager.I(1)) * 0.035;
 
 		var dead = false;
 		for (i in 0...nb) {

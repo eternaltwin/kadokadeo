@@ -100,7 +100,7 @@ class Game implements kado.GameInterface {
 		map._x = 0;
 		map._y = 0;
 
-		// Filt.glow(map, 30 * Cs.NEW_GEN_SCALE, 1.5, 0x397BFC);
+		// Filt.glow(map, KadoKadeoManager.I(30), 1.5, 0x397BFC);
 
 		dm = new DepthManager(map);
 		bg = gdm.attach("mcBg", 0);
@@ -147,10 +147,10 @@ class Game implements kado.GameInterface {
 		panel = cast gdm.attach("mcCounter", 4);
 		panel.field = panel.initTextField("field", {
 			font: "Arial",
-			size: 50,
+			size: 40,
 			color: 0xFFFFFF,
 			align: "center",
-			y: -30
+			y: -KadoKadeoManager.I(10),
 		});
 		panel.field.text = Std.string(KKApi.val(turn));
 		panel.a = -2.8;
@@ -245,7 +245,7 @@ class Game implements kado.GameInterface {
 						var p = new Part(gdm.attach("mcFruit", 8));
 						p.x = mc._x;
 						p.y = mc._y;
-						p.weight = 0.4 * Cs.NEW_GEN_SCALE + Seed.randVfx() * 0.4 * Cs.NEW_GEN_SCALE;
+						p.weight = KadoKadeoManager.S(0.4) + Seed.randVfx() * KadoKadeoManager.S(0.4);
 						p.root.gotoAndStop(mc._currentframe);
 						free(pos.x, pos.y);
 						fList.push(p);
@@ -529,7 +529,7 @@ class Game implements kado.GameInterface {
 		var rayY = cullH * 0.5;
 		var bpx = cullX + Math.cos(panel.ta) * rayX;
 		var bpy = cullY + Math.sin(panel.ta) * rayY;
-		var m = 16 * Cs.NEW_GEN_SCALE;
+		var m = KadoKadeoManager.I(16);
 
 		var rec = 1 / 0;
 		var nnta = panel.ta;
@@ -593,7 +593,7 @@ class Game implements kado.GameInterface {
 	}
 
 	function updateLogicalCulling():Void {
-		var margin = CULL_MARGIN * Cs.NEW_GEN_SCALE;
+		var margin = KadoKadeoManager.I(CULL_MARGIN);
 		for (x in 0...Cs.GRID_MAX) {
 			for (y in 0...Cs.GRID_MAX) {
 				var mc = grid[x][y];
@@ -926,7 +926,7 @@ class Game implements kado.GameInterface {
 			p.vr = (Seed.randVfx() * 2 - 1) * 30;
 			p.timer = 10 + Seed.randVfx() * 10;
 			p.frict = 0.92;
-			var dist = Seed.randVfx() * 10 * Cs.NEW_GEN_SCALE;
+			var dist = Seed.randVfx() * KadoKadeoManager.I(10);
 			partB._x = dist;
 			// p.root.sub._x = dist;
 			var na = Seed.randVfx() * 6.28;

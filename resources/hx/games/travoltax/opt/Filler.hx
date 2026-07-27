@@ -44,7 +44,7 @@ class Filler extends Option {
 		ey = sy;
 		mcPuce = Game.me.dm.attach("mcSpider", Game.DP_PARTS);
 		mcPuce._x = Cs.mcw * 0.5;
-		mcPuce._y = Cs.mch + 10 * Cs.NEW_GEN_SCALE;
+		mcPuce._y = Cs.mch + KadoKadeoManager.I(10);
 		mcPuce._xscale = mcPuce._yscale = 150;
 
 		Filt.glow(mcPuce, 2, 10, 0xFFFFFF);
@@ -57,7 +57,7 @@ class Filler extends Option {
 		var ox = mcPuce._x;
 		var oy = mcPuce._y;
 		mcPuce._x = Cs.MX + (cx + 0.5) * Cs.SIZE;
-		mcPuce._y = Cs.MY + (cy + 0.5) * Cs.SIZE - Math.sin(coef * 3.14) * 30 * Cs.NEW_GEN_SCALE;
+		mcPuce._y = Cs.MY + (cy + 0.5) * Cs.SIZE - Math.sin(coef * 3.14) * KadoKadeoManager.I(30);
 
 		var dx = ox - mcPuce._x;
 		var dy = oy - mcPuce._y;
@@ -104,7 +104,7 @@ class Filler extends Option {
 
 				p.timer = 10 + Seed.randVfx() * 18;
 				p.fadeType = 0;
-				p.weight = (0.05 + Seed.randVfx() * 0.05) * Cs.NEW_GEN_SCALE;
+				p.weight = KadoKadeoManager.S(0.05 + Seed.randVfx() * 0.05);
 				p.setScale(100 + Seed.randVfx() * 100);
 				p.frict = 0.95;
 				p.root.gotoAndPlay(Seed.randomVfx(p.root._totalframes) + 1);
@@ -115,7 +115,7 @@ class Filler extends Option {
 					var a = (i + Seed.randVfx()) / max * 6.28;
 					var ca = Math.cos(a);
 					var sa = Math.sin(a);
-					var sp = Seed.randVfx() * 4 * Cs.NEW_GEN_SCALE;
+					var sp = Seed.randVfx() * KadoKadeoManager.I(4);
 					p.x = mcPuce._x + ca * sp * 3;
 					p.y = mcPuce._y + sa * sp * 3;
 					p.vx = ca * sp;

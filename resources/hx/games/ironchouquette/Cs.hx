@@ -1,13 +1,10 @@
 package ironchouquette;
 
 import common_haxe_avm1.KKApi;
-import pixi.core.textures.RenderTexture;
-import pixi.core.math.Matrix;
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
-	public static var mcw = 300 * Cs.NEW_GEN_SCALE;
-	public static var mch = 300 * Cs.NEW_GEN_SCALE;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
 
 	// GAMEPLAY
 	public static var CDIF = 0.7; // 0.7;

@@ -139,7 +139,7 @@ class Game implements kado.GameInterface {
 				var mc = new Part(dm.empty(DP_INTERFACE));
 				var txt = mc.root.initTextField("txt", {
 					font: "Orbitron",
-					size: 90,
+					size: 60,
 					color: 0xFFFFFF,
 					align: "left",
 				});
@@ -192,12 +192,12 @@ class Game implements kado.GameInterface {
 					var ca = Math.max(0, Math.cos(hero.angle));
 					hero.mainFlameTrg = Math.max(0, ca * 100);
 					var center = {x: Cs.mcw * 0.5, y: Cs.mch * 0.5};
-					hero.toward(center, 0.1, 3 * Cs.NEW_GEN_SCALE);
+					hero.toward(center, 0.1, KadoKadeoManager.I(3));
 					var f = Math.pow(0.9, Timer.tmod);
 					hero.vx *= f;
 					hero.vy *= f;
 					scrollDash += Timer.tmod;
-					scrollSpeed = ca * Math.max(20 * Cs.NEW_GEN_SCALE - hero.getDist(center), 0) + scrollDash;
+					scrollSpeed = ca * Math.max(KadoKadeoManager.I(20) - hero.getDist(center), 0) + scrollDash;
 					Cs.game.hero.launchSparks(0, Std.int(Math.min(scrollSpeed * 0.1, 5)), scrollSpeed * 0.1);
 				}
 				if (scrollDash >= 100)
@@ -207,7 +207,7 @@ class Game implements kado.GameInterface {
 			case 4:
 				if (hero != null) {
 					var center = {x: Cs.mcw * 0.5, y: Cs.mch * 0.5};
-					hero.toward(center, 0.1, 3 * Cs.NEW_GEN_SCALE);
+					hero.toward(center, 0.1, KadoKadeoManager.I(3));
 					Cs.game.hero.launchSparks(0, Std.int(Math.min(scrollSpeed * 0.1, 5)), scrollSpeed * 0.1);
 				}
 				scrollSpeed *= Math.pow(0.95, Timer.tmod);
@@ -258,8 +258,8 @@ class Game implements kado.GameInterface {
 
 	function scrollBg() {
 		bg._x -= scrollSpeed;
-		if (bg._x < -900 * Cs.NEW_GEN_SCALE) {
-			bg._x += 900 * Cs.NEW_GEN_SCALE;
+		if (bg._x < -KadoKadeoManager.I(900)) {
+			bg._x += KadoKadeoManager.I(900);
 			bg._prevState.x = bg._x + scrollSpeed;
 		}
 	}
@@ -268,7 +268,7 @@ class Game implements kado.GameInterface {
 		if (Seed.randomVfx(2) == 0)
 			return;
 		var mc:DashlightSprite = cast dm.attach("mcDashLight", DP_PARTS);
-		mc._x = Cs.mcw + Seed.randVfx() * 100 * Cs.NEW_GEN_SCALE;
+		mc._x = Cs.mcw + Seed.randVfx() * KadoKadeoManager.I(100);
 		mc._y = Seed.randVfx() * Cs.mch;
 		mc._yscale = 50 + Seed.randVfx() * 50;
 		mc._xscale = mc._yscale;
@@ -285,7 +285,7 @@ class Game implements kado.GameInterface {
 		while (i < dashLightList.length) {
 			var mc = dashLightList[i];
 			mc._x -= scrollSpeed * (mc._yscale / 100);
-			mc._xscale = mc._yscale + Math.max(scrollSpeed - 30 * Cs.NEW_GEN_SCALE, 0) * 10 * mc.multi;
+			mc._xscale = mc._yscale + Math.max(scrollSpeed - KadoKadeoManager.I(30), 0) * 10 * mc.multi;
 			mc._alpha -= 4 * (mc._yscale / 100) * Timer.tmod;
 			if (mc._x < -mc._width || mc._alpha < 3) {
 				mc.removeMovieClip();

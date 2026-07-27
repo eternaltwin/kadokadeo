@@ -160,7 +160,6 @@ class EndScene extends Container {
 		this.addChild(makePanScore());
 		this.addChild(makePiouTrack());
 		this.addChild(clickToReplay());
-
 	}
 
 	public function handleReplayClick():Void {
@@ -178,14 +177,15 @@ class EndScene extends Container {
 	}
 
 	public function makePanScore():Container {
-		var cont = new NineSlicePlane(Sprite.from("window_back_2.png").texture, 50, 70, 50, 50);
-		cont.width = 900;
-		cont.height = 204;
+		var cont = new NineSlicePlane(Sprite.from("window_back_2.png").texture, KadoKadeoManager.I(17), KadoKadeoManager.I(23), KadoKadeoManager.I(17),
+			KadoKadeoManager.I(17));
+		cont.width = KadoKadeoManager.I(300);
+		cont.height = KadoKadeoManager.I(68);
 		cont.x = (kkm.renderer.width - cont.width) / 2;
-		cont.y = 450;
+		cont.y = KadoKadeoManager.I(150);
 		var fieldTitle = cont.addChild(new pixi.core.text.Text(text[11], {
 			fontFamily: 'Fredoka Bold',
-			fontSize: 56,
+			fontSize: 40,
 			fill: 0x056a83,
 			align: 'center',
 			letterSpacing: 2
@@ -194,13 +194,13 @@ class EndScene extends Container {
 
 		var fieldScore = cont.addChild(new pixi.core.text.Text(Std.string(kkm.score), {
 			fontFamily: 'Junegull-Regular',
-			fontSize: 142,
+			fontSize: 100,
 			fill: 0xfdb102,
 			align: 'center',
 			letterSpacing: 6
 		}));
 		fieldScore.x = (kkm.renderer.width - fieldScore.width) / 2;
-		fieldScore.y = details.is_best ? 35 : 60;
+		fieldScore.y = details.is_best ? KadoKadeoManager.I(12) : KadoKadeoManager.I(20);
 		Filt.glow(fieldScore, 6, 4, 0xba3801);
 		fieldScore.filters.push(new DropShadowFilter({
 			blur: 5,
@@ -211,14 +211,14 @@ class EndScene extends Container {
 
 		fieldBest = cont.addChild(new pixi.core.text.Text(text[13], {
 			fontFamily: 'Junegull-Regular',
-			fontSize: 32,
+			fontSize: 24,
 			fill: 0xff6a2b,
 			align: 'center',
 		}));
 		fieldBest.x = (kkm.renderer.width - fieldBest.width) / 2;
-		fieldBest.y = 168;
+		fieldBest.y = KadoKadeoManager.I(56);
 		fieldBest.alpha = details.is_best ? 1 : 0;
-		Filt.glow(fieldBest, 15, 2, 0xffff00);
+		Filt.glow(fieldBest, KadoKadeoManager.I(5), 2, 0xffff00);
 
 		var tweenFilterBest = registerTween(pixi.core.Pixi.tweenManager.createTween(fieldBest));
 		tweenFilterBest.time = 300;
@@ -244,10 +244,10 @@ class EndScene extends Container {
 		tweenY.easing = pixi.core.Pixi.tween.Easing.outExpo();
 		tweenY.delay = 500;
 		tweenY.from({
-			y: 450
+			y: KadoKadeoManager.I(150)
 		});
 		tweenY.to({
-			y: 50
+			y: KadoKadeoManager.I(17)
 		});
 		tweenY.start();
 
@@ -263,9 +263,9 @@ class EndScene extends Container {
 		piouShade.scale.set(0.77);
 		piouCont.addChild(piouShade);
 		piouCont.addChild(piouWalk);
-		piouCont.x = 50;
-		piouCont.y = 100;
-		piouWalk.y = 20;
+		piouCont.x = KadoKadeoManager.I(17);
+		piouCont.y = KadoKadeoManager.I(33);
+		piouWalk.y = KadoKadeoManager.I(7);
 		piouWalk.animationSpeed = 0.5;
 		piouWalk.gotoAndStop(0);
 
@@ -275,17 +275,17 @@ class EndScene extends Container {
 		var end_line_cont = new Container();
 		var end_line_1 = Sprite.from("end_line_1.png");
 		var end_line_2 = Sprite.from("end_line_2.png");
-		end_line_2.y = -52;
+		end_line_2.y = KadoKadeoManager.I(-17);
 		end_line_2.x = 1;
 		end_line_cont.addChild(end_line_1);
 		end_line_cont.addChild(end_line_2);
-		end_line_cont.x = 705;
-		end_line_cont.y = 112;
+		end_line_cont.x = KadoKadeoManager.I(235);
+		end_line_cont.y = KadoKadeoManager.I(37);
 		cont.addChild(end_line_cont);
 
 		cont.addChild(piouCont);
-		cont.x = 50;
-		cont.y = 500;
+		cont.x = KadoKadeoManager.I(17);
+		cont.y = KadoKadeoManager.I(166);
 
 		cont.alpha = 0;
 		var tweenAppear = registerTween(pixi.core.Pixi.tweenManager.createTween(cont));
@@ -302,36 +302,36 @@ class EndScene extends Container {
 
 		var textQualField = cont.addChild(new pixi.core.text.Text(text[19], {
 			fontFamily: 'Junegull-Regular',
-			fontSize: 32,
+			fontSize: 24,
 			fill: 0x056a83,
 			align: 'center',
 		}));
 		textQualField.x = (kkm.renderer.width - textQualField.width) / 2 - cont.x;
-		textQualField.y = 150;
+		textQualField.y = KadoKadeoManager.I(50);
 		textQualField.alpha = details.people_to_beat == 0 ? 1 : 0;
 
 		var textQual = cont.addChild(new pixi.core.text.Text(txtPlayersToOvertake(details.people_to_beat), {
 			// fontFamily: 'Junegull-Regular',
-			fontSize: 32,
+			fontSize: 24,
 			fill: 0x056a83,
 			align: 'center',
 		}));
 		textQual.x = (kkm.renderer.width - textQual.width) / 2 - cont.x;
-		textQual.y = 200;
+		textQual.y = KadoKadeoManager.I(66);
 		textQual.alpha = details.people_to_beat > 0 ? 1 : 0;
 		cont.addChild(textQual);
 		cont.addChild(textQualField);
 
 		var tweenPiouMove = registerTween(pixi.core.Pixi.tweenManager.createTween(piouCont));
-		var MOVE_TIME_PER_PX = 1500 / 655;
-		var MOVE_VALUES = [705, 639.5, 574, 508.5, 443, 377.5, 312, 246.5, 181, 115.5];
+		var MOVE_TIME_PER_PX = 1500 / KadoKadeoManager.I(218);
+		var MOVE_VALUES = [235, 213, 191, 169, 148, 126, 104, 83, 60, 38];
 		var moveIndex = details.people_to_beat > 9 ? 9 : details.people_to_beat;
-		var moveTargetX = MOVE_VALUES[moveIndex];
-		var moveDistance = Math.abs(moveTargetX - 50);
+		var moveTargetX = KadoKadeoManager.I(MOVE_VALUES[moveIndex]);
+		var moveDistance = Math.abs(moveTargetX - KadoKadeoManager.I(17));
 		tweenPiouMove.time = Std.int(moveDistance * MOVE_TIME_PER_PX);
 		// tweenPiouMove.time = 1500;
 		tweenPiouMove.delay = 2000;
-		tweenPiouMove.from({x: 50}).to({x: moveTargetX}).start();
+		tweenPiouMove.from({x: KadoKadeoManager.I(17)}).to({x: moveTargetX}).start();
 
 		untyped tweenPiouMove.on("start", () -> {
 			if (disposed || piouWalk == null) {
@@ -348,7 +348,7 @@ class EndScene extends Container {
 			if (details.people_to_beat == 0) {
 				piouFloat = new AnimatedSprite(untyped kkm.sheet.animations["piou_float"]);
 				piouFloat.animationSpeed = 0.5;
-				piouFloat.y = -50;
+				piouFloat.y = KadoKadeoManager.I(-17);
 				piouCont.removeChild(piouWalk);
 				piouCont.addChild(piouFloat);
 				piouFloat.play();
@@ -357,7 +357,7 @@ class EndScene extends Container {
 				tweenFloat1.time = 600;
 				tweenFloat1.pingPong = true;
 				tweenFloat1.loop = true;
-				tweenFloat1.from({y: piouFloat.y}).to({y: piouFloat.y - 20}).start();
+				tweenFloat1.from({y: piouFloat.y}).to({y: piouFloat.y - KadoKadeoManager.I(7)}).start();
 				var tweenFloat2 = registerTween(pixi.core.Pixi.tweenManager.createTween(piouFloat));
 				tweenFloat2.time = 800;
 				tweenFloat2.loop = true;
@@ -372,12 +372,12 @@ class EndScene extends Container {
 		var cont = new Container();
 		var field = cont.addChild(new pixi.core.text.Text(text[14], {
 			fontFamily: 'Verdana',
-			fontSize: 28,
+			fontSize: 20,
 			fill: 0x056a83,
 			align: 'center',
 		}));
 		field.x = (kkm.renderer.width - field.width) / 2;
-		field.y = 900;
+		field.y = KadoKadeoManager.I(300);
 		field.alpha = 0;
 		cont.addChild(field);
 

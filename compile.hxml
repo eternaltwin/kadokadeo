@@ -76,3 +76,6 @@ tubulo.Game
 --next
 -js ./resources/js/games/invasion.js
 invasion.Game
+--next
+-js ./resources/js/games/cookinglili.js
+cookinglili.Game

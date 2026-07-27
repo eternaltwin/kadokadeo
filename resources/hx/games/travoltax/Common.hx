@@ -1,9 +1,7 @@
 package travoltax;
 
 import kado.Seed;
-
 import common_haxe_avm1.KKApi;
-import mt.bumdum.Lib;
 
 enum Step {
 	Play;
@@ -13,15 +11,14 @@ enum Step {
 }
 
 class Cs {
-	public static var NEW_GEN_SCALE = 3;
-	public static var mcw = 300 * NEW_GEN_SCALE;
-	public static var mch = 300 * NEW_GEN_SCALE;
+	public static var mcw = KadoKadeoManager.I(300);
+	public static var mch = KadoKadeoManager.I(300);
 
 	public static var MX = 0.0;
 	public static var MY = 0.0;
 	public static var XMAX = 10;
 	public static var YMAX = 22;
-	public static var SIZE = 16 * NEW_GEN_SCALE;
+	public static var SIZE = KadoKadeoManager.I(16);
 	public static var CONTRAT_MAX = 18;
 
 	public static var COL_NEUTRAL = 0x98ABD4;

@@ -31,7 +31,7 @@ class Layer {
 		trg.attachBitmap(bmp, 1);
 		trg._xscale = trg._yscale = 100 / RT_SCALE;
 
-		// Filt.glow(root, 10 * Cs.NEW_GEN_SCALE, 1, 0xFFFFFF);
+		// Filt.glow(root, KadoKadeoManager.I(10), 1, 0xFFFFFF);
 	}
 
 	public function draw(mc:ASprite) {
@@ -69,8 +69,8 @@ class Layer {
 			else
 				sy = Seed.randomVfx(2) * 2 - 1;
 
-			var rx = Cs.mcw * 0.5 + mc._width * 0.5 + Seed.randVfx() * (200 * Cs.NEW_GEN_SCALE);
-			var ry = Cs.mch * 0.5 + mc._height * 0.5 + Seed.randVfx() * (200 * Cs.NEW_GEN_SCALE);
+			var rx = Cs.mcw * 0.5 + mc._width * 0.5 + Seed.randVfx() * KadoKadeoManager.I(200);
+			var ry = Cs.mch * 0.5 + mc._height * 0.5 + Seed.randVfx() * KadoKadeoManager.I(200);
 
 			mc._x = Cs.mcw * 0.5 + rx * sx;
 			mc._y = Cs.mch * 0.5 + ry * sy;

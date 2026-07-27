@@ -6,7 +6,7 @@ import mt.bumdum.Phys;
 import mt.bumdum.Lib;
 
 class Ghost extends Phys {
-	static var RAY = 6 * Game.NEW_GEN_SCALE;
+	static var RAY = KadoKadeoManager.I(6);
 
 	var game:Game;
 	var smc:ASprite;

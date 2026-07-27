@@ -20,7 +20,7 @@ class Panel extends NineSlicePlane {
 		}
 		this.titleText = new pixi.core.text.Text(title, {
 			fontFamily: 'Fredoka Bold',
-			fontSize: 56,
+			fontSize: 40,
 			fill: [0xFFFF00, 0xFF9900],
 			align: 'center',
 			stroke: 0xFF9900,

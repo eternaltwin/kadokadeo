@@ -4,7 +4,6 @@ import common_haxe_avm1.KeyboardManager;
 import common_haxe_avm1.KKApi;
 import common_haxe_avm1.MouseManager;
 import haxe.io.UInt16Array;
-import pixi.core.math.Point;
 import pixi.core.text.Text;
 import pixi.core.textures.RenderTexture;
 import mt.bumdum.Lib;
@@ -115,8 +114,8 @@ class Game implements kado.GameInterface {
 	}
 
 	function initDecor(n) {
-		var size = 40 * Cs.NEW_GEN_SCALE;
-		var height = 2000 * Cs.NEW_GEN_SCALE;
+		var size = KadoKadeoManager.I(40);
+		var height = KadoKadeoManager.I(2000);
 		var xMax = Std.int(Cs.mcw / size);
 		var yMax = Std.int(height / size);
 
@@ -134,7 +133,7 @@ class Game implements kado.GameInterface {
 				mc.removeMovieClip();
 			}
 		}
-		var by:Float = 100 * Cs.NEW_GEN_SCALE;
+		var by:Float = KadoKadeoManager.I(100);
 		while (by < height) {
 			if (Seed.randVfx() < 0.2) {
 				var link = "mcMotif";
@@ -151,7 +150,7 @@ class Game implements kado.GameInterface {
 				mc.removeMovieClip();
 			}
 
-			by += Seed.randomVfx(100 * Cs.NEW_GEN_SCALE);
+			by += Seed.randomVfx(KadoKadeoManager.I(100));
 		}
 
 		for (y in 0...yMax) {
@@ -250,7 +249,7 @@ class Game implements kado.GameInterface {
 
 	function initPastilles() {
 		var list = new Array();
-		var y = -100 * Cs.NEW_GEN_SCALE;
+		var y = -KadoKadeoManager.I(100);
 		while (y > roof) {
 			if (Seed.rand() < y / roof) {
 				var p = new Pastille();
@@ -259,7 +258,7 @@ class Game implements kado.GameInterface {
 				p.y = y;
 				list.push(p);
 			}
-			y -= 20 * Cs.NEW_GEN_SCALE;
+			y -= KadoKadeoManager.I(20);
 		}
 		eList.push({list: cast list, s: Cs.START_WHEEL_ID, e: Cs.START_WHEEL_ID - 1});
 	}
@@ -296,10 +295,10 @@ class Game implements kado.GameInterface {
 					color: 0xe1bd6a,
 					align: "left",
 					font: "Chubby Cheeks",
-					size: 46,
+					size: 36,
 					bold: false,
-					x: 28,
-					y: 16
+					x: KadoKadeoManager.I(8),
+					y: KadoKadeoManager.I(4)
 				});
 
 				wheelLoading.removeMovieClip();
