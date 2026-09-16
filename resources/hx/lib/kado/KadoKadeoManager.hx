@@ -360,6 +360,7 @@ class KadoKadeoManager extends Application {
 			"Pricedown",
 			"Megaton",
 			"Alien Encounters Solid",
+			"LondonTwo",
 		];
 		return Promise.all(fonts.map(font -> Browser.window.document.fonts.load("16px " + font)));
 	}

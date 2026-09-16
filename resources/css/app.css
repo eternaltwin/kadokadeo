@@ -75,6 +75,11 @@
   src: url('/fonts/Alien-Encounters-Solid.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'LondonTwo';
+  src: url('/fonts/LondonTwo.ttf') format('truetype');
+}
+
 [data-lang='fr'] {
   background: url('/gfx/langFrench.gif') no-repeat;
 }
@@ -89,6 +94,7 @@
   --font-pricedown: 'Pricedown', sans-serif;
   --font-megaton: 'Megaton', sans-serif;
   --font-alien-encounters-solid: 'Alien Encounters Solid', sans-serif;
+  --font-london-two: 'LondonTwo', sans-serif;
 
   --text-2xs: 0.625rem;
 

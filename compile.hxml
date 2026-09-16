@@ -79,3 +79,6 @@ invasion.Game
 --next
 -js ./resources/js/games/cookinglili.js
 cookinglili.Game
+--next
+-js ./resources/js/games/alchimie2.js
+alchimie2.Game

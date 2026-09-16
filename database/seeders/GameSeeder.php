@@ -84,6 +84,7 @@ class GameSeeder extends Seeder
             ['name' => "Logic'O", 'image_path' => "/assets/img/games/Logic'O.png", 'is_active' => false, 'stars' => [124705, 198061, 234739]],
             ['name' => 'Choco-Mouche', 'image_path' => '/assets/img/games/Choco-Mouche.png', 'is_active' => true, 'stars' => [84041, 204101, 264131]],
             ['name' => 'Alchimie', 'image_path' => '/assets/img/games/Alchimie.png', 'is_active' => false, 'stars' => [25999, 166540, 236810], 'description' => "Devenez Alchimiste ! Assemblez les différents éléments nécessaires à la réalisation d'une véritable pépite d'or. Mais attention à ne pas dépasser la limite !"],
+            ['name' => 'Alchimie 2', 'image_path' => '/assets/img/games/Alchimie.png', 'is_active' => true, 'stars' => [25999, 166540, 236810], 'description' => "Devenez Alchimiste ! Assemblez les différents éléments nécessaires à la réalisation d'une véritable pépite d'or. Mais attention à ne pas dépasser la limite !"],
             ['name' => 'Bactery', 'image_path' => '/assets/img/games/Bactery.png', 'is_active' => false, 'stars' => [10612, 13734, 15294]],
             ['name' => 'Binary', 'image_path' => '/assets/img/games/Binary.png', 'is_active' => false, 'stars' => [19388, 40931, 51702]],
             ['name' => 'QuadriKolor', 'image_path' => '/assets/img/games/QuadriKolor.png', 'is_active' => false, 'stars' => [17427, 26600, 31186]],

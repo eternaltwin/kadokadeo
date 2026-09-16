@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/kanji.js
-kanji.Game
+-js ./resources/js/games/alchimie2.js
+alchimie2.Game

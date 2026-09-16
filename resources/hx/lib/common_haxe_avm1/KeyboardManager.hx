@@ -4,11 +4,19 @@ import haxe.ds.IntMap;
 import js.html.KeyboardEvent;
 
 class KeyboardManager {
+	static public inline var BACKSPACE = 8;
+	static public inline var DELETE = 46;
 	static public inline var ENTER = 13;
 	static public inline var SHIFT = 16;
 	static public inline var CONTROL = 17;
 	static public inline var ESCAPE = 27;
 	static public inline var SPACE = 32;
+	static public inline var DIGIT_2 = 50;
+	static public inline var DIGIT_3 = 51;
+	static public inline var DIGIT_4 = 52;
+	static public inline var DIGIT_5 = 53;
+	static public inline var DIGIT_6 = 54;
+	static public inline var DIGIT_7 = 55;
 	static public inline var DOWN = 40;
 	static public inline var UP = 38;
 	static public inline var LEFT = 37;
@@ -23,6 +31,8 @@ class KeyboardManager {
 	static public inline var E = 69;
 	static public inline var F = 70;
 	static public inline var G = 71;
+	static public inline var H = 72;
+	static public inline var N = 78;
 	static public inline var Q = 81;
 	static public inline var R = 82;
 	static public inline var S = 83;

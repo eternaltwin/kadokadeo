@@ -44,7 +44,9 @@ class GameController extends Controller implements HasMiddleware
                 $q->where('period_id', $periodId);
             });
             $query->orderBy('star', 'desc');
-        }])->get();
+        }])
+            ->orderBy('name', 'asc')
+            ->get();
 
         $categories = \App\Models\Category::all();
 
