@@ -80,6 +80,11 @@
   src: url('/fonts/LondonTwo.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Kozuka Gothic Pro H';
+  src: url('/fonts/Kozuka Gothic Pro H.ttf') format('truetype');
+}
+
 [data-lang='fr'] {
   background: url('/gfx/langFrench.gif') no-repeat;
 }
@@ -95,6 +100,7 @@
   --font-megaton: 'Megaton', sans-serif;
   --font-alien-encounters-solid: 'Alien Encounters Solid', sans-serif;
   --font-london-two: 'LondonTwo', sans-serif;
+  --font-kozuka-gothic-pro-h: 'Kozuka Gothic Pro H', sans-serif;
 
   --text-2xs: 0.625rem;
 

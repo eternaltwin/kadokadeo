@@ -42,7 +42,7 @@ class Coin {
 		if (dy <= 0) {
 			return false;
 		}
-		var s = Math.min(KadoKadeoManager.I(20) * Timer.tmod, Cs.COIN_SIZE / 2);
+		var s = KadoKadeoManager.I(30);
 		dy -= s;
 		mc._y += s;
 		return dy > 0;
@@ -81,9 +81,9 @@ class Coin {
 						var a = Seed.randVfx() * 6.28;
 						var ca = Math.cos(a);
 						var sa = Math.sin(a);
-						var speed = KadoKadeoManager.S(4 + Seed.randVfx() * 8);
-						part.x = p.x + ca * KadoKadeoManager.I(4);
-						part.y = p.y + sa * KadoKadeoManager.I(4);
+						var speed = KadoKadeoManager.S(8 + Seed.randVfx() * 16);
+						part.x = p.x + ca * KadoKadeoManager.I(2);
+						part.y = p.y + sa * KadoKadeoManager.I(2);
 						part.vx = ca * speed;
 						part.vy = sa * speed;
 						part.frict = 0.9;
@@ -93,7 +93,7 @@ class Coin {
 
 					if (this == trg) {
 						step = 1;
-						timer = 24;
+						timer = 12;
 					} else {
 						step = 10;
 					}
@@ -101,11 +101,9 @@ class Coin {
 			case 1:
 				mc._alpha = Math.max(mc._alpha - 20 * Timer.tmod, 0);
 				timer -= Timer.tmod;
-				if (timer < 20) {
-					for (part in pList) {
-						var p = trg.getPos();
-						part.towardSpeed(p, 0.1, KadoKadeoManager.S(0.8));
-					}
+				for (part in pList) {
+					var p = trg.getPos();
+					part.towardSpeed(p, 0.3, 8);
 				}
 
 				if (timer <= 0) {

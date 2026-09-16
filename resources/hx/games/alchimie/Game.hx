@@ -301,7 +301,7 @@ class Game implements kado.GameInterface {
 			tx = 0;
 		}
 
-		var s = Math.min(KadoKadeoManager.I(5) * Timer.tmod, KadoKadeoManager.I(20));
+		var s = KadoKadeoManager.I(5);
 		var ds = 0.0;
 		if ((KeyboardManager.isDown(KeyboardManager.LEFT)
 			|| KeyboardManager.isDown(KeyboardManager.A)
@@ -316,7 +316,7 @@ class Game implements kado.GameInterface {
 			moving = true;
 		} else {
 			var px = (tx + (((rot & 1) == 0) ? 0.5 : 0)) * Cs.COIN_SIZE + Cs.POS_X;
-			var p = Math.pow(0.7, Timer.tmod);
+			var p = 0.7;
 			moving = Math.abs(piece.mc._x - px) > KadoKadeoManager.I(4);
 			piece.mc._x = piece.mc._x * p + px * (1 - p);
 		}
@@ -331,8 +331,7 @@ class Game implements kado.GameInterface {
 			|| KeyboardManager.isJustDown(KeyboardManager.SPACE)
 			|| KeyboardManager.isJustDown(KeyboardManager.UP)
 			|| KeyboardManager.isJustDown(KeyboardManager.W)
-			|| KeyboardManager.isJustDown(KeyboardManager.Z))
-			&& !moving) {
+			|| KeyboardManager.isJustDown(KeyboardManager.Z))) {
 			rot_activate = false;
 			rotate();
 		}
@@ -372,7 +371,9 @@ class Game implements kado.GameInterface {
 		pendingVirtualKeyUps = keep;
 	}
 
-	public function destroy():Void {}
+	public function destroy():Void {
+		Cs.ID_COUNT = 4;
+	}
 
 	public function newPart(link:String):Phys {
 		var mc = dmanager.attach(link, Cs.PLAN_PART);
