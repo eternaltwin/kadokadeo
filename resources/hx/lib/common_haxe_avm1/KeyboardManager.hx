@@ -27,6 +27,7 @@ class KeyboardManager {
 	static public inline var ARROW_RIGHT = 39;
 	static public inline var A = 65;
 	static public inline var B = 66;
+	static public inline var C = 67;
 	static public inline var D = 68;
 	static public inline var E = 69;
 	static public inline var F = 70;

@@ -66,9 +66,11 @@ class Grenade extends StageObject {
 			return;
 
 		for (pos in targetXY) {
-			var o = Game.me.stage.grid[x + pos[0]][y + pos[1]];
-			if (o != null)
-				targets.push(o);
+			if (Game.me.stage.grid[x + pos[0]] != null) {
+				var o = Game.me.stage.grid[x + pos[0]][y + pos[1]];
+				if (o != null)
+					targets.push(o);
+			}
 		}
 
 		effectTimer = 100;

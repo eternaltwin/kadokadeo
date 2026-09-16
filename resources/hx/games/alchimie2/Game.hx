@@ -454,6 +454,12 @@ class Game implements kado.GameInterface {
 		if (KeyboardManager.isJustDown(KeyboardManager.A)) // A alchimite
 			forceGroup(Alchimoth);
 
+		if (KeyboardManager.isJustDown(KeyboardManager.C)) // C grenade 0
+			forceGroup(Grenade(0));
+
+		if (KeyboardManager.isJustDown(KeyboardManager.E)) // E grenade 1
+			forceGroup(Grenade(1));
+
 		if (KeyboardManager.isJustDown(KeyboardManager.B)) // B Dynamite Bomberman
 			forceGroup(Dynamit(3));
 
