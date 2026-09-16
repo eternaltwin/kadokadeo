@@ -64,7 +64,7 @@ class Phys extends Sprite {
 			root._yscale = root._xscale;
 		}
 		if (vs != null) {
-			root._xscale += vs * Timer.tmod;
+			root._xscale += vs * Timer.tmod * frict;
 			root._yscale = root._xscale;
 		}
 
