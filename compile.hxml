@@ -91,3 +91,6 @@ toutcaen.Game
 --next
 --js ./resources/js/games/autrement.js
 autrement.Game
+--next
+--js ./resources/js/games/bactery.js
+bactery.Game
