@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/toutcaen.js
-toutcaen.Game
+-js ./resources/js/games/kavern.js
+kavern.Game

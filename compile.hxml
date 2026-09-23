@@ -94,3 +94,6 @@ autrement.Game
 --next
 --js ./resources/js/games/bactery.js
 bactery.Game
+--next
+--js ./resources/js/games/kavern.js
+kavern.Game
