@@ -88,3 +88,6 @@ alchimie2.Game
 --next
 --js ./resources/js/games/toutcaen.js
 toutcaen.Game
+--next
+--js ./resources/js/games/autrement.js
+autrement.Game
