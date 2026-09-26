@@ -149,9 +149,10 @@ class Hero extends Ent {
 		root = r;
 		r._xscale = r._yscale = 80;
 		var shade = r.attachMovie("heroShade");
-		shade._x = KadoKadeoManager.S(12);
+		shade._x = KadoKadeoManager.S(15);
 		shade._y = KadoKadeoManager.S(-.5 + 16);
 		r.heroRight = r.attachMovie("heroRight", Square.DP_ACTOR);
+		r.heroRight._x = KadoKadeoManager.I(4);
 		r.heroLeft = r.attachMovie("heroRight", Square.DP_ACTOR);
 		r.heroLeft._x = KadoKadeoManager.S(24);
 		r.heroLeft._xscale = -100;

@@ -332,7 +332,7 @@
             <key type="filename">src/heroBack/90.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.283186,0.283688</point_f>
+                <point_f>0.230088,0.283688</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -451,7 +451,7 @@
             <key type="filename">src/heroFront/90.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.242991,0.330709</point_f>
+                <point_f>0.186916,0.330709</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
