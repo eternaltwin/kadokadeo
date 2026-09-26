@@ -44,8 +44,34 @@ class PixelHelper {
 		draw(onto, gfx, new Matrix());
 	}
 
-	static public function draw(onto:RenderTexture, object:DisplayObject, matrix:Matrix) {
-		(untyped common_haxe_avm1.MouseManager.getApp().renderer).render(object, cast {renderTexture: onto, clear: false, transform: matrix});
+	/** `clipRect` uses destination texture coordinates, matching `BitmapData.draw`. */
+	static public function draw(onto:RenderTexture, object:DisplayObject, matrix:Matrix, ?clipRect:Rectangle) {
+		var renderTexture = onto;
+		var renderMatrix = matrix;
+		var clippedTexture:RenderTexture = null;
+
+		if (clipRect != null) {
+			var left = Math.max(0, clipRect.x);
+			var top = Math.max(0, clipRect.y);
+			var right = Math.min(onto.width, clipRect.x + clipRect.width);
+			var bottom = Math.min(onto.height, clipRect.y + clipRect.height);
+			if (right <= left || bottom <= top)
+				return;
+
+			var frame = new Rectangle(onto.frame.x + left, onto.frame.y + top, right - left, bottom - top);
+			clippedTexture = new RenderTexture(cast onto.baseTexture, frame);
+			renderTexture = clippedTexture;
+			renderMatrix = matrix.clone();
+			renderMatrix.translate(-left, -top);
+		}
+
+		(untyped common_haxe_avm1.MouseManager.getApp().renderer).render(object, cast {
+			renderTexture: renderTexture,
+			clear: false,
+			transform: renderMatrix
+		});
+		if (clippedTexture != null)
+			clippedTexture.destroy(false);
 	}
 
 	static public function extract(texture:RenderTexture) {

@@ -6,6 +6,11 @@ enum abstract TouchControlsMode(String) from String to String {
 	var JOYSTICK = "joystick";
 }
 
+enum abstract TouchButtonShape(String) from String to String {
+	var CIRCLE = "circle";
+	var SQUARE = "square";
+}
+
 typedef TouchButtonConfig = {
 	var id:String;
 	var label:String;
@@ -17,6 +22,7 @@ typedef TouchButtonConfig = {
 	@:optional var keyCode:Int;
 	@:optional var action:String;
 	@:optional var invisible:Bool;
+	@:optional var shape:TouchButtonShape;
 }
 
 typedef TouchJoystickConfig = {

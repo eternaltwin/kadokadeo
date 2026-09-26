@@ -30,6 +30,7 @@ typedef TextFieldOptions = {
 	@:optional var dropShadow:String;
 	@:optional var stroke:String;
 	@:optional var strokeThickness:Int;
+	@:optional var letterSpacing:Int;
 }
 
 class TransformState {
@@ -730,6 +731,8 @@ class ASprite extends Sprite {
 				style.wordWrap = true;
 				style.wordWrapWidth = options.wordWrap;
 			}
+			if (options.letterSpacing != null)
+				style.letterSpacing = options.letterSpacing;
 		}
 
 		textField.style = style;

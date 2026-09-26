@@ -9,6 +9,7 @@ import js.html.Element;
 import js.html.Event;
 import js.html.PointerEvent;
 import kado.TouchControlsConfig.TouchButtonConfig;
+import kado.TouchControlsConfig.TouchButtonShape;
 import kado.TouchControlsConfig.TouchControlsConfig;
 import kado.TouchControlsConfig.TouchControlsMode;
 import kado.TouchControlsConfig.TouchJoystickConfig;
@@ -603,12 +604,16 @@ class TouchControlsOverlay {
 				continue;
 			}
 
-			var r = state.size * 0.5;
-			var cx = state.x + r;
-			var cy = state.y + r;
+			var radius = state.size * 0.5;
+			var cx = state.x + radius;
+			var cy = state.y + radius;
 
 			context.beginPath();
-			context.arc(cx, cy, r, 0, Math.PI * 2);
+			if (state.cfg.shape == TouchButtonShape.SQUARE) {
+				context.rect(state.x, state.y, state.size, state.size);
+			} else {
+				context.arc(cx, cy, radius, 0, Math.PI * 2);
+			}
 			context.fillStyle = state.pressedCount > 0 ? "rgba(58,104,128,0.62)" : "rgba(20,35,45,0.35)";
 			context.fill();
 			context.lineWidth = 2;

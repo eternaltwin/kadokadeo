@@ -97,3 +97,6 @@ bactery.Game
 --next
 --js ./resources/js/games/kavern.js
 kavern.Game
+--next
+--js ./resources/js/games/kanjisadventure.js
+kanjisadventure.Game

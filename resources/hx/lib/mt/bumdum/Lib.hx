@@ -361,46 +361,44 @@ class Filt {
 	}
 
 	static public function grey(mc:ASprite, ?c:Float, ?inc:Int, ?o, ?m1) {
-		/*if (c == null)
-				c = 1;
-			if (inc == null)
-				inc = 0;
-			if (o == null)
-				o = {r: 0, g: 0, b: 0};
+		if (c == null)
+			c = 1;
+		if (inc == null)
+			inc = 0;
+		if (o == null)
+			o = {r: 0, g: 0, b: 0};
 
-			var m0 = [
-				1, 0, 0, 0, 0,
-				0, 1, 0, 0, 0,
-				0, 0, 1, 0, 0,
-				0, 0, 0, 1, 0
+		var m0 = [
+			1, 0, 0, 0, 0,
+			0, 1, 0, 0, 0,
+			0, 0, 1, 0, 0,
+			0, 0, 0, 1, 0
+		];
+
+		if (m1 == null) {
+			var r = 0.35;
+			var g = 0.45;
+			var b = 0.2;
+			m1 = [
+				r, g, b, 0, o.r / 255 + inc,
+				r, g, b, 0, o.g / 255 + inc,
+				r, g, b, 0, o.b / 255 + inc,
+				0, 0, 0, 1,               0,
+
 			];
+		}
 
-			if (m1 == null) {
-				var r = 0.25;
-				var g = 0.15;
-				var b = 0.6;
-				m1 = [
-					r, g, b, 0, o.r + inc,
-					r, g, b, 0, o.g + inc,
-					r, g, b, 0, o.b + inc,
-					0, 0, 0, 1,         0,
+		var m = [];
+		for (i in 0...m0.length) {
+			m[i] = m0[i] * (1 - c) + m1[i] * c;
+		}
 
-				];
-			}
+		var fl = new ColorMatrixFilter();
+		fl.matrix = m;
 
-			var m = [];
-			for (i in 0...m0.length) {
-				m[i] = m0[i] * (1 - c) + m1[i] * c;
-			}
-
-			var fl = new flash.filters.ColorMatrixFilter();
-			fl.matrix = m;
-
-			var a = mc.filters;
-			a.push(fl);
-			mc.filters = a; */
-
-		trace("FIXME");
+		var a = mc.filters != null ? mc.filters : [];
+		a.push(fl);
+		mc.filters = a;
 	}
 }
 
