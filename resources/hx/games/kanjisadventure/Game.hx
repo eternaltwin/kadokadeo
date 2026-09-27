@@ -330,10 +330,6 @@ class Game implements kado.GameInterface {
 		return null;
 	}
 
-	public function queueTraderHover(slot:Int, itemId:Int):Void {
-		queueReplayEvent({kind: REPLAY_TRADER_HOVER, slot: slot, itemId: itemId});
-	}
-
 	public function queueTraderBuy(slot:Int, itemId:Int):Void {
 		queueReplayEvent({kind: REPLAY_TRADER_BUY, slot: slot, itemId: itemId});
 	}
@@ -1000,7 +996,7 @@ class Game implements kado.GameInterface {
 		var slotIndex = getItemSlotAtMouse();
 		if (slotIndex != hoveredItemSlot) {
 			var itemId = slotIndex < 0 ? -1 : inventory[slotIndex];
-			queueReplayEvent({kind: REPLAY_ITEM_HOVER, slot: slotIndex, itemId: itemId});
+			applyItemHover(slotIndex, itemId);
 		}
 
 		if (slotIndex >= 0 && MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {

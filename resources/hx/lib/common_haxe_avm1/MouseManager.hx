@@ -150,6 +150,33 @@ class MouseManager {
 		}, true);
 	}
 
+	static public function queueVirtualPointerMove(x:Int, y:Int):Void {
+		queueMouseOp({
+			type: POSITION,
+			button: -1,
+			x: x,
+			y: y
+		});
+	}
+
+	static public function queueVirtualPointerDown(button:Int, x:Int, y:Int):Void {
+		queueMouseOp({
+			type: BUTTON_DOWN,
+			button: button,
+			x: x,
+			y: y
+		});
+	}
+
+	static public function queueVirtualPointerUp(button:Int, x:Int, y:Int):Void {
+		queueMouseOp({
+			type: BUTTON_UP,
+			button: button,
+			x: x,
+			y: y
+		});
+	}
+
 	static public function captureInputEvent(event:Dynamic):Void {
 		var x = extractCoord(event, true);
 		var y = extractCoord(event, false);

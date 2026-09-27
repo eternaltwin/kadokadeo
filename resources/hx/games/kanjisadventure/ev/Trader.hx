@@ -194,7 +194,7 @@ class Trader extends Event {
 		var slotIndex = getSlotAtMouse();
 		if (slotIndex != hoveredSlot) {
 			var itemId = slotIndex < 0 ? -1 : slots[slotIndex].id;
-			Game.me.queueTraderHover(slotIndex, itemId);
+			applyHover(slotIndex, itemId);
 		}
 
 		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {

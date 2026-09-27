@@ -601,6 +601,15 @@ class KadoKadeoManager extends Application {
 			},
 			onAction: (action:String) -> {
 				common_haxe_avm1.MouseManager.queueInputCallback(() -> dispatchTouchAction(action));
+			},
+			onPointerDown: (x:Int, y:Int) -> {
+				common_haxe_avm1.MouseManager.queueVirtualPointerDown(common_haxe_avm1.MouseManager.BUTTON_LEFT, x, y);
+			},
+			onPointerMove: (x:Int, y:Int) -> {
+				common_haxe_avm1.MouseManager.queueVirtualPointerMove(x, y);
+			},
+			onPointerUp: (x:Int, y:Int) -> {
+				common_haxe_avm1.MouseManager.queueVirtualPointerUp(common_haxe_avm1.MouseManager.BUTTON_LEFT, x, y);
 			}
 		});
 	}

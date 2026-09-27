@@ -20,6 +20,9 @@ typedef TouchControlsCallbacks = {
 	@:optional var onKeyUp:Int->Void;
 	@:optional var onJoystick:(Float, Float, Bool) -> Void;
 	@:optional var onAction:String->Void;
+	@:optional var onPointerDown:(Int, Int) -> Void;
+	@:optional var onPointerMove:(Int, Int) -> Void;
+	@:optional var onPointerUp:(Int, Int) -> Void;
 }
 
 typedef TouchJoystickState = {
@@ -97,6 +100,9 @@ class TouchControlsOverlay {
 	var swipeMaxDurationMs:Float = 300;
 	var swipePointers:IntMap<TouchSwipePointerState> = new IntMap();
 	var pendingTapPointers:IntMap<TouchPendingTapState> = new IntMap();
+	var passthroughPointer:Null<Int>;
+	var passthroughX:Int = 0;
+	var passthroughY:Int = 0;
 
 	public function new(canvas:CanvasElement, config:TouchControlsConfig, callbacks:TouchControlsCallbacks) {
 		this.canvas = canvas;
@@ -167,6 +173,7 @@ class TouchControlsOverlay {
 	}
 
 	public function destroy():Void {
+		releasePassthroughPointer();
 		releaseAllKeys();
 		endJoystick();
 		if (overlay != null) {
@@ -362,11 +369,19 @@ class TouchControlsOverlay {
 				startY: y,
 				startMs: Date.now().getTime()
 			});
+			return;
 		}
+
+		startPassthroughPointer(evt);
 	}
 
 	function onPointerMove(evt:PointerEvent):Void {
 		if (overlay == null) {
+			return;
+		}
+		if (passthroughPointer == evt.pointerId) {
+			evt.preventDefault();
+			updatePassthroughPointer(evt);
 			return;
 		}
 		if (activeJoystickPointer == null || evt.pointerId != activeJoystickPointer) {
@@ -397,12 +412,18 @@ class TouchControlsOverlay {
 		if (overlay == null) {
 			return;
 		}
-		if (activeJoystickPointer == evt.pointerId) {
+		if (activeJoystickPointer == evt.pointerId || passthroughPointer == evt.pointerId) {
 			releasePointerState(evt.pointerId, evt, false);
 		}
 	}
 
 	function releasePointerState(pointerId:Int, evt:PointerEvent, allowGestureDispatch:Bool):Void {
+		if (passthroughPointer == pointerId) {
+			updatePassthroughPosition(evt);
+			releasePassthroughPointer();
+			return;
+		}
+
 		var swipeState = swipePointers.get(pointerId);
 		if (swipeState != null) {
 			swipePointers.remove(pointerId);
@@ -457,6 +478,61 @@ class TouchControlsOverlay {
 				callbacks.onAction(pendingTap.action);
 			}
 		}
+	}
+
+	function startPassthroughPointer(evt:PointerEvent):Void {
+		if (passthroughPointer != null || callbacks == null || callbacks.onPointerDown == null) {
+			return;
+		}
+		var position = getCanvasPointerPosition(evt);
+		if (position == null) {
+			return;
+		}
+		passthroughPointer = evt.pointerId;
+		passthroughX = position.x;
+		passthroughY = position.y;
+		callbacks.onPointerDown(passthroughX, passthroughY);
+	}
+
+	function updatePassthroughPointer(evt:PointerEvent):Void {
+		if (!updatePassthroughPosition(evt) || callbacks == null || callbacks.onPointerMove == null) {
+			return;
+		}
+		callbacks.onPointerMove(passthroughX, passthroughY);
+	}
+
+	function updatePassthroughPosition(evt:PointerEvent):Bool {
+		var position = getCanvasPointerPosition(evt);
+		if (position == null) {
+			return false;
+		}
+		passthroughX = position.x;
+		passthroughY = position.y;
+		return true;
+	}
+
+	function releasePassthroughPointer():Void {
+		if (passthroughPointer == null) {
+			return;
+		}
+		passthroughPointer = null;
+		if (callbacks != null && callbacks.onPointerUp != null) {
+			callbacks.onPointerUp(passthroughX, passthroughY);
+		}
+	}
+
+	function getCanvasPointerPosition(evt:PointerEvent):Null<{x:Int, y:Int}> {
+		if (canvas == null || evt == null) {
+			return null;
+		}
+		var bounds = canvas.getBoundingClientRect();
+		if (bounds == null || bounds.width <= 0 || bounds.height <= 0) {
+			return null;
+		}
+		return {
+			x: Std.int((evt.clientX - bounds.left) * canvas.width / bounds.width),
+			y: Std.int((evt.clientY - bounds.top) * canvas.height / bounds.height)
+		};
 	}
 
 	function handleSwipeEnd(state:TouchSwipePointerState, evt:PointerEvent):Bool {
