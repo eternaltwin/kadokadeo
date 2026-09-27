@@ -27,7 +27,6 @@ enum AttackBehaviour {
 
 enum MoveBehaviour {
 	BHunt;
-	BFollow(c:Float);
 	BNormal(c:Float);
 	BErratic(c:Float);
 	BCoward;

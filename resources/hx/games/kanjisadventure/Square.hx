@@ -45,11 +45,22 @@ class Square {
 			if (mcHeat == null) {
 				mcHeat = dm.empty(DP_DECOR);
 				mcHeat.getGraphics().beginFill(0xFF0000).drawRect(0, 0, Cs.CS, Cs.CS).endFill();
+				var tf = mcHeat.initTextField("tf", {
+					font: "arial",
+					size: 20,
+					color: 0xFFFFFF,
+					align: "center",
+					x: x,
+					y: y,
+				});
+				tf.text = n + "";
 			}
 			mcHeat._alpha = 60 - n * 5;
 		} else {
-			mcHeat.removeMovieClip();
-			mcHeat = null;
+			if (mcHeat != null) {
+				mcHeat.removeMovieClip();
+				mcHeat = null;
+			}
 		}
 	}
 
@@ -399,8 +410,6 @@ class Square {
 				if (next == target) {
 					if (!next.isGround())
 						continue;
-				} else if (!next.isFree()) {
-					continue;
 				}
 
 				var nextIndex = nx + ny * width;

@@ -91,39 +91,13 @@ class Bad extends Ent {
 		}
 
 		if (moveList.length > 0) {
+			var rdi = moveList[Seed.random(moveList.length)];
 			var bh = bhMove;
-			var flFollow:Bool;
-			switch (bh) {
-				case BFollow(c):
-					flFollow = true;
-				case _:
-					flFollow = false;
-			}
-
 			var hdi = Std.int(getHeroDist());
-			var rdi = 0;
-			if (hdi <= seek && !Type.enumEq(bh, BCoward) && !flFollow && !flChaos)
+			if (hdi <= seek && !Type.enumEq(bh, BCoward) && !flChaos)
 				bh = BHunt;
 
 			switch (bh) {
-				default:
-			}
-			if (!flFollow)
-				rdi = moveList[Seed.random(moveList.length)];
-
-			switch (bh) {
-				case BFollow(c):
-					if (Seed.rand() < c) {
-						var direction = sq.getNextDirectionTo(Game.me.hero.sq);
-						if (direction != null && moveList.contains(direction)) {
-							setAction(Goto(direction));
-							lastDir = direction;
-							return;
-						}
-					}
-					var direction = moveList[Seed.random(moveList.length)];
-					setAction(Goto(direction));
-					lastDir = direction;
 				case BNormal(c):
 					var fdi = rdi;
 					if (Seed.rand() < c) {
@@ -157,9 +131,9 @@ class Bad extends Ent {
 					var sq2 = floor.grid[sq.x + d[0]][sq.y + d[1]];
 					var rh = sq2.heat;
 					for (di in moveList) {
-						var d = Cs.DIR[di];
-						var sq2 = floor.grid[sq.x + d[0]][sq.y + d[1]];
-						if (sq2.heat < rh || rh == null) {
+						d = Cs.DIR[di];
+						sq2 = floor.grid[sq.x + d[0]][sq.y + d[1]];
+						if (rh == null || (sq2.heat != null && sq2.heat < rh)) {
 							rh = sq2.heat;
 							fdi = di;
 						}
@@ -302,7 +276,7 @@ class Bad extends Ent {
 				flEatable = true;
 				flGood = true;
 				flBad = false;
-				bhMove = BFollow(0.4);
+				bhMove = BNormal(0);
 				bhAtt = BStick;
 
 				agility = 3;
@@ -318,7 +292,7 @@ class Bad extends Ent {
 				flEatable = true;
 				flGood = true;
 				flBad = false;
-				bhMove = BFollow(0.9);
+				bhMove = BNormal(0);
 				bhAtt = BStick;
 
 				agility = 4;
