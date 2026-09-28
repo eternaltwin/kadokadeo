@@ -1,6 +1,5 @@
 package common_haxe_avm1.display;
 
-import mt.bumdum.Phys;
 import mt.bumdum.Lib;
 import pixi.core.math.Point;
 

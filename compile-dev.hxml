@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/kanjisadventure.js
-kanjisadventure.Game
+-js ./resources/js/games/magmax.js
+magmax.Game
