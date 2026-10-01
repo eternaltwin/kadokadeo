@@ -27,16 +27,16 @@ class Game implements kado.GameInterface {
 	var hoverCell:CellPos;
 	var bgPressed:Bool;
 	var finished:Bool;
-	var isReplayMode:Bool;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
-		isReplayMode = isReplay;
+		var replayMouseButtons = new UInt16Array(1);
+		replayMouseButtons[0] = MouseManager.BUTTON_LEFT;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: new UInt16Array(0),
 			recordInputs: false,
-			recordEvents: true,
-			recordMousePosition: false,
-			recordedMouseButtons: new UInt16Array(0),
+			recordEvents: false,
+			recordMousePosition: true,
+			recordedMouseButtons: replayMouseButtons,
 		});
 
 		colorTime = 0;
@@ -82,10 +82,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function update(delta:Float) {
-		for (event in KadoKadeoManager.kkm.replay.consumeEvents())
-			applyReplayEvent(event);
-
-		if (!finished && !isReplayMode)
+		if (!finished)
 			updateMouse();
 
 		var i = 0;
@@ -123,7 +120,7 @@ class Game implements kado.GameInterface {
 		}
 	}
 
-	// Only card selection and background release affect gameplay; hover stays local and visual.
+	// card.onPress / bg.onRelease / bg.onMouseMove, polled so that replays are deterministic
 	function updateMouse() {
 		var mx = MouseManager.getX();
 		var my = MouseManager.getY();
@@ -131,48 +128,18 @@ class Game implements kado.GameInterface {
 		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {
 			var c = level.getCardAt(mx, my);
 			bgPressed = (c == null);
-			if (c != null) {
-				recordGridEvent(0, c.x, c.y);
+			if (c != null)
 				cardSelect(c);
-			}
 		}
 
 		if (MouseManager.isButtonJustReleased(MouseManager.BUTTON_LEFT)) {
-			if (bgPressed && level.getCardAt(mx, my) == null && current != null) {
-				recordGridEvent(1, 0, 0);
+			if (bgPressed && level.getCardAt(mx, my) == null)
 				release();
-			}
 			bgPressed = false;
 		}
 
 		if (!finished)
 			mouseMove();
-	}
-
-	function recordGridEvent(kind:Int, x:Int, y:Int) {
-		// The action is applied in this update, so replay it on this same frame.
-		KadoKadeoManager.kkm.replay.recordEvent({k: kind, x: x, y: y}, KadoKadeoManager.kkm.replay.getCurrentFrame());
-	}
-
-	function applyReplayEvent(event:Dynamic) {
-		if (finished || event == null)
-			return;
-		var kind:Null<Int> = Reflect.field(event, "k");
-		var x:Null<Int> = Reflect.field(event, "x");
-		var y:Null<Int> = Reflect.field(event, "y");
-		if (kind == null || x == null || y == null)
-			return;
-		switch (kind) {
-			case 0:
-				if (x >= 0 && x < Const.LVL_WIDTH && y >= 0 && y < Const.LVL_HEIGHT) {
-					var c = level.tbl[x][y];
-					if (c != null)
-						cardSelect(c);
-				}
-			case 1:
-				release();
-			default:
-		}
 	}
 
 	function explosion(x:Float, y:Float) {
@@ -204,9 +171,7 @@ class Game implements kado.GameInterface {
 			current.resetColor();
 			current = null;
 		}
-		clearPath();
-		if (!isReplayMode)
-			mouseMove(true);
+		mouseMove(true);
 	}
 
 	function release() {
@@ -214,8 +179,7 @@ class Game implements kado.GameInterface {
 			current.resetColor();
 			current = null;
 			clearPath();
-			if (!isReplayMode)
-				mouseMove(true);
+			mouseMove(true);
 		}
 	}
 

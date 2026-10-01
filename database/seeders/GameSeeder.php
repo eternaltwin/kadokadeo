@@ -78,7 +78,7 @@ class GameSeeder extends Seeder
             ['name' => 'Opalus 2', 'image_path' => '/assets/img/games/Opalus.png', 'is_active' => true, 'stars' => [77855, 105661, 119563]],
             ['name' => 'Kaskade 2', 'image_path' => '/assets/img/games/Kaskade_2.png', 'is_active' => true, 'stars' => [158229, 230151, 266112]],
             ['name' => 'Cooking Lili', 'image_path' => '/assets/img/games/Cooking_Lili.png', 'is_active' => true, 'stars' => [26230, 41660, 49374]],
-            ['name' => 'Xian-Xiang', 'image_path' => '/assets/img/games/Xian-Xiang.png', 'is_active' => false, 'stars' => [10240, 12288, 13312]],
+            ['name' => 'Xian-Xiang', 'image_path' => '/assets/img/games/Xian-Xiang.png', 'is_active' => true, 'stars' => [10240, 12288, 13312]],
             ['name' => 'Aqua Splash', 'image_path' => '/assets/img/games/Aqua_Splash.png', 'is_active' => false, 'stars' => [60722, 107431, 130786]],
             ['name' => 'Atlanteine', 'image_path' => '/assets/img/games/Atlanteine.png', 'is_active' => true, 'stars' => [34641, 61288, 74612]],
             ['name' => "Logic'O", 'image_path' => "/assets/img/games/Logic'O.png", 'is_active' => false, 'stars' => [124705, 198061, 234739]],
