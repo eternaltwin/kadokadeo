@@ -1,42 +1,15 @@
 package kanjisadventure;
 
-import common_haxe_avm1.kac.ProtectedInt;
-import common_haxe_avm1.KKApi;
-import common_haxe_avm1.KeyboardManager;
-import common_haxe_avm1.MouseManager;
 import haxe.io.UInt16Array;
-import kado.KadoKadeoManager;
-import kado.TouchControlsConfig.TouchButtonShape;
 import kado.TouchControlsConfig.TouchControlsMode;
-import mt.DepthManager;
-import mt.bumdum.Sprite;
-import mt.bumdum.Lib;
 import pixi.core.text.Text;
-
-class McTextSprite extends ASprite {
-	public var field:Text;
-}
-
-class McInterSprite extends ASprite {
-	public var barLife:ASprite;
-	public var shuriken:ASprite;
-	public var fieldLife:Text;
-	public var fieldFood:Text;
-	public var fieldGold:Text;
-	public var fieldShuriken:Text;
-}
-
-class McLogSprite extends ASprite {
-	public var dm:DepthManager;
-	public var timer:Float;
-}
-
-typedef InventorySlotView = {
-	var slot:ASprite;
-	var item:ASprite;
-	var index:Int;
-	var itemId:Int;
-}
+import kanjisadventure.ent.Hero;
+import kanjisadventure.ent.Bad;
+import kanjisadventure.ev.Bomb as EvBomb;
+import kanjisadventure.ev.Floor as EvFloor;
+import kanjisadventure.ev.Shoot as EvShoot;
+import kanjisadventure.ev.Teleport as EvTeleport;
+import kanjisadventure.ev.Trader as EvTrader;
 
 enum MonsterStep {
 	MAttack;
@@ -54,67 +27,48 @@ enum Step {
 
 @:expose('GameKanjisAdventure')
 class Game implements kado.GameInterface {
+	// turn based on a grid: a 4 way joystick (it follows the finger) and the shuriken button.
+	// The items of the bag and the shop are tapped (or 1-5 on a keyboard)
 	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
-		mode: TouchControlsMode.KEYBOARD,
+		mode: TouchControlsMode.JOYSTICK,
+		joystick: {
+			x: 0.18,
+			y: 0.8,
+			radius: 84,
+			deadZone: 0.25,
+			dynamicCenter: true,
+			directions: 4,
+		},
 		buttons: [
 			{
-				id: "up",
-				label: "^",
-				leftPx: 64,
-				bottomPx: 76,
-				size: 56,
-				keyCode: KeyboardManager.UP,
-				shape: TouchButtonShape.SQUARE,
-			},
-			{
-				id: "left",
-				label: "<",
-				leftPx: 8,
-				bottomPx: 20,
-				size: 56,
-				keyCode: KeyboardManager.LEFT,
-				shape: TouchButtonShape.SQUARE,
-			},
-			{
-				id: "right",
-				label: ">",
-				leftPx: 120,
-				bottomPx: 20,
-				size: 56,
-				keyCode: KeyboardManager.RIGHT,
-				shape: TouchButtonShape.SQUARE,
-			},
-			{
-				id: "down",
-				label: "v",
-				leftPx: 64,
-				bottomPx: 20,
-				size: 56,
-				keyCode: KeyboardManager.DOWN,
-				shape: TouchButtonShape.SQUARE,
-			},
-			{
-				id: "action",
-				label: "🏹",
-				rightPx: 12,
-				bottomPx: 20,
-				size: 80,
+				id: "shoot",
+				label: "✦",
+				rightPx: 14,
+				bottomPx: 14,
+				size: 84,
 				keyCode: KeyboardManager.SPACE,
-			},
+			}
 		],
 	};
 
-	static inline var REPLAY_ITEM_HOVER = 1;
-	static inline var REPLAY_ITEM_USE = 2;
-	static inline var REPLAY_TRADER_HOVER = 3;
-	static inline var REPLAY_TRADER_BUY = 4;
-	static inline var REPLAY_TRADER_LEAVE = 5;
+	// ZQSD / WASD move like the arrows, Enter and Control throw a shuriken like Space
+	public static var KEY_ALIASES = KeyboardManager.ALIASES_MOVE.concat(KeyboardManager.ALIASES_ENTER_SPACE)
+		.concat(KeyboardManager.ALIASES_CONTROL_SPACE);
 
 	public static var DP_ITEMS = 4;
 	public static var DP_INTER = 3;
 	public static var DP_FADER = 2;
 	public static var DP_MAP = 1;
 	public static var DP_BG = 0;
+
+	// replay events (clicks of the player)
+	public static inline var EV_USE = 0; // use the item x of the bag
+	public static inline var EV_BUY = 1; // buy the item x of the shop
+	public static inline var EV_LEAVE = 2; // leave the shop
+	static inline var EV_DEBUG_SHOP = 3; // test hook (debug builds)
+
+	static inline var DIGIT_1 = 49;
+	static inline var SLOT = 28;
 
 	public var flShoot:Bool;
 	public var flMove:Bool;
@@ -135,96 +89,94 @@ class Game implements kado.GameInterface {
 	public var bx:Int;
 	public var by:Int;
 
-	public var bagSize:ProtectedInt;
-	public var food:ProtectedInt;
-	public var gold:ProtectedInt;
-	public var shuriken:ProtectedInt;
-	public var weaponId:ProtectedInt;
-	public var armorId:ProtectedInt;
+	public var bagSize:Int;
+	public var food:Int;
+	public var gold:Int;
+	public var shuriken:Int;
+	public var weaponId:Int;
+	public var armorId:Int;
 	public var huntMax:Int;
 
 	public var inventory:Array<Int>;
 
 	public var flhColor:Int;
-	public var flh:Float;
+	public var flh:Null<Float>;
 
-	var logCoef:Float;
-	var isReplayMode:Bool;
-	var pendingLiveReplayEvents:Array<Dynamic>;
-	var itemSlots:Array<InventorySlotView>;
-	var itemsInteractive:Bool;
-	var hoveredItemSlot:Int;
+	var logCoef:Null<Float>;
 
-	public var hero:kanjisadventure.ent.Hero;
+	public var hero:Hero;
 	public var work:Array<Ent>;
-	public var active:Array<Ent> = [];
+	public var active:Array<Ent>;
 	public var allies:Array<Ent>;
-	public var logs:Array<McTextSprite>;
+	public var logs:Array<ASprite>;
 
 	public var dm:DepthManager;
 	public var root:ASprite;
 	public var bg:ASprite;
-	public var mcInter:McInterSprite;
 
-	public var mcLog:McLogSprite;
+	var mcInter:ASprite;
+	var barLife:ASprite;
+	var fieldLife:Text;
+	var fieldFood:Text;
+	var fieldGold:Text;
+	var fieldShuriken:Text;
+	var slotItems:Array<ASprite>;
+	var slotsAction:Bool;
+
+	public var mcLog:ASprite;
+
+	var logTimer:Float;
+
+	var isReplay:Bool;
 
 	static public var me:Game;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
-		isReplayMode = isReplay;
-		pendingLiveReplayEvents = [];
-		itemSlots = [];
-		itemsInteractive = false;
-		hoveredItemSlot = -1;
-
-		var keyCodes = [
-			KeyboardManager.RIGHT,
-			KeyboardManager.DOWN,
-			KeyboardManager.LEFT,
-			KeyboardManager.UP,
-			KeyboardManager.D,
-			KeyboardManager.S,
-			KeyboardManager.Q,
-			KeyboardManager.A,
-			KeyboardManager.Z,
-			KeyboardManager.W,
-			KeyboardManager.SPACE,
-			KeyboardManager.SHIFT,
-			KeyboardManager.ENTER,
-		];
-		var replayKeys = new UInt16Array(keyCodes.length);
-		for (i in 0...keyCodes.length)
-			replayKeys[i] = keyCodes[i];
+		var replayKeys = new UInt16Array(5);
+		replayKeys[0] = KeyboardManager.UP;
+		replayKeys[1] = KeyboardManager.DOWN;
+		replayKeys[2] = KeyboardManager.LEFT;
+		replayKeys[3] = KeyboardManager.RIGHT;
+		replayKeys[4] = KeyboardManager.SPACE;
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: replayKeys,
 			recordInputs: true,
 			recordEvents: true,
-			recordMousePosition: false,
-			recordedMouseButtons: new UInt16Array(0),
 		});
+		this.isReplay = isReplay;
 
 		Cs.init();
 		this.root = root;
 		me = this;
 		dm = new DepthManager(root);
 		bg = dm.empty(DP_BG);
-		bg.getGraphics().beginFill(0x54576b).drawRect(0, 0, Cs.mcw, Cs.mch).endFill();
-		// did = 351;
+		var g = bg.getGraphics();
+		g.beginFill(Cs.COL_MCBG);
+		g.drawRect(0, 0, Cs.mcw, Cs.mch);
+		g.endFill();
 		did = Seed.random(12000);
 
 		huntMax = 10;
 
-		bagSize = new ProtectedInt(3);
-		food = new ProtectedInt(250);
-		gold = new ProtectedInt(0);
-		shuriken = new ProtectedInt(3);
-		armorId = new ProtectedInt(0);
-		weaponId = new ProtectedInt(0);
+		flShoot = true;
+		flMove = false;
+		flQueue = false;
+		flMute = false;
+
+		bagSize = 3;
+		food = 250;
+		gold = 0;
+		shuriken = 3;
+		armorId = 0;
+		weaponId = 0;
 
 		allies = [];
 		inventory = [];
 		work = [];
+		active = [];
 		logs = [];
+		slotItems = [];
+		slotsAction = false;
 
 		initInter();
 
@@ -238,7 +190,11 @@ class Game implements kado.GameInterface {
 
 	// UPDATE
 	public function update(delta:Float) {
-		applyPendingReplayEvents();
+		for (e in KadoKadeoManager.kkm.replay.consumeEvents()) {
+			applyEvent(e);
+		}
+		if (!isReplay)
+			pollUiInput();
 
 		switch (step) {
 			case Play:
@@ -249,7 +205,7 @@ class Game implements kado.GameInterface {
 				event.update();
 			case GameOver:
 				updateGameOver();
-			case _:
+			default:
 		}
 		if (flh != null)
 			updateFlash();
@@ -258,100 +214,84 @@ class Game implements kado.GameInterface {
 		if (mcLog != null && mcLog._alpha > 0)
 			updateLogAlpha();
 
-		updateItemMouseInput();
-		updateSprites();
+		if (step == Play)
+			hoverItems(MouseManager.getX(), MouseManager.getY());
+
+		mt.bumdum.Sprite.updateAll();
 	}
 
-	function applyPendingReplayEvents():Void {
-		for (replayEvent in KadoKadeoManager.kkm.replay.consumeEvents())
-			applyReplayEvent(replayEvent);
-
-		if (!isReplayMode) {
-			var events = pendingLiveReplayEvents;
-			pendingLiveReplayEvents = [];
-			for (replayEvent in events)
-				applyReplayEvent(replayEvent);
+	// clicks (mouse or tap) and the item keys of a live game become replay events
+	function pollUiInput() {
+		if (step == Play) {
+			for (i in 0...bagSize) {
+				if (KeyboardManager.isJustDown(DIGIT_1 + i) && inventory[i] != null) {
+					recordAndApply(EV_USE, i);
+					return;
+				}
+			}
+		}
+		if (!MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT))
+			return;
+		var mx = MouseManager.getX();
+		var my = MouseManager.getY();
+		if (step == Play) {
+			var i = slotAt(mx, my);
+			if (i != null && inventory[i] != null)
+				recordAndApply(EV_USE, i);
+		} else if (step == Event && Std.isOfType(event, EvTrader)) {
+			var shop:EvTrader = cast event;
+			var a = shop.getClick(mx, my);
+			if (a != null)
+				recordAndApply(a[0], a[1]);
 		}
 	}
 
-	function queueReplayEvent(replayEvent:Dynamic):Void {
-		if (isReplayMode || replayEvent == null)
-			return;
-		KadoKadeoManager.kkm.replay.recordEvent(replayEvent);
-		pendingLiveReplayEvents.push(replayEvent);
+	function recordAndApply(k:Int, x:Int) {
+		var e = {k: k, x: x, y: 0};
+		KadoKadeoManager.kkm.replay.recordEvent(e, KadoKadeoManager.kkm.replay.getCurrentFrame());
+		applyEvent(e);
 	}
 
-	function applyReplayEvent(replayEvent:Dynamic):Void {
-		if (replayEvent == null)
+	function applyEvent(e:Dynamic) {
+		if (e == null)
 			return;
-		var kind = getReplayIntField(replayEvent, "kind");
-		if (kind == null)
+		var k:Null<Int> = Reflect.field(e, "k");
+		var x:Null<Int> = Reflect.field(e, "x");
+		if (k == null || x == null)
 			return;
-
-		switch (kind) {
-			case REPLAY_ITEM_HOVER:
-				var slot = getReplayIntField(replayEvent, "slot");
-				var itemId = getReplayIntField(replayEvent, "itemId");
-				if (slot != null && itemId != null)
-					applyItemHover(slot, itemId);
-			case REPLAY_ITEM_USE:
-				var slot = getReplayIntField(replayEvent, "slot");
-				var itemId = getReplayIntField(replayEvent, "itemId");
-				if (slot != null && itemId != null)
-					applyItemUse(slot, itemId);
-			case REPLAY_TRADER_HOVER:
-				var slot = getReplayIntField(replayEvent, "slot");
-				var itemId = getReplayIntField(replayEvent, "itemId");
-				var trader = getTraderEvent();
-				if (slot != null && itemId != null && trader != null)
-					trader.applyHover(slot, itemId);
-			case REPLAY_TRADER_BUY:
-				var slot = getReplayIntField(replayEvent, "slot");
-				var itemId = getReplayIntField(replayEvent, "itemId");
-				var trader = getTraderEvent();
-				if (slot != null && itemId != null && trader != null)
-					trader.applyBuy(slot, itemId);
-			case REPLAY_TRADER_LEAVE:
-				var trader = getTraderEvent();
-				if (trader != null)
-					trader.applyLeave();
+		switch (k) {
+			case EV_USE:
+				if (step == Play && inventory[x] != null)
+					useItem(x);
+			case EV_BUY:
+				if (Std.isOfType(event, EvTrader))
+					(cast event : EvTrader).buyAt(x);
+			case EV_LEAVE:
+				if (Std.isOfType(event, EvTrader))
+					(cast event : EvTrader).leave();
+			#if debug
+			case EV_DEBUG_SHOP:
+				if (step == Play)
+					new EvTrader();
+			#end
 			default:
 		}
-	}
-
-	function getReplayIntField(replayEvent:Dynamic, name:String):Null<Int> {
-		var value:Dynamic = Reflect.field(replayEvent, name);
-		return Std.isOfType(value, Int) ? cast value : null;
-	}
-
-	function getTraderEvent():kanjisadventure.ev.Trader {
-		if (event != null && Std.isOfType(event, kanjisadventure.ev.Trader))
-			return cast event;
-		return null;
-	}
-
-	public function queueTraderBuy(slot:Int, itemId:Int):Void {
-		queueReplayEvent({kind: REPLAY_TRADER_BUY, slot: slot, itemId: itemId});
-	}
-
-	public function queueTraderLeave():Void {
-		queueReplayEvent({kind: REPLAY_TRADER_LEAVE});
 	}
 
 	// DUNGEON
 	public function enterDungeon() {
 		floors = [];
-		hero = new kanjisadventure.ent.Hero();
+		hero = new Hero();
 		hero.x = Std.int(Cs.XMAX * 0.5);
 		hero.y = Std.int(Cs.YMAX * 0.5);
 		loadFloor(0);
 		step = Play;
+		initPlay();
 	}
 
-	public function loadFloor(id) {
-		if (cfl != null) {
+	public function loadFloor(id:Int) {
+		if (cfl != null)
 			cfl.hide();
-		}
 		cfl = getFloor(id);
 		cfl.show();
 		hero.setFloor(cfl);
@@ -359,21 +299,10 @@ class Game implements kado.GameInterface {
 		bx = hero.x;
 		by = hero.y;
 		hero.display();
-		cfl.scroll(hero);
-
-		/*
-			if(cfl!=null)cleanMap();
-
-			genFloor(n);
-			initMap();
-
-			hero.setPos(Std.int(Cs.XMAX*0.5),Std.int(Cs.YMAX*0.5));
-
-			updateScroll();
-		 */
+		cfl.scroll(hero, true);
 	}
 
-	public function getFloor(id) {
+	public function getFloor(id:Int) {
 		var fl = floors[id];
 		if (fl == null) {
 			fl = new Floor(id);
@@ -381,7 +310,6 @@ class Game implements kado.GameInterface {
 			if (id > 0)
 				Cs.probaLevelUp();
 		}
-
 		return fl;
 	}
 
@@ -398,9 +326,9 @@ class Game implements kado.GameInterface {
 
 		if (flMove) {
 			if (hero.sq.type == STAIR_UP)
-				new kanjisadventure.ev.Floor(1);
+				new EvFloor(1);
 			else if (hero.sq.type == STAIR_DOWN)
-				new kanjisadventure.ev.Floor(-1);
+				new EvFloor(-1);
 			var sq = hero.sq;
 			if (sq.itemId != null) {
 				pickUp(sq.itemId, sq);
@@ -418,9 +346,9 @@ class Game implements kado.GameInterface {
 
 		flMove = false;
 		if (event == null) {
-			if (food.get() == 0) {
+			if (food == 0) {
 				log([
-					"Vous avez très faim !",
+					"Vous avez tres faim !",
 					"Il faut trouver de la nourriture !",
 					"Vous avez besoin de manger !",
 					"La faim vous terrasse"
@@ -442,21 +370,15 @@ class Game implements kado.GameInterface {
 	}
 
 	public function updatePlay() {
-		if (KeyboardManager.isDown(KeyboardManager.RIGHT) || KeyboardManager.isDown(KeyboardManager.D))
+		if (KeyboardManager.isDown(KeyboardManager.RIGHT))
 			move(0);
-		else if (KeyboardManager.isDown(KeyboardManager.DOWN) || KeyboardManager.isDown(KeyboardManager.S))
+		else if (KeyboardManager.isDown(KeyboardManager.DOWN))
 			move(1);
-		else if (KeyboardManager.isDown(KeyboardManager.LEFT)
-			|| KeyboardManager.isDown(KeyboardManager.Q)
-			|| KeyboardManager.isDown(KeyboardManager.A))
+		else if (KeyboardManager.isDown(KeyboardManager.LEFT))
 			move(2);
-		else if (KeyboardManager.isDown(KeyboardManager.UP)
-			|| KeyboardManager.isDown(KeyboardManager.Z)
-			|| KeyboardManager.isDown(KeyboardManager.W))
+		else if (KeyboardManager.isDown(KeyboardManager.UP))
 			move(3);
-		else if (KeyboardManager.isDown(KeyboardManager.SPACE)
-			|| KeyboardManager.isDown(KeyboardManager.SHIFT)
-			|| KeyboardManager.isDown(KeyboardManager.ENTER))
+		else if (KeyboardManager.isDown(KeyboardManager.SPACE))
 			shoot();
 		else
 			flShoot = true;
@@ -464,7 +386,9 @@ class Game implements kado.GameInterface {
 
 	public function move(dir:Int) {
 		var d = Cs.DIR[dir];
-		var sq = cfl.grid[hero.sq.x + d[0]][hero.sq.y + d[1]];
+		var sq = cfl.getSquare(hero.sq.x + d[0], hero.sq.y + d[1]);
+		if (sq == null)
+			return;
 		if (sq.isHeroFree()) {
 			flMove = true;
 			hero.setFuturAction(Goto(dir));
@@ -476,32 +400,30 @@ class Game implements kado.GameInterface {
 			} else if (sq.ent.flGood) {
 				flMove = true;
 				hero.setFuturAction(Goto(dir));
-				var ally:kanjisadventure.ent.Bad = cast(sq.ent);
+				var ally:Bad = cast(sq.ent);
 				ally.swapDir = (dir + 2) % 4;
 				ally.first();
-
 				gogogo();
 			} else if (sq.ent.flTrader) {
-				new kanjisadventure.ev.Trader();
+				new EvTrader();
 			}
 		}
 	}
 
 	public function shoot() {
-		if (!flShoot || shuriken.get() <= 0)
+		if (!flShoot || shuriken <= 0)
 			return;
 		flShoot = false;
 		var trg = hero.getNearestBad(2, 7);
 
 		if (trg != null) {
 			incShuriken(-1);
-			var ev = new kanjisadventure.ev.Shoot(hero, trg, 1 + Seed.random(3));
+			var ev = new EvShoot(hero, trg, 1 + Seed.random(3));
 			if (hero.flFire) {
 				ev.dmg++;
-				Filt.glow(ev.shot, KadoKadeoManager.I(2), 4, 0xFFFF00);
-				Filt.glow(ev.shot, KadoKadeoManager.I(4), 2, 0xFFCC00);
-			};
-			// var ev = new ev.Shoot(hero,trg,0);
+				Filt.glow(ev.shot, 4, 4, 0xFFFF00);
+				Filt.glow(ev.shot, 8, 2, 0xFFCC00);
+			}
 		} else {
 			log("Aucun monstre a portée de tir !");
 		}
@@ -535,8 +457,8 @@ class Game implements kado.GameInterface {
 	public function gogogo() {
 		Game.me.hero.first();
 		displayItems();
-		if (food.get() > 0) {
-			food -= 1;
+		if (food > 0) {
+			food--;
 			displayFood();
 		}
 
@@ -568,16 +490,16 @@ class Game implements kado.GameInterface {
 				flQueue = false;
 				next = MEnd;
 			case MEnd:
+				next = null;
 				initEvents();
+			case null:
 		}
 	}
 
 	// ITEM
-	public function pickUp(id, ?sq) {
-		// var id = sq.itemId;
+	public function pickUp(id:Int, ?sq:Square) {
 		if (sq != null)
 			sq.removeItem();
-		// hero.sq.fxGem( Col.objToCol(Col.getRainbow()) );
 		switch (id) {
 			case 1:
 				incGold(1);
@@ -622,23 +544,18 @@ class Game implements kado.GameInterface {
 			default:
 				take(id);
 		}
-
-		// sq.fxLight();
 	}
 
-	function take(id) {
-		switch (id) {
-			default:
-				Lang.take(id);
-				inventory.push(id);
-				if (inventory.length > bagSize.get())
-					dropItem(inventory.shift());
-				displayItems();
-				hero.buildCaracs();
-		}
+	function take(id:Int) {
+		Lang.take(id);
+		inventory.push(id);
+		if (inventory.length > bagSize)
+			dropItem(inventory.shift());
+		displayItems();
+		hero.buildCaracs();
 	}
 
-	function useItem(n) {
+	function useItem(n:Int) {
 		var id = inventory[n];
 
 		switch (id) {
@@ -652,10 +569,10 @@ class Game implements kado.GameInterface {
 			case 16: // GRAPPIN
 				var fl = getFloor(cfl.id + 1);
 				var sq = fl.grid[hero.x][hero.y];
-				if (sq != null && sq.isHeroFree()) {
-					new kanjisadventure.ev.Floor(1);
+				if (sq.isHeroFree()) {
+					new EvFloor(1);
 				} else {
-					log("Vous ne parvenez pas à accrocher votre grappin !");
+					log("Vous ne parvenez pas a accrocher votre grappin !");
 					return;
 				}
 
@@ -677,7 +594,7 @@ class Game implements kado.GameInterface {
 				}
 
 			case 18:
-				log("il augmente d'un point vos dégâts.");
+				log("il augmente d'un point vos dégats.");
 				return;
 			case 19:
 				log("il augmente vos chance d'esquive");
@@ -689,7 +606,6 @@ class Game implements kado.GameInterface {
 				log("C'est une patte d'ours blanc porte-bonheur");
 				return;
 			case 25: // SCROLL FIRE
-
 				var list = hero.getNearBads(1);
 				if (list.length == 0) {
 					log("Il n'y a aucun ennemis proches de vous.");
@@ -707,28 +623,25 @@ class Game implements kado.GameInterface {
 					log("Il n'y a aucun ennemis proches de vous.");
 					return;
 				} else {
-					var ev = new kanjisadventure.ev.Shoot(hero, trg, 0);
+					var ev = new EvShoot(hero, trg, 0);
 					ev.shot.gotoAndStop(2);
 					ev.bhl = [1];
 				}
 
 			case 27: // BOMB
-				var ev = new kanjisadventure.ev.Bomb();
+				new EvBomb();
 
 			case 28: // OREILLER
 				if (hero.life >= hero.lifeMax)
-					log("Vous êtes déjà en pleine forme !!");
-				else if (food.get() < 15)
+					log("Vous êtes déja en pleine forme !!");
+				else if (food < 15)
 					log("Vous avez trop faim pour dormir...");
 				else {
 					var flOk = true;
-					var list = [];
 					var ray = 7;
 					for (dx in 0...ray * 2 + 1) {
 						for (dy in 0...ray * 2 + 1) {
-							var x = hero.x + dx - ray;
-							var y = hero.y + dy - ray;
-							if (cfl.grid[x] != null && cfl.grid[x][y] != null && cfl.grid[x][y].ent != null && cfl.grid[x][y].ent.flBad) {
+							if (cfl.getBad(hero.x + dx - ray, hero.y + dy - ray) != null) {
 								flOk = false;
 								break;
 							}
@@ -746,17 +659,16 @@ class Game implements kado.GameInterface {
 				return;
 
 			case 29: // TELEPORT
-				var ev = new kanjisadventure.ev.Teleport();
+				new EvTeleport();
 
 			case 30: // CHAOS
-
-				var list = Game.me.hero.getNearBads(6);
+				var list = hero.getNearBads(6);
 				fxFlash(0x8800FF);
 				if (list.length > 0) {
 					for (b in list)
 						b.setChaos();
 				} else {
-					log("Il n'y a aucun ennemi proche dans les environs.");
+					log("Il n'y a aucun ennemis proches dans les environs.");
 					return;
 				}
 
@@ -786,7 +698,7 @@ class Game implements kado.GameInterface {
 			case 34: // ZIPPO
 				log("Il permet d'enflammer vos shuriken !");
 
-			case _:
+			default:
 				log("sans effets...");
 				return;
 		}
@@ -795,17 +707,17 @@ class Game implements kado.GameInterface {
 		displayItems(event == null);
 	}
 
-	function gem(id) {
+	function gem(id:Int) {
 		Lang.take(21 + id);
 		hero.sq.fxGem(Cs.COLOR_GEM[id]);
 
 		var sc = Cs.SCORE_GEM[id];
 		KadoKadeoManager.kkm.addScore(sc);
-		hero.sq.fxScore(KKApi.val(sc) + "");
+		hero.sq.fxScore(sc);
 	}
 
-	public function invoke(id, sq) {
-		var bad = new kanjisadventure.ent.Bad(id);
+	public function invoke(id:Int, sq:Square) {
+		var bad = new Bad(id);
 		bad.setFloor(cfl);
 		bad.setPos(sq.x, sq.y);
 		bad.display();
@@ -813,39 +725,39 @@ class Game implements kado.GameInterface {
 		sq.fxGem(0xFF0000);
 	}
 
-	function dropItem(itemId) {
+	function dropItem(itemId:Int) {
 		hero.sq.addItem(itemId);
 		hero.sq.showItem();
 	}
 
-	function incGold(inc) {
+	function incGold(inc:Int) {
 		if (inc == 1)
-			log("Vous ramassez 1 pièce d'or !");
+			log("Vous rammassez 1 pièce d'or !");
 		if (inc > 1)
-			log("Vous ramassez " + inc + " pièces d'or !");
+			log("Vous rammassez " + inc + " pièces d'or !");
 		gold += inc;
 		displayGold();
 	}
 
-	function incFood(inc) {
+	function incFood(inc:Int) {
 		food += inc;
-		if (food.get() < 0)
+		if (food < 0)
 			food = 0;
 		displayFood();
 	}
 
-	function incShuriken(inc) {
+	function incShuriken(inc:Int) {
 		if (inc > 0)
-			log("Vous ramassez " + inc + " shurikens !");
+			log("Vous rammassez " + inc + " shurikens !");
 		shuriken += inc;
 		displayShuriken();
 	}
 
-	function setArmor(aid) {
-		var id = null;
-		if (armorId.get() == 1)
+	function setArmor(aid:Int) {
+		var id:Null<Int> = null;
+		if (armorId == 1)
 			id = 5;
-		if (armorId.get() == 2)
+		if (armorId == 2)
 			id = 6;
 		if (id != null)
 			dropItem(id);
@@ -854,15 +766,14 @@ class Game implements kado.GameInterface {
 		hero.display();
 	}
 
-	function setWeapon(wid) {
-		var id = null;
-		if (weaponId.get() == 1)
+	function setWeapon(wid:Int) {
+		var id:Null<Int> = null;
+		if (weaponId == 1)
 			id = 7;
-		if (weaponId.get() == 2)
+		if (weaponId == 2)
 			id = 8;
 		if (id != null)
 			dropItem(id);
-
 		weaponId = wid;
 		hero.buildCaracs();
 		hero.display();
@@ -870,71 +781,28 @@ class Game implements kado.GameInterface {
 
 	// INTER
 	function initInter() {
-		mcInter = cast dm.attach("mcInter", DP_INTER);
-		mcInter.barLife = mcInter.createEmptyMovieClip();
-		mcInter.barLife._x = KadoKadeoManager.S(6.5);
-		mcInter.barLife._y = KadoKadeoManager.S(9.5);
-		Filt.glow(mcInter.barLife, KadoKadeoManager.I(4), 4, 0xFFFFFF);
-		mcInter.barLife.getGraphics()
-			.beginFill(0xCCCCCC)
-			.drawRect(0, 0, KadoKadeoManager.I(80), KadoKadeoManager.I(3))
-			.endFill();
+		mcInter = dm.attach("inter", DP_INTER);
+		barLife = mcInter.attachMovie("barLife", "barLife", 1);
+		barLife._x = KadoKadeoManager.S(Data.BAR_LIFE[0]);
+		barLife._y = KadoKadeoManager.S(Data.BAR_LIFE[1]);
+		fieldLife = interText(Data.TEXT_LIFE);
+		fieldFood = interText(Data.TEXT_FOOD);
+		fieldGold = interText(Data.TEXT_GOLD);
+		fieldShuriken = interText(Data.TEXT_SHURIKEN);
+	}
 
-		mcInter.shuriken = mcInter.attachMovie("mcStar", "shuriken");
-		mcInter.shuriken._xscale = mcInter.shuriken._yscale = 50;
-		mcInter.shuriken._x = KadoKadeoManager.S(100.5);
-		mcInter.shuriken._y = KadoKadeoManager.S(11.5);
-
-		mcInter.fieldLife = mcInter.initTextField("fieldLife", {
-			font: "verdana",
-			size: 20,
-			color: 0xFFFFFF,
-			stroke: "#323879",
-			strokeThickness: KadoKadeoManager.I(2),
-			letterSpacing: KadoKadeoManager.I(1),
-		});
-		mcInter.fieldLife.x = KadoKadeoManager.S(13);
-		mcInter.fieldLife.y = KadoKadeoManager.I(17);
-
-		mcInter.fieldFood = mcInter.initTextField("fieldFood", {
-			font: "verdana",
-			size: 20,
-			color: 0xFFFFFF,
-			stroke: "#323879",
-			strokeThickness: KadoKadeoManager.I(2),
-			letterSpacing: KadoKadeoManager.I(1),
-		});
-		mcInter.fieldFood.x = KadoKadeoManager.S(67);
-		mcInter.fieldFood.y = KadoKadeoManager.I(17);
-
-		mcInter.fieldGold = mcInter.initTextField("fieldGold", {
-			font: "verdana",
-			size: 20,
-			color: 0xFFFFFF,
-			stroke: "#323879",
-			strokeThickness: KadoKadeoManager.I(2),
-			letterSpacing: KadoKadeoManager.I(1),
-		});
-		mcInter.fieldGold.x = KadoKadeoManager.S(107);
-		mcInter.fieldGold.y = KadoKadeoManager.I(17);
-
-		mcInter.fieldShuriken = mcInter.initTextField("fieldShuriken", {
-			font: "verdana",
-			size: 20,
-			color: 0xFFFFFF,
-			stroke: "#323879",
-			strokeThickness: KadoKadeoManager.I(2),
-			letterSpacing: KadoKadeoManager.I(1),
-		});
-		mcInter.fieldShuriken.x = KadoKadeoManager.S(107);
-		mcInter.fieldShuriken.y = KadoKadeoManager.I(3);
+	function interText(t:Array<Float>):Text {
+		var txt = Txt.make(KadoKadeoManager.S(t[3]), Txt.VERDANA, "left", 0x323879, 4);
+		txt.x = KadoKadeoManager.S(t[0]);
+		txt.y = KadoKadeoManager.S(t[1]);
+		mcInter.addChild(txt);
+		return txt;
 	}
 
 	public function displayLife() {
 		var coef = hero.life / hero.lifeMax;
-		mcInter.barLife._xscale = coef * 100;
+		barLife._xscale = coef * 100;
 
-		// var col = Col.objToCol(Col.getRainbow(coef));
 		var col = 0x00FF00;
 		if (coef < 1)
 			col = 0x44DD00;
@@ -942,109 +810,63 @@ class Game implements kado.GameInterface {
 			col = 0xFFCC00;
 		if (coef <= 0.25)
 			col = 0xFF0000;
+		Col.setColor(barLife, col);
 
-		Col.setColor(mcInter.barLife.getGraphics(), col);
-
-		mcInter.fieldLife.text = hero.life + "/" + hero.lifeMax;
+		fieldLife.text = hero.life + "/" + hero.lifeMax;
 	}
 
 	public function displayFood() {
-		mcInter.fieldFood.text = food.get() + "";
+		fieldFood.text = food + "";
 	}
 
 	public function displayGold() {
-		mcInter.fieldGold.text = gold.get() + "";
+		fieldGold.text = gold + "";
 	}
 
 	public function displayShuriken() {
-		mcInter.fieldShuriken.text = shuriken.get() + "";
-		if (hero != null) {
-			mcInter.shuriken.gotoAndStop(hero.flFire ? 2 : 1);
-		}
+		fieldShuriken.text = shuriken + "";
 	}
 
-	public function displayItems(?flAction) {
-		itemSlots = [];
-		itemsInteractive = flAction == true;
-		hoveredItemSlot = -1;
-		// mcInter.fieldGold.text = gold+"";
+	public function displayItems(?flAction:Bool) {
 		dm.clear(DP_ITEMS);
-		for (i in 0...bagSize.get()) {
+		slotItems = [];
+		slotsAction = flAction == true;
+		for (i in 0...bagSize) {
 			var slot = dm.attach("mcSlot", DP_ITEMS);
-			slot._x = Cs.mcw - (bagSize.get() - i) * KadoKadeoManager.I(28);
-			slot._y = KadoKadeoManager.I(3);
+			slot._x = Cs.mcw - KadoKadeoManager.S((bagSize - i) * SLOT);
+			slot._y = KadoKadeoManager.S(3);
 			var id = inventory[i];
 			if (id != null) {
 				var mc = dm.attach("mcItem", DP_ITEMS);
 				mc._x = slot._x;
 				mc._y = slot._y;
 				mc.gotoAndStop(id + 1);
-				itemSlots.push({
-					slot: slot,
-					item: mc,
-					index: i,
-					itemId: id
-				});
-			}
-		};
-	}
-
-	function updateItemMouseInput():Void {
-		if (isReplayMode || !itemsInteractive || step != Play || event != null)
-			return;
-
-		var slotIndex = getItemSlotAtMouse();
-		if (slotIndex != hoveredItemSlot) {
-			var itemId = slotIndex < 0 ? -1 : inventory[slotIndex];
-			applyItemHover(slotIndex, itemId);
-		}
-
-		if (slotIndex >= 0 && MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {
-			queueReplayEvent({kind: REPLAY_ITEM_USE, slot: slotIndex, itemId: inventory[slotIndex]});
-		}
-	}
-
-	function getItemSlotAtMouse():Int {
-		var mouseX = MouseManager.getX();
-		var mouseY = MouseManager.getY();
-		for (view in itemSlots) {
-			if (view.slot.getBounds().contains(mouseX, mouseY))
-				return view.index;
-		}
-		return -1;
-	}
-
-	function applyItemHover(slotIndex:Int, itemId:Int):Void {
-		for (view in itemSlots)
-			if (view.index == hoveredItemSlot)
-				rouItem(view.item);
-		hoveredItemSlot = -1;
-
-		if (!itemsInteractive || step != Play || event != null || slotIndex < 0 || slotIndex >= inventory.length)
-			return;
-		for (view in itemSlots) {
-			if (view.index == slotIndex && view.itemId == itemId && inventory[slotIndex] == itemId) {
-				rovItem(view.item);
-				hoveredItemSlot = slotIndex;
-				return;
+				slotItems[i] = mc;
 			}
 		}
 	}
 
-	function applyItemUse(slotIndex:Int, itemId:Int):Void {
-		if (!itemsInteractive || step != Play || event != null || slotIndex < 0 || slotIndex >= inventory.length)
-			return;
-		if (inventory[slotIndex] != itemId)
-			return;
-		useItem(slotIndex);
+	// slot of the bag under a point of the screen
+	function slotAt(mx:Float, my:Float):Null<Int> {
+		if (!slotsAction)
+			return null;
+		var size = KadoKadeoManager.S(27);
+		for (i in 0...bagSize) {
+			var x0 = Cs.mcw - KadoKadeoManager.S((bagSize - i) * SLOT);
+			var y0 = KadoKadeoManager.S(3);
+			if (mx >= x0 && mx < x0 + size && my >= y0 && my < y0 + size)
+				return i;
+		}
+		return null;
 	}
 
-	public function rovItem(mc:ASprite) {
-		mc.blendMode = BlendModes.ADD;
-	}
-
-	public function rouItem(mc:ASprite) {
-		mc.blendMode = BlendModes.NORMAL;
+	function hoverItems(mx:Float, my:Float) {
+		var over = slotAt(mx, my);
+		for (i in 0...slotItems.length) {
+			var mc = slotItems[i];
+			if (mc != null)
+				mc.blendMode = over == i ? BlendModes.ADD : BlendModes.NORMAL;
+		}
 	}
 
 	// GameOver
@@ -1062,7 +884,7 @@ class Game implements kado.GameInterface {
 				if (coef == 1) {
 					endStep++;
 					if (gold > 0) {
-						var a = KKApi.val(Cs.SCORE_GOLD);
+						var a = Cs.SCORE_GOLD;
 						log("Bonus Or " + gold + " x" + a + " = " + (a * gold) + "pts");
 					}
 				}
@@ -1073,7 +895,7 @@ class Game implements kado.GameInterface {
 				} else {
 					endStep++;
 					if (food > 0) {
-						var a = KKApi.val(Cs.SCORE_FOOD);
+						var a = Cs.SCORE_FOOD;
 						log("Bonus Nourriture " + food + " x" + a + " = " + (a * food) + "pts");
 					}
 				}
@@ -1103,36 +925,30 @@ class Game implements kado.GameInterface {
 		Col.setPercentColor(root, prc, flhColor);
 	}
 
-	public function fxFlash(col) {
+	public function fxFlash(col:Int) {
 		flhColor = col;
 		flh = 100;
 	}
 
 	// LOG
-	public function log(str) {
+	public function log(str:String) {
 		if (flMute)
 			return;
 		if (mcLog == null) {
-			mcLog = cast dm.empty(DP_INTER);
-			mcLog.dm = new DepthManager(mcLog);
+			mcLog = dm.empty(DP_INTER);
 		}
 
-		var mc:McTextSprite = cast mcLog.dm.empty(DP_INTER);
-		mc.field = mc.initTextField("field", {
-			font: "verdana",
-			size: 20,
-			color: 0xFFFFFF,
-			stroke: "#000000",
-			strokeThickness: KadoKadeoManager.I(2),
-			x: KadoKadeoManager.I(2),
-		});
-		mc.field.text = str;
+		var mc = mcLog.createEmptyMovieClip("log", 1);
+		var t = Txt.make(KadoKadeoManager.S(Data.TEXT_LOG[3]), Txt.VERDANA, "left", 0x000000, 5);
+		t.x = KadoKadeoManager.S(Data.TEXT_LOG[0]);
+		t.y = KadoKadeoManager.S(Data.TEXT_LOG[1]);
+		t.text = str;
+		mc.addChild(t);
 		mc._y = Cs.mch;
-		Filt.glow(mc, KadoKadeoManager.I(2), 4, 0);
 		logs.unshift(mc);
 		logCoef = 0;
 
-		mcLog.timer = 60;
+		logTimer = 60;
 		mcLog._alpha = 100;
 	}
 
@@ -1140,11 +956,11 @@ class Game implements kado.GameInterface {
 		logCoef = Math.min(logCoef + 0.2, 1);
 
 		var lim = 5;
-		var ec = KadoKadeoManager.I(12);
+		var ec = KadoKadeoManager.S(12);
 		for (i in 0...logs.length) {
 			var mc = logs[i];
-			mc._y = Cs.mch - ((i + logCoef) * ec + KadoKadeoManager.I(5));
-			mc._alpha = 100 - ((i + logCoef - 1) / (lim - 1)) * 100;
+			mc._y = Cs.mch - ((i + logCoef) * ec + KadoKadeoManager.S(5));
+			mc._alpha = Math.min(100, 100 - ((i + logCoef - 1) / (lim - 1)) * 100);
 		}
 
 		if (logCoef == 1) {
@@ -1155,8 +971,8 @@ class Game implements kado.GameInterface {
 	}
 
 	public function updateLogAlpha() {
-		if (mcLog.timer > 0)
-			mcLog.timer--;
+		if (logTimer > 0)
+			logTimer--;
 		else
 			mcLog._alpha -= 10;
 		if (mcLog._alpha <= 0) {
@@ -1165,23 +981,17 @@ class Game implements kado.GameInterface {
 		}
 	}
 
-	//
-	function updateSprites() {
-		Sprite.updateAll();
+	#if debug
+	// test hook of the harness (debug builds only): opens the trader's shop, recorded like a click so that the
+	// replay does the same
+	@:keep public function debugOpenShop() {
+		if (step == Play)
+			recordAndApply(EV_DEBUG_SHOP, 0);
 	}
+	#end
 
-	public function destroy() {}
+	public function destroy():Void {
+		KadoKadeoManager.kkm.setTouchJoystickEnabled(true);
+		me = null;
+	}
 }
-
-// MSG MARCHAND QUAND PLUS DE PLACE
-// SCEAU MORT VIVANT
-// FADE DU LOG
-// ** MECANISME DE JEU **
-// PORTES ( CLE OU ENFONCE )
-// PIEGE QUI FAIT TOMBER LE JOUEUR & l'etag precedent
-// CAPE INVISIBLE
-// BUCHE / FAUX MUR : Permet de bloquer des ennemis
-// BUG
-// ** TODO **
-// SYSTEM DE GARDE ROOM
-// SYSTEM DE DIF ROOM

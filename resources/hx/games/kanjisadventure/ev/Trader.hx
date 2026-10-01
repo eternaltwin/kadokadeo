@@ -1,26 +1,11 @@
 package kanjisadventure.ev;
 
-import kanjisadventure.*;
-import common_haxe_avm1.KeyboardManager;
-import common_haxe_avm1.MouseManager;
-import mt.DepthManager;
 import pixi.core.text.Text;
 
-class SlotShopSprite extends ASprite {
-	public var field:Text;
-	public var fieldGold:Text;
-	public var item:ASprite;
-	public var id:Int;
-	public var price:Int;
-	public var flInv:Bool;
-	public var index:Int;
-	public var enabled:Bool;
-}
+typedef SlotShop = {mc:ASprite, hi:ASprite, field:Text, fieldGold:Text, id:Int, price:Int, flInv:Bool, flOk:Bool};
 
-class McPanelSprite extends ASprite {
-	public var field:Text;
-}
-
+// the shop of the trader: the player clicks the items to buy them, clicks outside (or presses a key) to leave.
+// Clicks are replay events (see Game.applyEvent)
 class Trader extends Event {
 	static var ITEMS_STD = [
 		{id: 5, price: 150, flInv: false}, // LEATHER ARMOR
@@ -38,30 +23,35 @@ class Trader extends Event {
 		{id: 32, price: 40, flInv: true}, // OS
 	];
 
+	// slot click areas (1x): the highlight of slotShop
+	static var SLOT_W = 116.5;
+	static var SLOT_H = 33;
+
 	public var flFirst:Bool;
 
 	var bg:ASprite;
-	var mcPanel:McPanelSprite;
+	var mcPanel:ASprite;
+	var panelText:Text;
+	var panelX:Float;
+	var panelY:Float;
 
-	var slots:Array<SlotShopSprite>;
-	var hoveredSlot:Int;
+	var slots:Array<SlotShop>;
 
-	// var dm:mt.DepthManager;
-
-	public function new(?first) {
+	public function new(?first:Bool) {
 		flFirst = first;
 		super();
 		bg = Game.me.dm.empty(Game.DP_FADER);
-		bg.getGraphics()
-			.beginFill(0x000000)
-			.drawRect(0, 0, KadoKadeoManager.I(Cs.mcw), KadoKadeoManager.I(Cs.mch))
-			.endFill();
+		var g = bg.getGraphics();
+		g.beginFill(0x000000);
+		g.drawRect(0, 0, Cs.mcw, Cs.mch);
+		g.endFill();
 		bg._alpha = 0;
 
 		spc = 0.1;
 		slots = [];
-		hoveredSlot = -1;
 		Game.me.displayItems(false);
+		// taps go to the shop, not to the joystick
+		KadoKadeoManager.kkm.setTouchJoystickEnabled(false);
 	}
 
 	override function update() {
@@ -76,11 +66,17 @@ class Trader extends Event {
 				}
 
 			case 1:
-				updateInput();
+				if (KeyboardManager.isDown(KeyboardManager.LEFT) || KeyboardManager.isDown(KeyboardManager.RIGHT)
+					|| KeyboardManager.isDown(KeyboardManager.UP) || KeyboardManager.isDown(KeyboardManager.DOWN)
+					|| KeyboardManager.isDown(KeyboardManager.SPACE))
+					leave();
+				else
+					hover(MouseManager.getX(), MouseManager.getY());
 			case 2:
 				bg._alpha = (1 - coef) * 50;
 				if (coef == 1) {
 					bg.removeMovieClip();
+					KadoKadeoManager.kkm.setTouchJoystickEnabled(true);
 					kill();
 					step++;
 				}
@@ -88,23 +84,22 @@ class Trader extends Event {
 	}
 
 	public function attachPanel() {
-		mcPanel = cast Game.me.dm.attach("mcPanel", Game.DP_INTER);
-		mcPanel._x = (Cs.mcw - KadoKadeoManager.I(240)) * 0.5;
-		mcPanel._y = Cs.bh + ((Cs.mch - Cs.bh) - KadoKadeoManager.I(100)) * 0.5;
-		mcPanel.field = mcPanel.initTextField("field", {
-			font: "verdana",
-			size: 22,
-			align: "center",
-			color: 0xFFFFFF,
-			stroke: "#1D2161",
-			strokeThickness: KadoKadeoManager.I(2),
-			x: KadoKadeoManager.I(120),
-			y: KadoKadeoManager.I(80),
-		});
+		mcPanel = Game.me.dm.attach("panel", Game.DP_INTER);
+		var pw = KadoKadeoManager.S(Data.PANEL_SIZE[0]);
+		var ph = KadoKadeoManager.S(Data.PANEL_SIZE[1]);
+		panelX = (Cs.mcw - pw) * 0.5;
+		panelY = Cs.bh + ((Cs.mch - Cs.bh) - ph) * 0.5;
+		mcPanel._x = panelX;
+		mcPanel._y = panelY;
+		mcPanel.updateState();
+
+		var tp = Data.TEXT_PANEL;
+		panelText = Txt.make(KadoKadeoManager.S(tp[3]), Txt.VERDANA, "center", 0x1D2161, 4);
+		panelText.x = KadoKadeoManager.S(tp[0] + tp[2] * 0.5);
+		panelText.y = KadoKadeoManager.S(tp[1]);
+		mcPanel.addChild(panelText);
 
 		var seed = new mt.Rand(Game.me.did + Game.me.cfl.id);
-
-		var dm = new DepthManager(mcPanel);
 		var a = ITEMS_STD.copy();
 		var list = [];
 		for (i in 0...4) {
@@ -115,40 +110,38 @@ class Trader extends Event {
 
 		var id = 0;
 		slots = [];
-		hoveredSlot = -1;
 		for (o in list) {
-			var mc:SlotShopSprite = cast dm.attach("slotShop", 0);
-			mc._x = KadoKadeoManager.I(8) + (id % 2) * KadoKadeoManager.I(115);
-			mc._y = KadoKadeoManager.I(8) + Math.floor(id / 2) * KadoKadeoManager.I(35);
-			mc.field = mc.initTextField("field", {
-				font: "verdana",
-				size: 18,
-				color: 0xFFFFFF,
-				stroke: "#1D2161",
-				strokeThickness: KadoKadeoManager.I(2),
-				x: KadoKadeoManager.I(30),
-				y: KadoKadeoManager.I(-2),
+			var mc = mcPanel.attachMovie("slotShop", "slot" + id, 1);
+			mc._x = KadoKadeoManager.S(8 + (id % 2) * 115);
+			mc._y = KadoKadeoManager.S(8 + Math.floor(id / 2) * 35);
+			var item = mc.attachMovie("mcItem", "item", 2);
+			item.gotoAndStop(o.id + 1);
+			var tn = Data.TEXT_SHOPNAME;
+			var field = Txt.make(KadoKadeoManager.S(tn[3]), Txt.VERDANA, "left", 0x1D2161, 4);
+			field.x = KadoKadeoManager.S(tn[0]);
+			field.y = KadoKadeoManager.S(tn[1]);
+			field.text = Lang.ITEMS[o.id];
+			mc.addChild(field);
+			var tg = Data.TEXT_SHOPGOLD;
+			var fieldGold = Txt.make(KadoKadeoManager.S(tg[3]), Txt.VERDANA, "left", 0x1D2161, 4);
+			fieldGold.x = KadoKadeoManager.S(tg[0]);
+			fieldGold.y = KadoKadeoManager.S(tg[1]);
+			fieldGold.text = Std.string(o.price);
+			mc.addChild(fieldGold);
+			var hi = mc.attachMovie("slotShopHi", "smc", 3);
+			hi.blendMode = BlendModes.ADD;
+			hi._alpha = 0;
+			slots.push({
+				mc: mc,
+				hi: hi,
+				field: field,
+				fieldGold: fieldGold,
+				id: o.id,
+				price: o.price,
+				flInv: o.flInv,
+				flOk: false
 			});
-			mc.fieldGold = mc.initTextField("fieldGold", {
-				font: "verdana",
-				size: 18,
-				color: 0xFFFFFF,
-				stroke: "#1D2161",
-				strokeThickness: KadoKadeoManager.I(2),
-				x: KadoKadeoManager.I(41),
-				y: KadoKadeoManager.I(11),
-			});
-			mc.field.text = Lang.ITEMS[o.id];
-			mc.fieldGold.text = Std.string(o.price);
-			mc.item = mc.attachMovie("mcItem", "item");
-			mc.item.gotoAndStop(o.id + 1);
-			mc.id = o.id;
-			mc.flInv = o.flInv;
-			mc.price = o.price;
-			mc.index = id;
-			mc.enabled = false;
 			id++;
-			slots.push(mc);
 		}
 
 		updateSlots();
@@ -156,29 +149,28 @@ class Trader extends Event {
 
 	public function updateSlots() {
 		var flNoRoom = false;
-
 		var str = Lang.TRADER[0];
 		var n = 0;
 
-		for (mc in slots) {
-			var flOk = mc.price <= Game.me.gold;
+		for (s in slots) {
+			var flOk = s.price <= Game.me.gold;
 			if (flOk) {
-				if (mc.flInv && Game.me.inventory.length >= Game.me.bagSize) {
+				if (s.flInv && Game.me.inventory.length >= Game.me.bagSize) {
 					flNoRoom = true;
 					flOk = false;
 				}
 			}
 
-			if (mc.id == 13 && Game.me.bagSize > 3)
+			if (s.id == 13 && Game.me.bagSize > 3)
 				flOk = false; // BAGPACK
-			mc.enabled = flOk;
 
+			s.flOk = flOk;
 			if (flOk) {
-				mc._alpha = 100;
+				s.mc._alpha = 100;
 				n++;
 			} else {
-				mc._alpha = 20;
-				unselect(mc);
+				s.mc._alpha = 20;
+				s.hi._alpha = 0;
 			}
 		}
 
@@ -187,108 +179,64 @@ class Trader extends Event {
 			if (flNoRoom)
 				str = Lang.TRADER[2];
 		}
-		mcPanel.field.text = str;
+		panelText.text = str;
 	}
 
-	function updateInput():Void {
-		var slotIndex = getSlotAtMouse();
-		if (slotIndex != hoveredSlot) {
-			var itemId = slotIndex < 0 ? -1 : slots[slotIndex].id;
-			applyHover(slotIndex, itemId);
+	// slot under a point of the screen
+	function slotAt(mx:Float, my:Float):Null<Int> {
+		if (step != 1)
+			return null;
+		for (i in 0...slots.length) {
+			var s = slots[i];
+			var x0 = panelX + s.mc._x;
+			var y0 = panelY + s.mc._y;
+			if (mx >= x0 && mx < x0 + KadoKadeoManager.S(SLOT_W) && my >= y0 && my < y0 + KadoKadeoManager.S(SLOT_H))
+				return i;
 		}
+		return null;
+	}
 
-		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {
-			if (slotIndex >= 0)
-				Game.me.queueTraderBuy(slotIndex, slots[slotIndex].id);
-			else if (!isMouseOverPanel())
-				Game.me.queueTraderLeave();
+	function hover(mx:Float, my:Float) {
+		var over = slotAt(mx, my);
+		for (i in 0...slots.length) {
+			var s = slots[i];
+			s.hi._alpha = s.flOk && over == i ? 20 : 0;
 		}
-
-		if (isExitKeyJustPressed())
-			Game.me.queueTraderLeave();
 	}
 
-	function getSlotAtMouse():Int {
-		var mouseX = MouseManager.getX();
-		var mouseY = MouseManager.getY();
-		for (mc in slots)
-			if (mc.enabled && mc.getBounds().contains(mouseX, mouseY))
-				return mc.index;
-		return -1;
+	// click of the player: [event kind, slot] or null
+	public function getClick(mx:Float, my:Float):Null<Array<Int>> {
+		if (step != 1)
+			return null;
+		var i = slotAt(mx, my);
+		if (i != null)
+			return slots[i].flOk ? [Game.EV_BUY, i] : null;
+		var pw = KadoKadeoManager.S(Data.PANEL_SIZE[0]);
+		var ph = KadoKadeoManager.S(Data.PANEL_SIZE[1]);
+		if (mx >= panelX && mx < panelX + pw && my >= panelY && my < panelY + ph)
+			return null;
+		if (my >= 0 && my < Cs.mch)
+			return [Game.EV_LEAVE, 0];
+		return null;
 	}
 
-	function isMouseOverPanel():Bool {
-		return mcPanel != null && mcPanel.getBounds().contains(MouseManager.getX(), MouseManager.getY());
-	}
-
-	function isExitKeyJustPressed():Bool {
-		return KeyboardManager.isJustDown(KeyboardManager.RIGHT)
-			|| KeyboardManager.isJustDown(KeyboardManager.DOWN)
-			|| KeyboardManager.isJustDown(KeyboardManager.LEFT)
-			|| KeyboardManager.isJustDown(KeyboardManager.UP)
-			|| KeyboardManager.isJustDown(KeyboardManager.D)
-			|| KeyboardManager.isJustDown(KeyboardManager.S)
-			|| KeyboardManager.isJustDown(KeyboardManager.Q)
-			|| KeyboardManager.isJustDown(KeyboardManager.A)
-			|| KeyboardManager.isJustDown(KeyboardManager.Z)
-			|| KeyboardManager.isJustDown(KeyboardManager.W)
-			|| KeyboardManager.isJustDown(KeyboardManager.SPACE)
-			|| KeyboardManager.isJustDown(KeyboardManager.SHIFT)
-			|| KeyboardManager.isJustDown(KeyboardManager.ENTER);
-	}
-
-	function select(mc:ASprite) {
-		mc.blendMode = BlendModes.ADD;
-	}
-
-	function unselect(mc:ASprite) {
-		mc.blendMode = BlendModes.NORMAL;
-	}
-
-	public function applyHover(slotIndex:Int, itemId:Int):Void {
-		if (hoveredSlot >= 0 && hoveredSlot < slots.length)
-			unselect(slots[hoveredSlot]);
-		hoveredSlot = -1;
-
-		if (step != 1 || slotIndex < 0 || slotIndex >= slots.length)
+	public function buyAt(i:Int) {
+		if (step != 1 || slots[i] == null || !slots[i].flOk)
 			return;
-		var mc = slots[slotIndex];
-		if (!mc.enabled || mc.id != itemId)
-			return;
-		select(mc);
-		hoveredSlot = slotIndex;
-	}
-
-	public function applyBuy(slotIndex:Int, itemId:Int):Void {
-		if (step != 1 || slotIndex < 0 || slotIndex >= slots.length)
-			return;
-		var mc = slots[slotIndex];
-		if (!mc.enabled || mc.id != itemId)
-			return;
-		buy(mc);
-	}
-
-	public function applyLeave():Void {
-		if (step == 1)
-			leave();
-	}
-
-	function buy(mc:SlotShopSprite) {
+		var s = slots[i];
 		Game.me.flMute = true;
-		Game.me.pickUp(mc.id);
+		Game.me.pickUp(s.id);
 		Game.me.flMute = false;
-		Game.me.gold -= mc.price;
+		Game.me.gold -= s.price;
 		Game.me.displayGold();
 		updateSlots();
 	}
 
-	function leave() {
+	public function leave() {
+		if (step != 1)
+			return;
 		coef = 0;
 		step = 2;
-		hoveredSlot = -1;
-		if (mcPanel != null) {
-			mcPanel.removeMovieClip();
-			mcPanel = null;
-		}
+		mcPanel.removeMovieClip();
 	}
 }

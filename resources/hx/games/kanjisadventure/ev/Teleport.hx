@@ -1,11 +1,8 @@
 package kanjisadventure.ev;
 
-import kanjisadventure.*;
-
 class Teleport extends Event {
 	public function new() {
 		super();
-
 		spc = 0.05;
 		Game.me.hero.sq.fxSmoke();
 		Game.me.hero.root.removeMovieClip();
@@ -28,10 +25,9 @@ class Teleport extends Event {
 			var sq = list[Seed.random(list.length)];
 			h.setPos(sq.x, sq.y);
 			h.display();
-			Game.me.cfl.scroll(h);
+			Game.me.cfl.scroll(h, true);
 			kill();
 			sq.fxSmoke();
 		}
 	}
-
 }

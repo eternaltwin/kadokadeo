@@ -3,11 +3,14 @@ package kanjisadventure;
 using Std;
 using Lambda;
 using StringTools;
-using common_haxe_avm1.PixelHelper;
 
-import common_haxe_avm1.display.ASprite;
 import kado.KadoKadeoManager;
 import kado.Seed;
-import pixi.core.textures.RenderTexture;
+import common_haxe_avm1.display.ASprite;
+import common_haxe_avm1.KeyboardManager;
+import common_haxe_avm1.MouseManager;
+import mt.DepthManager;
+import mt.bumdum.Lib;
+import mt.Timer;
 import pixi.core.Pixi.BlendModes;
-import pixi.core.math.Matrix;
+import kanjisadventure.Cs;

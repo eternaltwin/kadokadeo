@@ -1,22 +1,19 @@
 package kanjisadventure.ent;
 
-import kanjisadventure.*;
-
 class Trader extends Ent {
 	public function new() {
 		super();
 		flTrader = true;
 		lifeMax = 5;
+		restX = 12;
+		restY = 17;
 		init();
 	}
 
-	//
-	override function attach():ASprite {
-		root = sq.dm.attach("mcTrader", Square.DP_ACTOR);
-		return root;
+	override function bodyName() {
+		return "trader";
 	}
 
-	//
 	override function die() {
 		var id = 3;
 		if (Seed.random(5) == 0)
@@ -24,36 +21,17 @@ class Trader extends Ent {
 		sq.addItem(id);
 		sq.showItem();
 
-		root.gotoAndPlay(2);
+		// "die" frames: sinks into the floor then removes itself
+		if (root != null) {
+			if (body != null)
+				body.removeMovieClip();
+			var mc = root.attachMovie("traderDie", "smc", 1);
+			mc.removeOnFrame = mc._totalframes;
+			mc.play();
+		}
 		root = null;
+		body = null;
 
 		super.die();
 	}
-	/*
-		public function setSquare(sq:Square){
-			//trace("setSq("+sq+")");
-			super.setSquare(sq);
-		}
-	 */
 }
-/*
-
-
-
-
-
-	enum AttackBehaviour {
-	ABRandom(c:Float);
-	ABStick;
-	ABCoward;
-	}
-	enum MoveBehaviour {
-	ABFollow;
-	ABRandom(c:Float);
-	}
-
-
-
-
-
- */

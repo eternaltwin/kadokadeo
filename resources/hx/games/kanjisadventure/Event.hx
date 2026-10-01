@@ -1,7 +1,5 @@
 package kanjisadventure;
 
-import mt.Timer;
-
 class Event {
 	var coef:Float;
 	var spc:Float;
@@ -17,7 +15,7 @@ class Event {
 	}
 
 	public function update() {
-		coef = Math.min(coef + spc * Timer.tmod, 1);
+		coef = Math.min(coef + spc * mt.Timer.tmod, 1);
 	}
 
 	public function kill() {

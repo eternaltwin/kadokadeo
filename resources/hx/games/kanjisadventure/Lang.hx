@@ -20,15 +20,15 @@ class Lang {
 		"Pomme",
 		"Viande",
 		"3x Shurikens",
-		"10x Shurikens",
+		"10x Shuriken",
 		"Sac-à-dos",
 		"Potion",
 		"Super potion",
 		"Grappin pointu",
 		"Talisman anti mort-vivant",
 		"Amulette rubis",
-		"Amulette émeraude",
-		"Amulette saphir",
+		"Amulette emeraude",
+		"Amulette saphire",
 		"Crystal vert",
 		"Crystal bleu",
 		"Crystal rose",
@@ -45,12 +45,12 @@ class Lang {
 		"Zippo étoilé"
 	];
 
-	static public function take(id) {
-		Game.me.log("Vous ramassez : " + ITEMS[id]);
+	static public function take(id:Int) {
+		Game.me.log("Vous rammassez : " + ITEMS[id]);
 	}
 
-	static public function getBadName(bid) {
-		return [
+	static public function getBadName(bid:Int):String {
+		var names = [
 			"cendrillo",
 			"dragonnet",
 			"fouineur",
@@ -59,6 +59,9 @@ class Lang {
 			"cyclope furieux",
 			"cauchemort",
 			"mage des Lumbs"
-		][bid];
+		];
+		var n = names[bid];
+		// the summoned bear and dog had no name in the original ("undefined")
+		return n != null ? n : (bid == 20 ? "l'ours" : "le chien");
 	}
 }

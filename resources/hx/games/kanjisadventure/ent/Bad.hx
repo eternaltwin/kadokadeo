@@ -1,39 +1,35 @@
 package kanjisadventure.ent;
 
-import kanjisadventure.*;
-import kanjisadventure.Protocol;
-import common_haxe_avm1.KKApi;
-import kado.KadoKadeoManager;
-import mt.bumdum.Lib;
-
 class Bad extends Ent {
 	public var flEatable:Bool;
 	public var flUndead:Bool;
 	public var flChaos:Bool;
 
-	var skin:ASprite;
-
 	var bid:Int;
-	var lastDir:Int;
+	var lastDir:Null<Int>;
 
-	public var swapDir:Int;
+	public var swapDir:Null<Int>;
 
 	var seek:Int;
 
 	public var bhAtt:AttackBehaviour;
 	public var bhMove:MoveBehaviour;
 
-	public function new(bid) {
+	public function new(bid:Int) {
 		super();
 		seek = 0;
 		flBad = true;
+		flEatable = false;
+		flUndead = false;
 		flChaos = false;
+		restX = 11.9;
+		restY = 17;
 		setType(bid);
 		init();
 		strikeId = 0;
 	}
 
-	override function setFloor(fl) {
+	override function setFloor(fl:Floor) {
 		if (floor != null)
 			floor.bads.remove(this);
 		super.setFloor(fl);
@@ -71,21 +67,12 @@ class Bad extends Ent {
 			swapDir = null;
 			return;
 		}
-		/*
-			if( futurAction!=null ){
-				switch(futurAction){
-					case Goto(di): setAction(futurAction);
-					default:
-				}
-				return;
-			}
-		 */
 
 		var moveList = [];
 		var di = 0;
 		for (d in Cs.DIR) {
-			var next = floor.grid[sq.x + d[0]][sq.y + d[1]];
-			if (next.isFree())
+			var next = floor.getSquare(sq.x + d[0], sq.y + d[1]);
+			if (next != null && next.isFree())
 				moveList.push(di);
 			di++;
 		}
@@ -93,8 +80,9 @@ class Bad extends Ent {
 		if (moveList.length > 0) {
 			var rdi = moveList[Seed.random(moveList.length)];
 			var bh = bhMove;
-			var hdi = Std.int(getHeroDist());
-			if (hdi <= seek && !Type.enumEq(bh, BCoward) && !flChaos)
+
+			var hdi = getHeroDist();
+			if (hdi <= seek && !bh.match(BCoward) && !flChaos)
 				bh = BHunt;
 
 			switch (bh) {
@@ -113,15 +101,12 @@ class Bad extends Ent {
 
 				case BHunt:
 					if (flBad && hdi <= 2) {
-						if (Game.me.hero.futurAction != null
-							&& Type.enumConstructor(Game.me.hero.futurAction) == Type.enumConstructor(Goto(2))
-							&& Seed.random(hdi) == 0)
+						var fa = Game.me.hero.futurAction;
+						if (fa != null && fa.match(Goto(_)) && Seed.random(hdi) == 0)
 							return;
 					}
 
 					if (flGood) {
-						// if( hdi==1 )return;
-						// if( hdi==2 && Std.random(3)==0 )return;
 						if (Seed.random(Std.int(Math.pow(hdi, 2))) == 0)
 							return;
 					}
@@ -131,13 +116,13 @@ class Bad extends Ent {
 					var sq2 = floor.grid[sq.x + d[0]][sq.y + d[1]];
 					var rh = sq2.heat;
 					for (di in moveList) {
-						d = Cs.DIR[di];
-						sq2 = floor.grid[sq.x + d[0]][sq.y + d[1]];
-						if (rh == null || (sq2.heat != null && sq2.heat < rh)) {
+						var d = Cs.DIR[di];
+						var sq2 = floor.grid[sq.x + d[0]][sq.y + d[1]];
+						if (lessHeat(sq2.heat, rh)) {
 							rh = sq2.heat;
 							fdi = di;
 						}
-					};
+					}
 					setAction(Goto(fdi));
 
 				case BCoward:
@@ -148,35 +133,34 @@ class Bad extends Ent {
 					for (di in moveList) {
 						var d = Cs.DIR[di];
 						var sq2 = floor.grid[sq.x + d[0]][sq.y + d[1]];
-						if (sq2.heat > rh || sq2.heat == null) {
+						if (moreHeat(sq2.heat, rh)) {
 							rh = sq2.heat;
 							fdi = di;
 						}
-					};
+					}
 					setAction(Goto(fdi));
 			}
 		}
+	}
 
-		/*
-			if( moveList.length>0 && Std.random(3)>0 ){
-				setAction( Goto(moveList[Std.random(moveList.length)]) );
+	// comparisons of the original with null heats (AS2: null < n and n < null are false, null was the "else" case)
+	static inline function lessHeat(h:Null<Int>, rh:Null<Int>) {
+		return rh == null || (h != null && h < rh);
+	}
 
-			}
-		 */
+	static inline function moreHeat(h:Null<Int>, rh:Null<Int>) {
+		return h == null || (rh != null && h > rh);
 	}
 
 	// --- TYPE ---
-	public function setType(id) {
+	public function setType(id:Int) {
 		bid = id;
 		switch (bid) {
 			case 0: // CACA
-
 				bhMove = BNormal(0.1);
 				bhAtt = BRandom(0.5);
-
 				agility = 1;
 				dodge = 3;
-
 				lifeMax = 2;
 				damageMax = 2;
 				seek = 2;
@@ -185,22 +169,17 @@ class Bad extends Ent {
 				flEatable = true;
 				bhMove = BNormal(0.6);
 				bhAtt = BStick;
-
 				agility = 2;
 				dodge = 2;
-
 				lifeMax = 4;
 				damageMax = 3;
-
 				seek = 3;
 
 			case 2: // INSECT
 				bhMove = BNormal(0.1);
 				bhAtt = BStick;
-
 				agility = 3;
 				dodge = 4;
-
 				damageMax = 2;
 				lifeMax = 2;
 				seek = 10;
@@ -209,23 +188,18 @@ class Bad extends Ent {
 				flUndead = true;
 				bhMove = BNormal(0.5);
 				bhAtt = BStick;
-
 				agility = 3;
 				dodge = 3;
-
 				lifeMax = 3;
 				damageMax = 5;
-
 				seek = 3;
 
 			case 4: // HYDRA
 				flEatable = true;
 				bhMove = BNormal(0.2);
 				bhAtt = BStick;
-
 				agility = 4;
 				dodge = 2;
-
 				damageMin = 2;
 				damageMax = 4;
 				lifeMax = 8;
@@ -235,26 +209,20 @@ class Bad extends Ent {
 				flUndead = true;
 				bhMove = BNormal(0.3);
 				bhAtt = BStick;
-
 				agility = 2;
 				dodge = 1;
-
 				damageMax = 5;
 				lifeMax = 12;
 				seek = 10;
 
 			case 6: // WARRIOR
 				flEatable = true;
-
 				bhMove = BNormal(0.8);
 				bhAtt = BStick;
-
 				agility = 4;
 				dodge = 4;
-
 				damageMin = 2;
 				damageMax = 6;
-
 				lifeMax = 6;
 				seek = 4;
 
@@ -262,13 +230,10 @@ class Bad extends Ent {
 				flUndead = true;
 				bhMove = BNormal(0.2);
 				bhAtt = BStick;
-
 				agility = 3;
 				dodge = 7;
-
 				damageMin = 1;
 				damageMax = 10;
-
 				lifeMax = 5;
 				seek = 5;
 
@@ -278,13 +243,10 @@ class Bad extends Ent {
 				flBad = false;
 				bhMove = BNormal(0);
 				bhAtt = BStick;
-
 				agility = 3;
 				dodge = 3;
-
 				damageMin = 2;
 				damageMax = 5;
-
 				lifeMax = 10;
 				seek = 10;
 
@@ -294,12 +256,10 @@ class Bad extends Ent {
 				flBad = false;
 				bhMove = BNormal(0);
 				bhAtt = BStick;
-
 				agility = 4;
 				dodge = 6;
 				damageMin = 1;
 				damageMax = 3;
-
 				lifeMax = 3;
 				seek = 10;
 
@@ -308,47 +268,20 @@ class Bad extends Ent {
 	}
 
 	//
-	override function attach():ASprite {
-		root = sq.dm.empty(Square.DP_ACTOR);
-		var rootroot = root.createEmptyMovieClip();
-		var shade = rootroot.attachMovie("mcBadShade");
-		shade._x = KadoKadeoManager.S(0.5);
-		shade._y = KadoKadeoManager.I(14);
-		skin = rootroot.attachMovie("mcBad" + (bid + 1));
-		if (flChaos) {
-			Filt.glow(root, KadoKadeoManager.I(4), 2, 0xFFFFFF);
-			Filt.glow(root, KadoKadeoManager.I(2), 4, 0xAA00FF);
-		}
-
-		var dieMask = root.createEmptyMovieClip();
-		dieMask._visible = false;
-		dieMask.getGraphics()
-			.beginFill(0xFFFFFF, 0.5)
-			.drawCircle(0, 0, KadoKadeoManager.I(12))
-			.drawRect(KadoKadeoManager.I(-11), KadoKadeoManager.I(-40), KadoKadeoManager.I(24), KadoKadeoManager.I(40))
-			.endFill();
-		root._totalframes = 10;
-		root.removeOnFrame = 10;
-		root.onFrame.set(2, function() {
-			dieMask._visible = true;
-			root.mask = dieMask;
-			root._y += KadoKadeoManager.I(11);
-		});
-		root.onFrame.set(3, () -> root._y += KadoKadeoManager.I(32));
-		root.onFrame.set(4, () -> root._y += KadoKadeoManager.I(53));
-		root.onFrame.set(5, () -> root._y += KadoKadeoManager.I(74));
-		root.onFrame.set(6, () -> root._y += KadoKadeoManager.I(96));
-		root.onFrame.set(7, () -> root._y += KadoKadeoManager.I(117));
-		root.onFrame.set(8, () -> root._y += KadoKadeoManager.I(138));
-		root.onFrame.set(9, () -> root._y += KadoKadeoManager.I(159));
-
-		return root;
+	override function bodyName() {
+		return "bad" + bid;
 	}
 
-	override function setDirection(di) {
-		direction = di;
-		if (skin != null)
-			skin.gotoAndStop(direction + 1);
+	override function bodyFrame() {
+		return direction + 1;
+	}
+
+	override function attach() {
+		super.attach();
+		if (flChaos) {
+			Filt.glow(root, 8, 2, 0xFFFFFF);
+			Filt.glow(root, 4, 4, 0xAA00FF);
+		}
 	}
 
 	//
@@ -363,18 +296,25 @@ class Bad extends Ent {
 				}
 			}
 			// SCORE
-			var sc = KKApi.cmult(KKApi.const(bid + 1), Cs.SCORE_MONSTER);
+			var sc = (bid + 1) * Cs.SCORE_MONSTER;
 			KadoKadeoManager.kkm.addScore(sc);
-			sq.fxScore(KKApi.val(sc) + "");
+			sq.fxScore(sc);
 		}
-		root._visible = false;
-		var c = attach();
-		c.gotoAndPlay(2);
+		// the clip plays its "die" frames (sinks into the floor) then removes itself
+		if (root != null) {
+			if (body != null)
+				body.removeMovieClip();
+			var mc = root.attachMovie("badDie" + bid, "smc", 1);
+			mc.removeOnFrame = mc._totalframes;
+			mc.play();
+		}
+		root = null;
+		body = null;
 
 		super.die();
 	}
 
-	public function getDrop() {
+	public function getDrop():Null<Int> {
 		switch (bid) {
 			case 0:
 				if (Seed.random(2) == 0)
@@ -385,7 +325,6 @@ class Bad extends Ent {
 			case 4:
 				if (Seed.random(10) == 0)
 					return 29; // HYDRA -> TELEPORT
-			// case 5:  if( Std.random(10)==0 ) return 0;	// ZOMBI -> OEIL
 			case 6:
 				if (Seed.random(100) == 0)
 					return 8; // WARRIOR -> KATANA
@@ -428,13 +367,13 @@ class Bad extends Ent {
 	}
 
 	//
-	public function getTrgList(sq) {
+	public function getTrgList(sq:Square):Array<Int> {
 		var a = [];
 		var di = 0;
 		for (d in Cs.DIR) {
-			var next = floor.grid[sq.x + d[0]][sq.y + d[1]];
-			if (next.ent != null) {
-				if (flBad && ((next.ent.flGood || flChaos)))
+			var next = floor.getSquare(sq.x + d[0], sq.y + d[1]);
+			if (next != null && next.ent != null) {
+				if (flBad && (next.ent.flGood || flChaos))
 					a.push(di);
 				if (flGood && next.ent.flBad)
 					a.push(di);
@@ -444,24 +383,3 @@ class Bad extends Ent {
 		return a;
 	}
 }
-/*
-
-
-
-
-
-	enum AttackBehaviour {
-	ABRandom(c:Float);
-	ABStick;
-	ABCoward;
-	}
-	enum MoveBehaviour {
-	ABFollow;
-	ABRandom(c:Float);
-	}
-
-
-
-
-
- */

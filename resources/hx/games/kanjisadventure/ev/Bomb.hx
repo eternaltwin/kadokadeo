@@ -1,10 +1,7 @@
 package kanjisadventure.ev;
 
-import kanjisadventure.*;
-
 class Bomb extends Event {
 	var grid:Array<Array<Bool>>;
-
 	var flames:Array<Array<Int>>;
 
 	public function new() {
@@ -30,8 +27,8 @@ class Bomb extends Event {
 			for (d in Cs.DIR) {
 				var nx = p[0] + d[0];
 				var ny = p[1] + d[1];
-				var sq = Game.me.cfl.grid[nx][ny];
-				if (grid[nx][ny] && sq.isGround()) {
+				var sq = Game.me.cfl.getSquare(nx, ny);
+				if (sq != null && grid[nx][ny] && sq.isGround()) {
 					grid[nx][ny] = false;
 					flames.push([nx, ny]);
 					sq.fxFlame();

@@ -1,8 +1,6 @@
 package kanjisadventure;
 
-import common_haxe_avm1.kac.ProtectedInt;
-import kanjisadventure.Protocol;
-import mt.bumdum.Lib;
+import kanjisadventure.ent.Bad;
 
 class Ent {
 	var flDamage:Bool;
@@ -19,44 +17,66 @@ class Ent {
 
 	public var direction:Int;
 
-	public var damageMin:ProtectedInt;
-	public var damageMax:ProtectedInt;
-	public var armor:ProtectedInt;
-	public var lifeMax:ProtectedInt;
-	public var life:ProtectedInt;
+	public var damageMin:Int;
+	public var damageMax:Int;
+	public var armor:Int;
+	public var lifeMax:Int;
+	public var life:Int;
 
-	public var agility:ProtectedInt;
-	public var dodge:ProtectedInt;
-	public var damage:ProtectedInt;
-	public var coef:Float;
+	public var agility:Int;
+	public var dodge:Int;
+	public var damage:Null<Int>;
 
-	public var strikeId:Int;
+	public var strikeId:Null<Int>;
 
 	public var floor:Floor;
 	public var sq:Square;
 
 	public var action:Action;
 
+	// clip of the original, attached in the square "host" (it stays in the square it leaves while it moves)
 	public var root:ASprite;
-	public var anim:ASprite;
+	public var host:Square;
+	// its "smc" child, moved by the attacks
+	public var body:ASprite;
+
+	// rest position of "smc" in the original clip (the attack code leaves it at (12, 16))
+	var restX:Float;
+	var restY:Float;
+	var bodyX:Float;
+	var bodyY:Float;
+	// walk cycle frame of the clip ("anim" of the original, only the hero has one)
+	var animFrame:Int;
+	var animFrames:Int;
 
 	public function new() {
-		damage = new ProtectedInt(0);
-		damageMin = new ProtectedInt(1);
-		damageMax = new ProtectedInt(1);
-		armor = new ProtectedInt(0);
-		agility = new ProtectedInt(3);
-		dodge = new ProtectedInt(4);
-		lifeMax = new ProtectedInt(3);
-		life = new ProtectedInt(lifeMax.get());
+		flDamage = false;
+		flDeath = false;
+		flDoubleDamage = false;
+		flFreeze = false;
+		flBad = false;
+		flGood = false;
+		flTrader = false;
+		damageMin = 1;
+		damageMax = 1;
+		armor = 0;
+		agility = 3;
+		dodge = 4;
+		lifeMax = 3;
+		restX = 12;
+		restY = 16;
+		bodyX = 0;
+		bodyY = 0;
+		animFrame = 1;
+		animFrames = 0;
 	}
 
 	public function init() {
-		life = new ProtectedInt(lifeMax.get());
+		life = lifeMax;
 		setDirection(1);
 	}
 
-	public function setFloor(fl) {
+	public function setFloor(fl:Floor) {
 		if (floor != null)
 			floor.ents.remove(this);
 		floor = fl;
@@ -77,23 +97,25 @@ class Ent {
 	public function checkMove() {}
 
 	// ACTION
-	public function setAction(ac) {
+	public function setAction(ac:Action) {
 		action = ac;
 		if (ac != null) {
 			Game.me.work.push(this);
 			Game.me.active.remove(this);
-			switch (action) {
-				case Goto(dir):
-					initMove(dir);
-				case Attack(dir):
-					initAttack(dir);
-			}
 		} else {
 			Game.me.work.remove(this);
 		}
+
+		switch (action) {
+			case Goto(dir):
+				initMove(dir);
+			case Attack(dir):
+				initAttack(dir);
+			case null:
+		}
 	}
 
-	public function update(coef) {
+	public function update(coef:Float) {
 		if (flDeath) {
 			setAction(null);
 			return;
@@ -103,11 +125,12 @@ class Ent {
 				move(dir, coef);
 			case Attack(dir):
 				attack(dir, coef);
+			case null:
 		}
 	}
 
 	// MOVE
-	function initMove(di) {
+	function initMove(di:Null<Int>) {
 		if (di == null)
 			return;
 		var d = Cs.DIR[di];
@@ -116,6 +139,7 @@ class Ent {
 		if (di == 1) {
 			display();
 			root._y -= Cs.CS;
+			root.updateState();
 		}
 
 		if (getHeroDist() <= Game.me.huntMax)
@@ -124,7 +148,7 @@ class Ent {
 		setDirection(di);
 	}
 
-	function move(di, coef:Float) {
+	function move(di:Null<Int>, coef:Float) {
 		if (di == null)
 			return;
 		var c = coef;
@@ -134,13 +158,10 @@ class Ent {
 		root._x = c * d[0] * Cs.CS;
 		root._y = c * d[1] * Cs.CS;
 
-		if (anim != null) {
-			var fr = anim._currentframe;
-			if (fr == anim._totalframes)
-				fr = 1;
-			else
-				fr++;
-			anim.gotoAndStop(fr);
+		if (animFrames > 0) {
+			animFrame = animFrame == animFrames ? 1 : animFrame + 1;
+			if (body != null)
+				body.gotoAndStop(animFrame);
 		}
 
 		if (coef == 1) {
@@ -152,7 +173,7 @@ class Ent {
 	}
 
 	// ATTACK
-	function initAttack(di) {
+	function initAttack(di:Int) {
 		setDirection(di);
 	}
 
@@ -160,66 +181,73 @@ class Ent {
 		var d = Cs.DIR[di];
 		var trg = floor.grid[sq.x + d[0]][sq.y + d[1]].ent;
 
-		if (!flDamage && trg != null) {
+		if (!flDamage) {
 			flDamage = true;
 
 			// DODGE
-			var c = agility.get() / trg.dodge.get();
-			damage.set(-1);
-			if (Seed.rand() < c) {
-				damage = getDamage();
-				damage -= trg.armor.get();
-				if (damage.get() < 0)
-					damage = 0;
-			}
+			damage = null;
+			if (trg == null) {
+				// the target is gone (killed by an ally): the original rolled against NaN
+				Seed.rand();
+			} else {
+				var c = agility / trg.dodge;
+				if (Seed.rand() < c) {
+					damage = getDamage();
+					damage -= trg.armor;
+					if (damage < 0)
+						damage = 0;
+				}
 
-			trg.fxDamage(damage.get());
-			if (damage.get() >= 0) {
-				trg.fxStrike(strikeId, di);
-				trg.hurt(damage.get());
-			}
+				trg.fxDamage(damage);
+				if (damage != null) {
+					trg.fxStrike(strikeId, di);
+					trg.hurt(damage);
+				}
 
-			if (Game.me.hero == this) {
-				if (damage.get() > 0)
-					Game.me.log("Vous infligez " + damage.get() + " dégât(s) à " + trg.getName() + ".");
-				else if (damage.get() == 0)
-					Game.me.log(trg.getName() + " encaisse votre attaque sans broncher.");
-				else
-					Game.me.log(trg.getName() + " évite votre coup.");
-			}
-			if (Game.me.hero == trg) {
-				if (damage.get() > 0)
-					Game.me.log(getName() + " vous inflige " + damage.get() + " dégât(s).");
-				else if (damage.get() == 0)
-					Game.me.log(getName() + " ne parvient pas à vous blesser.");
-				else
-					Game.me.log("Vous esquivez l'attaque de " + getName() + ".");
+				if (Game.me.hero == this) {
+					if (damage != null && damage > 0)
+						Game.me.log("Vous infligez " + damage + " dégat(s) à " + trg.getName() + ".");
+					else if (damage == 0)
+						Game.me.log(trg.getName() + " encaisse votre attaque sans broncher.");
+					else
+						Game.me.log(trg.getName() + " évite votre coups.");
+				}
+				if (Game.me.hero == trg) {
+					if (damage != null && damage > 0)
+						Game.me.log(getName() + " vous inflige " + damage + " dégat(s).");
+					else if (damage == 0)
+						Game.me.log(getName() + " ne parvient pas a vous blesser.");
+					else
+						Game.me.log("Vous esquivez l'attaque de " + getName() + ".");
+				}
 			}
 		}
 
 		var c = Math.max(1 - coef * 1.5, 0);
-		var d = Cs.DIR[di];
+		var cx = 12;
+		var cy = 16;
+		var dc = 4;
+		setBodyPos(cx + c * d[0] * dc, cy + c * d[1] * dc);
 
-		var cx = 0;
-		var cy = 0;
-
-		var dc = KadoKadeoManager.I(4);
-		root._x = cx + c * d[0] * dc;
-		root._y = cy + c * d[1] * dc;
-
-		if (damage.get() > 0 && trg != null && trg.root != null) {
-			var sens = trg.root._x > cx ? -1 : 1;
-			trg.root._x = cx + c * KadoKadeoManager.I(6) * sens;
-			Col.setPercentColor(trg.root, (1 - coef) * 100, 0xFF0000);
-		} else {
-			// var n = Math.sin(coef*3.14);
-			// trg.root._x = cx+n*d[0]*16;
-			// trg.root._y = cy+n*d[1]*16;
+		if (damage != null && damage > 0 && trg != null && trg.body != null) {
+			var sens = trg.bodyX + trg.restX > cx ? -1 : 1;
+			trg.setBodyPos(cx + c * 6 * sens, trg.bodyY + trg.restY);
+			Col.setPercentColor(trg.body, (1 - coef) * 100, 0xFF0000);
 		}
 
 		if (coef == 1) {
 			flDamage = false;
 			setAction(null);
+		}
+	}
+
+	// position of "smc" in the clip of the original (1x units)
+	public function setBodyPos(px:Float, py:Float) {
+		bodyX = px - restX;
+		bodyY = py - restY;
+		if (body != null) {
+			body._x = KadoKadeoManager.S(bodyX);
+			body._y = KadoKadeoManager.S(bodyY);
 		}
 	}
 
@@ -230,95 +258,38 @@ class Ent {
 	}
 
 	//
-	public function hurt(n) {
+	public function hurt(n:Null<Int>) {
 		if (n == null)
 			return;
 		life -= n;
 		if (n > 0 && Game.me.hero == this) {
 			Game.me.fxFlash(0xFF0000);
 		}
-		if (life.get() <= 0) {
+		if (life <= 0) {
 			life = 0;
 			die();
 		}
 	}
 
-	public function fxDamage(n:Int) {
+	public function fxDamage(n:Null<Int>) {
 		var mc = floor.dm.empty(Square.DP_FX);
-		var tf = mc.initTextField("tf", {
-			font: 'tahoma',
-			size: 30,
-			color: 0xFFFFFF,
-			align: "center",
-		});
-		var compt = 5;
-		mc._totalframes = 14;
-		mc.onFrame.set(1, () -> {});
-		mc.onFrame.set(2, () -> mc._y -= KadoKadeoManager.I(5));
-		mc.onFrame.set(3, () -> mc._y -= KadoKadeoManager.I(6));
-		mc.onFrame.set(4, () -> mc._y -= KadoKadeoManager.I(7));
-		mc.onFrame.set(5, () -> mc._y -= KadoKadeoManager.I(9));
-		mc.onFrame.set(6, () -> mc._y -= KadoKadeoManager.I(10));
-		mc.onFrame.set(7, () -> mc._y -= KadoKadeoManager.I(11));
-		mc.onFrame.set(8, () -> mc._y += KadoKadeoManager.I(12));
-		mc.onFrame.set(9, () -> mc._y += KadoKadeoManager.I(30));
-		mc.onFrame.set(10, function() {
-			mc._xscale = mc._yscale = 100;
-		});
-		mc.onFrame.set(11, function() {
-			mc._xscale = mc._yscale = 77;
-			if (compt-- > 0) {
-				mc.gotoAndPlay(10);
-			}
-		});
-		mc.onFrame.set(12, function() {
-			mc._y += KadoKadeoManager.I(1);
-			mc._xscale = mc._yscale = 55;
-		});
-		mc.onFrame.set(13, function() {
-			mc._y -= KadoKadeoManager.I(1);
-			mc._xscale = mc._yscale = 31;
-		});
-		mc.onFrame.set(14, function() {
-			mc._xscale = mc._yscale = 8;
-		});
-		mc.removeOnFrame = mc._totalframes;
-		mc.play();
-
-		mc._x = (x + 0.5) * Cs.CS; //*0.5;
-		mc._y = (y + 0.5) * Cs.CS; // + b.y;
-		var str = n + "";
-		var col = 0xFF0000;
-		if (n == -1) {
-			col = 0;
-			str = "miss";
-		}
-
-		Filt.glow(mc, KadoKadeoManager.I(2), 4, col);
-		tf.text = str;
+		var top = root != null ? root.getLocalBounds().y : -Cs.CS;
+		new LossPart(mc, (x + 0.5) * Cs.CS, (y + 0.5) * Cs.CS + top, n == null ? "miss" : Std.string(n), n == null ? 0x000000 : 0xFF0000);
 	}
 
-	public function fxStrike(id, di) {
+	public function fxStrike(id:Null<Int>, di:Int) {
 		if (id == null)
 			return;
 		var mc = sq.dm.attach("mcStrike" + (id + 1), Square.DP_FX);
-		mc.play();
-		switch (id) {
-			case 0:
-				mc.removeOnFrame = 5;
-			case 1 | 2 | 3:
-				mc.removeOnFrame = 6;
-			case 4:
-				mc.removeOnFrame = 4;
-		}
 		mc._x = Cs.CS * 0.5;
 		mc._y = Cs.CS * 0.5;
-		// if( di!=0 )mc._xscale*=-1;
 		mc._rotation = di * 90;
+		mc.removeOnFrame = mc._totalframes;
+		mc.play();
 	}
 
 	public function getDamage() {
-		var dmg = damageMin.get() + Seed.random(1 + damageMax.get() - damageMin.get());
+		var dmg = damageMin + Seed.random(1 + damageMax - damageMin);
 		if (flDoubleDamage)
 			dmg *= 2;
 		return dmg;
@@ -329,13 +300,13 @@ class Ent {
 		kill();
 	}
 
-	public function setPos(x, y) {
+	public function setPos(x:Int, y:Int) {
 		this.x = x;
 		this.y = y;
 		setSquare(floor.grid[x][y]);
 	}
 
-	public function setSquare(square) {
+	public function setSquare(square:Square) {
 		if (sq != null && sq.ent == this)
 			sq.ent = null;
 		sq = square;
@@ -346,62 +317,81 @@ class Ent {
 	public function display() {
 		if (root != null)
 			root.removeMovieClip();
+		// a new clip: its walk cycle starts again
+		animFrame = 1;
+		bodyX = 0;
+		bodyY = 0;
 		attach();
-		setDirection(direction);
+		refreshBody();
 		if (flFreeze) {
-			Filt.grey(untyped this.skin, 1, 0, {r: 0, g: 150, b: 210});
+			Filt.grey(root, 1, 0, {r: 0, g: 150, b: 210});
 		}
 	}
 
-	function attach():ASprite {
-		root = sq.dm.attach("mcEnt", Square.DP_ACTOR);
-		return root;
+	function attach() {
+		host = sq;
+		root = sq.dm.empty(Square.DP_ACTOR);
+		body = null;
 	}
 
-	function setDirection(di) {
+	// animation and frame of the "smc" clip
+	function bodyName():String {
+		return "";
+	}
+
+	function bodyFrame():Int {
+		return 1;
+	}
+
+	function refreshBody() {
+		if (root == null)
+			return;
+		if (body != null)
+			body.removeMovieClip();
+		body = root.attachMovie(bodyName(), "smc", 1);
+		body.gotoAndStop(bodyFrame());
+		body._x = KadoKadeoManager.S(bodyX);
+		body._y = KadoKadeoManager.S(bodyY);
+	}
+
+	function setDirection(di:Int) {
 		direction = di;
-		if (root != null) {
-			root.gotoAndStop(direction + 1);
-		}
+		animFrame = 1;
+		refreshBody();
 	}
 
 	// TOOLS
-	public function getHeroDist() {
+	public function getHeroDist():Int {
 		var dx = Math.abs(sq.x - Game.me.hero.sq.x);
 		var dy = Math.abs(sq.y - Game.me.hero.sq.y);
-		return dx + dy;
+		return Std.int(dx + dy);
 	}
 
-	public function getNearBads(ray) {
-		var list:Array<kanjisadventure.ent.Bad> = [];
+	public function getNearBads(ray:Int):Array<Bad> {
+		var list:Array<Bad> = [];
 		for (dx in 0...ray * 2 + 1) {
 			for (dy in 0...ray * 2 + 1) {
-				var x = x + dx - ray;
-				var y = y + dy - ray;
-				if (floor.grid[x] == null || floor.grid[x][y] == null)
-					continue;
-				var ent = floor.grid[x][y].ent;
-				if (ent != null && ent.flBad)
-					list.push(cast ent);
+				var b = floor.getBad(x + dx - ray, y + dy - ray);
+				if (b != null)
+					list.push(b);
 			}
 		}
 		return list;
 	}
 
-	public function getNearestBad(min, max) {
+	public function getNearestBad(min:Int, max:Int):Ent {
 		var trg:Ent = null;
 		var dmax = 99;
 		for (d in Cs.DIR) {
 			for (i in 1...max) {
-				var x = x + i * d[0];
-				var y = y + i * d[1];
-				var sq = floor.grid[x][y];
-				if (!sq.isGround() || (i < min && sq.ent != null && sq.ent.flBad))
+				var sq = floor.getSquare(x + i * d[0], y + i * d[1]);
+				var e = sq != null ? sq.ent : null;
+				var bad = e != null && e.flBad;
+				if (sq == null || !sq.isGround() || (i < min && bad))
 					break;
-				if (sq.ent != null && sq.ent.flGood != true && (i < dmax || (sq.ent.flBad && trg.flBad != true))) {
-					trg = sq.ent;
+				if ((i < dmax || (bad && (trg == null || !trg.flBad))) && e != null && !e.flGood) {
+					trg = e;
 					dmax = i;
-					// trace("="+sq.ent);
 					break;
 				}
 				if (i == dmax)
@@ -411,17 +401,14 @@ class Ent {
 		return trg;
 	}
 
-	public function getNearFreeList() {
+	public function getNearFreeList():Array<Square> {
 		var list = [];
 		var ray = 1;
 		for (dx in 0...ray * 2 + 1) {
 			for (dy in 0...ray * 2 + 1) {
-				var x = x + dx - ray;
-				var y = y + dy - ray;
-				var sq = floor.grid[x][y];
-				if (sq.ent == null && sq.isGround())
+				var sq = floor.getSquare(x + dx - ray, y + dy - ray);
+				if (sq != null && sq.ent == null && sq.isGround())
 					list.push(sq);
-				// if( ent.flBad )list.push( cast ent);
 			}
 		}
 		return list;
@@ -439,5 +426,51 @@ class Ent {
 			root.removeMovieClip();
 		floor.ents.remove(this);
 		sq.ent = null;
+	}
+}
+
+// "mcLoss": damage / "miss" text over an actor
+class LossPart extends mt.bumdum.Sprite {
+	var holder:ASprite;
+	var frame:Int;
+	var compt:Int;
+
+	public function new(mc:ASprite, px:Float, py:Float, str:String, col:Int) {
+		super(mc);
+		holder = root.createEmptyMovieClip("smc", 1);
+		var t = Txt.make(KadoKadeoManager.S(Data.TEXT_LOSS[3]), Txt.TAHOMA, "center", col, 4);
+		t.y = KadoKadeoManager.S(Data.TEXT_LOSS[1]);
+		t.text = str;
+		holder.addChild(t);
+		x = px;
+		y = py;
+		frame = 1;
+		compt = 0;
+		showFrame();
+		updatePos();
+		root.updateState();
+	}
+
+	override function update() {
+		frame++;
+		// frame 9: compt = 5 / frame 11: if (compt-- > 0) gotoAndPlay(_currentframe - 1) / frame 14: removeMovieClip()
+		if (frame == 9)
+			compt = 5;
+		if (frame == 11 && compt-- > 0)
+			frame = 10;
+		if (frame >= 14) {
+			kill();
+			return;
+		}
+		showFrame();
+		super.update();
+	}
+
+	function showFrame() {
+		var r = Data.LOSS[frame - 1];
+		holder._x = KadoKadeoManager.S(r[0]);
+		holder._y = KadoKadeoManager.S(r[1]);
+		holder._xscale = r[2] * 100;
+		holder._yscale = r[3] * 100;
 	}
 }

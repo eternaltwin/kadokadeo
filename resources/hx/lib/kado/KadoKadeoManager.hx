@@ -651,6 +651,13 @@ class KadoKadeoManager extends Application {
 		}
 	}
 
+	// a game turns the touch joystick off while one of its menus is tapped
+	public function setTouchJoystickEnabled(enabled:Bool):Void {
+		if (touchOverlay != null) {
+			touchOverlay.setJoystickEnabled(enabled);
+		}
+	}
+
 	public function getTouchJoystickState():Null<TouchJoystickState> {
 		if (touchOverlay == null) {
 			return null;

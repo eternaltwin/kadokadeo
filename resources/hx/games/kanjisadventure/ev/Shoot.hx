@@ -1,19 +1,15 @@
 package kanjisadventure.ev;
 
-import kanjisadventure.*;
-import mt.bumdum.Lib;
-
 class Shoot extends Event {
 	public var shot:ASprite;
 
 	var trg:Ent;
 	var ent:Ent;
 
-	public var dmg:Int;
-
+	public var dmg:Null<Int>;
 	public var bhl:Array<Int>;
 
-	public function new(e, t, ?d) {
+	public function new(e:Ent, t:Ent, ?d:Int) {
 		ent = e;
 		trg = t;
 		dmg = d;
@@ -22,10 +18,10 @@ class Shoot extends Event {
 		var dy = trg.y - ent.y;
 		spc = 0.5 / Math.sqrt(dx * dx + dy * dy);
 
-		shot = Game.me.cfl.dm.attach("mcShot", Floor.DP_FX);
+		// black glow of the original baked in "mcShot"
+		shot = Game.me.cfl.dm.attach("mcShot", kanjisadventure.Floor.DP_FX);
 		shot.stop();
 		shot._x = -10000;
-		Filt.glow(shot, KadoKadeoManager.I(2), 4, 0);
 
 		bhl = [0];
 	}
@@ -34,8 +30,9 @@ class Shoot extends Event {
 		super.update();
 		shot._x = ((trg.x + 0.5) * coef + (ent.x + 0.5) * (1 - coef)) * Cs.CS;
 		shot._y = ((trg.y + 0.5) * coef + (ent.y + 0.5) * (1 - coef)) * Cs.CS;
-
 		shot._rotation += 16;
+		if (coef == 0 || shot._prevState == null || shot._prevState.x < -5000)
+			shot.updateState();
 
 		if (coef == 1) {
 			impact();
@@ -60,7 +57,5 @@ class Shoot extends Event {
 	override function kill() {
 		Game.me.event = null;
 		Game.me.gogogo();
-		// Game.me.checkEvents();
 	}
-
 }

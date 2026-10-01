@@ -77,6 +77,7 @@ class TouchControlsOverlay {
 	var pressedKeys:IntMap<Int> = new IntMap();
 
 	var joystickEnabled:Bool = false;
+	var joystickSuspended:Bool = false;
 	var activeJoystickPointer:Null<Int>;
 	var joyZoneX:Float = 0;
 	var joyZoneY:Float = 0;
@@ -378,7 +379,7 @@ class TouchControlsOverlay {
 			return;
 		}
 
-		if (joystickEnabled && activeJoystickPointer == null && isInJoystickZone(x, y)) {
+		if (joystickEnabled && !joystickSuspended && activeJoystickPointer == null && isInJoystickZone(x, y)) {
 			activeJoystickPointer = evt.pointerId;
 			if (joyDynamic) {
 				setJoystickCenter(x, y);
@@ -790,9 +791,21 @@ class TouchControlsOverlay {
 			}
 		}
 
-		if (joystickEnabled) {
+		if (joystickEnabled && !joystickSuspended) {
 			renderJoystick();
 		}
+	}
+
+	// the game can turn the joystick off for a while (a menu of the game is tapped instead)
+	public function setJoystickEnabled(enabled:Bool):Void {
+		if (!joystickEnabled || joystickSuspended == !enabled) {
+			return;
+		}
+		joystickSuspended = !enabled;
+		if (joystickSuspended && activeJoystickPointer != null) {
+			endJoystick();
+		}
+		render();
 	}
 
 	function renderJoystick():Void {

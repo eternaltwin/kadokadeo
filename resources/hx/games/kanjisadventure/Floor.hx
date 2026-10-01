@@ -1,18 +1,8 @@
 package kanjisadventure;
 
-import pixi.core.graphics.Graphics;
-import mt.DepthManager;
+import kanjisadventure.ent.Bad;
 
 typedef Room = {rx:Int, ry:Int, dif:Int, stair:{x:Int, y:Int}};
-
-class BrushSprite extends ASprite {
-	public var ground:ASprite;
-	public var shade:ASprite;
-	public var wallLight:ASprite;
-	public var walls:Array<ASprite>;
-	public var stairup:ASprite;
-	public var stairdown:ASprite;
-}
 
 class Floor {
 	public static var DP_FX = 2;
@@ -32,19 +22,16 @@ class Floor {
 	public var rooms:Array<Array<Room>>;
 
 	public var ents:Array<Ent>;
-	public var bads:Array<kanjisadventure.ent.Bad>;
+	public var bads:Array<Bad>;
 
-	public var ground:RenderTexture;
-
-	public var brush:BrushSprite;
-
-	var root:ASprite;
-
+	public var root:ASprite;
+	public var ground:ASprite;
 	public var dm:DepthManager;
 
+	// the layout of a floor only depends on the dungeon id
 	public var seed:mt.Rand;
 
-	public function new(id) {
+	public function new(id:Int) {
 		this.id = id;
 		root = Game.me.dm.empty(Game.DP_MAP);
 		dm = new DepthManager(root);
@@ -66,11 +53,8 @@ class Floor {
 		hide();
 	}
 
-	public function update() {}
-
 	// GENERATION
 	public function genGrid() {
-		// haxe.Log.clear();
 		seed = new mt.Rand(Game.me.did + id);
 
 		// GRID
@@ -78,14 +62,13 @@ class Floor {
 		for (x in 0...Cs.XMAX) {
 			grid[x] = [];
 			for (y in 0...Cs.YMAX) {
-				grid[x][y] = new Square(this, x, y);
+				grid[x][y] = new Square(x, y);
 			}
 		}
 
 		var dfl = Game.me.floors[id - 1];
 
 		// STAIR
-		var to = 0;
 		while (true) {
 			rsx = seed.random(Cs.RX);
 			rsy = seed.random(Cs.RY);
@@ -104,16 +87,7 @@ class Floor {
 			}
 		}
 
-		//
-		// while(ents.length>1)ents[seed.random(ents.length)].kill();
-
 		// CORRIDORS
-		//*
-		var srx = 0;
-		var sry = 0;
-		var erx = Cs.RX;
-		var ery = Cs.RY;
-
 		for (rx in 0...Cs.RX) {
 			var x = Cs.WALL + rx * (Cs.RM * 2 + 1) + Cs.RM;
 			var sy = Cs.WALL + Cs.RM;
@@ -134,10 +108,9 @@ class Floor {
 					sq.setType(GROUND);
 			}
 		}
-		//*/
 	}
 
-	public function genRoom(px, py) {
+	public function genRoom(px:Int, py:Int) {
 		var cx = getc(px);
 		var cy = getc(py);
 
@@ -148,7 +121,6 @@ class Floor {
 		var flFirstRoom = px == 1 && py == 1 && id == 0;
 
 		// COULOIR PROBA
-
 		var flCorridor = seed.random(12) == 0 && !flStairUp && !flFirstRoom;
 		if (flCorridor) {
 			rx = 0;
@@ -162,15 +134,13 @@ class Floor {
 
 		// CHECK DOWN
 		var dfl = Game.me.floors[id - 1];
-		var underRoom:Room = null;
-		if (dfl != null && dfl.rooms[px] != null) {
-			underRoom = dfl.rooms[px][py];
-			if (underRoom.stair != null) {
-				rx = underRoom.rx;
-				ry = underRoom.ry;
-				var sq = grid[underRoom.stair.x][underRoom.stair.y];
-				sq.setType(STAIR_DOWN);
-			}
+		var underRoom = dfl != null ? dfl.rooms[px][py] : null;
+		var underStair = underRoom != null && underRoom.stair != null;
+		if (underStair) {
+			rx = underRoom.rx;
+			ry = underRoom.ry;
+			var sq = grid[underRoom.stair.x][underRoom.stair.y];
+			sq.setType(STAIR_DOWN);
 		}
 
 		var room:Room = {
@@ -185,25 +155,13 @@ class Floor {
 		var list = [];
 		for (x in 0...(rx * 2 + 1)) {
 			for (y in 0...(ry * 2 + 1)) {
-				var px = cx + x - rx;
-				var py = cy + y - ry;
-				var sq = grid[px][py];
+				var sq = grid[cx + x - rx][cy + y - ry];
 				if (sq.type == WALL) {
 					sq.setType(GROUND);
 					list.push(sq);
 				}
 			}
 		}
-
-		// CORRIDOR
-		/*
-			var lnk = 0;
-			for( i in 0...2 ){
-				var d = Cs.DIR[0];
-				var nb = rooms[px-d[0]][-d[1]];
-
-			}
-		 */
 
 		if (flCorridor)
 			return;
@@ -217,10 +175,8 @@ class Floor {
 				list2.splice(i--, 1);
 			i++;
 		}
-		if (list2.length == 0) {
-			trace("ERROR LIST2 !");
+		if (list2.length == 0)
 			return;
-		}
 
 		// STAIR_UP
 		if (flStairUp) {
@@ -254,7 +210,7 @@ class Floor {
 		// MONSTER
 		var dif = id + 1;
 		var sum = 0;
-		if ((underRoom != null && underRoom.stair != null) || flFirstRoom || flCorridor || seed.random(12) == 0)
+		if (underStair || flFirstRoom || flCorridor || seed.random(12) == 0)
 			dif = 0;
 		while (sum < dif) {
 			var bid = seed.random(dif - sum);
@@ -262,7 +218,7 @@ class Floor {
 				bid = 7;
 			sum += (bid + 1);
 
-			var bad = new kanjisadventure.ent.Bad(bid);
+			var bad = new Bad(bid);
 			var index = seed.random(list.length);
 			var sq = list[index];
 			list.splice(index, 1);
@@ -273,27 +229,6 @@ class Floor {
 			if (list.length == 0)
 				break;
 		}
-
-		/*
-			var max = 1;
-			while( seed.random(8)==0 )max++;
-			for( i in 0...max ){
-
-
-				list.splice(index,1);
-				var bn = id;
-				if( seed.random(3)==0 )bn++;
-				if( seed.random(3)==0 )bn--;
-				while( seed.random(10)==0 )bn++;
-				if(bn<0)bn=0;
-				if(bn>6)bn=6;
-
-				var bad = new ent.Bad( bn );
-				bad.setFloor(this);
-				bad.setPos(sq.x,sq.y);
-				if(list.length==0)break;
-			}
-		 */
 
 		// TREASURE
 		var max = 0;
@@ -320,39 +255,22 @@ class Floor {
 
 	// DRAW
 	public function draw() {
-		// GROUND
-		ground = RenderTexture.create(Cs.XMAX * Cs.CS, Cs.YMAX * Cs.CS);
-		ground.draw(new Graphics().beginFill(Cs.COL_BG).drawRect(0, 0, Cs.XMAX * Cs.CS, Cs.YMAX * Cs.CS).endFill(), new Matrix());
-
-		// DRAW
-		brush = cast dm.empty(0);
-		brush.ground = brush.attachMovie("mcGround", "mcGround");
-		brush.shade = brush.ground.attachMovie("mcShade", "mcShade");
-		brush.shade._visible = false;
-		brush.stairdown = brush.attachMovie("mcStairUp", "mcStairUp");
-		brush.stairup = brush.attachMovie("mcStairDown", "mcStairDown");
-		brush.walls = [];
-		for (i in 0...16) {
-			brush.walls.push(brush.attachMovie("mcWall" + (i + 1)));
-		}
-		brush.wallLight = brush.attachMovie("mcWallLight", "mcWallLight");
-		brush.wallLight.gotoAndStop(2);
+		ground = dm.empty(DP_GROUND);
+		var g = ground.getGraphics();
+		g.beginFill(Cs.COL_BG);
+		g.drawRect(0, 0, Cs.XMAX * Cs.CS, Cs.YMAX * Cs.CS);
+		g.endFill();
 		for (y in 0...Cs.YMAX) {
 			for (x in 0...Cs.XMAX) {
 				grid[x][y].draw(this);
 			}
 		}
-		brush.removeMovieClip();
-
-		var mc = dm.empty(DP_GROUND);
-		mc.attachBitmap(ground, 0);
 	}
 
 	// TRACK
 	public function buildTracks() {
 		for (x in 0...Cs.XMAX) {
-			for (y in 0...Cs.XMAX) {
-				// grid[x][y].setHeat(null);
+			for (y in 0...Cs.YMAX) {
 				grid[x][y].heat = null;
 			}
 		}
@@ -360,49 +278,60 @@ class Floor {
 		mark(ssq, 0, Game.me.huntMax);
 	}
 
-	public function mark(sq, heat, max) {
-		// sq.setHeat(heat);
+	public function mark(sq:Square, heat:Int, max:Int) {
 		sq.heat = heat;
 		if (heat == max)
 			return;
 		for (d in Cs.DIR) {
-			var nx = sq.x + d[0];
-			var ny = sq.y + d[1];
-			var nsq = grid[nx][ny];
-			if (nsq.isFree() && (nsq.heat == null || nsq.heat > heat + 1)) {
+			var nsq = getSquare(sq.x + d[0], sq.y + d[1]);
+			if (nsq != null && nsq.isFree() && (nsq.heat == null || nsq.heat > heat + 1)) {
 				mark(nsq, heat + 1, max);
 			}
 		}
 	}
 
-	//
+	// a hidden floor leaves the display list: it is not updated with the shown one (faster replay seeking)
+	var holder:ASprite;
+
 	public function show() {
+		if (root.parent == null && holder != null) {
+			holder.addChild(root);
+			root.swapDepths(root.getDepth());
+		}
 		root._visible = true;
 	}
 
 	public function hide() {
 		root._visible = false;
-	}
-
-	//
-	public function getBad(x, y) {
-		var e:kanjisadventure.ent.Bad = cast grid[x][y].ent;
-		if (e.flBad)
-			return e;
-		return null;
-	}
-
-	// SCROLL
-	public function scroll(ent:Ent) {
-		if (ent.root != null) {
-			var parent:ASprite = cast ent.root._parent;
-			root._x = Cs.mcw * 0.5 - (ent.root._x + parent._x);
-			root._y = Cs.mch * 0.5 - (ent.root._y + parent._y);
+		if (root.parent != null) {
+			holder = cast root.parent;
+			holder.removeChild(root);
 		}
 	}
 
-	//
-	public function getc(rx) {
+	public inline function getSquare(x:Int, y:Int):Square {
+		var col = grid[x];
+		return col == null ? null : col[y];
+	}
+
+	public function getBad(x:Int, y:Int):Bad {
+		var sq = getSquare(x, y);
+		if (sq != null && sq.ent != null && sq.ent.flBad)
+			return cast sq.ent;
+		return null;
+	}
+
+	// SCROLL: the entity at the center of the screen
+	public function scroll(ent:Ent, ?snap:Bool) {
+		if (ent.root == null || ent.host == null)
+			return;
+		root._x = Cs.mcw * 0.5 - (ent.root._x + ent.host.root._x);
+		root._y = Cs.mch * 0.5 - (ent.root._y + ent.host.root._y);
+		if (snap)
+			root.updateState();
+	}
+
+	public function getc(rx:Int) {
 		return Cs.WALL + rx * (Cs.RM * 2 + 1) + Cs.RM;
 	}
 }
