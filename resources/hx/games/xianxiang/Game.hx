@@ -1,8 +1,13 @@
 package xianxiang;
 
+import haxe.io.UInt16Array;
 import mt.Timer;
 import mt.DepthManager;
-import common_haxe_avm1.KKApi;
+import common_haxe_avm1.MouseManager;
+import pixi.filters.colormatrix.ColorMatrixFilter;
+import xianxiang.Level.CellPos;
+
+typedef MatchNumber = {mc:ASprite, sub:ASprite, frame:Int, t:Float};
 
 @:expose('GameXianXiang')
 class Game implements kado.GameInterface {
@@ -10,42 +15,86 @@ class Game implements kado.GameInterface {
 
 	var level:Level;
 	var bg_mc:ASprite;
-	var mlist:Array<{mc:ASprite, t:Float}>;
+	var mlist:Array<MatchNumber>;
 
 	var current:Card;
 	var colorTime:Float;
 	var breaks:Array<Card>;
 
 	var path:Array<ASprite>;
+	var pathColor:ColorMatrixFilter;
 
-	// var pathTimer:Float;
+	var hoverCell:CellPos;
+	var bgPressed:Bool;
+	var finished:Bool;
+	var isReplayMode:Bool;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
+		isReplayMode = isReplay;
+		KadoKadeoManager.kkm.replay.init({
+			recordedKeys: new UInt16Array(0),
+			recordInputs: false,
+			recordEvents: true,
+			recordMousePosition: false,
+			recordedMouseButtons: new UInt16Array(0),
+		});
+
 		colorTime = 0;
 		dmanager = new DepthManager(root);
 		bg_mc = dmanager.attach("bg", Const.PLAN_BG);
-		// TO DO
-		// bg_mc.onMouseMove = callback(this, mouseMove);
-		// bg_mc.onRelease = callback(this, release);
 		level = new Level(this);
 		mlist = new Array();
 		breaks = new Array();
-		// pathTimer = 0;
+		path = new Array();
+		bgPressed = false;
+		finished = false;
+
+		// Color.setRGB(0xFF0000) on the path parts blocked by a card
+		pathColor = new ColorMatrixFilter();
+		pathColor.matrix = [
+			0, 0, 0, 0, 1,
+			0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0,
+			0, 0, 0, 1, 0
+		];
 	}
 
-	public function spawn(c, v) {
-		// TO DO
-		/*var m = dmanager.attach("matchNumber" + v, Const.PLAN_MATCH);
-			m._x = c.mc._x + 17;
-			m._y = c.mc._y + 10;
-			m.play();
-			mlist.push({mc: m, t: 1}); */
+	public function spawn(c:Card, v:Int) {
+		var m = dmanager.empty(Const.PLAN_MATCH);
+		m._x = c.mc._x + Const.MATCH_X;
+		m._y = c.mc._y + Const.MATCH_Y;
+		var sub = m.attachMovie("match", "sub", 1);
+		sub.gotoAndStop(v + 1);
+		var n = {
+			mc: m,
+			sub: sub,
+			frame: 0,
+			t: 1.0
+		};
+		showMatchFrame(n);
+		mlist.push(n);
+	}
+
+	function showMatchFrame(m:MatchNumber) {
+		m.sub._xscale = Const.MATCH_SCALE[m.frame] * 100;
+		m.sub._yscale = Const.MATCH_SCALE[m.frame] * 100;
+		m.sub._alpha = Const.MATCH_ALPHA[m.frame] * 100;
 	}
 
 	public function update(delta:Float) {
+		for (event in KadoKadeoManager.kkm.replay.consumeEvents())
+			applyReplayEvent(event);
+
+		if (!finished && !isReplayMode)
+			updateMouse();
+
 		var i = 0;
 		while (i < mlist.length) {
 			var m = mlist[i];
+			if (m.frame < Const.MATCH_SCALE.length - 1) {
+				m.frame++;
+				showMatchFrame(m);
+			}
 			m.t -= Timer.deltaT;
 			if (m.t < 0) {
 				m.mc._alpha -= Timer.tmod * 8;
@@ -57,24 +106,10 @@ class Game implements kado.GameInterface {
 			i++;
 		}
 
-		/*for (p in path) {
-				//			p._alpha = 30+50*Math.abs(Math.sin(pathTimer)) ;
-			}
-			pathTimer += 0.3 */
-
 		colorTime += Timer.tmod / 5;
 		var c = Std.int((Math.sin(colorTime) + 1) * 25);
-		// TO DO
-		/*current.color.setTransform({
-			ra: 100,
-			rb: c,
-			ba: 100,
-			bb: c,
-			ga: 100,
-			gb: c,
-			aa: 100,
-			ab: 0
-		});*/
+		if (current != null)
+			current.setColorOffset(c);
 
 		var i = 0;
 		while (i < breaks.length) {
@@ -88,16 +123,70 @@ class Game implements kado.GameInterface {
 		}
 	}
 
-	function explosion(x, y) {
+	// Only card selection and background release affect gameplay; hover stays local and visual.
+	function updateMouse() {
+		var mx = MouseManager.getX();
+		var my = MouseManager.getY();
+
+		if (MouseManager.isButtonJustPressed(MouseManager.BUTTON_LEFT)) {
+			var c = level.getCardAt(mx, my);
+			bgPressed = (c == null);
+			if (c != null) {
+				recordGridEvent(0, c.x, c.y);
+				cardSelect(c);
+			}
+		}
+
+		if (MouseManager.isButtonJustReleased(MouseManager.BUTTON_LEFT)) {
+			if (bgPressed && level.getCardAt(mx, my) == null && current != null) {
+				recordGridEvent(1, 0, 0);
+				release();
+			}
+			bgPressed = false;
+		}
+
+		if (!finished)
+			mouseMove();
+	}
+
+	function recordGridEvent(kind:Int, x:Int, y:Int) {
+		// The action is applied in this update, so replay it on this same frame.
+		KadoKadeoManager.kkm.replay.recordEvent({k: kind, x: x, y: y}, KadoKadeoManager.kkm.replay.getCurrentFrame());
+	}
+
+	function applyReplayEvent(event:Dynamic) {
+		if (finished || event == null)
+			return;
+		var kind:Null<Int> = Reflect.field(event, "k");
+		var x:Null<Int> = Reflect.field(event, "x");
+		var y:Null<Int> = Reflect.field(event, "y");
+		if (kind == null || x == null || y == null)
+			return;
+		switch (kind) {
+			case 0:
+				if (x >= 0 && x < Const.LVL_WIDTH && y >= 0 && y < Const.LVL_HEIGHT) {
+					var c = level.tbl[x][y];
+					if (c != null)
+						cardSelect(c);
+				}
+			case 1:
+				release();
+			default:
+		}
+	}
+
+	function explosion(x:Float, y:Float) {
 		var fx = dmanager.attach("explosion", Const.PLAN_FX);
 		fx._x = x + Const.CARD_WIDTH / 2;
 		fx._y = y + Const.CARD_HEIGHT / 2;
-		var scale = Std.random(40) + 80;
-		fx._xscale = scale * (Std.random(2) * 2 - 1);
+		var scale = Seed.randomVfx(40) + 80;
+		fx._xscale = scale * (Seed.randomVfx(2) * 2 - 1);
 		fx._yscale = scale;
+		fx.removeOnFrame = Const.EXPLOSION_END_FRAME;
+		fx.play();
 	}
 
-	function cardSelect(c) {
+	function cardSelect(c:Card) {
 		if (current == null) {
 			current = c;
 			colorTime = 0;
@@ -110,53 +199,61 @@ class Game implements kado.GameInterface {
 				breaks.push(c);
 				breaks.push(current);
 				if (!level.canBreak())
-					KKApi.gameOver(level.combis);
+					gameOver();
 			}
-			// TO DO
-			// current.color.reset();
+			current.resetColor();
 			current = null;
 		}
-		mouseMove();
+		clearPath();
+		if (!isReplayMode)
+			mouseMove(true);
 	}
 
 	function release() {
 		if (current != null) {
-			// TO DO
-			// current.color.reset();
+			current.resetColor();
 			current = null;
 			clearPath();
-			mouseMove();
+			if (!isReplayMode)
+				mouseMove(true);
 		}
 	}
 
-	function mouseMove() {
-		// TO DO CODE MODIFIÉ
-		var xm = 0;
-		var ym = 0;
-		// TO DO CODE ORIGINE
-		/*var xm = Std.xmouse() - Const.BASE_X;
-			var ym = Std.ymouse() - Const.BASE_Y; */
-		if (xm < 0 || ym < 0) {
-			activePath(null);
+	function gameOver() {
+		finished = true;
+		KadoKadeoManager.kkm.gameOver(level.combis);
+	}
+
+	function mouseMove(?force:Bool = false) {
+		var cell = getMouseCell();
+		if (!force && sameCell(cell, hoverCell))
 			return;
-		}
+		hoverCell = cell;
+		activePath(cell);
+	}
+
+	function getMouseCell():CellPos {
+		var xm = MouseManager.getX() - Const.BASE_X;
+		var ym = MouseManager.getY() - Const.BASE_Y;
+		if (xm < 0 || ym < 0)
+			return null;
 		var x = Std.int(xm / Const.CARD_WIDTH);
 		var y = Std.int(ym / Const.CARD_HEIGHT);
-		if (x >= Const.LVL_WIDTH || y >= Const.LVL_HEIGHT) {
-			activePath(null);
-			return;
-		}
-		activePath({x: x, y: y});
+		if (x >= Const.LVL_WIDTH || y >= Const.LVL_HEIGHT)
+			return null;
+		return {x: x, y: y};
 	}
 
-	function activePath(target) {
+	function sameCell(a:CellPos, b:CellPos) {
+		if (a == null || b == null)
+			return a == b;
+		return a.x == b.x && a.y == b.y;
+	}
+
+	function activePath(target:CellPos) {
 		clearPath();
 		if (current == null || target == null || (target.x == current.x && target.y == current.y))
 			return;
-		var dx = current.x - target.x;
-		var dy = current.y - target.y;
-
-		var x, y;
 
 		var npath1 = level.pathLength(current, target);
 		var npath2 = level.pathLength(target, current);
@@ -166,21 +263,19 @@ class Game implements kado.GameInterface {
 			tracePath(target, current);
 	}
 
-	function attachPath(x, y, t) {
+	function attachPath(x:Int, y:Int, t:Int) {
 		var s = (level.tbl[x][y] == null) || t >= 3;
 		var p = dmanager.attach("link", Const.PLAN_PATH);
-		p.gotoAndStop(Std.string(t + 1));
+		p.gotoAndStop(t + 1);
 		p._x = Const.BASE_X + (x + 0.5) * Const.CARD_WIDTH;
 		p._y = Const.BASE_Y + (y + 0.5) * Const.CARD_HEIGHT;
-		// TO DO
-		/*var c = new Color(p);
-			if (!s)
-				c.setRGB(0xFF0000); */
+		if (!s)
+			p.filters = [pathColor];
 		path.push(p);
 		return p;
 	}
 
-	function tracePath(c1, c2) {
+	function tracePath(c1:CellPos, c2:CellPos) {
 		var x, y;
 		var p;
 		y = c1.y;
@@ -245,8 +340,8 @@ class Game implements kado.GameInterface {
 	}
 
 	function clearPath() {
-		for (i in 0...path.length) {
-			path[i].removeMovieClip();
+		for (p in path) {
+			p.removeMovieClip();
 		}
 		path = new Array();
 	}

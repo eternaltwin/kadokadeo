@@ -6,7 +6,10 @@ class CardID {
 	public var socle:Int;
 
 	public static function random():CardID {
-		return new CardID(Std.random(3), Std.random(4), Std.random(5));
+		var so = Seed.random(3);
+		var c = Seed.random(4);
+		var sy = Seed.random(5);
+		return new CardID(so, c, sy);
 	}
 
 	function new(so, c, sy) {

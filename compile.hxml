@@ -103,3 +103,6 @@ kanjisadventure.Game
 --next
 --js ./resources/js/games/magmax.js
 magmax.Game
+--next
+--js ./resources/js/games/xianxiang.js
+xianxiang.Game
