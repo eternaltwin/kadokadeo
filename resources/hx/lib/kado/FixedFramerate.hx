@@ -12,6 +12,12 @@ class FixedFramerate {
 		this.update = update;
 	}
 
+	// after a jump of the simulation (replay seek): no catch up, show the last step
+	public function reset():Void {
+		accumulator = 0;
+		alpha = 1;
+	}
+
 	public function onTick(elapsedMS:Float):Void {
 		accumulator += elapsedMS;
 

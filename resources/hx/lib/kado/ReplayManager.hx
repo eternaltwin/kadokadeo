@@ -35,6 +35,8 @@ typedef ReplayFrameRecord = {
 class ReplayManager {
 	public static inline var REPLAY_VERSION:Int = 2;
 	private static inline var MAGIC_HEADER:String = "KADO";
+	// optional trailer (ignored by older readers): number of frames of the game
+	private static inline var MAGIC_LENGTH:String = "LEN";
 	private static inline var FLAG_INPUTS:Int = 1;
 	private static inline var FLAG_EVENTS:Int = 2;
 	private static inline var FLAG_MOUSE_POSITION:Int = 4;
@@ -44,6 +46,8 @@ class ReplayManager {
 
 	private var replayData:Bytes;
 	private var currentFrame:Int = 0;
+	private var totalFrames:Int = -1;
+	private var lastRecordedFrame:Int = 0;
 	private var isRecording:Bool = false;
 	private var isPlaying:Bool = false;
 	private var params:ReplayInitParams;
@@ -135,6 +139,16 @@ class ReplayManager {
 
 	public inline function getCurrentFrame():Int {
 		return currentFrame;
+	}
+
+	// number of frames of the replay being played: -1 if the replay does not say it (older replays)
+	public inline function getTotalFrames():Int {
+		return totalFrames;
+	}
+
+	// last frame with a recorded input or event (the game may go on a bit after it)
+	public inline function getLastRecordedFrame():Int {
+		return lastRecordedFrame;
 	}
 
 	public function beginFrame():Void {
@@ -255,6 +269,8 @@ class ReplayManager {
 		if ((flags & FLAG_MOUSE_BUTTONS) != 0) {
 			writeMouseButtonRecords(output);
 		}
+		output.writeString(MAGIC_LENGTH);
+		writeVarUInt(output, currentFrame);
 		return output.getBytes();
 	}
 
@@ -516,6 +532,16 @@ class ReplayManager {
 		}
 		if (version >= 2 && (flags & FLAG_MOUSE_BUTTONS) != 0) {
 			readMouseButtonRecords(input, replayFrameRecords);
+		}
+		totalFrames = -1;
+		if (data.length - input.position >= MAGIC_LENGTH.length + 1 && input.readString(MAGIC_LENGTH.length) == MAGIC_LENGTH) {
+			totalFrames = readVarUInt(input);
+		}
+		lastRecordedFrame = 0;
+		for (frame in replayFrameRecords.keys()) {
+			if (frame > lastRecordedFrame) {
+				lastRecordedFrame = frame;
+			}
 		}
 		#if debug
 		trace('Decoded replay data');

@@ -56,8 +56,8 @@ class ReplayOverlay extends ASprite {
 		}
 	}
 
-	public function updateElapsed(elapsedMs:Float):Void {
-		timeText.text = "Temps: " + formatElapsed(elapsedMs);
+	public function updateElapsed(elapsedMs:Float, ?totalMs:Float):Void {
+		timeText.text = "Temps: " + formatElapsed(elapsedMs) + (totalMs != null && totalMs > 0 ? " / " + formatElapsed(totalMs) : "");
 	}
 
 	public function setPaused(value:Bool):Void {
