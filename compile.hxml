@@ -106,3 +106,6 @@ magmax.Game
 --next
 --js ./resources/js/games/xianxiang.js
 xianxiang.Game
+--next
+--js ./resources/js/games/elloninthedark.js
+elloninthedark.Game
