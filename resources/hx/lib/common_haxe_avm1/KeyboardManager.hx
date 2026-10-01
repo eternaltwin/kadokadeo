@@ -3,6 +3,14 @@ package common_haxe_avm1;
 import haxe.ds.IntMap;
 import js.html.KeyboardEvent;
 
+// Extra key for a key read by the game: `code` is the physical key (KeyboardEvent.code, independent of the layout:
+// "KeyW" is Z on AZERTY and W on QWERTY), `keyCode` the legacy key code. `key` is the key the game reads.
+typedef KeyAlias = {
+	@:optional var code:String;
+	@:optional var keyCode:Int;
+	var key:Int;
+}
+
 class KeyboardManager {
 	static public inline var BACKSPACE = 8;
 	static public inline var DELETE = 46;
@@ -49,12 +57,27 @@ class KeyboardManager {
 	static public inline var F7 = 118;
 	static public inline var F8 = 119;
 
+	// ZQSD (AZERTY) / WASD (QWERTY): the same physical keys move like the arrows
+	static public var ALIASES_MOVE:Array<KeyAlias> = [
+		{code: "KeyW", key: UP},
+		{code: "KeyA", key: LEFT},
+		{code: "KeyS", key: DOWN},
+		{code: "KeyD", key: RIGHT}
+	];
+	// Enter (main keyboard and keypad) does what Space does
+	static public var ALIASES_ENTER_SPACE:Array<KeyAlias> = [{keyCode: ENTER, key: SPACE}];
+	// Control does what Space does (only for the games that do not read Control themselves)
+	static public var ALIASES_CONTROL_SPACE:Array<KeyAlias> = [{keyCode: CONTROL, key: SPACE}];
+
 	static private var keyState:IntMap<Bool>;
 	static private var justPressed:IntMap<Bool>;
 	static private var frameKeyChanges:Array<{keyCode:Int, isDown:Bool}> = [];
 	static private var isInitialized:Bool = false;
 	static private var inputLocked:Bool = false;
 	static private var pendingOps:Array<{keyCode:Int, isDown:Bool}> = [];
+	static private var aliases:Array<KeyAlias> = [];
+	// game key -> physical keys holding it down (a key mapped on several keys is released with the last one)
+	static private var heldBy:IntMap<Array<String>> = new IntMap();
 
 	static public var lastDown:Int;
 
@@ -70,6 +93,7 @@ class KeyboardManager {
 
 		js.Browser.window.addEventListener("keydown", onKeyDown);
 		js.Browser.window.addEventListener("keyup", onKeyUp);
+		js.Browser.window.addEventListener("blur", onBlur);
 
 		/*window.js.Browser.dEventListener("keydown", function(e) {
 			if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1) {
@@ -79,27 +103,86 @@ class KeyboardManager {
 	}
 
 	static private function onKeyUp(e:KeyboardEvent):Void {
-		if ([SPACE, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT].contains(e.keyCode)) {
+		var targets = keyTargets(e);
+		if (targets.length > 1 || [SPACE, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT].contains(e.keyCode)) {
 			e.preventDefault();
 		}
 		if (inputLocked) {
 			return;
 		}
-		queueKeyOp(e.keyCode, false);
+		var source = physicalKey(e);
+		for (key in targets) {
+			var held = heldBy.get(key);
+			if (held != null) {
+				held.remove(source);
+				if (held.length > 0) {
+					continue;
+				}
+				heldBy.remove(key);
+			}
+			queueKeyOp(key, false);
+		}
 	}
 
 	static private function onKeyDown(e:KeyboardEvent) {
-		if ([SPACE, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT].contains(e.keyCode)) {
+		var targets = keyTargets(e);
+		if (targets.length > 1 || [SPACE, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT].contains(e.keyCode)) {
 			e.preventDefault();
 		}
 		if (inputLocked) {
 			return;
 		}
-		queueKeyOp(e.keyCode, true);
+		var source = physicalKey(e);
+		for (key in targets) {
+			var held = heldBy.get(key);
+			if (held == null) {
+				held = [];
+				heldBy.set(key, held);
+			}
+			if (!held.contains(source)) {
+				held.push(source);
+			}
+			queueKeyOp(key, true);
+		}
+	}
+
+	// window lost the focus: the key releases will not be received
+	static private function onBlur(_:js.html.Event):Void {
+		if (inputLocked) {
+			return;
+		}
+		for (key in heldBy.keys()) {
+			queueKeyOp(key, false);
+		}
+		heldBy = new IntMap();
+	}
+
+	// the key itself and the game keys it is an alias of
+	static private function keyTargets(e:KeyboardEvent):Array<Int> {
+		var out = [e.keyCode];
+		for (a in aliases) {
+			if ((a.code != null && a.code == e.code) || (a.keyCode != null && a.keyCode == e.keyCode)) {
+				if (!out.contains(a.key)) {
+					out.push(a.key);
+				}
+			}
+		}
+		return out;
+	}
+
+	static private inline function physicalKey(e:KeyboardEvent):String {
+		return e.code != null && e.code != "" ? e.code : "key" + e.keyCode;
+	}
+
+	// extra keys of the current game (see KeyAlias), e.g. ALIASES_MOVE.concat(ALIASES_ENTER_SPACE)
+	static public function setAliases(list:Array<KeyAlias>):Void {
+		aliases = list != null ? list : [];
+		heldBy = new IntMap();
 	}
 
 	static public function setInputLocked(value:Bool):Void {
 		inputLocked = value;
+		heldBy = new IntMap();
 		if (value) {
 			pendingOps = [];
 		}
@@ -174,6 +257,7 @@ class KeyboardManager {
 		justPressed = new IntMap();
 		frameKeyChanges = [];
 		pendingOps = [];
+		heldBy = new IntMap();
 		lastDown = 0;
 	}
 

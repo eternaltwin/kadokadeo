@@ -31,7 +31,8 @@ class Game implements kado.GameInterface {
 		],
 	};
 
-	static inline var JOYSTICK_DIGITAL_THRESHOLD = 0.2;
+	// ZQSD / WASD move like the arrows, Enter shoots like Space and Control
+	public static var KEY_ALIASES = KeyboardManager.ALIASES_MOVE.concat(KeyboardManager.ALIASES_ENTER_SPACE);
 
 	public static var DP_INTER = 3;
 	public static var DP_PLAN = 1;
@@ -420,20 +421,9 @@ class Game implements kado.GameInterface {
 			return;
 		}
 
-		var axisX = 0;
-		var axisY = 0;
-		if (joystick.active) {
-			if (joystick.nx <= -JOYSTICK_DIGITAL_THRESHOLD) {
-				axisX = -1;
-			} else if (joystick.nx >= JOYSTICK_DIGITAL_THRESHOLD) {
-				axisX = 1;
-			}
-			if (joystick.ny <= -JOYSTICK_DIGITAL_THRESHOLD) {
-				axisY = -1;
-			} else if (joystick.ny >= JOYSTICK_DIGITAL_THRESHOLD) {
-				axisY = 1;
-			}
-		}
+		// 8 directions snapped by the joystick (with hysteresis: no flicker between two directions)
+		var axisX = joystick.active ? joystick.dirX : 0;
+		var axisY = joystick.active ? joystick.dirY : 0;
 
 		setDirectionalKey(KeyboardManager.LEFT, axisX < 0);
 		setDirectionalKey(KeyboardManager.RIGHT, axisX > 0);

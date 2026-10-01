@@ -26,11 +26,17 @@ typedef TouchButtonConfig = {
 }
 
 typedef TouchJoystickConfig = {
+	// rest position (fraction of the screen)
 	@:optional var x:Float;
 	@:optional var y:Float;
 	@:optional var radius:Float;
 	@:optional var deadZone:Float;
+	// the joystick appears under the finger, anywhere on the left half of the screen
 	@:optional var dynamicCenter:Bool;
+	// the joystick follows the finger when it goes past the edge (default: true with dynamicCenter)
+	@:optional var follow:Bool;
+	// digital directions given in TouchJoystickState.dirX / dirY: 8 (default) or 4
+	@:optional var directions:Int;
 }
 
 typedef TouchSwipeConfig = {

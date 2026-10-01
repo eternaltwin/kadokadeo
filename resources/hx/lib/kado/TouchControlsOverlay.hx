@@ -26,9 +26,13 @@ typedef TouchControlsCallbacks = {
 }
 
 typedef TouchJoystickState = {
+	// analog direction, length 0..1 (0 inside the dead zone)
 	var nx:Float;
 	var ny:Float;
 	var active:Bool;
+	// digital direction (-1, 0, 1), snapped on 8 (or 4) directions with some hysteresis
+	var dirX:Int;
+	var dirY:Int;
 }
 
 private typedef TouchButtonState = {
@@ -90,6 +94,13 @@ class TouchControlsOverlay {
 	var joyRadius:Float = 72;
 	var joyDeadZone:Float = 0.18;
 	var joyDynamic:Bool = false;
+	var joyFollow:Bool = false;
+	var joyRestNormX:Float = 0.18;
+	var joyRestNormY:Float = 0.8;
+	var joyDirections:Int = 8;
+	var joySector:Int = -1;
+	var joyDirX:Int = 0;
+	var joyDirY:Int = 0;
 
 	var swipeEnabled:Bool = false;
 	var swipeLeftAction:Null<String>;
@@ -208,7 +219,9 @@ class TouchControlsOverlay {
 		return {
 			nx: joyInputX,
 			ny: joyInputY,
-			active: joyInputActive
+			active: joyInputActive,
+			dirX: joyDirX,
+			dirY: joyDirY
 		};
 	}
 
@@ -256,9 +269,13 @@ class TouchControlsOverlay {
 			joyRadius = config.radius != null ? config.radius : joyRadius;
 			joyDeadZone = config.deadZone != null ? config.deadZone : joyDeadZone;
 			joyDynamic = config.dynamicCenter == true;
+			joyFollow = config.follow != null ? config.follow : joyDynamic;
+			joyDirections = config.directions == 4 ? 4 : 8;
 			joyBaseNormX = config.x != null ? config.x : joyBaseNormX;
 			joyBaseNormY = config.y != null ? config.y : joyBaseNormY;
 		}
+		joyRestNormX = joyBaseNormX;
+		joyRestNormY = joyBaseNormY;
 	}
 
 	function initSwipe(config:TouchSwipeConfig):Void {
@@ -295,10 +312,18 @@ class TouchControlsOverlay {
 	}
 
 	function layoutJoystick(resetCenter:Bool):Void {
-		joyZoneX = layoutX;
-		joyZoneW = layoutWidth * 0.58;
-		joyZoneH = layoutHeight * 0.58;
-		joyZoneY = layoutY + layoutHeight - joyZoneH;
+		if (joyDynamic) {
+			// floating joystick: the whole left half of the screen
+			joyZoneX = layoutX;
+			joyZoneY = layoutY;
+			joyZoneW = layoutWidth * 0.5;
+			joyZoneH = layoutHeight;
+		} else {
+			joyZoneX = layoutX;
+			joyZoneW = layoutWidth * 0.58;
+			joyZoneH = layoutHeight * 0.58;
+			joyZoneY = layoutY + layoutHeight - joyZoneH;
+		}
 
 		if (resetCenter || activeJoystickPointer == null || !joyDynamic) {
 			joyCenterX = layoutX + layoutWidth * joyBaseNormX;
@@ -578,14 +603,68 @@ class TouchControlsOverlay {
 		joyInputX = 0;
 		joyInputY = 0;
 		joyInputActive = false;
+		joySector = -1;
+		joyDirX = 0;
+		joyDirY = 0;
+		if (joyDynamic) {
+			// back to its rest position
+			joyBaseNormX = joyRestNormX;
+			joyBaseNormY = joyRestNormY;
+			joyCenterX = layoutX + layoutWidth * joyBaseNormX;
+			joyCenterY = layoutY + layoutHeight * joyBaseNormY;
+		}
 		if (callbacks != null && callbacks.onJoystick != null) {
 			callbacks.onJoystick(0, 0, false);
 		}
 	}
 
+	// 8 (or 4) directions; the current one is kept until the finger is clearly in another one
+	static inline var DIRECTION_HYSTERESIS = 0.14; // radians (8 degrees)
+	static var SECTOR_X_8 = [1, 1, 0, -1, -1, -1, 0, 1];
+	static var SECTOR_Y_8 = [0, 1, 1, 1, 0, -1, -1, -1];
+
+	function updateDigitalDirection(dx:Float, dy:Float, active:Bool):Void {
+		if (!active) {
+			joySector = -1;
+			joyDirX = 0;
+			joyDirY = 0;
+			return;
+		}
+		var count = joyDirections == 4 ? 4 : 8;
+		var step = Math.PI * 2 / count;
+		var angle = Math.atan2(dy, dx);
+		var sector = ((Math.round(angle / step) % count) + count) % count;
+		if (joySector >= 0 && joySector != sector) {
+			var diff = angle - joySector * step;
+			while (diff > Math.PI)
+				diff -= Math.PI * 2;
+			while (diff < -Math.PI)
+				diff += Math.PI * 2;
+			if (Math.abs(diff) < step * 0.5 + DIRECTION_HYSTERESIS) {
+				sector = joySector;
+			}
+		}
+		joySector = sector;
+		var i = count == 4 ? sector * 2 : sector;
+		joyDirX = SECTOR_X_8[i];
+		joyDirY = SECTOR_Y_8[i];
+	}
+
+	function moveJoystickCenter(x:Float, y:Float):Void {
+		joyCenterX = clamp(x, layoutX, layoutX + layoutWidth);
+		joyCenterY = clamp(y, layoutY, layoutY + layoutHeight);
+		if (layoutWidth > 0) {
+			joyBaseNormX = (joyCenterX - layoutX) / layoutWidth;
+		}
+		if (layoutHeight > 0) {
+			joyBaseNormY = (joyCenterY - layoutY) / layoutHeight;
+		}
+	}
+
 	function setJoystickCenter(x:Float, y:Float):Void {
-		joyCenterX = clamp(x, layoutX + joyRadius, layoutX + layoutWidth - joyRadius);
-		joyCenterY = clamp(y, layoutY + joyRadius, layoutY + layoutHeight - joyRadius);
+		// exactly under the finger (even near an edge): touching does not move yet
+		joyCenterX = clamp(x, layoutX, layoutX + layoutWidth);
+		joyCenterY = clamp(y, layoutY, layoutY + layoutHeight);
 		if (layoutWidth > 0) {
 			joyBaseNormX = (joyCenterX - layoutX) / layoutWidth;
 		}
@@ -602,21 +681,27 @@ class TouchControlsOverlay {
 		var dx = x - joyCenterX;
 		var dy = y - joyCenterY;
 		var dist = Math.sqrt(dx * dx + dy * dy);
+		if (joyFollow && dist > joyRadius) {
+			// the joystick follows the finger: the finger stays on its edge, in the same direction
+			var pull = (dist - joyRadius) / dist;
+			moveJoystickCenter(joyCenterX + dx * pull, joyCenterY + dy * pull);
+			dx = x - joyCenterX;
+			dy = y - joyCenterY;
+			dist = Math.sqrt(dx * dx + dy * dy);
+		}
 		var clamped = Math.min(dist, joyRadius);
 		var nx = 0.0;
 		var ny = 0.0;
 		var magnitude = joyRadius > 0 ? clamped / joyRadius : 0;
+		// dead zone, then the full range: no jump when leaving the dead zone
+		magnitude = magnitude <= joyDeadZone ? 0 : (magnitude - joyDeadZone) / (1 - joyDeadZone);
 		if (dist > 0) {
 			nx = (dx / dist) * magnitude;
 			ny = (dy / dist) * magnitude;
 		}
-		if (magnitude < joyDeadZone) {
-			nx = 0;
-			ny = 0;
-			magnitude = 0;
-		}
 		nx = Math.max(-1, Math.min(1, nx));
 		ny = Math.max(-1, Math.min(1, ny));
+		updateDigitalDirection(dx, dy, magnitude > 0);
 
 		if (dist > 0) {
 			joyKnobOffsetX = (dx / dist) * clamped;
@@ -706,23 +791,52 @@ class TouchControlsOverlay {
 		}
 
 		if (joystickEnabled) {
-			context.beginPath();
-			context.arc(joyCenterX, joyCenterY, joyRadius, 0, Math.PI * 2);
-			context.fillStyle = "rgba(18,30,38,0.2)";
-			context.fill();
-			context.lineWidth = 2;
-			context.strokeStyle = "rgba(255,255,255,0.5)";
-			context.stroke();
+			renderJoystick();
+		}
+	}
 
-			var knobRadius = joyRadius * 0.45;
+	function renderJoystick():Void {
+		var active = activeJoystickPointer != null;
+		context.save();
+		// at rest: a faint hint of where it is; held: under the finger
+		context.globalAlpha = active ? 1 : 0.55;
+
+		context.beginPath();
+		context.arc(joyCenterX, joyCenterY, joyRadius, 0, Math.PI * 2);
+		context.fillStyle = "rgba(12,24,34,0.3)";
+		context.fill();
+		context.lineWidth = 2;
+		context.strokeStyle = "rgba(255,255,255,0.55)";
+		context.stroke();
+
+		// direction given to the game: its slice of the joystick lights up
+		if (active && joySector >= 0) {
+			var count = joyDirections == 4 ? 4 : 8;
+			var step = Math.PI * 2 / count;
+			var a = joySector * step;
 			context.beginPath();
-			context.arc(joyCenterX + joyKnobOffsetX, joyCenterY + joyKnobOffsetY, knobRadius, 0, Math.PI * 2);
-			context.fillStyle = "rgba(78,136,166,0.48)";
+			context.moveTo(joyCenterX, joyCenterY);
+			context.arc(joyCenterX, joyCenterY, joyRadius, a - step * 0.5, a + step * 0.5);
+			context.closePath();
+			context.fillStyle = "rgba(255,214,90,0.32)";
 			context.fill();
-			context.lineWidth = 2;
-			context.strokeStyle = "rgba(255,255,255,0.7)";
+			context.beginPath();
+			context.arc(joyCenterX, joyCenterY, joyRadius, a - step * 0.5, a + step * 0.5);
+			context.lineWidth = 5;
+			context.lineCap = "round";
+			context.strokeStyle = "rgba(255,214,90,0.95)";
 			context.stroke();
 		}
+
+		var knobRadius = joyRadius * 0.42;
+		context.beginPath();
+		context.arc(joyCenterX + joyKnobOffsetX, joyCenterY + joyKnobOffsetY, knobRadius, 0, Math.PI * 2);
+		context.fillStyle = active ? "rgba(240,248,255,0.85)" : "rgba(240,248,255,0.5)";
+		context.fill();
+		context.lineWidth = 2;
+		context.strokeStyle = "rgba(255,255,255,0.95)";
+		context.stroke();
+		context.restore();
 	}
 
 	function findButtonAt(x:Float, y:Float):Null<Int> {

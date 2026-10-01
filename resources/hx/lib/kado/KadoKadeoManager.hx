@@ -369,6 +369,8 @@ class KadoKadeoManager extends Application {
 	private function beginGame() {
 		common_haxe_avm1.KeyboardManager.clearState();
 		common_haxe_avm1.MouseManager.clearState();
+		// extra keys of the game (ZQSD / WASD, Enter...), see KeyboardManager.KeyAlias
+		common_haxe_avm1.KeyboardManager.setAliases(cast Reflect.field(gameClass, "KEY_ALIASES"));
 		this.replay.start();
 		this.gameRoot = dm.empty(1);
 		replayElapsedMs = 0;
