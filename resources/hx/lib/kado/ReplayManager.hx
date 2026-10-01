@@ -32,8 +32,15 @@ typedef ReplayFrameRecord = {
 	@:optional var mouseButtons:Array<{button:Int, isDown:Bool}>;
 }
 
+// Binary replay: "KADO", version, flags, init params (recorded keys / mouse buttons), then one section per kind of
+// record, and the number of frames of the game ("LEN" trailer, ignored by older readers). Deflated, then base64.
+// Version 3 (written since 2026-10) packs the sections column by column: all the frame gaps, then all the values
+// (deflate finds the repetitions of each column), keys and buttons written as their index in the init params, the
+// mouse position as its move (minus the move of the frame before when the mouse moved on consecutive frames:
+// smooth moves give numbers close to 0). Mouse games give replays about 2 times smaller than with version 2.
+// Versions 1 and 2 (one group per frame: gap, count, values) are still read.
 class ReplayManager {
-	public static inline var REPLAY_VERSION:Int = 2;
+	public static inline var REPLAY_VERSION:Int = 3;
 	private static inline var MAGIC_HEADER:String = "KADO";
 	// optional trailer (ignored by older readers): number of frames of the game
 	private static inline var MAGIC_LENGTH:String = "LEN";
@@ -41,8 +48,12 @@ class ReplayManager {
 	private static inline var FLAG_EVENTS:Int = 2;
 	private static inline var FLAG_MOUSE_POSITION:Int = 4;
 	private static inline var FLAG_MOUSE_BUTTONS:Int = 8;
+	// version 3: the inputs / buttons are written as their code, not as their index in the init params
+	private static inline var FLAG_KEY_CODES:Int = 16;
+	private static inline var FLAG_BUTTON_CODES:Int = 32;
 	private static inline var EVENT_ENCODING_PACKED_GRID:Int = 0;
 	private static inline var EVENT_ENCODING_SERIALIZED:Int = 1;
+	private static inline var DEFLATE_LEVEL:Int = 9;
 
 	private var replayData:Bytes;
 	private var currentFrame:Int = 0;
@@ -52,12 +63,24 @@ class ReplayManager {
 	private var isPlaying:Bool = false;
 	private var params:ReplayInitParams;
 
+	// recording: records by frame
 	private var frameRecords:IntMap<ReplayFrameRecord>;
-	private var replayFrameRecords:IntMap<ReplayFrameRecord>;
+	// playing: the frames that have a record, in order, and the next one to apply
+	private var playFrames:Array<Int>;
+	private var playRecords:Array<ReplayFrameRecord>;
+	private var playCursor:Int = 0;
+	// playing: last mouse position applied
+	private var playMouseX:Int = 0;
+	private var playMouseY:Int = 0;
+	private var hasPlayMouse:Bool = false;
+
 	private var pendingEvents:Array<ReplayEvent>;
 	private var frameEvents:Array<ReplayEvent>;
 	private var trackedKeys:IntMap<Bool>;
+	private var trackedKeyList:Array<Int>;
+	private var trackAllKeys:Bool = true;
 	private var trackedMouseButtons:IntMap<Bool>;
+	private var hasTrackedMouseButtons:Bool = false;
 	private var recordedKeyStates:IntMap<Bool>;
 	private var shouldRecordInputs:Bool = true;
 	private var shouldRecordEvents:Bool = true;
@@ -69,13 +92,14 @@ class ReplayManager {
 	public function new(?replayData:String = null) {
 		this.replayData = parseReplayString(replayData);
 		this.frameRecords = new IntMap();
-		this.replayFrameRecords = new IntMap();
+		this.playFrames = [];
+		this.playRecords = [];
 		this.pendingEvents = [];
 		this.frameEvents = [];
-		this.trackedKeys = new IntMap();
-		this.trackedMouseButtons = new IntMap();
 		this.recordedKeyStates = new IntMap();
 		this.params = defaultParams();
+		refreshTrackedKeys();
+		refreshTrackedMouseButtons();
 
 		if (this.replayData != null) {
 			try {
@@ -83,11 +107,17 @@ class ReplayManager {
 			} catch (e:Dynamic) {
 				trace("Invalid replay data: " + e);
 				this.replayData = null;
+				this.playFrames = [];
+				this.playRecords = [];
 			}
 		}
 	}
 
 	public function init(params:ReplayInitParams):Void {
+		// a replay keeps the params it was recorded with
+		if (this.replayData != null) {
+			return;
+		}
 		this.params = normalizeParams(params);
 		refreshTrackedKeys();
 		refreshTrackedMouseButtons();
@@ -107,6 +137,8 @@ class ReplayManager {
 		recordedKeyStates = new IntMap();
 		hasLastRecordedMouse = false;
 		currentFrame = 0;
+		playCursor = 0;
+		hasPlayMouse = false;
 
 		if (this.replayData != null) {
 			this.isPlaying = true;
@@ -151,12 +183,56 @@ class ReplayManager {
 		return lastRecordedFrame;
 	}
 
+	// keys pressed at least once in the replay being played (in the order of the recorded keys)
+	public function getReplayKeys():Array<Int> {
+		var used = new IntMap<Bool>();
+		var order:Array<Int> = [];
+		for (record in playRecords) {
+			for (input in record.inputs) {
+				if (!used.exists(input.keyCode)) {
+					used.set(input.keyCode, true);
+					order.push(input.keyCode);
+				}
+			}
+		}
+		var keys = [for (k in trackedKeyList) if (used.exists(k)) k];
+		for (k in order) {
+			if (keys.indexOf(k) < 0) {
+				keys.push(k);
+			}
+		}
+		return keys;
+	}
+
+	// mouse buttons pressed at least once in the replay being played
+	public function getReplayMouseButtons():Array<Int> {
+		var buttons:Array<Int> = [];
+		for (record in playRecords) {
+			if (record.mouseButtons != null) {
+				for (change in record.mouseButtons) {
+					if (buttons.indexOf(change.button) < 0) {
+						buttons.push(change.button);
+					}
+				}
+			}
+		}
+		buttons.sort((a, b) -> a - b);
+		return buttons;
+	}
+
+	// mouse position of the player in the replay being played (game pixels), null before the first one
+	public function getReplayMouse():Null<{x:Int, y:Int}> {
+		return hasPlayMouse ? {x: playMouseX, y: playMouseY} : null;
+	}
+
 	public function beginFrame():Void {
 		if (!this.isRecording && !this.isPlaying) {
 			return;
 		}
 
-		frameEvents = [];
+		if (frameEvents.length > 0) {
+			frameEvents = [];
+		}
 
 		if (this.isPlaying) {
 			applyFrame(currentFrame);
@@ -176,7 +252,9 @@ class ReplayManager {
 			captureFrameMousePosition();
 		}
 
-		captureFrameMouseButtons();
+		if (hasTrackedMouseButtons) {
+			captureFrameMouseButtons();
+		}
 
 		if (this.shouldRecordEvents && pendingEvents.length > 0) {
 			var record = getOrCreateFrameRecord(currentFrame);
@@ -214,7 +292,7 @@ class ReplayManager {
 			return;
 		}
 
-		var previous = recordedKeyStates.exists(keyCode) ? recordedKeyStates.get(keyCode) : false;
+		var previous = recordedKeyStates.exists(keyCode);
 		if (previous == isDown) {
 			return;
 		}
@@ -245,6 +323,28 @@ class ReplayManager {
 		output.writeString(MAGIC_HEADER);
 		output.writeByte(REPLAY_VERSION);
 
+		var frames = [for (frameIndex in frameRecords.keys()) frameIndex];
+		frames.sort((a, b) -> a - b);
+		var records = [for (frameIndex in frames) frameRecords.get(frameIndex)];
+
+		// a key or button missing from the init params (none given: every key is recorded) is written as its code
+		var keyIndex = indexTable(params.recordedKeys);
+		var buttonIndex = indexTable(params.recordedMouseButtons);
+		for (record in records) {
+			for (input in record.inputs) {
+				if (keyIndex != null && !keyIndex.exists(input.keyCode)) {
+					keyIndex = null;
+				}
+			}
+			if (record.mouseButtons != null) {
+				for (change in record.mouseButtons) {
+					if (buttonIndex != null && !buttonIndex.exists(change.button)) {
+						buttonIndex = null;
+					}
+				}
+			}
+		}
+
 		var flags = 0;
 		if (params.recordInputs)
 			flags |= FLAG_INPUTS;
@@ -254,20 +354,24 @@ class ReplayManager {
 			flags |= FLAG_MOUSE_POSITION;
 		if (params.recordedMouseButtons.length > 0)
 			flags |= FLAG_MOUSE_BUTTONS;
+		if (keyIndex == null)
+			flags |= FLAG_KEY_CODES;
+		if (buttonIndex == null)
+			flags |= FLAG_BUTTON_CODES;
 		output.writeByte(flags);
 
 		writeInitParams(output, flags);
 		if ((flags & FLAG_INPUTS) != 0) {
-			writeInputRecords(output);
+			writeInputRecords(output, frames, records, keyIndex);
 		}
 		if ((flags & FLAG_EVENTS) != 0) {
-			writeEventRecords(output);
+			writeEventRecords(output, frames, records);
 		}
 		if ((flags & FLAG_MOUSE_POSITION) != 0) {
-			writeMousePositionRecords(output);
+			writeMousePositionRecords(output, frames, records);
 		}
 		if ((flags & FLAG_MOUSE_BUTTONS) != 0) {
-			writeMouseButtonRecords(output);
+			writeMouseButtonRecords(output, frames, records, buttonIndex);
 		}
 		output.writeString(MAGIC_LENGTH);
 		writeVarUInt(output, currentFrame);
@@ -278,18 +382,24 @@ class ReplayManager {
 		if (replayData != null) {
 			return null;
 		}
-		var compressed = externs.Pako.deflate(bytesToUint8Array(encodeBinaryData()));
+		var compressed = externs.Pako.deflate(bytesToUint8Array(encodeBinaryData()), {level: DEFLATE_LEVEL});
 		return Base64.encode(uint8ArrayToBytes(compressed));
 	}
 
 	private function applyFrame(frameIndex:Int):Void {
-		var record = replayFrameRecords.get(frameIndex);
-		if (record == null) {
+		while (playCursor < playFrames.length && playFrames[playCursor] < frameIndex) {
+			playCursor++;
+		}
+		if (playCursor >= playFrames.length || playFrames[playCursor] != frameIndex) {
 			return;
 		}
+		var record = playRecords[playCursor++];
 
 		if (record.mousePosition != null) {
-			common_haxe_avm1.MouseManager.setPosition(record.mousePosition.x, record.mousePosition.y);
+			playMouseX = record.mousePosition.x;
+			playMouseY = record.mousePosition.y;
+			hasPlayMouse = true;
+			common_haxe_avm1.MouseManager.setPosition(playMouseX, playMouseY);
 		}
 
 		if (record.mouseButtons != null) {
@@ -310,8 +420,13 @@ class ReplayManager {
 			}
 		}
 
-		for (event in record.events) {
-			frameEvents.push(event);
+		if (record.events.length > 0) {
+			if (frameEvents.length == 0) {
+				frameEvents = [];
+			}
+			for (event in record.events) {
+				frameEvents.push(event);
+			}
 		}
 	}
 
@@ -324,14 +439,11 @@ class ReplayManager {
 			recordInput(change.keyCode, change.isDown, currentFrame);
 		}
 
-		for (keyCode in trackedKeys.keys()) {
+		for (keyCode in trackedKeyList) {
 			var isDown = common_haxe_avm1.KeyboardManager.isDown(keyCode);
-			var previous = recordedKeyStates.exists(keyCode) ? recordedKeyStates.get(keyCode) : false;
-			if (previous == isDown) {
-				continue;
+			if (recordedKeyStates.exists(keyCode) != isDown) {
+				recordInput(keyCode, isDown, currentFrame);
 			}
-
-			recordInput(keyCode, isDown, currentFrame);
 		}
 	}
 
@@ -356,10 +468,6 @@ class ReplayManager {
 	}
 
 	private function captureFrameMouseButtons():Void {
-		if (!trackedMouseButtons.keys().hasNext()) {
-			return;
-		}
-
 		var record:ReplayFrameRecord = null;
 		for (change in common_haxe_avm1.MouseManager.getFrameButtonChanges()) {
 			if (!trackedMouseButtons.exists(change.button)) {
@@ -380,12 +488,8 @@ class ReplayManager {
 		return getOrCreateFrameRecordFromMap(frameRecords, frameIndex);
 	}
 
-	private function shouldTrackKey(keyCode:Int):Bool {
-		if (trackedKeys.keys().hasNext()) {
-			return trackedKeys.exists(keyCode);
-		}
-
-		return true;
+	private inline function shouldTrackKey(keyCode:Int):Bool {
+		return trackAllKeys || trackedKeys.exists(keyCode);
 	}
 
 	private function writeInitParams(output:BytesOutput, flags:Int):Void {
@@ -404,51 +508,49 @@ class ReplayManager {
 		}
 	}
 
-	private function writeInputRecords(output:BytesOutput):Void {
-		var frameIndexes = [for (frameIndex in frameRecords.keys()) frameIndex];
-		frameIndexes.sort((a, b) -> a - b);
-		frameIndexes = frameIndexes.filter((frameIndex) -> {
-			var record = frameRecords.get(frameIndex);
-			return record != null && record.inputs.length > 0;
-		});
-
-		writeVarUInt(output, frameIndexes.length);
+	// version 3 section of changes: count, frame gaps, then values
+	private function writeChanges(output:BytesOutput, frames:Array<Int>, values:Array<Int>):Void {
+		writeVarUInt(output, frames.length);
 		var previousFrame = 0;
-		for (frameIndex in frameIndexes) {
-			var record = frameRecords.get(frameIndex);
-			if (record == null || record.inputs.length == 0) {
-				continue;
-			}
-
+		for (frameIndex in frames) {
 			writeVarUInt(output, frameIndex - previousFrame);
 			previousFrame = frameIndex;
-
-			writeVarUInt(output, record.inputs.length);
-			for (input in record.inputs) {
-				var packed = (input.keyCode << 1) | (input.isDown ? 1 : 0);
-				writeVarUInt(output, packed);
-			}
+		}
+		for (value in values) {
+			writeVarUInt(output, value);
 		}
 	}
 
-	private function writeEventRecords(output:BytesOutput):Void {
-		var frameIndexes = [for (frameIndex in frameRecords.keys()) frameIndex];
-		frameIndexes.sort((a, b) -> a - b);
-		frameIndexes = frameIndexes.filter((frameIndex) -> {
-			var record = frameRecords.get(frameIndex);
-			return record != null && record.events.length > 0;
-		});
+	private function writeInputRecords(output:BytesOutput, frames:Array<Int>, records:Array<ReplayFrameRecord>, keyIndex:IntMap<Int>):Void {
+		var changeFrames:Array<Int> = [];
+		var values:Array<Int> = [];
+		for (i in 0...frames.length) {
+			for (input in records[i].inputs) {
+				changeFrames.push(frames[i]);
+				values.push(((keyIndex != null ? keyIndex.get(input.keyCode) : input.keyCode) << 1) | (input.isDown ? 1 : 0));
+			}
+		}
+		writeChanges(output, changeFrames, values);
+	}
 
-		writeVarUInt(output, frameIndexes.length);
+	private function writeEventRecords(output:BytesOutput, frames:Array<Int>, records:Array<ReplayFrameRecord>):Void {
+		var count = 0;
+		for (record in records) {
+			if (record.events.length > 0) {
+				count++;
+			}
+		}
+
+		writeVarUInt(output, count);
 		var previousFrame = 0;
-		for (frameIndex in frameIndexes) {
-			var record = frameRecords.get(frameIndex);
-			if (record == null || record.events.length == 0) {
+		for (i in 0...frames.length) {
+			var record = records[i];
+			if (record.events.length == 0) {
 				continue;
 			}
 
-			writeVarUInt(output, frameIndex - previousFrame);
-			previousFrame = frameIndex;
+			writeVarUInt(output, frames[i] - previousFrame);
+			previousFrame = frames[i];
 
 			writeVarUInt(output, record.events.length);
 			for (event in record.events) {
@@ -457,54 +559,67 @@ class ReplayManager {
 		}
 	}
 
-	private function writeMousePositionRecords(output:BytesOutput):Void {
-		var frameIndexes = [for (frameIndex in frameRecords.keys()) frameIndex];
-		frameIndexes.sort((a, b) -> a - b);
-		frameIndexes = frameIndexes.filter((frameIndex) -> {
-			var record = frameRecords.get(frameIndex);
-			return record != null && record.mousePosition != null;
-		});
-
-		writeVarUInt(output, frameIndexes.length);
-		var previousFrame = 0;
-		for (frameIndex in frameIndexes) {
-			var record = frameRecords.get(frameIndex);
-			if (record == null || record.mousePosition == null) {
-				continue;
+	private function writeMousePositionRecords(output:BytesOutput, frames:Array<Int>, records:Array<ReplayFrameRecord>):Void {
+		var changeFrames:Array<Int> = [];
+		var xs:Array<Int> = [];
+		var ys:Array<Int> = [];
+		for (i in 0...frames.length) {
+			if (records[i].mousePosition != null) {
+				changeFrames.push(frames[i]);
+				xs.push(records[i].mousePosition.x);
+				ys.push(records[i].mousePosition.y);
 			}
+		}
 
+		writeVarUInt(output, changeFrames.length);
+		var previousFrame = 0;
+		for (frameIndex in changeFrames) {
 			writeVarUInt(output, frameIndex - previousFrame);
 			previousFrame = frameIndex;
-			writeVarUInt(output, record.mousePosition.x);
-			writeVarUInt(output, record.mousePosition.y);
+		}
+		writeMoves(output, changeFrames, xs);
+		writeMoves(output, changeFrames, ys);
+	}
+
+	// one coordinate of the mouse: its move, minus the move of the frame before when it moved then too
+	private function writeMoves(output:BytesOutput, frames:Array<Int>, values:Array<Int>):Void {
+		var previous = 0;
+		var previousMove = 0;
+		for (i in 0...values.length) {
+			var move = values[i] - previous;
+			var consecutive = i > 0 && frames[i] - frames[i - 1] == 1;
+			writeZigZag(output, consecutive ? move - previousMove : move);
+			previousMove = consecutive ? move : 0;
+			previous = values[i];
 		}
 	}
 
-	private function writeMouseButtonRecords(output:BytesOutput):Void {
-		var frameIndexes = [for (frameIndex in frameRecords.keys()) frameIndex];
-		frameIndexes.sort((a, b) -> a - b);
-		frameIndexes = frameIndexes.filter((frameIndex) -> {
-			var record = frameRecords.get(frameIndex);
-			return record != null && record.mouseButtons != null && record.mouseButtons.length > 0;
-		});
+	private function readMoves(input:BytesInput, frames:Array<Int>):Array<Int> {
+		var values:Array<Int> = [];
+		var previous = 0;
+		var previousMove = 0;
+		for (i in 0...frames.length) {
+			var consecutive = i > 0 && frames[i] - frames[i - 1] == 1;
+			var move = readZigZag(input) + (consecutive ? previousMove : 0);
+			previousMove = consecutive ? move : 0;
+			previous += move;
+			values.push(previous);
+		}
+		return values;
+	}
 
-		writeVarUInt(output, frameIndexes.length);
-		var previousFrame = 0;
-		for (frameIndex in frameIndexes) {
-			var record = frameRecords.get(frameIndex);
-			if (record == null || record.mouseButtons == null || record.mouseButtons.length == 0) {
-				continue;
-			}
-
-			writeVarUInt(output, frameIndex - previousFrame);
-			previousFrame = frameIndex;
-
-			writeVarUInt(output, record.mouseButtons.length);
-			for (change in record.mouseButtons) {
-				var packed = (change.button << 1) | (change.isDown ? 1 : 0);
-				writeVarUInt(output, packed);
+	private function writeMouseButtonRecords(output:BytesOutput, frames:Array<Int>, records:Array<ReplayFrameRecord>, buttonIndex:IntMap<Int>):Void {
+		var changeFrames:Array<Int> = [];
+		var values:Array<Int> = [];
+		for (i in 0...frames.length) {
+			if (records[i].mouseButtons != null) {
+				for (change in records[i].mouseButtons) {
+					changeFrames.push(frames[i]);
+					values.push(((buttonIndex != null ? buttonIndex.get(change.button) : change.button) << 1) | (change.isDown ? 1 : 0));
+				}
 			}
 		}
+		writeChanges(output, changeFrames, values);
 	}
 
 	private function decodeBinaryData(data:Bytes):Void {
@@ -515,37 +630,55 @@ class ReplayManager {
 		}
 
 		var version = input.readByte();
-		if (version != 1 && version != REPLAY_VERSION) {
+		if (version < 1 || version > REPLAY_VERSION) {
 			throw "Unsupported replay version " + version;
 		}
 		var flags = input.readByte();
 
+		var target = new IntMap<ReplayFrameRecord>();
 		readInitParams(input, flags, version);
+		var keys = (flags & FLAG_KEY_CODES) != 0 ? null : params.recordedKeys;
+		var buttons = (flags & FLAG_BUTTON_CODES) != 0 ? null : params.recordedMouseButtons;
 		if ((flags & FLAG_INPUTS) != 0) {
-			readInputRecords(input, replayFrameRecords);
+			if (version >= 3) {
+				readChanges(input, target, keys, (record, code, isDown) -> record.inputs.push({keyCode: code, isDown: isDown}));
+			} else {
+				readInputRecords(input, target);
+			}
 		}
 		if ((flags & FLAG_EVENTS) != 0) {
-			readEventRecords(input, replayFrameRecords);
+			readEventRecords(input, target);
 		}
 		if (version >= 2 && (flags & FLAG_MOUSE_POSITION) != 0) {
-			readMousePositionRecords(input, replayFrameRecords);
+			if (version >= 3) {
+				readMousePositionChanges(input, target);
+			} else {
+				readMousePositionRecords(input, target);
+			}
 		}
 		if (version >= 2 && (flags & FLAG_MOUSE_BUTTONS) != 0) {
-			readMouseButtonRecords(input, replayFrameRecords);
+			if (version >= 3) {
+				readChanges(input, target, buttons, (record, code, isDown) -> {
+					if (record.mouseButtons == null) {
+						record.mouseButtons = [];
+					}
+					record.mouseButtons.push({button: code, isDown: isDown});
+				});
+			} else {
+				readMouseButtonRecords(input, target);
+			}
 		}
 		totalFrames = -1;
 		if (data.length - input.position >= MAGIC_LENGTH.length + 1 && input.readString(MAGIC_LENGTH.length) == MAGIC_LENGTH) {
 			totalFrames = readVarUInt(input);
 		}
-		lastRecordedFrame = 0;
-		for (frame in replayFrameRecords.keys()) {
-			if (frame > lastRecordedFrame) {
-				lastRecordedFrame = frame;
-			}
-		}
+
+		playFrames = [for (frame in target.keys()) frame];
+		playFrames.sort((a, b) -> a - b);
+		playRecords = [for (frame in playFrames) target.get(frame)];
+		lastRecordedFrame = playFrames.length > 0 ? playFrames[playFrames.length - 1] : 0;
 		#if debug
-		trace('Decoded replay data');
-		trace(replayFrameRecords);
+		trace('Decoded replay data: version ' + version + ', ' + data.length + ' bytes, ' + playFrames.length + ' frames with records');
 		#end
 	}
 
@@ -581,6 +714,43 @@ class ReplayManager {
 		this.shouldRecordInputs = this.params.recordInputs;
 		this.shouldRecordEvents = this.params.recordEvents;
 		this.shouldRecordMousePosition = this.params.recordMousePosition;
+	}
+
+	// version 3 section of key / button changes; table: codes by index (null: the values are the codes)
+	private function readChanges(input:BytesInput, target:IntMap<ReplayFrameRecord>, table:UInt16Array,
+			add:(ReplayFrameRecord, Int, Bool) -> Void):Void {
+		var count = readVarUInt(input);
+		var frames = readFrames(input, count);
+		for (i in 0...count) {
+			var packed = readVarUInt(input);
+			var code = packed >> 1;
+			if (table != null) {
+				if (code >= table.length) {
+					throw "Replay index out of range " + code;
+				}
+				code = table[code];
+			}
+			add(getOrCreateFrameRecordFromMap(target, frames[i]), code, (packed & 1) == 1);
+		}
+	}
+
+	private function readFrames(input:BytesInput, count:Int):Array<Int> {
+		var frames:Array<Int> = [];
+		var frameIndex = 0;
+		for (i in 0...count) {
+			frameIndex += readVarUInt(input);
+			frames.push(frameIndex);
+		}
+		return frames;
+	}
+
+	private function readMousePositionChanges(input:BytesInput, target:IntMap<ReplayFrameRecord>):Void {
+		var frames = readFrames(input, readVarUInt(input));
+		var xs = readMoves(input, frames);
+		var ys = readMoves(input, frames);
+		for (i in 0...frames.length) {
+			getOrCreateFrameRecordFromMap(target, frames[i]).mousePosition = {x: xs[i], y: ys[i]};
+		}
 	}
 
 	private function readInputRecords(input:BytesInput, target:IntMap<ReplayFrameRecord>):Void {
@@ -654,7 +824,8 @@ class ReplayManager {
 		var k = intFieldOrNull(event, "k");
 		var x = intFieldOrNull(event, "x");
 		var y = intFieldOrNull(event, "y");
-		var canPack = k != null && x != null && y != null && k >= 0 && k < 4 && x >= 0 && x < 8 && y >= 0 && y < 8;
+		var canPack = k != null && x != null && y != null && k >= 0 && k < 4 && x >= 0 && x < 8 && y >= 0 && y < 8
+			&& Reflect.fields(event).length == 3;
 
 		if (canPack) {
 			output.writeByte(EVENT_ENCODING_PACKED_GRID);
@@ -739,6 +910,16 @@ class ReplayManager {
 		}
 	}
 
+	// signed numbers: 0, -1, 1, -2, 2... -> 0, 1, 2, 3, 4...
+	private inline function writeZigZag(output:BytesOutput, value:Int):Void {
+		writeVarUInt(output, value >= 0 ? value << 1 : ((-value) << 1) - 1);
+	}
+
+	private inline function readZigZag(input:BytesInput):Int {
+		var v = readVarUInt(input);
+		return (v & 1) == 0 ? v >>> 1 : -((v + 1) >>> 1);
+	}
+
 	private function intFieldOrNull(event:ReplayEvent, field:String):Null<Int> {
 		var value:Dynamic = Reflect.field(event, field);
 		if (value == null) {
@@ -753,11 +934,26 @@ class ReplayManager {
 		return intValue;
 	}
 
+	private function indexTable(list:UInt16Array):IntMap<Int> {
+		var table = new IntMap<Int>();
+		for (i in 0...list.length) {
+			if (!table.exists(list[i])) {
+				table.set(list[i], i);
+			}
+		}
+		return table;
+	}
+
 	private function refreshTrackedKeys():Void {
 		trackedKeys = new IntMap();
+		trackedKeyList = [];
 		for (i in 0...params.recordedKeys.length) {
-			trackedKeys.set(params.recordedKeys[i], true);
+			if (!trackedKeys.exists(params.recordedKeys[i])) {
+				trackedKeys.set(params.recordedKeys[i], true);
+				trackedKeyList.push(params.recordedKeys[i]);
+			}
 		}
+		trackAllKeys = trackedKeyList.length == 0;
 	}
 
 	private function refreshTrackedMouseButtons():Void {
@@ -765,6 +961,7 @@ class ReplayManager {
 		for (i in 0...params.recordedMouseButtons.length) {
 			trackedMouseButtons.set(params.recordedMouseButtons[i], true);
 		}
+		hasTrackedMouseButtons = params.recordedMouseButtons.length > 0;
 	}
 
 	private function parseReplayString(?input:String):Bytes {
@@ -785,20 +982,12 @@ class ReplayManager {
 		}
 	}
 
-	private inline function bytesToUint8Array(data:Bytes):Uint8Array {
-		var out = new Uint8Array(data.length);
-		for (i in 0...data.length) {
-			out[i] = data.get(i);
-		}
-		return out;
+	private static inline function bytesToUint8Array(data:Bytes):Uint8Array {
+		return new Uint8Array(data.getData(), 0, data.length);
 	}
 
-	private inline function uint8ArrayToBytes(data:Uint8Array):Bytes {
-		var out = Bytes.alloc(data.length);
-		for (i in 0...data.length) {
-			out.set(i, data[i]);
-		}
-		return out;
+	private static inline function uint8ArrayToBytes(data:Uint8Array):Bytes {
+		return Bytes.ofData(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
 	}
 
 	private function normalizeParams(input:ReplayInitParams):ReplayInitParams {

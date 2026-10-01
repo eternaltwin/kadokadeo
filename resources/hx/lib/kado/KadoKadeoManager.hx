@@ -41,8 +41,7 @@ class KadoKadeoManager extends Application {
 	var gameOverScreen:GameOver = null;
 	var endScene:EndScene = null;
 	var bottomBar:BottomBar = null;
-	var replayOverlay:ReplayOverlay = null;
-	var seekBar:ReplaySeekBar = null;
+	var replayHud:ReplayHud = null;
 	var touchOverlay:TouchControlsOverlay = null;
 
 	var runDetails:Dto.RunDTO;
@@ -53,15 +52,30 @@ class KadoKadeoManager extends Application {
 	var params:GameParams;
 	var hasPhysicsCrashReported:Bool = false;
 	var simulationTimeMs:Float = mt.Timer.oldTime;
-	var replayElapsedMs:Float = 0;
 	var replaySpeed:Float = 1;
 	var replayPaused:Bool = false;
 
-	// replay seeking: the game is restarted when going back, then simulated without waiting up to the wanted frame
-	// (a few ms per rendered frame, the game is seen fast forwarding)
-	static inline var SEEK_BUDGET_MS = 28;
+	// replay seeking: the game is restarted when going back, then simulated without waiting up to the wanted frame.
+	// Meanwhile the last picture stays on screen and the game is not drawn (nor interpolated): all the time of
+	// a page frame goes to the simulation; a small progress ring appears only if the seek lasts.
+	static inline var SEEK_BUDGET_MS = 80;
+	static inline var SEEK_RING_DELAY_MS = 150;
 
 	var seekTarget:Null<Int> = null;
+	var seekFrom:Int = 0;
+	var seekStartMs:Float = 0;
+	var seekFreeze:pixi.core.sprites.Sprite = null;
+	var seekRing:pixi.core.graphics.Graphics = null;
+
+	// anti cheat: a game cannot be paused by hiding its tab (switching tab or app, the browser stops drawing it):
+	// back to the tab, the time spent hidden is played at once, without being drawn (like a replay seek; the
+	// inputs were released when the page lost the focus). Games where the time does not matter can keep the
+	// pause with `public static var ALLOW_PAUSE = true;` in their class.
+	static inline var CATCH_UP_MAX_MS = 20 * 60 * 1000;
+
+	var hiddenAtMs:Null<Float> = null;
+	var hiddenAtFrame:Int = 0;
+	var catchUpTarget:Null<Int> = null;
 	var seedHash:Int = 0;
 
 	var fpsText:pixi.core.text.Text;
@@ -123,12 +137,14 @@ class KadoKadeoManager extends Application {
 
 		untyped Ticker.system.add(systemTicker);
 		this.ticker.add(() -> {
-			updateSeekBar();
-			updateGraphics(ff.alpha);
+			updateReplayHud();
+			if (seekTarget == null && catchUpTarget == null)
+				updateGraphics(ff.alpha);
 			updateDebugFpsDisplay();
 			pixi.core.Pixi.tweenManager.update();
 		});
 		this.replay = new ReplayManager(params?.replayData);
+		Browser.document.addEventListener("visibilitychange", onVisibilityChange);
 	}
 
 	function systemTicker(delta:Float) {
@@ -136,12 +152,18 @@ class KadoKadeoManager extends Application {
 			runSeek();
 			return;
 		}
-		var speed = replayPaused ? 0 : replaySpeed;
-		if (replayPaused) {
+		if (catchUpTarget != null) {
+			runCatchUp();
+			return;
+		}
+		// speed and pause only for a replay being watched (a live game cannot be slowed down or paused)
+		var watching = replay.isPlayingReplay();
+		var paused = watching && replayPaused;
+		if (paused) {
 			common_haxe_avm1.KeyboardManager.beginFrame();
 			common_haxe_avm1.MouseManager.beginFrame();
 		}
-		ff.onTick(untyped Ticker.system.elapsedMS * speed);
+		ff.onTick(untyped Ticker.system.elapsedMS * (paused ? 0 : watching ? replaySpeed : 1));
 	}
 
 	function initDebugFpsDisplay():Void {
@@ -211,10 +233,6 @@ class KadoKadeoManager extends Application {
 				gameRoot.update();
 				game.update(dt);
 				replay.endFrame();
-				if (replayOverlay != null && replay.isPlayingReplay()) {
-					replayElapsedMs = replay.getCurrentFrame() * FixedFramerate.STEP;
-					replayOverlay.updateElapsed(replayElapsedMs, getReplayLength() * FixedFramerate.STEP);
-				}
 			} else {
 				common_haxe_avm1.KeyboardManager.beginFrame();
 				common_haxe_avm1.MouseManager.beginFrame();
@@ -387,31 +405,23 @@ class KadoKadeoManager extends Application {
 		common_haxe_avm1.KeyboardManager.setAliases(cast Reflect.field(gameClass, "KEY_ALIASES"));
 		this.replay.start();
 		this.gameRoot = dm.empty(1);
-		replayElapsedMs = 0;
 		replayPaused = false;
 		setReplaySpeed(1);
 		var isReplay = this.replay.isPlayingReplay();
 		if (isReplay) {
 			this.gameRoot.interactive = false;
 			this.gameRoot.interactiveChildren = false;
-			if (this.replayOverlay == null) {
-				this.replayOverlay = new ReplayOverlay(setReplaySpeed, setReplayPaused, replaySpeed, replayPaused);
-				this.replayOverlay.x = 12;
-				this.replayOverlay.y = 28;
+			if (this.replayHud == null) {
+				this.replayHud = new ReplayHud(canvas, replay, FixedFramerate.STEP, {
+					seek: seekReplay,
+					setPaused: setReplayPaused,
+					setSpeed: setReplaySpeed,
+					step: stepReplay
+				});
 			}
-			this.replayOverlay.setSpeed(replaySpeed);
-			this.replayOverlay.setPaused(replayPaused);
-			this.replayOverlay.updateElapsed(replayElapsedMs);
-			this.stage.addChild(this.replayOverlay);
-			if (this.seekBar == null) {
-				this.seekBar = new ReplaySeekBar(canvas, FixedFramerate.STEP, seekReplay, () -> setReplayPaused(!replayPaused));
-			}
-			this.stage.addChild(this.seekBar);
+			this.stage.addChild(this.replayHud);
 		} else {
-			if (this.replayOverlay != null && this.replayOverlay.parent != null) {
-				this.replayOverlay.parent.removeChild(this.replayOverlay);
-			}
-			destroySeekBar();
+			destroyReplayHud();
 		}
 
 		this.score = 0;
@@ -434,9 +444,11 @@ class KadoKadeoManager extends Application {
 	public function reset(?preserveScore:Bool = false):Void {
 		replay.stop();
 		seekTarget = null;
-		destroySeekBar();
+		catchUpTarget = null;
+		hiddenAtMs = null;
+		unfreezeSeek();
+		destroyReplayHud();
 		destroyTouchOverlay();
-		replayElapsedMs = 0;
 		replayPaused = false;
 		replaySpeed = 1;
 		if (!preserveScore) {
@@ -484,14 +496,6 @@ class KadoKadeoManager extends Application {
 			bottomBar = null;
 		}
 
-		if (replayOverlay != null) {
-			if (replayOverlay.parent != null) {
-				replayOverlay.parent.removeChild(replayOverlay);
-			}
-			replayOverlay.destroy({children: true});
-			replayOverlay = null;
-		}
-
 		if (gameRoot != null) {
 			if (gameRoot.parent != null) {
 				gameRoot.parent.removeChild(gameRoot);
@@ -510,9 +514,6 @@ class KadoKadeoManager extends Application {
 		var wasInReplay = this.replay.isPlayingReplay();
 		this.replay.stop();
 		destroyTouchOverlay();
-		if (this.replayOverlay != null && this.replayOverlay.parent != null) {
-			this.replayOverlay.parent.removeChild(this.replayOverlay);
-		}
 		// this.stage.removeChildren();
 		gameOverScreen = new GameOver(() -> {
 			if (wasInReplay) {
@@ -536,6 +537,10 @@ class KadoKadeoManager extends Application {
 			}
 		});
 		this.stage.addChild(gameOverScreen);
+		// the controls of a replay stay usable over the fade (going back to a moment of the replay)
+		if (replayHud != null && wasInReplay) {
+			this.stage.addChild(replayHud);
+		}
 		// trace('Game finished, showing end screen');
 		#if debug
 		trace('Replay data: ' + replay.encodeReplayString());
@@ -548,6 +553,7 @@ class KadoKadeoManager extends Application {
 		destroyDebugFpsDisplay();
 		this.ticker.stop();
 		untyped Ticker.system.remove(systemTicker);
+		Browser.document.removeEventListener("visibilitychange", onVisibilityChange);
 		untyped Ticker.system.stop();
 		this.root = null;
 		super.destroy(removeView);
@@ -566,7 +572,7 @@ class KadoKadeoManager extends Application {
 
 	// go to a frame of the replay being watched (backwards too)
 	public function seekReplay(frame:Int):Void {
-		if (params == null || params.replayData == null || game == null || seekBar == null) {
+		if (params == null || params.replayData == null || game == null || replayHud == null) {
 			return;
 		}
 		var length = getReplayLength();
@@ -579,10 +585,95 @@ class KadoKadeoManager extends Application {
 			if (frame >= length && ended) {
 				return;
 			}
+			freezeSeek();
 			restartReplay();
+		} else {
+			freezeSeek();
 		}
+		seekFrom = replay.getCurrentFrame();
 		seekTarget = frame;
-		seekBar.setSeeking(frame);
+	}
+
+	// one frame forward or back, the replay being paused (forward: simulated and shown without interpolation)
+	public function stepReplay(delta:Int):Void {
+		if (replayHud == null || game == null || seekTarget != null) {
+			return;
+		}
+		setReplayPaused(true);
+		if (delta < 0) {
+			seekReplay(replay.getCurrentFrame() - 1);
+			return;
+		}
+		if (gameOverScreen != null || !replay.isPlayingReplay()) {
+			return;
+		}
+		updatePhysics(FixedFramerate.STEP);
+		if (gameRoot != null) {
+			gameRoot.updateState();
+		}
+	}
+
+	// the picture of the game stays on screen while the replay is simulated up to the wanted frame
+	function freezeSeek():Void {
+		if (seekFreeze == null && root != null) {
+			var r:Dynamic = untyped this.renderer;
+			var tex:pixi.core.textures.Texture = r.generateTexture(root, 1, 1, new pixi.core.math.shapes.Rectangle(0, 0, 600, 600));
+			seekFreeze = new pixi.core.sprites.Sprite(tex);
+			stage.addChildAt(seekFreeze, stage.getChildIndex(root) + 1);
+			seekStartMs = Browser.window.performance.now();
+		}
+		if (gameRoot != null)
+			gameRoot.renderable = false;
+	}
+
+	function unfreezeSeek():Void {
+		if (seekFreeze != null) {
+			if (seekFreeze.parent != null)
+				seekFreeze.parent.removeChild(seekFreeze);
+			seekFreeze.destroy({children: true, texture: true, baseTexture: true});
+			seekFreeze = null;
+		}
+		if (seekRing != null) {
+			if (seekRing.parent != null)
+				seekRing.parent.removeChild(seekRing);
+			seekRing.destroy();
+			seekRing = null;
+		}
+		if (gameRoot != null) {
+			gameRoot.renderable = true;
+			// shown at the reached frame, without interpolation from the frozen picture
+			gameRoot.updateState();
+			gameRoot.updateGraphics(1);
+		}
+	}
+
+	// small ring over the frozen picture, only when the catch up of a hidden tab lasts (the controls of a replay show
+	// the progress of a seek themselves)
+	function updateSeekRing():Void {
+		var target:Null<Int> = seekTarget != null ? seekTarget : catchUpTarget;
+		if (target == null || seekFreeze == null || replayHud != null)
+			return;
+		var elapsed = Browser.window.performance.now() - seekStartMs;
+		if (elapsed < SEEK_RING_DELAY_MS)
+			return;
+		if (seekRing == null) {
+			seekRing = new pixi.core.graphics.Graphics();
+			stage.addChildAt(seekRing, stage.getChildIndex(seekFreeze) + 1);
+		}
+		var span = Math.max(1, target - seekFrom);
+		var p = Math.max(0, Math.min(1, (replay.getCurrentFrame() - seekFrom) / span));
+		var g = seekRing;
+		g.clear();
+		g.beginFill(0x000000, 0.55);
+		g.drawCircle(300, 300, 21);
+		g.endFill();
+		g.lineStyle(4, 0xFFFFFF, 0.3);
+		g.drawCircle(300, 300, 13);
+		if (p > 0) {
+			g.lineStyle(4, 0xFFFFFF, 1);
+			g.moveTo(300, 287);
+			g.arc(300, 300, 13, -Math.PI / 2, -Math.PI / 2 + p * Math.PI * 2);
+		}
 	}
 
 	// the replay starts again from its first frame, without leaving the screen of the game
@@ -612,7 +703,7 @@ class KadoKadeoManager extends Application {
 		replay.stop();
 		Seed.init(seedHash);
 		score = 0;
-		if (bottomBar != null) {
+		if (bottomBar != null && seekFreeze == null) {
 			bottomBar.updateScore(score);
 		}
 		beginGame();
@@ -620,8 +711,68 @@ class KadoKadeoManager extends Application {
 		setReplayPaused(paused);
 	}
 
+	// ANTI CHEAT: NO PAUSE BY HIDING THE TAB
+
+	function canCatchUp():Bool {
+		return runFlow.state == Playing && game != null && gameOverScreen == null && !replay.isPlayingReplay()
+			&& Reflect.field(gameClass, "ALLOW_PAUSE") != true;
+	}
+
+	function onVisibilityChange(_):Void {
+		var now = Browser.window.performance.now();
+		if (Browser.document.hidden) {
+			if (canCatchUp() && hiddenAtMs == null) {
+				hiddenAtMs = now;
+				hiddenAtFrame = replay.getCurrentFrame();
+			}
+			return;
+		}
+		if (hiddenAtMs == null)
+			return;
+		var lost = Math.min(now - hiddenAtMs, CATCH_UP_MAX_MS);
+		hiddenAtMs = null;
+		if (!canCatchUp())
+			return;
+		var target = hiddenAtFrame + Std.int(lost / FixedFramerate.STEP);
+		if (target <= replay.getCurrentFrame())
+			return;
+		if (catchUpTarget == null) {
+			freezeSeek();
+			seekFrom = replay.getCurrentFrame();
+		}
+		catchUpTarget = target;
+	}
+
+	function runCatchUp():Void {
+		var start = Browser.window.performance.now();
+		if (gameRoot != null)
+			gameRoot.renderable = false;
+		while (catchUpTarget != null) {
+			if (!canCatchUp() || replay.getCurrentFrame() >= catchUpTarget) {
+				endCatchUp();
+				return;
+			}
+			updatePhysics(FixedFramerate.STEP);
+			if (Browser.window.performance.now() - start >= SEEK_BUDGET_MS) {
+				return;
+			}
+		}
+	}
+
+	function endCatchUp():Void {
+		catchUpTarget = null;
+		unfreezeSeek();
+		if (bottomBar != null) {
+			bottomBar.updateScore(score);
+		}
+		emitWindowEvent("score", {score: score.get()});
+		ff.reset();
+	}
+
 	function runSeek():Void {
 		var start = Browser.window.performance.now();
+		if (gameRoot != null)
+			gameRoot.renderable = false;
 		while (seekTarget != null) {
 			if (game == null || !replay.isPlayingReplay() || replay.getCurrentFrame() >= seekTarget) {
 				endSeek();
@@ -636,52 +787,51 @@ class KadoKadeoManager extends Application {
 
 	function endSeek():Void {
 		seekTarget = null;
+		unfreezeSeek();
+		if (bottomBar != null) {
+			bottomBar.updateScore(score);
+		}
+		emitWindowEvent("score", {score: score.get()});
 		ff.reset();
-		replayElapsedMs = replay.getCurrentFrame() * FixedFramerate.STEP;
-		if (replayOverlay != null) {
-			replayOverlay.updateElapsed(replayElapsedMs, getReplayLength() * FixedFramerate.STEP);
-		}
-		if (seekBar != null) {
-			seekBar.setSeeking(null);
-		}
 	}
 
-	function updateSeekBar():Void {
-		if (seekBar == null || seekBar.parent == null) {
+	// every picture: the controls of the replay follow it (they draw again only what changed)
+	function updateReplayHud():Void {
+		updateSeekRing();
+		if (replayHud == null || replayHud.parent == null) {
 			return;
 		}
 		var length = getReplayLength();
-		var frame = replay.isPlayingReplay() ? replay.getCurrentFrame() : length;
-		seekBar.setProgress(frame, length, replay.getTotalFrames() > 0);
+		var ended = gameOverScreen != null || !replay.isPlayingReplay();
+		var frame = ended ? length : replay.getCurrentFrame();
+		replayHud.update(frame, length, replay.getTotalFrames() > 0, replayPaused, replaySpeed, seekTarget, ended);
 	}
 
-	function destroySeekBar():Void {
-		if (seekBar != null) {
-			seekBar.dispose();
-			if (seekBar.parent != null) {
-				seekBar.parent.removeChild(seekBar);
+	function destroyReplayHud():Void {
+		if (replayHud != null) {
+			replayHud.dispose();
+			if (replayHud.parent != null) {
+				replayHud.parent.removeChild(replayHud);
 			}
-			seekBar.destroy({children: true});
-			seekBar = null;
+			replayHud.destroy({children: true});
+			replayHud = null;
 		}
 	}
 
 	public function setReplaySpeed(speed:Float):Void {
-		replaySpeed = Math.max(0.1, speed);
-		if (replayOverlay != null) {
-			replayOverlay.setSpeed(replaySpeed);
-		}
+		replaySpeed = Math.max(0.1, Math.min(16, speed));
 	}
 
 	public function setReplayPaused(paused:Bool):Void {
 		replayPaused = paused;
-		if (replayOverlay != null) {
-			replayOverlay.setPaused(replayPaused);
-		}
 	}
 
 	public function addScore(points:Int):Void {
 		score += points;
+		// while a replay seek runs, the score is shown once at the end (no counting on screen)
+		if (seekFreeze != null) {
+			return;
+		}
 		if (bottomBar != null) {
 			bottomBar.updateScore(score);
 		}

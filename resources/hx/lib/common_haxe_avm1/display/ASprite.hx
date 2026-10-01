@@ -512,7 +512,12 @@ class ASprite extends Sprite {
 	}
 
 	public function update() {
-		updateState();
+		// own state only: every ASprite child copies its own when its update() runs just below
+		// (updateState() is recursive: called here, the deepest sprites were copied once per parent)
+		if (_prevState == null) {
+			_prevState = new TransformState(this);
+		}
+		_prevState.copyFrom(_curState);
 		for (i in this.children) {
 			if (Std.is(i, ASprite)) {
 				(cast i).update();

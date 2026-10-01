@@ -157,6 +157,12 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
 - `recordEvent` sans `frameIndex` met en file d'attente pour la frame suivante (comportement normal du manager).
 - Consequence pratique: si une action est enregistree en event, eviter de l'appliquer "tout de suite" en live dans un chemin de code different, sinon live et replay peuvent diverger (timing, trajectoires, score).
 - Le format d'evenement `{k, x, y}` est un exemple et est a adapter suivant le jeu / le contexte.
+- Format binaire (version 3, ecrite depuis 2026-10) : chaque section est ecrite colonne par colonne (tous les ecarts
+  de frames, puis toutes les valeurs), les touches / boutons comme leur indice dans `recordedKeys` /
+  `recordedMouseButtons`, la position de la souris comme son deplacement (moins celui de la frame d'avant) : environ
+  2 fois plus petit pour les jeux a la souris. Les versions 1 et 2 restent lues (anciens replays). Rien a faire dans
+  les jeux.
+- L'interface du replay (`ReplayHud`, creee par `KadoKadeoManager`) est commune a tous les jeux : rien a faire non plus.
 
 ## Patterns de reference (repo actuel)
 

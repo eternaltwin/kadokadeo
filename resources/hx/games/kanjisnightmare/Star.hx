@@ -1,80 +1,64 @@
 package kanjisnightmare;
 
-import mt.bumdum.Lib.Num;
-import mt.Timer;
-
+// shuriken
 class Star extends Phys {
 	public var damage:Float;
 
-	public function new(mc) {
+	public function new(mc:ASprite) {
 		super(mc);
 		Cs.game.nsList.push(this);
 		damage = 5;
 	}
 
-	public override function update() {
+	override public function update() {
 		super.update();
-		// list = Cs.game.grid[x][y].list
-		for (i in 0...Cs.game.mList.length) {
-			var m = Cs.game.mList[i];
-			if (Num.q(Math.abs(m.x - x) + Math.abs(m.y - y)) < KadoKadeoManager.I(20)) {
+		for (m in Cs.game.mList) {
+			if (Math.abs(m.x - x) + Math.abs(m.y - y) < 20) {
 				m.hit(this);
 				kill();
 				break;
 			}
 		}
-		// CHECK
+		// CHECK (like the original, still done after a hit)
 		checkMouse();
 		checkMedusa();
 		// OUT
-		if (isOut2(KadoKadeoManager.I(40))) {
+		if (isOut(40))
 			kill();
-		}
 	}
 
+	// the shuriken can hit the mouse pointer (it falls)
 	function checkMouse() {
-		if (!Cs.game.flMouseDead) {
-			var mouse = Cs.game.getMapMouse();
-			var xm = Num.q(mouse.x + KadoKadeoManager.I(8));
-			var ym = Num.q(mouse.y + KadoKadeoManager.I(8));
-			if (Num.q(Math.abs(x - xm) + Math.abs(y - ym)) < KadoKadeoManager.I(15)) {
-				Cs.game.flMouseDead = true;
-				Cs.game.mouseDeadTimer = 50;
-				Cs.game.dm.root_mc.interactive = true;
-				untyped Cs.game.dm.root_mc.cursor = "none";
-
-				var p = Cs.game.newPart("mcMouse");
-				p.x = xm + KadoKadeoManager.I(8);
-				p.y = ym + KadoKadeoManager.I(8);
-				p.vy = KadoKadeoManager.I(-4);
+		var g = Cs.game;
+		if (!g.flMouseDead && g.mouseActive()) {
+			var xm = g.mouseMapX() + 8;
+			var ym = g.mouseMapY() + 8;
+			if (Math.abs(x - xm) + Math.abs(y - ym) < 15) {
+				g.killMouse();
+				var p = g.newPart("mcMouse");
+				p.x = xm + 8;
+				p.y = ym + 8;
+				p.vy = -4;
 				p.vx = vx * 0.5;
 				p.vr = 8 + Seed.randVfx() * 10;
 				p.timer = 30 + Seed.randVfx() * 10;
 				p.fadeType = 0;
-				p.weight = KadoKadeoManager.S(0.6);
+				p.weight = 0.6;
 				p.flPlatCol = true;
-				p.ray = KadoKadeoManager.I(8);
-
+				p.ray = 8;
 				kill();
-				return;
 			}
 		}
 	}
 
 	function checkMedusa() {
-		if (vx < 0) {
-			var dx = Num.q(x - Cs.game.medusa.medusa.x);
-			var dy = Num.q(y - Cs.game.medusa.medusa.y);
-			var ray = KadoKadeoManager.I(58);
-			if (Cs.game.medusa.medusa.root._visible == true && dx * dx + dy * dy < ray * ray)
-				klong();
-		}
+		if (vx < 0 && Cs.game.medusaHitTest(x, y))
+			klong();
 	}
 
 	function klong() {
 		var a = Math.atan2(-vy, -vx) + (Seed.randVfx() * 2 - 1) * 0.4;
 		var speed = Math.sqrt(vx * vx + vy * vy) * 0.5;
-
 		var p = Cs.game.newPart("mcKlongShuriken");
 		p.x = x;
 		p.y = y;
@@ -83,11 +67,11 @@ class Star extends Phys {
 		p.vr = 8 + Seed.randVfx() * 10;
 		p.timer = 30 + Seed.randVfx() * 10;
 		p.fadeType = 0;
-		p.weight = KadoKadeoManager.S(0.6);
+		p.weight = 0.6;
 		kill();
 	}
 
-	public override function kill() {
+	override public function kill() {
 		super.kill();
 		Cs.game.nsList.remove(this);
 	}

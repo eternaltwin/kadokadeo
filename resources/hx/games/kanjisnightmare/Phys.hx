@@ -1,29 +1,47 @@
 package kanjisnightmare;
 
-import mt.bumdum.Lib.Num;
-import mt.Timer;
+class Phys extends Sprite {
+	public var flOrient:Bool;
 
-class Phys extends mt.bumdum.Phys {
 	public var ray:Float;
+	public var weight:Null<Float>;
+	public var frict:Null<Float>;
+	public var vx:Float;
+	public var vy:Float;
+	public var vr:Null<Float>;
 
-	public function new(mc) {
+	public function new(mc:ASprite) {
 		super(mc);
 		frict = 0.95;
 		vx = 0;
 		vy = 0;
+		ray = 0;
+		flOrient = false;
+	}
+
+	override public function update() {
+		if (vr != null)
+			root._rotation += vr * Timer.tmod;
+		if (weight != null)
+			vy += weight * Timer.tmod;
+		if (frict != null) {
+			var f = Math.pow(frict, Timer.tmod);
+			vx *= f;
+			vy *= f;
+		}
+		x += vx * Timer.tmod;
+		y += vy * Timer.tmod;
+		if (flOrient)
+			orient();
+		super.update();
 	}
 
 	public function checkPlatCol() {
-		//
 		if (vy > 0) {
-			var px = Num.q(x);
-			var py = Num.q(y + ray);
-			var oy = Num.q(py - vy * Timer.tmod);
+			var py = y + ray;
+			var oy = py - vy * Timer.tmod;
 			for (pl in Cs.game.platList) {
-				var ply = Num.q(pl.y);
-				var plx = Num.q(pl.x);
-				var plr = Num.q(pl.x + pl.w);
-				if (oy <= ply && py > ply && px > plx && px < plr) {
+				if (oy < pl.y && py > pl.y && x > pl.x && x < pl.x + pl.w) {
 					y = pl.y - ray;
 					land(pl);
 					break;
@@ -32,19 +50,22 @@ class Phys extends mt.bumdum.Phys {
 		}
 	}
 
-	public function land(plat) {}
+	public function land(plat:Plat) {}
 
-	public function speedToward(o, c, lim) {
-		var a = getAng({x: o.x, y: o.y});
-		var dx = o.x - x;
-		var dy = o.y - y;
-		vx += Num.mm(-lim, dx * c, lim);
-		vy += Num.mm(-lim, dy * c, lim);
+	public function orient() {
+		var sens = 1;
+		if (vx < 0)
+			sens = -1;
+		root._xscale = sens * 100;
+		root._rotation = Math.atan2(vy, vx) / 0.0174;
+		if (vx < 0)
+			root._rotation += 180;
 	}
 
-	public function isOut2(m:Float) {
-		var px = x + Cs.game.map._x;
-		var py = y + Cs.game.map._y;
-		return (px < -m || px > Cs.mcw + m || py < -m || py > Cs.mch + m);
+	public function speedToward(o:{x:Float, y:Float}, c:Float, lim:Float) {
+		var dx = o.x - x;
+		var dy = o.y - y;
+		vx += Cs.mm(-lim, dx * c, lim);
+		vy += Cs.mm(-lim, dy * c, lim);
 	}
 }

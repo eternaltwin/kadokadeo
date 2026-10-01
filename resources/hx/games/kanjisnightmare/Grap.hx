@@ -1,86 +1,56 @@
 package kanjisnightmare;
 
-import mt.Timer;
-import mt.bumdum.Lib.Num;
-import mt.bumdum.Sprite;
-
+// kunai thrown to hang from the ceiling or under a platform
 class Grap extends Sprite {
-	var flMain:Bool;
-
+	public var flMain:Bool;
 	public var flFly:Bool;
-
-	var long:Float;
-
 	public var vx:Float;
 	public var vy:Float;
 	public var speed:Int;
 
-	public function new(mc) {
+	public function new(mc:ASprite) {
 		super(mc);
-
 		flMain = true;
 		flFly = true;
+		vx = 0;
+		vy = 0;
 	}
 
-	public override function update() {
+	override public function update() {
 		super.update();
-
 		if (flFly) {
 			for (i in 0...speed) {
 				var oy = y;
-
-				x = Num.q(x + vx * Timer.tmod);
-				y = Num.q(y + vy * Timer.tmod);
-
-				var flCol = Num.q(y) < KadoKadeoManager.I(10);
-
-				for (n in 0...Cs.game.platList.length) {
-					var pl = Cs.game.platList[n];
-					var py = Num.q(pl.y + KadoKadeoManager.I(12));
-					var px = Num.q(x);
-					if (py < Num.q(oy) && py > Num.q(y) && px > Num.q(pl.x) && px < Num.q(pl.x + pl.w)) {
+				x += vx * Timer.tmod;
+				y += vy * Timer.tmod;
+				var flCol = y < 10;
+				for (pl in Cs.game.platList) {
+					if (pl.y + 12 < oy && pl.y + 12 > y && x > pl.x && x < pl.x + pl.w) {
 						flCol = true;
 						pl.grap = this;
 						break;
 					}
 				}
-
 				if (flCol) {
 					flFly = false;
-
-					var ray = KadoKadeoManager.I(12);
-					var speed = Num.q(Math.sqrt(vx * vx + vy * vy));
-					if (speed > 0) {
-						x = Num.q(x - (vx / speed) * ray);
-						y = Num.q(y - (vy / speed) * ray);
-					}
+					var a = Math.atan2(vy, vx);
+					var ray = 12;
+					x = Cs.q(x - Math.cos(a) * ray);
+					y = Cs.q(y - Math.sin(a) * ray);
 					root.gotoAndStop(2);
-					// long = GP_DIST;//getDist(Cs.game.hero)*0.5
-
 					if (flMain)
 						Cs.game.hero.grap();
-
 					updatePos();
 				}
 			}
-
-			if (Num.q(y) < 0) {
-				if (flMain) {
+			if (y < 0) {
+				if (flMain)
 					Cs.game.hero.releaseGrap();
-				}
 				kill();
 			}
 		} else {
-			if (!flMain) {
-				/*
-					var m = new flash.geom.Matrix();
-					m.scale(root._xscale/100,root._yscale/100);
-					m.rotate(root._rotation*0.0174);
-					m.translate(x,y);
-					Cs.game.mcCaveTop.bmp.draw(root,m,null,null,null,null);
-				 */
+			if (!flMain)
 				kill();
-			}
 		}
 	}
 

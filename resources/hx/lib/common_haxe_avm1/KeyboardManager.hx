@@ -104,7 +104,8 @@ class KeyboardManager {
 
 	static private function onKeyUp(e:KeyboardEvent):Void {
 		var targets = keyTargets(e);
-		if (targets.length > 1 || [SPACE, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT].contains(e.keyCode)) {
+		// a release is always taken (the key may have been pressed in the game before going to a field)
+		if (!isTyping(e) && (targets.length > 1 || [SPACE, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT].contains(e.keyCode))) {
 			e.preventDefault();
 		}
 		if (inputLocked) {
@@ -125,6 +126,10 @@ class KeyboardManager {
 	}
 
 	static private function onKeyDown(e:KeyboardEvent) {
+		// typed in a text field of the page: for the field, not for the game
+		if (isTyping(e)) {
+			return;
+		}
 		var targets = keyTargets(e);
 		if (targets.length > 1 || [SPACE, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT].contains(e.keyCode)) {
 			e.preventDefault();
@@ -144,6 +149,15 @@ class KeyboardManager {
 			}
 			queueKeyOp(key, true);
 		}
+	}
+
+	static private function isTyping(e:KeyboardEvent):Bool {
+		var el:js.html.Element = cast e.target;
+		if (el == null || el.tagName == null) {
+			return false;
+		}
+		var tag = el.tagName.toUpperCase();
+		return tag == "INPUT" || tag == "TEXTAREA" || tag == "SELECT" || el.isContentEditable;
 	}
 
 	// window lost the focus: the key releases will not be received
