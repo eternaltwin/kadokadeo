@@ -16,7 +16,6 @@ import pixi.filters.extras.GlowFilter;
 
 // decor plan: the 4 cave layers (type 0, repeated) and the elements that scroll by (type 1)
 typedef PlanInfo = {mc:ASprite, c:Float, w:Float, x:Float, y:Float, dy:Float, type:Int};
-
 // Medusa's arm: shoulder ($b), forearm ($ab) and hand ($h) turned by the code
 typedef ArmPart = {vr:Float, rot:Float};
 typedef Arm = {p:Phys, b:ArmPart, ab:ArmPart, hx:Float, hy:Float, hFrame:Int};
@@ -976,10 +975,10 @@ class Game implements kado.GameInterface {
 		var m = Std.int(100 - prc) / 100;
 		var c = prc / 100;
 		cm.matrix = [
-			m, 0, 0, 0, Std.int(c * (col >> 16)) / 255,
+			m, 0, 0, 0,         Std.int(c * (col >> 16)) / 255,
 			0, m, 0, 0, Std.int(c * ((col >> 8) & 0xFF)) / 255,
-			0, 0, m, 0, Std.int(c * (col & 0xFF)) / 255,
-			0, 0, 0, 1, 0
+			0, 0, m, 0,        Std.int(c * (col & 0xFF)) / 255,
+			0, 0, 0, 1,                                      0
 		];
 		pic.filters = [cm];
 		p.x = x;
