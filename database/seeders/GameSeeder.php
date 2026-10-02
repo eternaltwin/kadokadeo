@@ -53,7 +53,7 @@ class GameSeeder extends Seeder
             ['name' => 'Cosmo Crash', 'image_path' => '/assets/img/games/Cosmo_Crash.png', 'is_active' => false, 'stars' => [7738, 33532, 46428]],
             ['name' => 'Magmax', 'image_path' => '/assets/img/games/Magmax.png', 'is_active' => false, 'stars' => [6183, 21641, 29370], 'description' => 'De nombreux ennemis vous assaillent de tous les cotés, survivez le maximum de temps en enfer en les refroidissant !'],
             ['name' => 'Red Raid', 'image_path' => '/assets/img/games/Red_Raid.png', 'is_active' => false, 'stars' => [26835, 47478, 57799]],
-            ['name' => 'Pioutch', 'image_path' => '/assets/img/games/Pioutch.png', 'is_active' => false, 'stars' => [10473, 22110, 27928]],
+            ['name' => 'Pioutch', 'image_path' => '/assets/img/games/Pioutch.png', 'is_active' => true, 'stars' => [10473, 22110, 27928]],
             ['name' => 'Safari', 'image_path' => '/assets/img/games/Safari.png', 'is_active' => false, 'stars' => [14073, 28146, 35183]],
             ['name' => 'Pacifik', 'image_path' => '/assets/img/games/Pacifik.png', 'is_active' => false, 'stars' => [7887, 34177, 47322]],
             ['name' => 'Phagocytoz', 'image_path' => '/assets/img/games/Phagocytoz.png', 'is_active' => false, 'stars' => [12000, 24000, 30000]],

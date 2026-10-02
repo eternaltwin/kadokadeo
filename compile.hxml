@@ -112,3 +112,6 @@ elloninthedark.Game
 --next
 --js ./resources/js/games/minirace.js
 minirace.Game
+--next
+--js ./resources/js/games/pioutch.js
+pioutch.Game
