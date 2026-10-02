@@ -50,6 +50,7 @@ typedef TouchSwipeConfig = {
 
 typedef TouchControlsConfig = {
 	var mode:TouchControlsMode;
+	@:optional var passthroughMouseButtons:Bool;
 	@:optional var buttons:Array<TouchButtonConfig>;
 	@:optional var joystick:TouchJoystickConfig;
 	@:optional var swipe:TouchSwipeConfig;

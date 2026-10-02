@@ -875,6 +875,7 @@ class KadoKadeoManager extends Application {
 		}
 
 		destroyTouchOverlay();
+		var passthroughMouseButtons = config.passthroughMouseButtons != false;
 		touchOverlay = new TouchControlsOverlay(canvas, config, {
 			onKeyDown: (keyCode:Int) -> {
 				common_haxe_avm1.KeyboardManager.queueVirtualKeyDown(keyCode);
@@ -889,13 +890,19 @@ class KadoKadeoManager extends Application {
 				common_haxe_avm1.MouseManager.queueInputCallback(() -> dispatchTouchAction(action));
 			},
 			onPointerDown: (x:Int, y:Int) -> {
-				common_haxe_avm1.MouseManager.queueVirtualPointerDown(common_haxe_avm1.MouseManager.BUTTON_LEFT, x, y);
+				if (passthroughMouseButtons)
+					common_haxe_avm1.MouseManager.queueVirtualPointerDown(common_haxe_avm1.MouseManager.BUTTON_LEFT, x, y);
+				else
+					common_haxe_avm1.MouseManager.queueVirtualPointerMove(x, y);
 			},
 			onPointerMove: (x:Int, y:Int) -> {
 				common_haxe_avm1.MouseManager.queueVirtualPointerMove(x, y);
 			},
 			onPointerUp: (x:Int, y:Int) -> {
-				common_haxe_avm1.MouseManager.queueVirtualPointerUp(common_haxe_avm1.MouseManager.BUTTON_LEFT, x, y);
+				if (passthroughMouseButtons)
+					common_haxe_avm1.MouseManager.queueVirtualPointerUp(common_haxe_avm1.MouseManager.BUTTON_LEFT, x, y);
+				else
+					common_haxe_avm1.MouseManager.queueVirtualPointerMove(x, y);
 			}
 		});
 	}

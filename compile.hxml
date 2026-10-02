@@ -118,3 +118,6 @@ pioutch.Game
 --next
 --js ./resources/js/games/manda.js
 manda.Game
+--next
+--js ./resources/js/games/drakhan.js
+drakhan.Game

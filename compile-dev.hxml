@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/manda.js
-manda.Game
+-js ./resources/js/games/drakhan.js
+drakhan.Game
