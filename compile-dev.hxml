@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/elloninthedark.js
-elloninthedark.Game
+-js ./resources/js/games/minirace.js
+minirace.Game

@@ -109,3 +109,6 @@ xianxiang.Game
 --next
 --js ./resources/js/games/elloninthedark.js
 elloninthedark.Game
+--next
+--js ./resources/js/games/minirace.js
+minirace.Game

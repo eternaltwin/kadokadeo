@@ -32,7 +32,7 @@ class GameSeeder extends Seeder
             ['name' => 'Piou-Piou', 'image_path' => '/assets/img/games/Piou-Piou.png', 'is_active' => true, 'stars' => [14801, 31247, 39470]],
             ['name' => 'Manda', 'image_path' => '/assets/img/games/Manda.png', 'is_active' => false, 'stars' => [23987, 263877, 383822], 'description' => "Tortillez-vous pour ramasser les fruits et les bonus, tentez d'obtenir le Jackpot et surtout evitez les murs ! Un grand classique."],
             ['name' => 'Schizo Fuzz', 'image_path' => '/assets/img/games/Schizo_Fuzz.png', 'is_active' => false, 'stars' => [76482, 172084, 219885]],
-            ['name' => 'Mini-Race', 'image_path' => '/assets/img/games/Mini-Race.png', 'is_active' => false, 'stars' => [23567, 57234, 74068]],
+            ['name' => 'Mini-Race', 'image_path' => '/assets/img/games/Mini-Race.png', 'is_active' => true, 'stars' => [23567, 57234, 74068]],
             ['name' => 'Kavern', 'image_path' => '/assets/img/games/Kavern.png', 'is_active' => true, 'stars' => [27421, 48514, 59061], 'description' => "Aidez PiouPiou à explorer de sombres cavernes ! Ramassez des légumes pour gagner des points et des capsules d'énergie pour survivre plus longtemps."],
             ['name' => 'Twin Spirit', 'image_path' => '/assets/img/games/Twin_Spirit.png', 'is_active' => false, 'stars' => [29884, 63089, 79691]],
             ['name' => 'Judo Commando', 'image_path' => '/assets/img/games/Judo_Commando.png', 'is_active' => false, 'stars' => [24212, 72636, 96848]],
