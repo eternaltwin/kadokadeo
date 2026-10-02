@@ -391,8 +391,8 @@ class MouseManager {
 			return null;
 		}
 
-		var localX = (event.clientX - rect.left) * (app.view.width / rect.width);
-		var localY = (event.clientY - rect.top) * (app.view.height / rect.height);
+		var localX = (event.clientX - rect.left) * (app.screen.width / rect.width);
+		var localY = (event.clientY - rect.top) * (app.screen.height / rect.height);
 		return {x: Std.int(localX), y: Std.int(localY)};
 	}
 

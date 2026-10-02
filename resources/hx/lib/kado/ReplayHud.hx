@@ -45,13 +45,13 @@ class ReplayHud extends Container {
 	public static var SPEEDS:Array<Float> = [0.25, 0.5, 1, 1.5, 2, 4, 8];
 
 	static inline var W = 600;
-	// top of the bottom bar of the site (score, contract)
-	static inline var BOTTOM = 594;
+	// bottom of the game area, above the score / contract bar
+	static final BOTTOM = KadoKadeoManager.I(300);
 	static inline var PANEL_H = 108;
 	static inline var BAR_X0 = 14;
 	static inline var BAR_X1 = 586;
-	static inline var BAR_Y = 552;
-	static inline var ROW_Y = 576;
+	static final BAR_Y = BOTTOM - 42;
+	static final ROW_Y = BOTTOM - 18;
 	static inline var BUTTON_H = 32;
 	// colours of the site (resources/css/app.css), and a dark teal for the backgrounds
 	static inline var CYAN = 0x44CCE7;
@@ -927,9 +927,10 @@ class ReplayHud extends Container {
 		var r = canvas.getBoundingClientRect();
 		if (r.width <= 0 || r.height <= 0)
 			return null;
+		var screen = KadoKadeoManager.kkm.screen;
 		return {
-			x: (e.clientX - r.left) * canvas.width / r.width,
-			y: (e.clientY - r.top) * canvas.height / r.height
+			x: (e.clientX - r.left) * screen.width / r.width,
+			y: (e.clientY - r.top) * screen.height / r.height
 		};
 	}
 
@@ -1159,11 +1160,14 @@ class ReplayHud extends Container {
 
 	static function text(s:String, size:Int, color:Int, ?bold:Bool = true):Text {
 		// Fredoka Bold is bold itself; the other texts stay lighter by their colour
-		return new Text(s, {
+		var t = new Text(s, {
 			fill: color,
 			fontFamily: FONT,
 			fontSize: size
 		});
+		// Match the high-DPI renderer before measuring labels for the layout.
+		t.resolution = KadoKadeoManager.kkm.renderer.resolution;
+		return t;
 	}
 
 	// dark teal, transparent at the top: behind the controls

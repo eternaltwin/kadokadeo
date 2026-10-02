@@ -18,7 +18,7 @@ class StartScene extends Container {
 		this.kkm = kkm;
 		this.elapsed = 0;
 
-		this.addChild((new Graphics()).beginFill(0x6b95b4, 1).drawRect(0, 0, kkm.renderer.width, kkm.renderer.height).endFill());
+		this.addChild((new Graphics()).beginFill(0x6b95b4, 1).drawRect(0, 0, kkm.screen.width, kkm.screen.height).endFill());
 		this.makeBottomBar();
 
 		var art = Sprite.from("/assets/img/gfx/artwork/" + gameName + ".jpg");
@@ -26,7 +26,7 @@ class StartScene extends Container {
 
 		this.overlay = new Graphics();
 		overlay.beginFill(0x6b95b4, 0.36);
-		overlay.drawRect(0, 0, kkm.renderer.width, kkm.renderer.height);
+		overlay.drawRect(0, 0, kkm.screen.width, kkm.screen.height);
 		overlay.endFill();
 		overlay.visible = false;
 		this.addChild(overlay);
@@ -34,8 +34,8 @@ class StartScene extends Container {
 		this.panel = new Panel(kkm);
 		panel.width = KadoKadeoManager.I(216);
 		panel.height = KadoKadeoManager.I(83);
-		panel.x = (kkm.renderer.width - panel.width) / 2;
-		panel.y = (kkm.renderer.height - panel.height) / 2;
+		panel.x = (kkm.screen.width - panel.width) / 2;
+		panel.y = (kkm.screen.height - panel.height) / 2;
 		panel.visible = false;
 		this.addChild(panel);
 
@@ -46,7 +46,7 @@ class StartScene extends Container {
 	public function makeBottomBar():Void {
 		var bb = Sprite.from("bottom_bar.png");
 		bb.x = 0;
-		bb.y = kkm.renderer.height - KadoKadeoManager.I(23);
+		bb.y = kkm.screen.height - KadoKadeoManager.I(23);
 		this.addChild(bb);
 
 		this.clicToStartText = new pixi.core.text.Text("CLIQUER POUR COMMENCER", {
@@ -58,8 +58,8 @@ class StartScene extends Container {
 			strokeThickness: 8,
 			letterSpacing: 2
 		});
-		this.clicToStartText.x = (kkm.renderer.width - this.clicToStartText.width) / 2;
-		this.clicToStartText.y = kkm.renderer.height - KadoKadeoManager.I(22);
+		this.clicToStartText.x = (kkm.screen.width - this.clicToStartText.width) / 2;
+		this.clicToStartText.y = kkm.screen.height - KadoKadeoManager.I(22);
 		this.addChild(this.clicToStartText);
 	}
 

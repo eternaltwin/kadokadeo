@@ -28,7 +28,7 @@ class BottomBar extends ASprite {
 	public function makeBottomBar():Void {
 		bb = Sprite.from("bottom_bar.png");
 		bb.x = 0;
-		bb.y = kkm.renderer.height - KadoKadeoManager.S(22.6);
+		bb.y = kkm.screen.height - KadoKadeoManager.S(22.6);
 		this.addChild(bb);
 
 		contractText = new pixi.core.text.Text(Std.string(runDetails != null ? runDetails.contract_points : 0), {

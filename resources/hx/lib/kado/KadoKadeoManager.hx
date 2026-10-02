@@ -99,6 +99,8 @@ class KadoKadeoManager extends Application {
 			view: canvas,
 			width: 600,
 			height: 640,
+			// Keep logical coordinates at 600 x 640; Vue controls the CSS size.
+			resolution: Math.max(1, Browser.window.devicePixelRatio),
 			backgroundColor: 0x80c0e6e9
 		});
 
@@ -107,8 +109,6 @@ class KadoKadeoManager extends Application {
 		this.params = params;
 		this.endRunClient = new KadoEndRun(crypto);
 		this.runFlow = new KadoRunFlow(params);
-		canvas.width = 600;
-		canvas.height = 640;
 		this.root = new ASprite();
 		this.dm = new DepthManager(root);
 		this.stage.addChild(root);

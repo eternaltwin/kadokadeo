@@ -555,9 +555,10 @@ class TouchControlsOverlay {
 		if (bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 			return null;
 		}
+		var screen = KadoKadeoManager.kkm.screen;
 		return {
-			x: Std.int((evt.clientX - bounds.left) * canvas.width / bounds.width),
-			y: Std.int((evt.clientY - bounds.top) * canvas.height / bounds.height)
+			x: Std.int((evt.clientX - bounds.left) * screen.width / bounds.width),
+			y: Std.int((evt.clientY - bounds.top) * screen.height / bounds.height)
 		};
 	}
 

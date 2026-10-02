@@ -155,8 +155,8 @@ class EndScene extends Container {
 		};
 
 		var back = this.addChild(Sprite.from("gameover_back.png"));
-		back.width = kkm.renderer.width;
-		back.height = kkm.renderer.height;
+		back.width = kkm.screen.width;
+		back.height = kkm.screen.height;
 		this.addChild(makePanScore());
 		this.addChild(makePiouTrack());
 		this.addChild(clickToReplay());
@@ -181,7 +181,7 @@ class EndScene extends Container {
 			KadoKadeoManager.I(17));
 		cont.width = KadoKadeoManager.I(300);
 		cont.height = KadoKadeoManager.I(68);
-		cont.x = (kkm.renderer.width - cont.width) / 2;
+		cont.x = (kkm.screen.width - cont.width) / 2;
 		cont.y = KadoKadeoManager.I(150);
 		var fieldTitle = cont.addChild(new pixi.core.text.Text(text[11], {
 			fontFamily: 'Fredoka Bold',
@@ -190,7 +190,7 @@ class EndScene extends Container {
 			align: 'center',
 			letterSpacing: 2
 		}));
-		fieldTitle.x = (kkm.renderer.width - fieldTitle.width) / 2;
+		fieldTitle.x = (kkm.screen.width - fieldTitle.width) / 2;
 
 		var fieldScore = cont.addChild(new pixi.core.text.Text(Std.string(kkm.score), {
 			fontFamily: 'Junegull-Regular',
@@ -199,7 +199,7 @@ class EndScene extends Container {
 			align: 'center',
 			letterSpacing: 6
 		}));
-		fieldScore.x = (kkm.renderer.width - fieldScore.width) / 2;
+		fieldScore.x = (kkm.screen.width - fieldScore.width) / 2;
 		fieldScore.y = details.is_best ? KadoKadeoManager.I(12) : KadoKadeoManager.I(20);
 		Filt.glow(fieldScore, 6, 4, 0xba3801);
 		fieldScore.filters.push(new DropShadowFilter({
@@ -215,7 +215,7 @@ class EndScene extends Container {
 			fill: 0xff6a2b,
 			align: 'center',
 		}));
-		fieldBest.x = (kkm.renderer.width - fieldBest.width) / 2;
+		fieldBest.x = (kkm.screen.width - fieldBest.width) / 2;
 		fieldBest.y = KadoKadeoManager.I(56);
 		fieldBest.alpha = details.is_best ? 1 : 0;
 		Filt.glow(fieldBest, KadoKadeoManager.I(5), 2, 0xffff00);
@@ -306,7 +306,7 @@ class EndScene extends Container {
 			fill: 0x056a83,
 			align: 'center',
 		}));
-		textQualField.x = (kkm.renderer.width - textQualField.width) / 2 - cont.x;
+		textQualField.x = (kkm.screen.width - textQualField.width) / 2 - cont.x;
 		textQualField.y = KadoKadeoManager.I(50);
 		textQualField.alpha = details.people_to_beat == 0 ? 1 : 0;
 
@@ -316,7 +316,7 @@ class EndScene extends Container {
 			fill: 0x056a83,
 			align: 'center',
 		}));
-		textQual.x = (kkm.renderer.width - textQual.width) / 2 - cont.x;
+		textQual.x = (kkm.screen.width - textQual.width) / 2 - cont.x;
 		textQual.y = KadoKadeoManager.I(66);
 		textQual.alpha = details.people_to_beat > 0 ? 1 : 0;
 		cont.addChild(textQual);
@@ -376,7 +376,7 @@ class EndScene extends Container {
 			fill: 0x056a83,
 			align: 'center',
 		}));
-		field.x = (kkm.renderer.width - field.width) / 2;
+		field.x = (kkm.screen.width - field.width) / 2;
 		field.y = KadoKadeoManager.I(300);
 		field.alpha = 0;
 		cont.addChild(field);
