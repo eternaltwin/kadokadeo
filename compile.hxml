@@ -3,7 +3,6 @@
 -L jsImport
 -cp ./resources/hx/lib
 -cp ./resources/hx/games
--debug
 
 --each
 -js ./resources/js/games/atlanteine.js
