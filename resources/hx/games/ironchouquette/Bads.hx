@@ -213,12 +213,12 @@ class Bads extends Phys {
 		}
 
 		// SPEED COLOR
-		if (Cs.game.hero.weapons[Hero.WP_SPEED][0] > 0 && Cs.game.plasmaSample != null) {
+		if (Cs.game.hero.weapons[Hero.WP_SPEED][0] > 0 && Cs.game.speedField.active) {
 			if ((Cs.game.frameId + speedColorPhase) % 2 == 0) {
 				var px = Std.int(root._x * Cs.game.pq);
 				var py = Std.int((root._y + Game.PLASMA_CACHE) * Cs.game.pq);
-				if (px >= 0 && py >= 0 && px < Cs.game.plasmaSample.width && py < Cs.game.plasmaSample.height) {
-					var col = Cs.game.plasmaSample.getPixel(px, py);
+				if (px >= 0 && py >= 0) {
+					var col = Cs.game.speedField.getPixel(px, py);
 					var o = Cs.colToObj32(col);
 					var lim = 50;
 					var score = o.r * 1.2;

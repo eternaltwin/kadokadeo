@@ -5,12 +5,9 @@ import kado.TouchControlsConfig.TouchControlsMode;
 import ironchouquette.elems.Base2;
 import ironchouquette.elems.Base1;
 import pixi.filters.colormatrix.ColorMatrixFilter;
-import pixi.core.textures.RenderTexture;
 import pixi.core.math.Matrix;
-import pixi.core.sprites.Sprite;
 import pixi.core.Pixi.BlendModes;
 import common_haxe_avm1.KeyboardManager;
-import common_haxe_avm1.PixelHelper;
 import mt.bumdum.Lib;
 import mt.DepthManager;
 import mt.Timer;
@@ -21,17 +18,6 @@ class ShotLayerSprite extends ASprite {
 
 class ShotsSprite extends ASprite {
 	public var layer:Array<ShotLayerSprite>;
-}
-
-class PlasmaLayerSprite extends ASprite {
-	public var bmp:RenderTexture;
-	public var backBmp:RenderTexture;
-	public var view:Sprite;
-	public var blit:Sprite;
-}
-
-class PlasmaSprite extends ASprite {
-	public var layer:Array<PlasmaLayerSprite>;
 }
 
 @:expose('GameIronChouquette')
@@ -79,6 +65,9 @@ class Game implements kado.GameInterface {
 	public static var SCROLL_SPEED = KadoKadeoManager.S(0.0001); // 5//10;
 	public static var SCROLL_SPEED_MAX = KadoKadeoManager.S(6); // 5//10;
 	public static var PLASMA_CACHE = KadoKadeoManager.S(100);
+	// ColorTransform of the plasma layers at each step (multipliers, offsets 0..255), like the original
+	static var PLASMA_MULT = [[1.0, 1, 1, 1], [0.95, 0.8, 0.8, 1]];
+	static var PLASMA_OFF = [[-2.0, -2, -2, 0], [-10.0, -20, -20, -10]];
 
 	public static var PM = 1;
 
@@ -106,7 +95,11 @@ class Game implements kado.GameInterface {
 	public var root:ASprite;
 	public var bg:ASprite;
 	public var shots:ShotsSprite;
-	public var plasma:PlasmaSprite;
+	public var plasma:ASprite;
+	public var plasmaLayers:Array<PlasmaLayer>;
+	public var speedField:SpeedField;
+
+	var plasmaMatrix = new Matrix();
 
 	public var baseList:Array<ASprite>;
 
@@ -120,8 +113,6 @@ class Game implements kado.GameInterface {
 	public var kidnappers:Array<Phys>;
 	public var chouquette:Phys;
 	public var frameId:Int;
-	public var plasmaSample:PixelHelper;
-	public var plasmaSampleRate:Int;
 
 	var pendingVirtualKeyUps:Array<{keyCode:Int, framesLeft:Int}>;
 
@@ -156,7 +147,6 @@ class Game implements kado.GameInterface {
 		badsList = new Array();
 		bonusList = new Array();
 		frameId = 0;
-		plasmaSampleRate = 3;
 		pendingVirtualKeyUps = [];
 
 		bg = dm.attach("mcBg", DP_BG);
@@ -207,8 +197,8 @@ class Game implements kado.GameInterface {
 				pl._y = KadoKadeoManager.I(160);
 				baseList = [pl, new Base2(dm.empty(DP_BG)), new Base1(dm.empty(DP_PARTS))];
 
-				//
-				pq = 0.5;
+				// plasma pixel = 4 pixels of the game (2 of the original 300x300 game: its pq was 0.5)
+				pq = 0.25;
 				initPlasma();
 				initShots();
 			// initStep(1)
@@ -276,6 +266,8 @@ class Game implements kado.GameInterface {
 
 		// GFXMODE
 		updateGfxMode();
+
+		flushPlasma();
 	}
 
 	public function updateKidnappers() {
@@ -355,128 +347,77 @@ class Game implements kado.GameInterface {
 	}
 
 	// PLASMA
+	// Two small bitmaps (game size * pq, plus PLASMA_CACHE above the screen) shown scaled up behind the game: things are
+	// stamped into them (plasmaDraw) and they are blurred, faded and scrolled at every step. See PlasmaLayer.
 	public function initPlasma() {
-		plasma = cast dm.empty(DP_BG);
-		plasma.layer = new Array();
-		var dm = new DepthManager(plasma);
+		plasma = dm.empty(DP_BG);
+		plasmaLayers = [];
+		var w = Std.int(Cs.mcw * pq);
+		var h = Std.int((Cs.mch + PLASMA_CACHE) * pq);
 		for (i in 0...2) {
-			var mc:PlasmaLayerSprite = cast dm.empty(0);
-			mc.bmp = RenderTexture.create(Std.int(Cs.mcw * pq), Std.int((Cs.mch + PLASMA_CACHE) * pq));
-			mc.backBmp = RenderTexture.create(Std.int(Cs.mcw * pq), Std.int((Cs.mch + PLASMA_CACHE) * pq));
-			mc.view = mc.attachBitmap(mc.bmp, 0);
-			mc.blit = new Sprite(mc.bmp);
-			mc.blit.blendMode = BlendModes.NORMAL;
-			plasma.layer.push(mc);
-			mc._y = -PLASMA_CACHE * pq;
-
-			if (i == 0)
-				mc.blendMode = BlendModes.ADD;
-			// if(i==1)mc.blendMode = BlendModes.OVERLAY;
+			var layer = new PlasmaLayer(w, h, plasmaBlur(i, 1), i == 0);
+			layer.view.y = -PLASMA_CACHE * pq;
+			plasma.addChild(layer.view);
+			plasmaLayers.push(layer);
 		}
 		plasma._xscale = 100 / pq;
 		plasma._yscale = 100 / pq;
+		speedField = new SpeedField(w, h);
+	}
+
+	// blur of the original (BlurFilter, in pixels of the bitmap), its pq being twice ours
+	function plasmaBlur(i:Int, tmod:Float):Float {
+		return i == 0 ? Math.max(4 * pq * tmod, 1.5) : Math.max(20 * pq * tmod, 1);
 	}
 
 	public function updatePlasma() {
 		plasmaDraw(shots.layer[0], 0);
 
-		for (i in 0...plasma.layer.length) {
-			if (plasma.layer[i] != null) {
-				var layer = plasma.layer[i];
-				var src = layer.bmp;
-				var dst = layer.backBmp;
-				switch (i) {
-					case 0:
-						var blp = Math.max(2 * pq * Timer.tmod, 1.5);
-						processPlasmaLayer(layer, src, dst, blp, 0xFFFFFF, 0.985);
-					case 1:
-						var blp = Math.max(10 * pq * Timer.tmod, 1);
-						processPlasmaLayer(layer, src, dst, blp, 0xF2CCCC, 0.92);
+		var scroll = SCROLL_SPEED > 0.2 ? Std.int(SCROLL_SPEED * 3 * pq) : 0;
+		for (i in 0...plasmaLayers.length)
+			if (plasmaLayers[i] != null)
+				plasmaLayers[i].step(plasmaBlur(i, Timer.tmod), PLASMA_MULT[i], PLASMA_OFF[i], scroll);
 
-					case _:
-				}
-			}
-		}
-
-		if (plasma.layer[0] != null && frameId % plasmaSampleRate == 0) {
-			plasmaSample = PixelHelper.extract(plasma.layer[0].bmp);
-		}
+		speedField.step(hero != null && hero.weapons[Hero.WP_SPEED][0] > 0, plasmaBlur(0, Timer.tmod), scroll);
 	}
 
-	function processPlasmaLayer(layer:PlasmaLayerSprite, src:RenderTexture, dst:RenderTexture, blur:Float, tint:Int, decayAlpha:Float):Void {
-		if (layer.blit == null)
-			layer.blit = new Sprite(src);
-		layer.blit.texture = src;
-		layer.blit.tint = tint;
-
-		var scrollY = SCROLL_SPEED > 0.2 ? Std.int(SCROLL_SPEED * 3 * pq) : 0;
-		var r = Math.max(1, Std.int(blur));
-
-		layer.blit.alpha = decayAlpha * 0.40;
-		var m = new Matrix();
-		m.translate(0, scrollY);
-		renderToTexture(layer.blit, dst, m, true);
-
-		layer.blit.alpha = decayAlpha * 0.15;
-		m = new Matrix();
-		m.translate(r, scrollY);
-		renderToTexture(layer.blit, dst, m, false);
-
-		m = new Matrix();
-		m.translate(-r, scrollY);
-		renderToTexture(layer.blit, dst, m, false);
-
-		m = new Matrix();
-		m.translate(0, r + scrollY);
-		renderToTexture(layer.blit, dst, m, false);
-
-		m = new Matrix();
-		m.translate(0, -r + scrollY);
-		renderToTexture(layer.blit, dst, m, false);
-
-		layer.bmp = dst;
-		layer.backBmp = src;
-		if (layer.view != null)
-			layer.view.texture = layer.bmp;
-	}
-
-	inline function renderToTexture(object:Dynamic, texture:RenderTexture, matrix:Matrix, clear:Bool):Void {
-		KadoKadeoManager.kkm.renderer.render(object, cast {renderTexture: texture, clear: clear, transform: matrix});
+	// the stamps of the step, drawn in the layers before the picture is shown
+	function flushPlasma() {
+		for (layer in plasmaLayers)
+			if (layer != null)
+				layer.flush();
 	}
 
 	public function plasmaDraw(mc:ASprite, n:Int) {
-		if (plasma.layer[n] == null)
+		var layer = plasmaLayers[n];
+		if (layer == null || mc == null)
 			return;
-		var bmp = plasma.layer[n].bmp;
-
-		var m = new Matrix();
+		var m = plasmaMatrix;
+		m.identity();
 		m.scale((mc._xscale / 100) * pq, (mc._yscale / 100) * pq);
 		m.rotate(mc._rotation * 0.0174);
 		m.translate((mc._x) * pq, (mc._y + PLASMA_CACHE) * pq);
-
-		// Commented while converting to pixi:
-		// var ct = new flash.geom.ColorTransform(1, 1, 1, 1, 0, 0, 0, -255 + mc._alpha * 2.55);
-		// var b = mc.blendMode;
-		// bmp.draw(mc, m, ct, b, null, false);
-
-		/* PIXI VERSION COMMENT: Exemple Haxe (Pixi) pour l’équivalent de ColorTransform : */
-		var f = new pixi.filters.colormatrix.ColorMatrixFilter();
-		var a = mc.alpha; // 0..1 en Pixi
-		// Matrice identité + offset sur alpha (dernière valeur)
-		f.matrix = [
-			1, 0, 0, 0,   0,
-			0, 1, 0, 0,   0,
-			0, 0, 1, 0,   0,
-			0, 0, 0, 1, a - 1
-		];
-		mc.filters = [f];
-		bmp.draw(mc, m);
+		// BitmapData.draw(mc, m, ColorTransform(alpha offset -255 + _alpha * 2.55), mc.blendMode)
+		layer.draw(mc, m, mc._alpha / 100, mc.blendMode);
+		if (n == 0)
+			speedField.draw(mc, m, mc._alpha / 100);
 	}
 
 	public function setPq(n) {
 		pq = n;
-		plasma.removeMovieClip();
+		destroyPlasma();
 		initPlasma();
+	}
+
+	function destroyPlasma() {
+		if (plasmaLayers != null)
+			for (layer in plasmaLayers)
+				if (layer != null)
+					layer.destroy();
+		plasmaLayers = null;
+		if (plasma != null)
+			plasma.removeMovieClip();
+		plasma = null;
 	}
 
 	// SCROLL
@@ -620,6 +561,7 @@ class Game implements kado.GameInterface {
 		Stykades.FL_CREATE_LOCK = false;
 		Bonus.NB = 0;
 
+		destroyPlasma();
 		if (bg != null)
 			bg.filters = [];
 		if (root != null)

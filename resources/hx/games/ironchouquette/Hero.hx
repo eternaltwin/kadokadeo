@@ -703,6 +703,8 @@ class Hero extends Phys {
 								mc.blendMode = BlendModes.ADD;
 								Cs.game.plasmaDraw(mc, 1);
 								mc.removeMovieClip();
+								// only drawn into the plasma: its lines are freed (graphics card buffers) once the plasma has them
+								mc.destroy({children: true});
 							} else {
 								lastLaser = mc;
 							}
