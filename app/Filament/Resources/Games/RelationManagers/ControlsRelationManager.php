@@ -18,13 +18,19 @@ class ControlsRelationManager extends RelationManager
 {
     protected static string $relationship = 'controls';
 
+    protected static ?string $title = 'Contrôles';
+
+    protected static ?string $modelLabel = 'contrôle';
+
+    protected static ?string $pluralModelLabel = 'contrôles';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('description')->required(),
-                TextInput::make('order')->required(),
-                Select::make('keys')->options(ControlKey::class)->multiple()->required(),
+                TextInput::make('description')->label('Description')->required(),
+                TextInput::make('order')->label('Ordre')->required(),
+                Select::make('keys')->label('Touches')->options(ControlKey::class)->multiple()->required(),
             ]);
     }
 
@@ -34,10 +40,10 @@ class ControlsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('id')
                     ->label('ID'),
-                TextColumn::make('description'),
-                TextColumn::make('order'),
+                TextColumn::make('description')->label('Description'),
+                TextColumn::make('order')->label('Ordre'),
                 TextColumn::make('keys')
-                    ->label('Keys')
+                    ->label('Touches')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => ControlKey::from($state)->getLabel()),
             ])

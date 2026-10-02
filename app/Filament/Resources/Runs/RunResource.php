@@ -13,6 +13,10 @@ use Filament\Schemas\Schema;
 
 class RunResource extends Resource
 {
+    protected static ?string $modelLabel = 'partie';
+
+    protected static ?string $pluralModelLabel = 'parties';
+
     protected static ?string $model = Run::class;
 
     protected static bool $shouldRegisterNavigation = false;
@@ -21,23 +25,29 @@ class RunResource extends Resource
     {
         return $schema->components([
             TextInput::make('period_id')
+                ->label('Période')
                 ->numeric(),
             TextInput::make('user_id')
+                ->label('ID utilisateur')
                 ->required()
                 ->numeric(),
             TextInput::make('contract_score')
+                ->label('Score du contrat')
                 ->numeric(),
             TextInput::make('contract_points')
+                ->label('Points du contrat')
                 ->numeric(),
-            TextInput::make('seed'),
+            TextInput::make('seed')->label('Graine'),
             TextInput::make('score')
+                ->label('Score')
                 ->numeric(),
-            TextInput::make('score_details'),
+            TextInput::make('score_details')->label('Détails du score'),
             TextInput::make('play_time_seconds')
+                ->label('Temps de jeu (s)')
                 ->numeric(),
-            TextInput::make('replay'),
-            DateTimePicker::make('completed_at'),
-            Checkbox::make('is_cheat'),
+            TextInput::make('replay')->label('Replay'),
+            DateTimePicker::make('completed_at')->label('Terminée le'),
+            Checkbox::make('is_cheat')->label('Triche'),
         ]);
     }
 

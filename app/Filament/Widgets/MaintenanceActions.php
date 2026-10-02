@@ -21,15 +21,15 @@ class MaintenanceActions extends Widget
             Artisan::call('kado:reset-scores');
 
             Notification::make()
-                ->title('Scores reset successfully.')
+                ->title('Scores réinitialisés.')
                 ->success()
                 ->send();
         } catch (Throwable $exception) {
             report($exception);
 
             Notification::make()
-                ->title('Unable to reset scores.')
-                ->body('Check logs for details and try again.')
+                ->title('Impossible de réinitialiser les scores.')
+                ->body('Consultez les logs pour plus de détails, puis réessayez.')
                 ->danger()
                 ->send();
         }
@@ -41,15 +41,15 @@ class MaintenanceActions extends Widget
             Artisan::call('kado:prepare-new-period');
 
             Notification::make()
-                ->title('OK!')
+                ->title('Nouvelle période préparée.')
                 ->success()
                 ->send();
         } catch (Throwable $exception) {
             report($exception);
 
             Notification::make()
-                ->title('Unable to prepare new period.')
-                ->body('Maybe a period is already in progress.')
+                ->title('Impossible de préparer une nouvelle période.')
+                ->body('Une période est peut-être déjà en cours.')
                 ->danger()
                 ->send();
         }

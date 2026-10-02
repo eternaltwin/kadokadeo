@@ -29,29 +29,41 @@ class RunsRelationManager extends RelationManager
 {
     protected static string $relationship = 'runs';
 
+    protected static ?string $title = 'Parties';
+
+    protected static ?string $modelLabel = 'partie';
+
+    protected static ?string $pluralModelLabel = 'parties';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 TextInput::make('period_id')
+                    ->label('Période')
                     ->numeric(),
                 TextInput::make('game_id')
+                    ->label('ID jeu')
                     ->required()
                     ->numeric(),
                 TextInput::make('contract_score')
+                    ->label('Score du contrat')
                     ->required()
                     ->numeric(),
                 TextInput::make('contract_points')
+                    ->label('Points du contrat')
                     ->required()
                     ->numeric(),
-                TextInput::make('seed'),
+                TextInput::make('seed')->label('Graine'),
                 TextInput::make('score')
+                    ->label('Score')
                     ->numeric(),
-                TextInput::make('score_details'),
+                TextInput::make('score_details')->label('Détails du score'),
                 TextInput::make('play_time_seconds')
+                    ->label('Temps de jeu (s)')
                     ->numeric(),
-                TextInput::make('replay'),
-                DateTimePicker::make('completed_at'),
+                TextInput::make('replay')->label('Replay'),
+                DateTimePicker::make('completed_at')->label('Terminée le'),
             ]);
     }
 
@@ -64,37 +76,48 @@ class RunsRelationManager extends RelationManager
                     ->label('ID')
                     ->searchable(),
                 TextColumn::make('period_id')
+                    ->label('Période')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('game.name')
+                    ->label('Jeu')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('score')
+                    ->label('Score')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('contract_score')
+                    ->label('Score du contrat')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('contract_points')
+                    ->label('Points du contrat')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('seed')
+                    ->label('Graine')
                     ->searchable(),
                 TextColumn::make('play_time_seconds')
+                    ->label('Temps de jeu (s)')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label('Créé le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Modifié le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('completed_at')
+                    ->label('Terminée le')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('deleted_at')
+                    ->label('Supprimé le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -103,7 +126,7 @@ class RunsRelationManager extends RelationManager
                 TrashedFilter::make(),
                 Filter::make('completed_at')
                     ->default(true)
-                    ->label('Completed Runs')
+                    ->label('Parties terminées')
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('completed_at')),
             ])
             ->headerActions([

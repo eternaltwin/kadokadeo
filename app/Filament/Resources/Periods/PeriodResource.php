@@ -17,11 +17,15 @@ use UnitEnum;
 
 class PeriodResource extends Resource
 {
+    protected static ?string $modelLabel = 'période';
+
+    protected static ?string $pluralModelLabel = 'périodes';
+
     protected static ?string $model = Period::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|UnitEnum|null $navigationGroup = 'Paramètres';
 
     public static function form(Schema $schema): Schema
     {

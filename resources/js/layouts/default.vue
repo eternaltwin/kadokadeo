@@ -1,5 +1,5 @@
 <script setup>
-import Error from '@/components/message/Error.vue'
+import Announcement from '@/components/message/Announcement.vue'
 import Kalendrier from '@/components/nav/Kalendrier.vue'
 import Navbar from '@/components/nav/Navbar.vue'
 import Starbar from '@/components/nav/Starbar.vue'
@@ -28,10 +28,7 @@ const authStore = useAuthStore()
     </template>
   </header>
 
-  <Error style="width: 890px; margin: 20px 60px 40px 60px; font-size: 0.85em">
-    Kadokadéo est en alpha! Il le restera jusqu'à avoir un site complet.<br />
-    Les replays des jeux ont été réinitialisés le 27 juillet 2026. Tous les jeux ont été optimisés.<br />
-  </Error>
+  <Announcement style="width: 890px; margin: 20px 60px 40px 60px; font-size: 0.85em" />
 
   <main id="container">
     <section id="bodySection" class="w-full flex">

@@ -30,13 +30,13 @@ class StatsOverview extends StatsOverviewWidget
         $activePlayersIncrease = $activePlayersCount - $activePlayersPrevMonthCount;
 
         return [
-            Stat::make('Total runs this month', $thisMonthCount)
-                ->description(($increase >= 0 ? '+' : '').$increase.' than last month')
+            Stat::make('Parties terminées ce mois-ci', $thisMonthCount)
+                ->description(($increase >= 0 ? '+' : '').$increase.' par rapport au mois dernier')
                 ->descriptionIcon($increase >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down'),
-            Stat::make('Users', User::count())
-                ->description('+'.$usersMonthCount.' this month'),
-            Stat::make('Active players this month', $activePlayersCount)
-                ->description(($activePlayersIncrease >= 0 ? '+' : '').$activePlayersIncrease.' than last month'),
+            Stat::make('Utilisateurs', User::count())
+                ->description('+'.$usersMonthCount.' ce mois-ci'),
+            Stat::make('Joueurs actifs ce mois-ci', $activePlayersCount)
+                ->description(($activePlayersIncrease >= 0 ? '+' : '').$activePlayersIncrease.' par rapport au mois dernier'),
         ];
     }
 }

@@ -14,24 +14,30 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('etwin_id')
+                    ->label('ID Eternaltwin')
                     ->required(),
                 TextInput::make('display_name')
+                    ->label('Pseudo')
                     ->required(),
                 TextInput::make('kado_points')
+                    ->label('Kadopoints')
                     ->required()
                     ->numeric()
                     ->default(0),
                 TextInput::make('kado_games')
+                    ->label('Jeux kado')
                     ->required()
                     ->numeric(),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Adresse e-mail')
                     ->email(),
                 TextInput::make('password')
+                    ->label('Mot de passe')
                     ->password()
                     ->dehydrated(fn ($state) => filled($state)),
-                DateTimePicker::make('last_seen_at'),
+                DateTimePicker::make('last_seen_at')->label('Dernière visite'),
                 Toggle::make('is_admin')
+                    ->label('Administrateur')
                     ->required(),
             ]);
     }

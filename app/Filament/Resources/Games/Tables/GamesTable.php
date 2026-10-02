@@ -22,19 +22,24 @@ class GamesTable
                     ->state(fn ($record) => config('app.url') . $record->image_path)
                     ->checkFileExistence(false),
                 TextColumn::make('name')
+                    ->label('Nom')
                     ->searchable(),
                 TextColumn::make('category_id')
-                    ->label('Category')
-                    ->getStateUsing(fn ($record) => $record->category?->name ?? 'Uncategorized'),
+                    ->label('Catégorie')
+                    ->getStateUsing(fn ($record) => $record->category?->name ?? 'Sans catégorie'),
                 IconColumn::make('is_active')
+                    ->label('Actif')
                     ->boolean(),
                 IconColumn::make('is_official')
+                    ->label('Officiel')
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label('Créé le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Modifié le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

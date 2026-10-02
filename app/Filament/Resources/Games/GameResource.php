@@ -21,6 +21,10 @@ use Filament\Tables\Table;
 
 class GameResource extends Resource
 {
+    protected static ?string $modelLabel = 'jeu';
+
+    protected static ?string $pluralModelLabel = 'jeux';
+
     protected static ?string $model = Game::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

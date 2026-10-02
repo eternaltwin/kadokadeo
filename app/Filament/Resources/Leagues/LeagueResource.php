@@ -16,11 +16,15 @@ use UnitEnum;
 
 class LeagueResource extends Resource
 {
+    protected static ?string $modelLabel = 'ligue';
+
+    protected static ?string $pluralModelLabel = 'ligues';
+
     protected static ?string $model = League::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|UnitEnum|null $navigationGroup = 'Paramètres';
 
     public static function form(Schema $schema): Schema
     {

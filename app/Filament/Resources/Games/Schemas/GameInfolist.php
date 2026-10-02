@@ -13,17 +13,22 @@ class GameInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
+                TextEntry::make('name')->label('Nom'),
                 TextEntry::make('category_id')
+                    ->label('Catégorie')
                     ->numeric(),
-                ImageEntry::make('image_path'),
+                ImageEntry::make('image_path')->label('Image'),
                 IconEntry::make('is_active')
+                    ->label('Actif')
                     ->boolean(),
                 IconEntry::make('is_official')
+                    ->label('Officiel')
                     ->boolean(),
                 TextEntry::make('created_at')
+                    ->label('Créé le')
                     ->dateTime(),
                 TextEntry::make('updated_at')
+                    ->label('Modifié le')
                     ->dateTime(),
             ]);
     }

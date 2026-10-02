@@ -33,6 +33,7 @@
 - API auth is enforced per-controller with `HasMiddleware`/`Middleware` (not one global auth group in `routes/api.php`).
 - Run submission crypto depends on RSA key files from `config/kado.php` (`KADO_RSA_PRIVATE_KEY_PATH`, `KADO_RSA_PUBLIC_KEY_PATH`).
 - Public RSA key is injected into `window.Kado.public_key` in `resources/views/layouts/default.blade.php`; game clients use it to encrypt run payloads.
+- Admin panel (Filament, `/admin`) UI must be in **French**: every user-facing string in `app/Filament/`, `app/Livewire/` admin widgets and `resources/views/filament/` (labels, headings, notifications, options, tabs). Always set an explicit French `->label()` on fields/columns (Filament otherwise derives English labels from column names) and `$modelLabel`/`$pluralModelLabel` on resources. Code identifiers stay in English.
 - Scheduled commands are defined in `routes/console.php` and executed by container cron (`docker/app/conf/crontab` runs `artisan schedule:run` every minute).
 
 ## Existing Agent Guidance

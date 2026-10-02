@@ -15,9 +15,11 @@ class PeriodsTable
         return $table
             ->columns([
                 TextColumn::make('start_at')
+                    ->label('Début')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('end_at')
+                    ->label('Fin')
                     ->dateTime()
                     ->sortable(),
             ])

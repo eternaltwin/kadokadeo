@@ -16,21 +16,27 @@ class GameForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nom')
                     ->required(),
                 Textarea::make('description')
+                    ->label('Description')
                     ->columnSpanFull(),
                 Select::make('category_id')
+                    ->label('Catégorie')
                     ->options(fn () => \App\Models\Category::all()->pluck('name', 'id'))
                     ->required(),
-                TextInput::make('image_path'),
-                Repeater::make('stars')->simple(
+                TextInput::make('image_path')->label('Image'),
+                Repeater::make('stars')->label('Étoiles')->simple(
                     TextInput::make('value')
+                        ->label('Valeur')
                         ->numeric()
                         ->required(),
                 )->minItems(3)->maxItems(3),
                 Toggle::make('is_active')
+                    ->label('Actif')
                     ->required(),
                 Toggle::make('is_official')
+                    ->label('Officiel')
                     ->required(),
             ]);
     }

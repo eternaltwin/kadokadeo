@@ -23,10 +23,10 @@ class ListGames extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make(),
-            'active' => Tab::make()
+            'all' => Tab::make('Tous'),
+            'active' => Tab::make('Actifs')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('is_active', true)),
-            'inactive' => Tab::make()
+            'inactive' => Tab::make('Inactifs')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('is_active', false)),
         ];
     }

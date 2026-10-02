@@ -11,8 +11,8 @@ class PeriodForm
     {
         return $schema
             ->components([
-                DateTimePicker::make('start_at'),
-                DateTimePicker::make('end_at'),
+                DateTimePicker::make('start_at')->label('Début'),
+                DateTimePicker::make('end_at')->label('Fin'),
             ]);
     }
 }

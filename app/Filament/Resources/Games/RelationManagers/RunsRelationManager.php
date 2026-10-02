@@ -30,30 +30,42 @@ class RunsRelationManager extends RelationManager
 {
     protected static string $relationship = 'runs';
 
+    protected static ?string $title = 'Parties';
+
+    protected static ?string $modelLabel = 'partie';
+
+    protected static ?string $pluralModelLabel = 'parties';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 TextInput::make('period_id')
+                    ->label('Période')
                     ->numeric(),
                 TextInput::make('user_id')
+                    ->label('ID utilisateur')
                     ->required()
                     ->numeric(),
                 TextInput::make('contract_score')
+                    ->label('Score du contrat')
                     ->required()
                     ->numeric(),
                 TextInput::make('contract_points')
+                    ->label('Points du contrat')
                     ->required()
                     ->numeric(),
-                TextInput::make('seed'),
+                TextInput::make('seed')->label('Graine'),
                 TextInput::make('score')
+                    ->label('Score')
                     ->numeric(),
-                TextInput::make('score_details'),
+                TextInput::make('score_details')->label('Détails du score'),
                 TextInput::make('play_time_seconds')
+                    ->label('Temps de jeu (s)')
                     ->numeric(),
-                TextInput::make('replay'),
-                DateTimePicker::make('completed_at'),
-                Checkbox::make('is_cheat'),
+                TextInput::make('replay')->label('Replay'),
+                DateTimePicker::make('completed_at')->label('Terminée le'),
+                Checkbox::make('is_cheat')->label('Triche'),
             ]);
     }
 
@@ -66,40 +78,51 @@ class RunsRelationManager extends RelationManager
                     ->label('ID')
                     ->searchable(),
                 TextColumn::make('period_id')
+                    ->label('Période')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('user.display_name')
+                    ->label('Joueur')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('score')
+                    ->label('Score')
                     ->numeric()
                     ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw("score {$direction} NULLS LAST"))
                     ->searchable(),
                 TextColumn::make('seed')
+                    ->label('Graine')
                     ->searchable(),
                 TextColumn::make('contract_score')
+                    ->label('Score du contrat')
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('contract_points')
+                    ->label('Points du contrat')
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('play_time_seconds')
+                    ->label('Temps de jeu (s)')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label('Créé le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Modifié le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('completed_at')
+                    ->label('Terminée le')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('deleted_at')
+                    ->label('Supprimé le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -108,7 +131,7 @@ class RunsRelationManager extends RelationManager
                 TrashedFilter::make(),
                 Filter::make('completed_at')
                     ->default(true)
-                    ->label('Completed Runs')
+                    ->label('Parties terminées')
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('completed_at')),
             ])
             ->headerActions([

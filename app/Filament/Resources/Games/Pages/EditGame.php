@@ -21,11 +21,11 @@ class EditGame extends EditRecord
     {
         return [
             Action::make('resetScores')
-                ->label('Reset scores')
+                ->label('Réinitialiser les scores')
                 ->color('danger')
                 ->requiresConfirmation()
-                ->modalHeading('Reset game scores')
-                ->modalDescription('This will delete all runs for this game. This action cannot be undone.')
+                ->modalHeading('Réinitialiser les scores du jeu')
+                ->modalDescription('Toutes les parties de ce jeu seront supprimées. Cette action est irréversible.')
                 ->action(function (): void {
                     try {
                         Artisan::call('kado:reset-scores', [
@@ -33,39 +33,39 @@ class EditGame extends EditRecord
                         ]);
 
                         Notification::make()
-                            ->title('Scores reset successfully.')
+                            ->title('Scores réinitialisés.')
                             ->success()
                             ->send();
                     } catch (Throwable $exception) {
                         report($exception);
 
                         Notification::make()
-                            ->title('Unable to reset scores.')
-                            ->body('Check logs for details and try again.')
+                            ->title('Impossible de réinitialiser les scores.')
+                            ->body('Consultez les logs pour plus de détails, puis réessayez.')
                             ->danger()
                             ->send();
                     }
                 }),
             Action::make('deleteReplays')
-                ->label('Delete replays')
+                ->label('Supprimer les replays')
                 ->color('danger')
                 ->requiresConfirmation()
-                ->modalHeading('Delete game replays')
-                ->modalDescription('This will delete all replays for this game. This action cannot be undone.')
+                ->modalHeading('Supprimer les replays du jeu')
+                ->modalDescription('Tous les replays de ce jeu seront supprimés. Cette action est irréversible.')
                 ->action(function (): void {
                     try {
                         Run::where('game_id', $this->record->id)->update(['replay' => null]);
 
                         Notification::make()
-                            ->title('Replays deleted successfully.')
+                            ->title('Replays supprimés.')
                             ->success()
                             ->send();
                     } catch (Throwable $exception) {
                         report($exception);
 
                         Notification::make()
-                            ->title('Unable to delete replays.')
-                            ->body('Check logs for details and try again.')
+                            ->title('Impossible de supprimer les replays.')
+                            ->body('Consultez les logs pour plus de détails, puis réessayez.')
                             ->danger()
                             ->send();
                     }

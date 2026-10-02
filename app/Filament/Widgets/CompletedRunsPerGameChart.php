@@ -16,7 +16,7 @@ class CompletedRunsPerGameChart extends ChartWidget
 {
     use HasFiltersSchema;
 
-    protected ?string $heading = 'Completed runs per game';
+    protected ?string $heading = 'Parties terminées par jeu';
 
     protected function getData(): array
     {
@@ -62,8 +62,8 @@ class CompletedRunsPerGameChart extends ChartWidget
     public function filtersSchema(Schema $schema): Schema
     {
         return $schema->components([
-            DatePicker::make('startDate')->default(now()->subDays(30)),
-            DatePicker::make('endDate')->default(now()),
+            DatePicker::make('startDate')->label('Du')->default(now()->subDays(30)),
+            DatePicker::make('endDate')->label('Au')->default(now()),
         ]);
     }
 

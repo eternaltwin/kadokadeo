@@ -30,21 +30,22 @@ class TopPlayersWidget extends BaseWidget
             )
             ->columns([
                 TextColumn::make('display_name')
-                    ->label('Player')
+                    ->label('Joueur')
                     ->searchable(),
                 TextColumn::make('completed_count')
-                    ->label('Runs completed')
+                    ->label('Parties terminées')
                     ->numeric()
                     ->sortable(),
             ])
             ->filters([
                 Filter::make('period')
+                    ->label('Période')
                     ->form([
                         DatePicker::make('start_date')
-                            ->label('From')
+                            ->label('Du')
                             ->default(now()->subMonth()),
                         DatePicker::make('end_date')
-                            ->label('To')
+                            ->label('Au')
                             ->default(now()),
                     ])
                     ->query(fn (Builder $query, array $data) => $query
@@ -60,10 +61,10 @@ class TopPlayersWidget extends BaseWidget
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
                         if ($data['start_date'] ?? null) {
-                            $indicators[] = 'From '.Carbon::parse($data['start_date'])->toFormattedDateString();
+                            $indicators[] = 'Du '.Carbon::parse($data['start_date'])->format('d/m/Y');
                         }
                         if ($data['end_date'] ?? null) {
-                            $indicators[] = 'To '.Carbon::parse($data['end_date'])->toFormattedDateString();
+                            $indicators[] = 'Au '.Carbon::parse($data['end_date'])->format('d/m/Y');
                         }
 
                         return $indicators;

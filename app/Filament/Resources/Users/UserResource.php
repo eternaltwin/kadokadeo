@@ -17,6 +17,10 @@ use Filament\Tables\Table;
 
 class UserResource extends Resource
 {
+    protected static ?string $modelLabel = 'utilisateur';
+
+    protected static ?string $pluralModelLabel = 'utilisateurs';
+
     protected static ?string $model = User::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

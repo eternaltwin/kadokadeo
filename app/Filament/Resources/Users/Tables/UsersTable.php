@@ -16,30 +16,38 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('etwin_id')
+                    ->label('ID Eternaltwin')
                     ->searchable(),
                 TextColumn::make('display_name')
+                    ->label('Pseudo')
                     ->searchable(),
                 TextColumn::make('kado_points')
+                    ->label('Kadopoints')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('kado_games')
+                    ->label('Jeux kado')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('email')
-                    ->label('Email address')
+                    ->label('Adresse e-mail')
                     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label('Créé le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Modifié le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('last_seen_at')
+                    ->label('Dernière visite')
                     ->dateTime()
                     ->sortable(),
                 IconColumn::make('is_admin')
+                    ->label('Administrateur')
                     ->boolean(),
             ])
             ->filters([

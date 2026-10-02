@@ -17,7 +17,7 @@ class RunsPlayedChart extends ChartWidget
 {
     use HasFiltersSchema;
 
-    protected ?string $heading = 'Games Runs Chart';
+    protected ?string $heading = 'Parties jouées';
 
     protected function getData(): array
     {
@@ -60,17 +60,17 @@ class RunsPlayedChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Complete games played',
+                    'label' => 'Parties terminées',
                     'data' => $dataCompleted->map(fn (TrendValue $value) => $value->aggregate),
                     'borderColor' => '#11AA55',
                 ],
                 [
-                    'label' => 'Incomplete games played',
+                    'label' => 'Parties non terminées',
                     'data' => $dataNotCompleted->map(fn (TrendValue $value) => $value->aggregate),
                     'borderColor' => '#AA1155',
                 ],
                 [
-                    'label' => 'Total games played',
+                    'label' => 'Total des parties',
                     'data' => $dataNotCompleted->map(fn (TrendValue $value, $key) => $value->aggregate + ($dataCompleted[$key]?->aggregate ?? 0)),
                 ],
             ],
@@ -81,8 +81,8 @@ class RunsPlayedChart extends ChartWidget
     public function filtersSchema(Schema $schema): Schema
     {
         return $schema->components([
-            DatePicker::make('startDate')->default(now()->subDays(30)),
-            DatePicker::make('endDate')->default(now()),
+            DatePicker::make('startDate')->label('Du')->default(now()->subDays(30)),
+            DatePicker::make('endDate')->label('Au')->default(now()),
             // Select::make('status')
             //     ->label('Run status')
             //     ->options([
@@ -91,16 +91,16 @@ class RunsPlayedChart extends ChartWidget
             //     ])
             //     ->default(null),
             Select::make('period')
-                ->label('Period')
+                ->label('Période')
                 ->options([
-                    'day' => 'Day',
-                    'week' => 'Week',
-                    'month' => 'Month',
-                    'year' => 'Year',
+                    'day' => 'Jour',
+                    'week' => 'Semaine',
+                    'month' => 'Mois',
+                    'year' => 'Année',
                 ])
                 ->default('day'),
             Select::make('game')
-                ->label('Game')
+                ->label('Jeu')
                 ->options(Game::where('is_active', true)->pluck('name', 'id'))
                 ->default(null),
         ]);

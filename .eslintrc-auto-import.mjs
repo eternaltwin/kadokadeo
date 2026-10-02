@@ -71,6 +71,7 @@ export default {
     "triggerRef": true,
     "unref": true,
     "updateAtMidnight": true,
+    "useAnnouncementStore": true,
     "useApi": true,
     "useAttrs": true,
     "useAuthStore": true,

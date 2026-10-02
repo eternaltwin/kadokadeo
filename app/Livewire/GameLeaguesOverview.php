@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class GameLeaguesOverview extends ChartWidget
 {
-    protected ?string $heading = 'Leagues Overview';
+    protected ?string $heading = 'Répartition par ligue';
 
     public ?Model $record = null;
 
@@ -63,7 +63,7 @@ class GameLeaguesOverview extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Players',
+                    'label' => 'Joueurs',
                     'data' => array_column($leaguesData, 'data'),
                     'backgroundColor' => array_values($this->colors),
                     'borderColor' => array_map(fn ($color) => str_replace('0.2', '1', $color), array_values($this->colors)),
