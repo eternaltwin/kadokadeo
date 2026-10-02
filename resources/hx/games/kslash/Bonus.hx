@@ -38,9 +38,6 @@ class Bonus {
 			case 3:
 				addScore(Cs.C5000);
 				pid = 0;
-				// (no break in the original: the red gem also gives the 20 shurikens of case 4)
-				Cs.game.hero.incStar(20);
-				pid = 1;
 			case 4:
 				Cs.game.hero.incStar(20);
 				pid = 1;

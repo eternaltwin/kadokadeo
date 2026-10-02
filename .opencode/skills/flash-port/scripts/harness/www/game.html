@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>harness</title>
+<style>
+  @font-face { font-family: 'Fredoka Bold'; src: url('/fonts/Fredoka-Bold.ttf') format('truetype'); }
+  @font-face { font-family: 'Pricedown'; src: url('/fonts/Pricedown.ttf') format('truetype'); }
+  body { background: #2b2b2b; color: #eee; font-family: sans-serif; margin: 8px; } canvas { display: block; }
+</style>
+<script>
+  window.Kado = { public_key: '' };
+  window.evts = new EventTarget();
+  window.__logs = [];
+  const origLog = console.log;
+  console.log = function (...a) { window.__logs.push(a.map(String).join(' ')); origLog.apply(console, a); };
+  evts.addEventListener('score', e => { document.getElementById('score').textContent = e.detail.score; });
+  evts.addEventListener('gameCrash', e => { window.__crash = e.detail; console.error('CRASH', JSON.stringify(e.detail)); });
+</script>
+<script src="/vendor/pixi.js"></script>
+<script src="/vendor/pixi-filters.min.js"></script>
+<script src="/pixi-tween.js"></script>
+</head>
+<body>
+<canvas id="c" width="600" height="640"></canvas>
+<div>score: <span id="score">0</span></div>
+<script>
+  // usage: game.html?game=<package>&cls=<exposed class>&seed=123[&replay=...][&test=...]
+  // The debug build always plays the seed 123 live (createDebugContext): give seed=123 to the replays too.
+  const q = new URLSearchParams(location.search);
+  const game = q.get('game'), cls = q.get('cls');
+  // test modes of the game: modes/<game>.js (optional) fills window.TEST_MODES[name] = (proto, query) => {...}
+  window.TEST_MODES = {
+    // any game: game over after N frames (identical in live and replay)
+    generic(P, q) {
+      const orig = P.update, N = +(q.get('frames') || 900);
+      P.update = function (d) {
+        if (this.__n === undefined) this.__n = 0;
+        orig.call(this, d);
+        if (++this.__n === N) kk.gameOver({});
+      };
+    },
+  };
+  const load = (src, then) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = then;
+    s.onerror = then;
+    document.head.appendChild(s);
+  };
+  load('/modes/' + game + '.js', () => load('/' + (q.get('js') || game) + '.js', () => {
+    const test = q.get('test');
+    if (test) {
+      // A test mode must do exactly the same thing in the live game and in its replay: only the frame counter and
+      // the url parameters may decide (see modes/kslash.js)
+      if (!TEST_MODES[test]) throw new Error('unknown test mode ' + test);
+      TEST_MODES[test](window[cls].prototype, q);
+    }
+    window.kk = new KadoKadeo(document.getElementById('c'), window[cls], {
+      name: game, gameId: 1, replayData: q.get('replay'), seed: q.get('seed') || '123',
+      contractScore: 0, contractPoints: 0, isDaily: false });
+  }));
+</script>
+</body>
+</html>

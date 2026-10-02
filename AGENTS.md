@@ -39,3 +39,4 @@
 
 - Keep `CLAUDE.md` as the companion high-level map; this file is the short, high-signal checklist.
 - For Flash-to-Haxe porting or replay/scale/determinism tasks, check `.opencode/skills/*/SKILL.md` before changing game code.
+- Porting a KadoKado Flash game (or redoing / fixing a port): start with `.opencode/skills/flash-port/SKILL.md` (method, tools in `scripts/`, K-Slash walkthrough). The `scale` skill is legacy: new ports scale the root container x2.

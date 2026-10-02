@@ -1,9 +1,13 @@
 ---
 name: scale
-description: Multiplier tous les calculs de taille, position et deplacement par un facteur de scale pour adapter le jeu a un ratio plus grand.
+description: (Legacy) Multiplier tous les calculs de taille, position et deplacement par un facteur de scale pour adapter le jeu a un ratio plus grand. Pour un nouveau portage, utiliser flash-port (racine a x2).
 ---
 
 Tu travailles sur un projet Haxe KadoKadeo.
+
+> **Legacy.** Pour un nouveau portage, ne pas utiliser ce skill : garder les coordonnées d'origine et mettre le
+> conteneur racine à x2 (voir `.opencode/skills/flash-port/references/code.md`, section « Scale »). Ce skill ne sert
+> plus qu'à comprendre ou corriger les anciens portages qui utilisent `KadoKadeoManager.S()` / `I()`.
 
 ## Objectif
 
