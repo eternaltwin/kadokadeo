@@ -15,6 +15,7 @@ Route::get('/achievements', [App\Http\Controllers\Api\AchievementController::cla
 
 Route::get('/period/current', [App\Http\Controllers\Api\PeriodController::class, 'current']);
 Route::get('/competition', [App\Http\Controllers\Api\GameScoreController::class, 'competition']);
+Route::get('/competition/poids-plumes', [App\Http\Controllers\Api\GameScoreController::class, 'poidsPlumes']);
 
 Route::get('/daily/game', [App\Http\Controllers\Api\GameController::class, 'daily']);
 Route::get('/daily/scores', [App\Http\Controllers\Api\GameScoreController::class, 'dailyScores']);

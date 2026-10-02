@@ -91,6 +91,12 @@ function getStarId(run) {
   return getStarIdFromScore(run.score)
 }
 
+function getProgressPercent(record) {
+  if (record.current_score === null || record.score === null) return 0
+  if (record.score <= 0) return record.current_score <= 0 ? 100 : 0
+  return Math.min(100, Math.round((record.current_score / record.score) * 100))
+}
+
 const gameAchievements = computed(() => {
   return achievementStore.achievements?.reduce((acc, achievement) => {
     if (!acc[achievement.game.name]) {
@@ -280,31 +286,54 @@ const gameAchievements = computed(() => {
             <h1 class="mt-0 text-center">Records de {{ authSore.user.display_name }}</h1>
             <Loader v-if="isRecordsLoading">Chargement des records...</Loader>
             <MessageError v-else-if="recordsError">Error: {{ recordsError }}</MessageError>
-            <table v-else>
-              <thead>
-                <tr class="text-kado-orange uppercase text-sm *:px-2">
-                  <th class="text-center">Étoile</th>
-                  <th class="text-left">Nom du jeu</th>
-                  <th class="text-right">Score du jeu</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="record in personalRecords" :key="record.game.id">
-                  <td class="text-center">
-                    <component :is="getStarImage(record)" class="size-4 inline-block" />
-                  </td>
-                  <td class="text-left">
-                    <RouterLink :to="{ name: 'games.records', params: { id: record.game.id } }">
-                      {{ record.game.name }}
-                    </RouterLink>
-                  </td>
-                  <td class="text-right">
-                    <Number v-if="record.score !== null" color="blue" :value="record.score" />
-                    <span v-else>-</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div v-else class="px-2">
+              <table class="w-full">
+                <thead>
+                    <tr class="text-kado-orange uppercase text-sm *:px-2 *:text-left">
+                      <th>Jeu</th>
+                      <th>Score actuel</th>
+                      <th>Votre record</th>
+                      <th>Progression</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="record in personalRecords" :key="record.game.id">
+                    <td class="text-left">
+                      <RouterLink :to="{ name: 'games.records', params: { id: record.game.id } }">
+                        {{ record.game.name }}
+                      </RouterLink>
+                    </td>
+                    <td class="text-left">
+                      <div v-if="record.current_score !== null" class="inline-flex items-center justify-start gap-1">
+                        <component :is="getStarImage({ game: record.game, score: record.current_score })" class="size-4" />
+                        <Number color="blue" :value="record.current_score" />
+                      </div>
+                    </td>
+                    <td class="text-left">
+                      <div v-if="record.score !== null" class="inline-flex items-center justify-start gap-1">
+                        <component :is="getStarImage({ game: record.game, score: record.score })" class="size-4" />
+                        <Number color="blue" :value="record.score" />
+                      </div>
+                    </td>
+                    <td class="text-left">
+                      <div v-if="record.current_score !== null && record.score !== null" class="inline-flex min-w-28 items-center justify-start gap-2">
+                        <div
+                          role="progressbar"
+                          :aria-label="`Progression du score de ${record.game.name}`"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          :aria-valuenow="getProgressPercent(record)"
+                          class="h-2.5 w-20 overflow-hidden rounded bg-kado-cyan-200"
+                        >
+                          <div class="h-full bg-kado-green-500 transition-[width]" :style="{ width: `${getProgressPercent(record)}%` }"></div>
+                        </div>
+                        <span class="w-9 text-left text-xs">{{ getProgressPercent(record) }}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

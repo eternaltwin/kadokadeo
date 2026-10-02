@@ -8,6 +8,7 @@ use App\Models\Game;
 use App\Models\Period;
 use App\Services\GameService;
 use App\Services\LeagueService;
+use App\Services\PoidsPlumeService;
 use App\Services\ScoreService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -20,7 +21,7 @@ class GameScoreController extends Controller implements HasMiddleware
     public static function middleware()
     {
         return [
-            new Middleware('auth:sanctum', only: ['index', 'show', 'daily', 'dailyScores', 'siteRecords', 'personalRecords', 'userPeriodRecords', 'competition']),
+            new Middleware('auth:sanctum', only: ['index', 'show', 'daily', 'dailyScores', 'siteRecords', 'personalRecords', 'userPeriodRecords', 'competition', 'poidsPlumes']),
         ];
     }
 
@@ -64,6 +65,7 @@ class GameScoreController extends Controller implements HasMiddleware
     public function personalRecords(ScoreService $scoreService)
     {
         $userId = Auth::id();
+        $currentPeriodId = Period::current()->first()?->id;
         $records = Game::query()
             ->where('is_active', true)
             ->orderBy('name')
@@ -75,6 +77,9 @@ class GameScoreController extends Controller implements HasMiddleware
                     'stars' => $game->stars,
                 ],
                 'score' => $scoreService->getUserBestScore($game, $userId)?->score,
+                'current_score' => $currentPeriodId === null
+                    ? null
+                    : $scoreService->getUserBestScore($game, $userId, $currentPeriodId)?->score,
             ]);
 
         return response()->json($records);
@@ -105,6 +110,11 @@ class GameScoreController extends Controller implements HasMiddleware
         $currentPeriodId = Period::current()->first()?->id;
 
         return response()->json($scoreService->get1500Leaderboard($currentPeriodId));
+    }
+
+    public function poidsPlumes(PoidsPlumeService $poidsPlumeService)
+    {
+        return response()->json($poidsPlumeService->getLeaderboardForPeriod(Period::current()->first()));
     }
 
     public function search(Request $request, Game $game, ScoreService $scoreService)
