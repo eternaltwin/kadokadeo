@@ -3,6 +3,7 @@
 -L jsImport
 -cp ./resources/hx/lib
 -cp ./resources/hx/games
+-debug
 
 --each
 -js ./resources/js/games/atlanteine.js
@@ -121,3 +122,6 @@ manda.Game
 --next
 --js ./resources/js/games/drakhan.js
 drakhan.Game
+--next
+-js ./resources/js/games/linea.js
+linea.Game

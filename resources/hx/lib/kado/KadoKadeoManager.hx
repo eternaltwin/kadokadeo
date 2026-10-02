@@ -394,6 +394,7 @@ class KadoKadeoManager extends Application {
 			"Alien Encounters Solid",
 			"LondonTwo",
 			"Kozuka Gothic Pro H",
+			"Neuropol",
 		];
 		return Promise.all(fonts.map(font -> Browser.window.document.fonts.load("16px " + font)));
 	}

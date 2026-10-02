@@ -6,6 +6,7 @@
 @source '../** /*.js';
 
 @layer base {
+
   html,
   :host {
     line-height: unset;
@@ -83,6 +84,11 @@
 @font-face {
   font-family: 'Kozuka Gothic Pro H';
   src: url('/fonts/Kozuka Gothic Pro H.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Neuropol';
+  src: url('/fonts/Neuropol.ttf') format('truetype');
 }
 
 [data-lang='fr'] {
@@ -273,6 +279,7 @@
   }
 
   @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+
     /* For compatible browsers */
     #container h1 {
       -webkit-text-stroke: 1px #1f6776;
@@ -749,22 +756,19 @@
   }
 
   @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+
     /* For compatible browsers */
     .btnHomepagePlay a {
-      background: -webkit-linear-gradient(
-        to bottom,
-        var(--color-kado-play-400) 0%,
-        var(--color-kado-play-500) 40%,
-        var(--color-kado-play-900) 41%,
-        var(--color-kado-play-700) 100%
-      );
-      background: linear-gradient(
-        to bottom,
-        var(--color-kado-play-400) 0%,
-        var(--color-kado-play-500) 40%,
-        var(--color-kado-play-900) 41%,
-        var(--color-kado-play-700) 100%
-      );
+      background: -webkit-linear-gradient(to bottom,
+          var(--color-kado-play-400) 0%,
+          var(--color-kado-play-500) 40%,
+          var(--color-kado-play-900) 41%,
+          var(--color-kado-play-700) 100%);
+      background: linear-gradient(to bottom,
+          var(--color-kado-play-400) 0%,
+          var(--color-kado-play-500) 40%,
+          var(--color-kado-play-900) 41%,
+          var(--color-kado-play-700) 100%);
       background-color: var(--color-kado-play-700);
       background-clip: text;
       -webkit-background-clip: text;

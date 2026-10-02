@@ -57,7 +57,7 @@ class GameSeeder extends Seeder
             ['name' => 'Safari', 'image_path' => '/assets/img/games/Safari.png', 'is_active' => false, 'stars' => [14073, 28146, 35183]],
             ['name' => 'Pacifik', 'image_path' => '/assets/img/games/Pacifik.png', 'is_active' => false, 'stars' => [7887, 34177, 47322]],
             ['name' => 'Phagocytoz', 'image_path' => '/assets/img/games/Phagocytoz.png', 'is_active' => false, 'stars' => [12000, 24000, 30000]],
-            ['name' => 'Linea', 'image_path' => '/assets/img/games/Linea.png', 'is_active' => false, 'stars' => [12188, 42658, 57893]],
+            ['name' => 'Linea', 'image_path' => '/assets/img/games/Linea.png', 'is_active' => true, 'stars' => [12188, 42658, 57893]],
             ['name' => 'Kanji Gaiden', 'image_path' => '/assets/img/games/Kanji_Gaiden.png', 'is_active' => false, 'stars' => [9024, 27072, 36096]],
             ['name' => 'Julianus', 'image_path' => '/assets/img/games/Julianus.png', 'is_active' => false, 'stars' => [4433, 9975, 12745]],
             ['name' => 'Popcorn', 'image_path' => '/assets/img/games/Popcorn.png', 'is_active' => true, 'stars' => [18443, 79920, 110658]],
