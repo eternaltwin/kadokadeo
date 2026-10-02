@@ -255,17 +255,46 @@ class Game implements kado.GameInterface {
 
 		// AFTERIMAGES of the aura: one white glow for all of them
 		auraLayer = mdm.empty(DP_ROPE);
-		auraLayer.filters = [
-			Type.createInstance(GlowFilter, [
-				{
-					distance: 4 * Clip.K,
-					outerStrength: 4,
-					innerStrength: 0,
-					color: 0xFFFFFF,
-					quality: 0.3
-				}
-			])
-		];
+		auraLayer.filters = [glow(4, 4, 0xFFFFFF)];
+
+		warmShaders();
+	}
+
+	// Cs.glow(mc, blur, strength, color) of the original: GlowFilter of pixi-filters (its shader depends on the distance
+	// and the quality: keep them in this function, warmShaders compiles the same ones)
+	static function glow(blur:Float, strength:Float, color:Int):Dynamic {
+		return Type.createInstance(GlowFilter, [
+			{
+				distance: blur * Clip.K,
+				outerStrength: strength,
+				innerStrength: 0,
+				color: color,
+				quality: 0.3
+			}
+		]);
+	}
+
+	// The first use of a filter or of a sprite mask compiles its shader on the graphics card: tens of ms (up to 100 and
+	// more on a modest PC) during which the game freezes, the hero stopped for a few pictures the first time he was hit
+	// (glow of the hero without clothes), had the aura (glow, colour matrix of the afterimages) or was swallowed (lips of
+	// Medusa). All of them are compiled now, at the start, by drawing a tiny sprite with each one off screen.
+	function warmShaders() {
+		var renderer:Dynamic = KadoKadeoManager.kkm.renderer;
+		var holder = new pixi.core.display.Container();
+		for (f in [new ColorMatrixFilter(), glow(4, 4, 0xFFFFFF), glow(3, 2, 0x662200)]) {
+			var s = new PixiSprite(Texture.WHITE);
+			s.filters = [f];
+			holder.addChild(s);
+		}
+		var masked = new PixiSprite(Texture.WHITE);
+		var mask = new PixiSprite(Texture.WHITE);
+		masked.mask = mask;
+		holder.addChild(mask);
+		holder.addChild(masked);
+		var rt = pixi.core.textures.RenderTexture.create(32, 32);
+		renderer.render(holder, {renderTexture: rt, clear: true});
+		holder.destroy({children: true});
+		rt.destroy(true);
 	}
 
 	// ---------------------------------------------------------------- MAIN
@@ -924,17 +953,7 @@ class Game implements kado.GameInterface {
 
 	// hero without clothes: Cs.glow(root, 3, 2, 0x662200)
 	public function slipGlow(mc:ASprite) {
-		mc.filters = [
-			Type.createInstance(GlowFilter, [
-				{
-					distance: 3 * Clip.K,
-					outerStrength: 2,
-					innerStrength: 0,
-					color: 0x662200,
-					quality: 0.3
-				}
-			])
-		];
+		mc.filters = [glow(3, 2, 0x662200)];
 	}
 
 	// afterimage of the hero (getSnapshot of the original): aura (coloured, glowing) or kick (magenta)

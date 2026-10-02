@@ -165,7 +165,7 @@ class Ent {
 		}
 
 		if (coef == 1) {
-			display();
+			display(true);
 			x = sq.x;
 			y = sq.y;
 			setAction(null);
@@ -314,7 +314,15 @@ class Ent {
 	}
 
 	// DISPLAY / ATTACH
-	public function display() {
+	// follow: end of a walk, the new clip goes on from where the old one was shown during this step (without it, the
+	// clip was drawn at its arrival for the whole step while the view still slid: a jump of one step at each square)
+	public function display(?follow:Bool = false) {
+		var shownX:Null<Float> = null;
+		var shownY:Null<Float> = null;
+		if (follow && root != null && root._prevState != null && host != null && host.root != null) {
+			shownX = host.root._x + root._prevState.x;
+			shownY = host.root._y + root._prevState.y;
+		}
 		if (root != null)
 			root.removeMovieClip();
 		// a new clip: its walk cycle starts again
@@ -325,6 +333,11 @@ class Ent {
 		refreshBody();
 		if (flFreeze) {
 			Filt.grey(root, 1, 0, {r: 0, g: 150, b: 210});
+		}
+		if (shownX != null) {
+			root.updateState();
+			root._prevState.x = shownX - host.root._x;
+			root._prevState.y = shownY - host.root._y;
 		}
 	}
 

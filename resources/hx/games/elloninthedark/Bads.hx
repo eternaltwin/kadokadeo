@@ -49,7 +49,10 @@ class Bads extends Phys {
 		if (cooldown > 0) {
 			cooldown -= Timer.tmod;
 		} else {
-			if (Seed.rand() * shootRate < 1) {
+			// shootRate null: no shot (Flash: random * undefined is NaN, never < 1; in JavaScript random * null is 0,
+			// the Golgoth fired its short shots all the time, during its warning and from its arrival)
+			var r = Seed.rand();
+			if (shootRate != null && r * shootRate < 1) {
 				shoot();
 			}
 		}

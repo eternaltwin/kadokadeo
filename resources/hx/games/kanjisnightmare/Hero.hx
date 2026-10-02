@@ -670,7 +670,7 @@ class Hero extends Phys {
 			hp--;
 			releaseGrap();
 			root.removeMovieClip();
-			setRoot(Clip.attach(Cs.game.mdm, "mcHeroSlip", Game.DP_HERO));
+			setRoot(Clip.attach(Cs.game.mdm, "mcHeroSlip", Game.DP_HERO), true);
 			setSens(sens);
 			Cs.game.slipGlow(root);
 			noColTimer = 70;
@@ -705,7 +705,7 @@ class Hero extends Phys {
 		hp = 1;
 		var fr = clip().frame;
 		root.removeMovieClip();
-		setRoot(Clip.attach(Cs.game.mdm, "mcHero", Game.DP_HERO));
+		setRoot(Clip.attach(Cs.game.mdm, "mcHero", Game.DP_HERO), true);
 		root.gotoAndStop(fr);
 		setSens(sens);
 	}

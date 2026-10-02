@@ -44,11 +44,17 @@ class Sprite {
 		}
 	}
 
-	// the display changed (new clip): placed again without interpolation
-	public function setRoot(mc:ASprite) {
+	// the display changed (new clip): placed again without interpolation; follow: the same sprite gets a new clip in the
+	// same layer (hero losing / getting back his clothes), it goes on from where the old clip was shown in this step
+	public function setRoot(mc:ASprite, ?follow:Bool = false) {
+		var old = root;
 		root = mc;
 		placed = false;
 		updatePos();
+		if (follow && old != null && old != mc && old._prevState != null && mc._prevState != null) {
+			mc._prevState.x = old._prevState.x;
+			mc._prevState.y = old._prevState.y;
+		}
 	}
 
 	public function getDist(o:{x:Float, y:Float}):Float {
