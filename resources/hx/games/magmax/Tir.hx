@@ -26,6 +26,7 @@ class Tir {
 		this.dy = dy;
 		mc = game.dmanager.attach("tir" + (t + 1), Cs.PLAN_TIR);
 		mc.play();
+		mc.loop = true;
 		mc._x = x;
 		mc._y = y;
 		mc._rotation = Math.atan2(dy, dx) * 180 / Math.PI;
