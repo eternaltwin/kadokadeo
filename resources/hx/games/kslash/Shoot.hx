@@ -1,13 +1,9 @@
 package kslash;
 
-import mt.Timer;
-import mt.DepthManager;
-
 class Shoot {
-	public var dm:DepthManager;
-	public var root:ASprite;
+	public var root:Clip;
 
-	public var flCheck:Bool;
+	var flCheck:Bool;
 
 	public var x:Int;
 	public var y:Int;
@@ -18,8 +14,7 @@ class Shoot {
 	public var vy:Float;
 	public var vr:Float;
 
-	public function new(mc) {
-		dm = new DepthManager(mc);
+	public function new(mc:Clip) {
 		root = mc;
 		Cs.game.sList.push(this);
 		x = 0;
@@ -49,7 +44,7 @@ class Shoot {
 			checkCol();
 	}
 
-	public function recal() {
+	function recal() {
 		var m = Cs.SIZE * 0.5;
 		var adx = Math.abs(dx);
 		var ady = Math.abs(dy);

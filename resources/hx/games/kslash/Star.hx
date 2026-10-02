@@ -1,31 +1,26 @@
 package kslash;
 
 class Star extends Shoot {
-	public var damage:Int;
+	public var damage:Float;
 
-	public function new(mc) {
+	public function new(mc:Clip) {
 		super(mc);
 		Cs.game.nsList.push(this);
-		// mc.getGraphics().beginFill(0xAA00DD, 0.5).drawRect(-Cs.SIZE / 2, -Cs.SIZE / 2, Cs.SIZE, Cs.SIZE);
 		damage = 5;
 	}
 
-	public override function checkCol() {
+	override public function checkCol() {
 		super.checkCol();
-		if (x < 0 || x >= Game.XMAX || y < 0 || y >= Game.YMAX) {
-			kill();
-			return;
-		}
-		var list = Cs.game.grid[x][y].list;
+		var list = Cs.game.gridList(x, y);
 
-		if (list.length > 0) {
+		if (list != null && list.length > 0) {
 			var m = list[0];
 			m.hit(this);
 			kill();
 		}
 	}
 
-	public override function kill() {
+	override public function kill() {
 		super.kill();
 		Cs.game.nsList.remove(this);
 	}

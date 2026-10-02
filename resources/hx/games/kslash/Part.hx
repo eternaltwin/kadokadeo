@@ -1,40 +1,25 @@
 package kslash;
 
-import pixi.core.text.Text;
-import mt.Timer;
-import mt.bumdum.Phys;
+// particle of Game.pList (a clip with these fields in the original, moved by Game.updateParts)
+class Part {
+	public var root:ASprite;
 
-class Part extends Phys {
-	public var flQueue:Bool;
-	public var field:Text;
+	public var vx:Float;
+	public var vy:Float;
+	public var vs:Null<Float>;
+	public var vr:Null<Float>;
+	public var ft:Null<Int>;
+	public var weight:Null<Float>;
+	public var frict:Null<Float>;
+	public var t:Null<Float>;
+	public var scale:Float;
+	public var wt:Null<Float>;
 
-	public function new(mc) {
-		super(mc);
-	}
-
-	public override function update() {
-		super.update();
-		if (sleep != null) {
-			return;
-		}
-		var ox = x;
-		var oy = y;
-
-		if (flQueue) {
-			var dx = ox - x;
-			var dy = oy - y;
-			var a = Math.atan2(dy, dx);
-			var d = Math.sqrt(dx * dx + dy * dy);
-			var q = Cs.game.newPart("partQueue");
-			q.x = x;
-			q.y = y;
-			q.root._rotation = a / 0.0174;
-			q.root._xscale = d;
-		}
-	}
-
-	public override function kill() {
-		Cs.game.pList.remove(this);
-		super.kill();
+	public function new(mc:ASprite) {
+		root = mc;
+		vx = 0;
+		vy = 0;
+		frict = 0.95;
+		scale = 100;
 	}
 }

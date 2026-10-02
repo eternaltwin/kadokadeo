@@ -1,11 +1,8 @@
 package kslash;
 
-import mt.DepthManager;
-import mt.Timer;
-
+// a character of the grid: square (x, y), half of the square (cx, cy) and offset (dx, dy) from its middle
 class Ent {
-	public var dm:DepthManager;
-	public var root:ASprite;
+	public var root:Clip;
 
 	public var flGround:Bool;
 	public var flCol:Bool;
@@ -23,18 +20,18 @@ class Ent {
 
 	public var vx:Float;
 	public var vy:Float;
-	public var vr:Float;
+	public var vr:Null<Float>;
 
 	public var weight:Float;
-	public var friction:Float;
+	public var friction:Null<Float>;
 
 	public var nextAnim:String;
-	public var animFrame:Map<String, Int> = new Map();
 
-	public function new(mc) {
-		dm = new DepthManager(mc);
+	// the clip is drawn where the code puts it (no interpolation from where it was): first placement, teleport
+	var snap:Bool;
+
+	public function new(mc:Clip) {
 		root = mc;
-		root.obj = cast this; // TODO: remove cast
 		flGround = false;
 		flFreezeAnim = false;
 		flCol = true;
@@ -46,15 +43,17 @@ class Ent {
 		cy = 0;
 		vx = 0;
 		vy = 0;
-		vr = null;
-		weight = KadoKadeoManager.I(1);
+		weight = 1;
 		friction = 0.95;
+		// attached at the end of a frame, Flash showed it one picture at (0, 0) of the map before its first update:
+		// hidden until then (its _x / _y stay 0 for the code, like in Flash)
+		snap = true;
+		root.visible = false;
 	}
 
 	public function update() {
-		if (!flGround) {
+		if (!flGround)
 			vy += weight * Timer.tmod;
-		}
 
 		if (friction != null) {
 			var frict = Math.pow(friction, Timer.tmod);
@@ -73,19 +72,19 @@ class Ent {
 
 		root._x = (x + 0.25 + (cx * 0.5)) * Cs.SIZE + dx;
 		root._y = (y + 0.25 + (cy * 0.5)) * Cs.SIZE + dy;
+		if (snap) {
+			snap = false;
+			root.visible = true;
+			root.updateState();
+		}
 
 		if (nextAnim != null && !flFreezeAnim) {
-			if (animFrame.exists(nextAnim)) {
-				var anim = animFrame.get(nextAnim);
-				root.gotoAndPlay(anim);
-			} else {
-				root.gotoAndPlay(nextAnim);
-			}
+			root.gotoAndPlay(nextAnim);
 			nextAnim = null;
 		}
 	}
 
-	public function recal() {
+	function recal() {
 		var m = Cs.SIZE * 0.25;
 
 		var adx = Math.abs(dx);
@@ -93,7 +92,7 @@ class Ent {
 
 		while (adx > m || ady > m) {
 			if (adx > ady) { // HORIZONTAL
-				if (dx > 0) { // DROITE
+				if (dx > 0) { // RIGHT
 					if (cx == 0) {
 						if (x < Game.XMAX - 1) {
 							cx++;
@@ -110,7 +109,7 @@ class Ent {
 						x++;
 						enterSquare();
 					}
-				} else { // GAUCHE
+				} else { // LEFT
 					if (cx == 1) {
 						if (x > 0) {
 							cx--;
@@ -129,7 +128,7 @@ class Ent {
 					}
 				}
 			} else { // VERTICAL
-				if (dy > 0) { // BAS
+				if (dy > 0) { // DOWN
 					if (cy == 0) {
 						if (!checkGround()) {
 							cy++;
@@ -145,7 +144,7 @@ class Ent {
 						y++;
 						enterSquare();
 					}
-				} else { // HAUT
+				} else { // UP
 					if (cy == 1) {
 						cy--;
 						dy += 2 * m;
@@ -170,7 +169,7 @@ class Ent {
 		}
 	}
 
-	public function checkFall() {
+	function checkFall() {
 		if (!checkGround())
 			fall();
 	}
@@ -180,23 +179,20 @@ class Ent {
 	}
 
 	public function land() {
-		// Log.trace("land!")
 		flGround = true;
-
 		vy = 0;
 	}
 
 	public function bang() {
 		vx = 0;
-	};
+	}
 
-	public function checkGround() {
+	public function checkGround():Bool {
 		if (!flCol)
 			return false;
 		for (i in 0...2) {
 			var sens = cx * 2 - 1;
 			if (!Cs.game.checkFree(x + sens * i, y + 1)) {
-				// Log.trace((x+sens*i)+","+(y+1))
 				return true;
 			}
 		}
@@ -208,24 +204,25 @@ class Ent {
 	public function leaveSquare() {}
 
 	//
-	public function setSens(n) {
+	public function setSens(n:Int) {
 		sens = n;
 		root._xscale = n * 100;
-		if (root._prevState != null) {
-			root._prevState.xscale = n;
-		}
 	}
 
-	//
-	public function getAng(o:Ent) {
-		var dx = o.root._x - root._x;
-		var dy = o.root._y - root._y;
-		return Math.atan2(dy, dx);
+	// angle and distance between the clips, like the original (no target: NaN, as in Flash)
+	public function getAng(mc:ASprite):Float {
+		if (mc == null)
+			return Math.NaN;
+		var dx = mc._x - root._x;
+		var dy = mc._y - root._y;
+		return Cs.q(Math.atan2(dy, dx));
 	}
 
-	public function getDist(o:Ent) {
-		var dx = o.root._x - root._x;
-		var dy = o.root._y - root._y;
+	public function getDist(mc:ASprite):Float {
+		if (mc == null)
+			return Math.NaN;
+		var dx = mc._x - root._x;
+		var dy = mc._y - root._y;
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 }

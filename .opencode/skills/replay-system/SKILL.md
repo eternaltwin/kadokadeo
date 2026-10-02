@@ -39,7 +39,7 @@ Choisir le mode en fonction des controles du jeu:
 1. Inputs clavier uniquement
     - `recordInputs: true`, `recordEvents: false`
     - fournir `recordedKeys` (`UInt16Array`)
-    - exemples: `resources/hx/games/atlanteine/Game.hx`, `resources/hx/games/kslash/Game.hx`
+    - exemple: `resources/hx/games/atlanteine/Game.hx`
 
 2. Inputs souris polls (sans position)
     - `recordInputs: false`, `recordEvents: false`
@@ -64,7 +64,8 @@ Choisir le mode en fonction des controles du jeu:
 5. Mix clavier + evenements metier
     - `recordInputs: true`, `recordEvents: true`
     - ajouter `recordMousePosition` / `recordedMouseButtons` seulement si la souris influence le gameplay
-    - exemple: `resources/hx/games/opalus2/Game.hx`
+    - exemples: `resources/hx/games/opalus2/Game.hx`, `resources/hx/games/kslash/Game.hx` (le code secret NIGHT
+      tape au clavier : ses lettres ne sont pas des touches enregistrees, un evenement le rejoue)
 
 ## Etapes d'implementation (ordre recommande)
 
@@ -168,7 +169,6 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
 
 - Inputs clavier seuls:
     - `resources/hx/games/atlanteine/Game.hx`
-    - `resources/hx/games/kslash/Game.hx`
 - Souris polled:
     - `resources/hx/games/interwheel/Game.hx`
     - `resources/hx/games/kaskade2/Game.hx`
@@ -177,6 +177,7 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
     - `resources/hx/games/chocomouche/Game.hx`
 - Inputs + evenements metier:
     - `resources/hx/games/opalus2/Game.hx`
+    - `resources/hx/games/kslash/Game.hx`
 
 ## Points d'attention importants
 

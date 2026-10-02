@@ -1,34 +1,28 @@
 package kslash;
 
-import mt.bumdum.Lib;
-import mt.Timer;
-
 class Monster extends Ent {
 	// STATS
+	public var stClimb:Float;
+	public var stDrop:Array<{w:Int, id:Int}>;
 	public var stLevel:Int;
-
-	var stClimb:Int;
-	var stDrop:Array<{w:Int, id:Int}>;
-	var stTossClimb:Int;
-	var stTossSmart:Int;
-	var stTossShoot:Int;
-	var stClimbWait:Float;
-	var stShootWait:Float;
-	var score:Int;
+	public var stTossClimb:Null<Int>;
+	public var stTossSmart:Int;
+	public var stTossShoot:Null<Int>;
+	public var stClimbWait:Float;
+	public var stShootWait:Float;
+	public var score:Int;
 
 	// VARIABLES
-	var flClimbAnim:Bool;
-
+	public var flClimbAnim:Bool;
 	public var flSpike:Bool;
+
 	public var hp:Float;
+	public var waitTimer:Float;
+	public var flash:Null<Float>;
 
-	var waitTimer:Float;
-	var flash:Float;
-
-	public function new(mc) {
+	public function new(mc:Clip) {
 		super(mc);
 		Cs.game.mList.push(this);
-		// mc.getGraphics().beginFill(0x00AADD, 0.5).drawRect(-Cs.SIZE / 2, -Cs.SIZE / 2, Cs.SIZE, Cs.SIZE);
 
 		stTossSmart = 10;
 		flSpike = false;
@@ -37,14 +31,15 @@ class Monster extends Ent {
 
 		hp = 10;
 		score = Cs.C0;
-		stClimb = KadoKadeoManager.I(21);
+		stClimb = 21;
 
 		initStep(Cs.ST_FLY);
 	}
 
-	public function initStep(n) {
+	public function initStep(n:Int) {
 		step = n;
 		switch (step) {
+			case Cs.ST_NORMAL:
 			case Cs.ST_FLY:
 				flGround = false;
 			case Cs.ST_CLIMB:
@@ -57,7 +52,7 @@ class Monster extends Ent {
 		}
 	}
 
-	public override function update() {
+	override public function update() {
 		super.update();
 		switch (step) {
 			case Cs.ST_CLIMB:
@@ -66,7 +61,7 @@ class Monster extends Ent {
 				if (waitTimer < 15) {
 					if (!flClimbAnim) {
 						flClimbAnim = true;
-						root.gotoAndPlay(animFrame.get("climbEnd"));
+						root.gotoAndPlay("climbEnd");
 					}
 					if (waitTimer < 0) {
 						climb();
@@ -92,7 +87,7 @@ class Monster extends Ent {
 		initStep(Cs.ST_NORMAL);
 	}
 
-	public function updateFlash() {
+	function updateFlash() {
 		if (flash != null) {
 			var prc = flash;
 			flash *= 0.7;
@@ -100,24 +95,24 @@ class Monster extends Ent {
 				flash = null;
 				prc = 0;
 			}
-			Col.setPercentColor(root, prc, 0xFFFFFF);
+			Cs.setPercentColor(root, prc, 0xFFFFFF);
 		}
 	}
 
 	//
-	public function cut(n) {
-		KadoKadeoManager.kkm.addScore(Cs.C50);
+	public function cut(n:Float) {
+		Cs.game.addScore(Cs.C50);
 		harm(n);
-		throwMonster(1.57 - (1.57 * Cs.game.hero.sens), KadoKadeoManager.I(10));
+		throwAt(1.57 - (1.57 * Cs.game.hero.sens), 10);
 	}
 
 	public function hit(shot:Star) {
-		KadoKadeoManager.kkm.addScore(Cs.C10);
+		Cs.game.addScore(Cs.C10);
 		harm(shot.damage);
-		throwMonster(Math.atan2(shot.vy, shot.vx), KadoKadeoManager.I(2));
+		throwAt(Cs.q(Math.atan2(shot.vy, shot.vx)), 2);
 	}
 
-	public function harm(n) {
+	public function harm(n:Float) {
 		hp -= n;
 		if (hp < 0) {
 			death();
@@ -127,33 +122,32 @@ class Monster extends Ent {
 	}
 
 	public function death() {
-		Col.setPercentColor(root, 0, 0xFFFFFF);
-		KadoKadeoManager.kkm.addScore(score);
+		Cs.setPercentColor(root, 0, 0xFFFFFF);
+		Cs.game.addScore(score);
 		Cs.game.spawnBonus(root._x, root._y, getDrop());
 		Cs.game.monsterLevel -= stLevel;
 		leaveSquare();
 		Cs.game.mList.remove(this);
 	}
 
-	public function getDrop() {
+	function getDrop():Int {
 		var sum = 0;
-		for (d in stDrop) {
+		for (d in stDrop)
 			sum += d.w;
-		}
 		var rnd = Seed.random(sum);
 		sum = 0;
 		for (d in stDrop) {
 			sum += d.w;
-			if (sum > rnd) {
+			if (sum > rnd)
 				return d.id;
-			}
 		}
 		return 0;
 	}
 
-	public function throwMonster(a, p) {
-		var vitx = Math.cos(a) * p;
-		var vity = Math.sin(a) * p - KadoKadeoManager.I(3);
+	// throw(a, p) of the original
+	public function throwAt(a:Float, p:Float) {
+		var vitx = Cs.q(Math.cos(a) * p);
+		var vity = Cs.q(Math.sin(a) * p) - 3;
 		if (flGround) {
 			vity = Math.min(0, vity);
 			if (vity < 0)
@@ -163,7 +157,7 @@ class Monster extends Ent {
 		vy += vity;
 	}
 
-	public function tryJumpFront() {
+	function tryJumpFront() {
 		var dist = 0;
 		while (dist < 6) {
 			dist++;
@@ -175,19 +169,19 @@ class Monster extends Ent {
 		}
 	}
 
-	public function jumpFront(dist) {
+	function jumpFront(dist:Int) {
 		initStep(Cs.ST_FLY);
-		vy = -KadoKadeoManager.I(10);
-		vx = Math.pow(dist * KadoKadeoManager.I(24), 0.6) * sens;
+		vy = -10;
+		vx = Cs.q(Math.pow(dist * 24, 0.5)) * sens;
 	}
 
 	// ON
-	public override function land() {
+	override public function land() {
 		super.land();
 		initStep(Cs.ST_NORMAL);
 	}
 
-	public override function crossSquare() {
+	override public function crossSquare() {
 		super.crossSquare();
 
 		var flSmart = isSmart();
@@ -208,33 +202,30 @@ class Monster extends Ent {
 		}
 	}
 
-	public override function fall() {
-		// super.fall();
+	override public function fall() {
 		initStep(Cs.ST_FLY);
 	}
 
-	public override function bang() {
+	override public function bang() {
 		super.bang();
 		setSens(-sens);
 	}
 
-	public override function enterSquare() {
-		if (x < 0 || x >= Game.XMAX || y < 0 || y >= Game.YMAX) {
-			return;
-		}
-		Cs.game.grid[x][y].list.push(this);
+	override public function enterSquare() {
+		var list = Cs.game.gridList(x, y);
+		if (list != null)
+			list.push(this);
 	}
 
-	public override function leaveSquare() {
+	override public function leaveSquare() {
 		super.leaveSquare();
-		if (x < 0 || x >= Game.XMAX || y < 0 || y >= Game.YMAX) {
-			return;
-		}
-		Cs.game.grid[x][y].list.remove(this);
+		var list = Cs.game.gridList(x, y);
+		if (list != null)
+			list.remove(this);
 	}
 
 	// TOOLS
-	public function chooseWay() {
+	function chooseWay() {
 		var sens = Seed.random(2) * 2 - 1;
 		if (isSmart())
 			sens = (Cs.game.hero.x < x) ? -1 : 1;
@@ -242,7 +233,7 @@ class Monster extends Ent {
 	}
 
 	// IS ?
-	public function isSmart() {
+	function isSmart():Bool {
 		return Seed.rand() * stTossSmart < 1;
 	}
 }

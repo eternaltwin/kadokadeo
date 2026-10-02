@@ -1,67 +1,58 @@
 package kslash;
 
 class Tanker extends Runner {
-	public function new(mc) {
+	public function new(mc:Clip) {
 		super(mc);
-		mc.removeOnFrame = 79;
-		mc.stopOnFrame = [41, 65];
-		mc.onFrame.set(21, () -> mc.gotoAndPlay(5));
-		mc.onFrame.set(37, () -> mc.gotoAndPlay(29));
-		animFrame.set("walk", 1);
-		animFrame.set("walk_loop", 5);
-		animFrame.set("climb", 24);
-		animFrame.set("fly_up", 38);
-		animFrame.set("fly_down", 59);
-		animFrame.set("death", 70);
 		stLevel = 3;
 		hp = 50;
 		score = Cs.C300;
-		stClimbWait = 12; // 16
-		stTossClimb = 6; // 12
+		stClimbWait = 12;
+		stTossClimb = 6;
 		stTossSmart = 2;
-		stClimb = KadoKadeoManager.I(36);
-		speed = KadoKadeoManager.I(4);
+		stClimb = 36;
+		speed = 4;
 		stDrop.push({w: 40, id: 1});
 		stDrop.push({w: 10, id: 2});
 		stDrop.push({w: 30, id: 5});
 		score = Cs.C100;
 	}
 
-	public override function hit(shot:Star) {
+	// ON
+	// the shield stops the shurikens coming from the front: they bounce
+	override public function hit(shot:Star) {
 		if (step == Cs.ST_NORMAL) {
 			if (shot.vx * sens < 0) {
-				var skinName = Cs.game.optList[Cs.OPT_FLAMES] ? "mcNinjaShot2" : "mcNinjaShot1";
-				var p = Cs.game.newPart(skinName);
-				p.x = shot.root._x;
-				p.y = shot.root._y;
-				p.root.loop = true;
-				p.root.play();
+				var p = Cs.game.newPart("mcNinjaShot");
+				p.root._x = shot.root._x;
+				p.root._y = shot.root._y;
+				p.root.gotoAndStop(Cs.game.optList[Cs.OPT_FLAMES] ? 2 : 1);
 				p.vx = -shot.vx * 0.75;
-				p.vy = shot.vy - KadoKadeoManager.I(3);
-				p.timer = 20 + Seed.randVfx() * 10;
-				p.weight = KadoKadeoManager.S(0.4);
+				p.vy = shot.vy - 3;
+				p.t = 20 + Seed.randVfx() * 10;
+				p.weight = 0.4;
 				return;
 			}
 		}
 		super.hit(shot);
 	}
 
-	public override function cut(n) {
+	// cut from behind only, pushed back otherwise
+	override public function cut(n:Float) {
 		if ((Cs.game.hero.x - x) * sens < 0) {
 			super.cut(n);
 		} else {
-			throwMonster(1.57 - (1.57 * Cs.game.hero.sens), KadoKadeoManager.I(12));
+			throwAt(1.57 - (1.57 * Cs.game.hero.sens), 12);
 		}
 	}
 
-	public override function throwMonster(a, p) {
+	override public function throwAt(a:Float, p:Float) {
 		if (flGround && hp > 0) {
-			root.gotoAndStop(animFrame.get("walk_loop"));
+			root.gotoAndStop("walk_loop");
 		}
-		super.throwMonster(a, p);
+		super.throwAt(a, p);
 	}
 
-	public override function crossSquare() {
+	override public function crossSquare() {
 		super.crossSquare();
 
 		if (Cs.game.checkFree(x + sens, y + 1)) {
@@ -71,9 +62,8 @@ class Tanker extends Runner {
 					setSens(-sens);
 				}
 			} else {
-				if (Seed.rand() < 0.7) {
+				if (Seed.rand() < 0.7)
 					setSens(-sens);
-				}
 			}
 		}
 	}

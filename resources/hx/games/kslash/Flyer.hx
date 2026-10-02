@@ -1,22 +1,12 @@
 package kslash;
 
-import mt.Timer;
-
 class Flyer extends Monster {
-	var speed:Float;
 	var trg:{x:Float, y:Float};
 
 	var waitTimerMax:Float;
 
-	public function new(mc) {
+	public function new(mc:Clip) {
 		super(mc);
-		mc.removeOnFrame = 50;
-		mc.onFrame.set(16, () -> mc.gotoAndPlay(1));
-		mc.onFrame.set(23, () -> mc.gotoAndPlay(1));
-		animFrame.set("fly", 1);
-		animFrame.set("hit", 17);
-		animFrame.set("death", 31);
-		root.play();
 		stLevel = 2;
 		score = Cs.C120;
 		setSens(Seed.random(2) * 2 - 1);
@@ -35,7 +25,7 @@ class Flyer extends Monster {
 		score = Cs.C30;
 	}
 
-	public override function update() {
+	override public function update() {
 		super.update();
 		switch (step) {
 			case Cs.ST_NORMAL:
@@ -46,46 +36,44 @@ class Flyer extends Monster {
 					waitTimerMax = Math.max(0, waitTimerMax - 8);
 				}
 				move();
-				// root._rotation = vx*3;
 				var dx = Cs.game.hero.root._x - root._x;
 				if (dx * sens < 0)
 					setSens(-sens);
 		}
 	}
 
-	public function move() {
+	function move() {
 		var dx = trg.x - root._x;
 		var dy = trg.y - root._y;
 		var a = Math.atan2(dy, dx);
 		var dist = Math.sqrt(dx * dx + dy * dy);
 
-		var c = KadoKadeoManager.S(0.1);
-		var lim = KadoKadeoManager.S(0.4);
+		var c = 0.1;
+		var lim = 0.4;
 
-		vx += Math.min(Math.max(-lim, Math.cos(a) * dist * c), lim);
-		vy += Math.min(Math.max(-lim, Math.sin(a) * dist * c), lim);
+		vx += Math.min(Math.max(-lim, Cs.q(Math.cos(a) * dist * c)), lim);
+		vy += Math.min(Math.max(-lim, Cs.q(Math.sin(a) * dist * c)), lim);
 	}
 
-	public function chooseTrg() {
+	function chooseTrg() {
 		var dx = Cs.game.hero.root._x - root._x;
 		var dy = Cs.game.hero.root._y - root._y;
 
 		var a = Math.atan2(dy, dx);
-		var dist = Math.min(Math.sqrt(dx * dx + dy * dy), KadoKadeoManager.I(160));
+		var dist = Math.min(Math.sqrt(dx * dx + dy * dy), 160);
 		trg = {
-			x: root._x + Math.cos(a) * dist,
-			y: root._y + Math.sin(a) * dist
+			x: root._x + Cs.q(Math.cos(a) * dist),
+			y: root._y + Cs.q(Math.sin(a) * dist)
 		};
-		// Log.trace("chooseTrg("+trg.x+","+trg.y+")")
 	}
 
-	public override function hit(shot) {
+	override public function hit(shot:Star) {
 		nextAnim = "hit";
 		super.hit(shot);
 	}
 
-	public override function death() {
-		root.gotoAndPlay(animFrame.get("death"));
+	override public function death() {
+		root.gotoAndPlay("death");
 		super.death();
 	}
 }

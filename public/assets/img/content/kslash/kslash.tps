@@ -4,7 +4,7 @@
         <key>fileFormatVersion</key>
         <int>6</int>
         <key>texturePackerVersion</key>
-        <string>8.0.2</string>
+        <string>7.12.0</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -80,9 +80,9 @@
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
-            <int>2048</int>
+            <int>2040</int>
             <key>height</key>
-            <int>2048</int>
+            <int>2040</int>
         </QSize>
         <key>fixedTextureSize</key>
         <QSize>
@@ -144,8 +144,6 @@
         <true/>
         <key>trimSpriteNames</key>
         <false/>
-        <key>enableCacheBusting</key>
-        <false/>
         <key>prependSmartFolderName</key>
         <false/>
         <key>autodetectAnimations</key>
@@ -175,8 +173,378 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">src/bg/1.png</key>
-            <key type="filename">src/bg/2.png</key>
+            <key type="filename">src/bonus_1/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.666667,0.511111</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>11,11,22,22</rect>
+                <key>scale9Paddings</key>
+                <rect>11,11,22,22</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/bonus_2/1.png</key>
+            <key type="filename">src/bonus_2/2.png</key>
+            <key type="filename">src/bonus_2/3.png</key>
+            <key type="filename">src/bonus_2/4.png</key>
+            <key type="filename">src/bonus_2/5.png</key>
+            <key type="filename">src/bonus_2/6.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.467742,0.60274</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>16,18,31,36</rect>
+                <key>scale9Paddings</key>
+                <rect>16,18,31,36</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c19_0/1.png</key>
+            <key type="filename">src/c19_0/2.png</key>
+            <key type="filename">src/c19_0/3.png</key>
+            <key type="filename">src/c19_0/4.png</key>
+            <key type="filename">src/c19_0/5.png</key>
+            <key type="filename">src/c19_0/6.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.921053,0.75</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>10,5,19,10</rect>
+                <key>scale9Paddings</key>
+                <rect>10,5,19,10</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c19_1_0/1.png</key>
+            <key type="filename">src/c19_1_0/2.png</key>
+            <key type="filename">src/c19_1_0/3.png</key>
+            <key type="filename">src/c19_1_0/4.png</key>
+            <key type="filename">src/c19_1_0/5.png</key>
+            <key type="filename">src/c19_1_0/6.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.92,0.769231</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>19,10,38,20</rect>
+                <key>scale9Paddings</key>
+                <rect>19,10,38,20</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c19_2_0/1.png</key>
+            <key type="filename">src/c19_2_0/2.png</key>
+            <key type="filename">src/c19_2_0/3.png</key>
+            <key type="filename">src/c19_2_0/4.png</key>
+            <key type="filename">src/c19_2_0/5.png</key>
+            <key type="filename">src/c19_2_0/6.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.928571,0.766667</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>14,8,28,15</rect>
+                <key>scale9Paddings</key>
+                <rect>14,8,28,15</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c24_1/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.301205,0.504505</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>21,28,42,56</rect>
+                <key>scale9Paddings</key>
+                <rect>21,28,42,56</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c28_0/1.png</key>
+            <key type="filename">src/c28_0/2.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.494624,0.505376</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>23,23,46,46</rect>
+                <key>scale9Paddings</key>
+                <rect>23,23,46,46</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c40_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.481481</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,7,24,14</rect>
+                <key>scale9Paddings</key>
+                <rect>12,7,24,14</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c50_0/1.png</key>
+            <key type="filename">src/c50_0/2.png</key>
+            <key type="filename">src/c50_0/3.png</key>
+            <key type="filename">src/c50_0/4.png</key>
+            <key type="filename">src/c50_0/5.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.573171,0.564103</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>20,10,41,20</rect>
+                <key>scale9Paddings</key>
+                <rect>20,10,41,20</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c63_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.481481</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,7,24,14</rect>
+                <key>scale9Paddings</key>
+                <rect>12,7,24,14</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c63_1_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.492063,0.485714</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>16,9,32,18</rect>
+                <key>scale9Paddings</key>
+                <rect>16,9,32,18</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c67_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.463768,0.534247</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>17,18,34,36</rect>
+                <key>scale9Paddings</key>
+                <rect>17,18,34,36</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c67_3/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.95122,0.37037</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>10,14,20,27</rect>
+                <key>scale9Paddings</key>
+                <rect>10,14,20,27</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c222_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>18,18,37,37</rect>
+                <key>scale9Paddings</key>
+                <rect>18,18,37,37</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c285_0/1.png</key>
+            <key type="filename">src/c285_0/2.png</key>
+            <key type="filename">src/c285_0/3.png</key>
+            <key type="filename">src/c285_0/4.png</key>
+            <key type="filename">src/c285_0/5.png</key>
+            <key type="filename">src/c285_0/6.png</key>
+            <key type="filename">src/c285_0/7.png</key>
+            <key type="filename">src/c285_0/8.png</key>
+            <key type="filename">src/c285_0/9.png</key>
+            <key type="filename">src/c285_0/10.png</key>
+            <key type="filename">src/c285_0/11.png</key>
+            <key type="filename">src/c285_0/12.png</key>
+            <key type="filename">src/c285_0/13.png</key>
+            <key type="filename">src/c285_0/14.png</key>
+            <key type="filename">src/c285_0/15.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.019608,0.586667</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>13,19,26,38</rect>
+                <key>scale9Paddings</key>
+                <rect>13,19,26,38</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c285_0W/1.png</key>
+            <key type="filename">src/c285_0W/2.png</key>
+            <key type="filename">src/c285_0W/3.png</key>
+            <key type="filename">src/c285_0W/4.png</key>
+            <key type="filename">src/c285_0W/5.png</key>
+            <key type="filename">src/c285_0W/6.png</key>
+            <key type="filename">src/c285_0W/7.png</key>
+            <key type="filename">src/c285_0W/8.png</key>
+            <key type="filename">src/c285_0W/9.png</key>
+            <key type="filename">src/c285_0W/10.png</key>
+            <key type="filename">src/c285_0W/11.png</key>
+            <key type="filename">src/c285_0W/12.png</key>
+            <key type="filename">src/c285_0W/13.png</key>
+            <key type="filename">src/c285_0W/14.png</key>
+            <key type="filename">src/c285_0W/15.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.019608,0.586667</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>13,19,26,38</rect>
+                <key>scale9Paddings</key>
+                <rect>13,19,26,38</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c310_0/1.png</key>
+            <key type="filename">src/c310_0/2.png</key>
+            <key type="filename">src/c310_0/3.png</key>
+            <key type="filename">src/c310_0/4.png</key>
+            <key type="filename">src/c310_0/5.png</key>
+            <key type="filename">src/c310_0/6.png</key>
+            <key type="filename">src/c310_0/7.png</key>
+            <key type="filename">src/c310_0/8.png</key>
+            <key type="filename">src/c310_0/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.42623,0.509434</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>15,13,30,26</rect>
+                <key>scale9Paddings</key>
+                <rect>15,13,30,26</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c328_0/1.png</key>
+            <key type="filename">src/c328_0/2.png</key>
+            <key type="filename">src/c328_0/3.png</key>
+            <key type="filename">src/c328_0/4.png</key>
+            <key type="filename">src/c328_0/5.png</key>
+            <key type="filename">src/c328_0/6.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.507042,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>18,18,36,36</rect>
+                <key>scale9Paddings</key>
+                <rect>18,18,36,36</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c336_0/1.png</key>
+            <key type="filename">src/c336_0/2.png</key>
+            <key type="filename">src/c336_0/3.png</key>
+            <key type="filename">src/c336_0/4.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.52,0.521739</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>6,6,12,12</rect>
+                <key>scale9Paddings</key>
+                <rect>6,6,12,12</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/c341_0/1.png</key>
+            <key type="filename">src/c341_0/2.png</key>
+            <key type="filename">src/c341_0/3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.516667</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>18,15,36,30</rect>
+                <key>scale9Paddings</key>
+                <rect>18,15,36,30</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/decor1/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -185,13 +553,13 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>255,255,510,510</rect>
+                <rect>125,9,250,18</rect>
                 <key>scale9Paddings</key>
-                <rect>255,255,510,510</rect>
+                <rect>125,9,250,18</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/bgBack.png</key>
+            <key type="filename">src/decor6/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -200,15 +568,13 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>375,26,750,53</rect>
+                <rect>125,9,250,18</rect>
                 <key>scale9Paddings</key>
-                <rect>375,26,750,53</rect>
+                <rect>125,9,250,18</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/bgFront/1.png</key>
-            <key type="filename">src/bgFront/2.png</key>
-            <key type="filename">src/bgFront/3.png</key>
+            <key type="filename">src/decor8/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -217,312 +583,13 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>750,750,1500,1500</rect>
+                <rect>22,65,44,130</rect>
                 <key>scale9Paddings</key>
-                <rect>750,750,1500,1500</rect>
+                <rect>22,65,44,130</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/bonus/1.png</key>
-            <key type="filename">src/bonus/10.png</key>
-            <key type="filename">src/bonus/2.png</key>
-            <key type="filename">src/bonus/3.png</key>
-            <key type="filename">src/bonus/4.png</key>
-            <key type="filename">src/bonus/5.png</key>
-            <key type="filename">src/bonus/6.png</key>
-            <key type="filename">src/bonus/7.png</key>
-            <key type="filename">src/bonus/8.png</key>
-            <key type="filename">src/bonus/9.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.516129,0.47861</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>47,47,93,93</rect>
-                <key>scale9Paddings</key>
-                <rect>47,47,93,93</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/corner/1.png</key>
-            <key type="filename">src/corner/2.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0,0.047619</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>18,16,36,31</rect>
-                <key>scale9Paddings</key>
-                <rect>18,16,36,31</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/heroBfx1/1.png</key>
-            <key type="filename">src/heroBfx1/2.png</key>
-            <key type="filename">src/heroBfx1/3.png</key>
-            <key type="filename">src/heroBfx1/4.png</key>
-            <key type="filename">src/heroBfx1/5.png</key>
-            <key type="filename">src/heroBfx2/1.png</key>
-            <key type="filename">src/heroBfx2/2.png</key>
-            <key type="filename">src/heroBfx2/3.png</key>
-            <key type="filename">src/heroBfx2/4.png</key>
-            <key type="filename">src/heroBfx2/5.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.277027,0.474074</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>37,34,74,67</rect>
-                <key>scale9Paddings</key>
-                <rect>37,34,74,67</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/heroKunai.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>1.09211,0.740741</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>19,7,38,13</rect>
-                <key>scale9Paddings</key>
-                <rect>19,7,38,13</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/inter.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>-0.145833,-0.166667</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>12,12,24,24</rect>
-                <key>scale9Paddings</key>
-                <rect>12,12,24,24</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/mcFlyer/1.png</key>
-            <key type="filename">src/mcFlyer/10.png</key>
-            <key type="filename">src/mcFlyer/11.png</key>
-            <key type="filename">src/mcFlyer/12.png</key>
-            <key type="filename">src/mcFlyer/13.png</key>
-            <key type="filename">src/mcFlyer/14.png</key>
-            <key type="filename">src/mcFlyer/15.png</key>
-            <key type="filename">src/mcFlyer/16.png</key>
-            <key type="filename">src/mcFlyer/17.png</key>
-            <key type="filename">src/mcFlyer/18.png</key>
-            <key type="filename">src/mcFlyer/19.png</key>
-            <key type="filename">src/mcFlyer/2.png</key>
-            <key type="filename">src/mcFlyer/20.png</key>
-            <key type="filename">src/mcFlyer/21.png</key>
-            <key type="filename">src/mcFlyer/22.png</key>
-            <key type="filename">src/mcFlyer/23.png</key>
-            <key type="filename">src/mcFlyer/24.png</key>
-            <key type="filename">src/mcFlyer/25.png</key>
-            <key type="filename">src/mcFlyer/26.png</key>
-            <key type="filename">src/mcFlyer/27.png</key>
-            <key type="filename">src/mcFlyer/28.png</key>
-            <key type="filename">src/mcFlyer/29.png</key>
-            <key type="filename">src/mcFlyer/3.png</key>
-            <key type="filename">src/mcFlyer/30.png</key>
-            <key type="filename">src/mcFlyer/31.png</key>
-            <key type="filename">src/mcFlyer/32.png</key>
-            <key type="filename">src/mcFlyer/33.png</key>
-            <key type="filename">src/mcFlyer/34.png</key>
-            <key type="filename">src/mcFlyer/35.png</key>
-            <key type="filename">src/mcFlyer/36.png</key>
-            <key type="filename">src/mcFlyer/37.png</key>
-            <key type="filename">src/mcFlyer/38.png</key>
-            <key type="filename">src/mcFlyer/39.png</key>
-            <key type="filename">src/mcFlyer/4.png</key>
-            <key type="filename">src/mcFlyer/40.png</key>
-            <key type="filename">src/mcFlyer/41.png</key>
-            <key type="filename">src/mcFlyer/42.png</key>
-            <key type="filename">src/mcFlyer/43.png</key>
-            <key type="filename">src/mcFlyer/44.png</key>
-            <key type="filename">src/mcFlyer/45.png</key>
-            <key type="filename">src/mcFlyer/46.png</key>
-            <key type="filename">src/mcFlyer/47.png</key>
-            <key type="filename">src/mcFlyer/48.png</key>
-            <key type="filename">src/mcFlyer/49.png</key>
-            <key type="filename">src/mcFlyer/5.png</key>
-            <key type="filename">src/mcFlyer/50.png</key>
-            <key type="filename">src/mcFlyer/6.png</key>
-            <key type="filename">src/mcFlyer/7.png</key>
-            <key type="filename">src/mcFlyer/8.png</key>
-            <key type="filename">src/mcFlyer/9.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.583569,0.427907</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>88,54,177,107</rect>
-                <key>scale9Paddings</key>
-                <rect>88,54,177,107</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/mcHero/1.png</key>
-            <key type="filename">src/mcHero/10.png</key>
-            <key type="filename">src/mcHero/100.png</key>
-            <key type="filename">src/mcHero/101.png</key>
-            <key type="filename">src/mcHero/102.png</key>
-            <key type="filename">src/mcHero/103.png</key>
-            <key type="filename">src/mcHero/104.png</key>
-            <key type="filename">src/mcHero/11.png</key>
-            <key type="filename">src/mcHero/116.png</key>
-            <key type="filename">src/mcHero/117.png</key>
-            <key type="filename">src/mcHero/118.png</key>
-            <key type="filename">src/mcHero/119.png</key>
-            <key type="filename">src/mcHero/12.png</key>
-            <key type="filename">src/mcHero/120.png</key>
-            <key type="filename">src/mcHero/121.png</key>
-            <key type="filename">src/mcHero/122.png</key>
-            <key type="filename">src/mcHero/123.png</key>
-            <key type="filename">src/mcHero/124.png</key>
-            <key type="filename">src/mcHero/125.png</key>
-            <key type="filename">src/mcHero/126.png</key>
-            <key type="filename">src/mcHero/127.png</key>
-            <key type="filename">src/mcHero/128.png</key>
-            <key type="filename">src/mcHero/13.png</key>
-            <key type="filename">src/mcHero/14.png</key>
-            <key type="filename">src/mcHero/15.png</key>
-            <key type="filename">src/mcHero/16.png</key>
-            <key type="filename">src/mcHero/17.png</key>
-            <key type="filename">src/mcHero/18.png</key>
-            <key type="filename">src/mcHero/19.png</key>
-            <key type="filename">src/mcHero/2.png</key>
-            <key type="filename">src/mcHero/20.png</key>
-            <key type="filename">src/mcHero/21.png</key>
-            <key type="filename">src/mcHero/22.png</key>
-            <key type="filename">src/mcHero/23.png</key>
-            <key type="filename">src/mcHero/24.png</key>
-            <key type="filename">src/mcHero/25.png</key>
-            <key type="filename">src/mcHero/26.png</key>
-            <key type="filename">src/mcHero/27.png</key>
-            <key type="filename">src/mcHero/28.png</key>
-            <key type="filename">src/mcHero/29.png</key>
-            <key type="filename">src/mcHero/3.png</key>
-            <key type="filename">src/mcHero/30.png</key>
-            <key type="filename">src/mcHero/31.png</key>
-            <key type="filename">src/mcHero/32.png</key>
-            <key type="filename">src/mcHero/33.png</key>
-            <key type="filename">src/mcHero/34.png</key>
-            <key type="filename">src/mcHero/35.png</key>
-            <key type="filename">src/mcHero/36.png</key>
-            <key type="filename">src/mcHero/37.png</key>
-            <key type="filename">src/mcHero/38.png</key>
-            <key type="filename">src/mcHero/39.png</key>
-            <key type="filename">src/mcHero/4.png</key>
-            <key type="filename">src/mcHero/40.png</key>
-            <key type="filename">src/mcHero/41.png</key>
-            <key type="filename">src/mcHero/42.png</key>
-            <key type="filename">src/mcHero/43.png</key>
-            <key type="filename">src/mcHero/44.png</key>
-            <key type="filename">src/mcHero/45.png</key>
-            <key type="filename">src/mcHero/46.png</key>
-            <key type="filename">src/mcHero/47.png</key>
-            <key type="filename">src/mcHero/48.png</key>
-            <key type="filename">src/mcHero/49.png</key>
-            <key type="filename">src/mcHero/5.png</key>
-            <key type="filename">src/mcHero/50.png</key>
-            <key type="filename">src/mcHero/51.png</key>
-            <key type="filename">src/mcHero/52.png</key>
-            <key type="filename">src/mcHero/53.png</key>
-            <key type="filename">src/mcHero/54.png</key>
-            <key type="filename">src/mcHero/55.png</key>
-            <key type="filename">src/mcHero/56.png</key>
-            <key type="filename">src/mcHero/57.png</key>
-            <key type="filename">src/mcHero/58.png</key>
-            <key type="filename">src/mcHero/59.png</key>
-            <key type="filename">src/mcHero/6.png</key>
-            <key type="filename">src/mcHero/60.png</key>
-            <key type="filename">src/mcHero/61.png</key>
-            <key type="filename">src/mcHero/62.png</key>
-            <key type="filename">src/mcHero/63.png</key>
-            <key type="filename">src/mcHero/64.png</key>
-            <key type="filename">src/mcHero/65.png</key>
-            <key type="filename">src/mcHero/66.png</key>
-            <key type="filename">src/mcHero/67.png</key>
-            <key type="filename">src/mcHero/68.png</key>
-            <key type="filename">src/mcHero/69.png</key>
-            <key type="filename">src/mcHero/7.png</key>
-            <key type="filename">src/mcHero/70.png</key>
-            <key type="filename">src/mcHero/71.png</key>
-            <key type="filename">src/mcHero/72.png</key>
-            <key type="filename">src/mcHero/73.png</key>
-            <key type="filename">src/mcHero/74.png</key>
-            <key type="filename">src/mcHero/75.png</key>
-            <key type="filename">src/mcHero/76.png</key>
-            <key type="filename">src/mcHero/77.png</key>
-            <key type="filename">src/mcHero/78.png</key>
-            <key type="filename">src/mcHero/79.png</key>
-            <key type="filename">src/mcHero/8.png</key>
-            <key type="filename">src/mcHero/80.png</key>
-            <key type="filename">src/mcHero/81.png</key>
-            <key type="filename">src/mcHero/82.png</key>
-            <key type="filename">src/mcHero/83.png</key>
-            <key type="filename">src/mcHero/84.png</key>
-            <key type="filename">src/mcHero/85.png</key>
-            <key type="filename">src/mcHero/86.png</key>
-            <key type="filename">src/mcHero/87.png</key>
-            <key type="filename">src/mcHero/88.png</key>
-            <key type="filename">src/mcHero/89.png</key>
-            <key type="filename">src/mcHero/9.png</key>
-            <key type="filename">src/mcHero/90.png</key>
-            <key type="filename">src/mcHero/91.png</key>
-            <key type="filename">src/mcHero/92.png</key>
-            <key type="filename">src/mcHero/93.png</key>
-            <key type="filename">src/mcHero/94.png</key>
-            <key type="filename">src/mcHero/95.png</key>
-            <key type="filename">src/mcHero/96.png</key>
-            <key type="filename">src/mcHero/97.png</key>
-            <key type="filename">src/mcHero/98.png</key>
-            <key type="filename">src/mcHero/99.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.596958,0.617978</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>66,45,131,89</rect>
-                <key>scale9Paddings</key>
-                <rect>66,45,131,89</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/mcHero/105.png</key>
-            <key type="filename">src/mcHero/106.png</key>
-            <key type="filename">src/mcHero/107.png</key>
-            <key type="filename">src/mcHero/108.png</key>
-            <key type="filename">src/mcHero/109.png</key>
-            <key type="filename">src/mcHero/110.png</key>
-            <key type="filename">src/mcHero/111.png</key>
-            <key type="filename">src/mcHero/112.png</key>
-            <key type="filename">src/mcHero/113.png</key>
-            <key type="filename">src/mcHero/114.png</key>
-            <key type="filename">src/mcHero/115.png</key>
+            <key type="filename">src/decor9/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -531,510 +598,253 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>66,45,131,89</rect>
+                <rect>28,55,56,110</rect>
                 <key>scale9Paddings</key>
-                <rect>66,45,131,89</rect>
+                <rect>28,55,56,110</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/mcIcon/1.png</key>
+            <key type="filename">src/decor10/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>1.04839,0.0151515</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>16,17,31,33</rect>
+                <rect>97,40,194,79</rect>
                 <key>scale9Paddings</key>
-                <rect>16,17,31,33</rect>
+                <rect>97,40,194,79</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/mcIcon/2.png</key>
-            <key type="filename">src/mcIcon/3.png</key>
+            <key type="filename">src/decor12/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>1.04839,0</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>16,17,31,33</rect>
+                <rect>125,18,250,37</rect>
                 <key>scale9Paddings</key>
-                <rect>16,17,31,33</rect>
+                <rect>125,18,250,37</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/mcKunai.png</key>
+            <key type="filename">src/decor15/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.340909,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>22,6,44,11</rect>
+                <rect>85,85,170,170</rect>
                 <key>scale9Paddings</key>
-                <rect>22,6,44,11</rect>
+                <rect>85,85,170,170</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/mcMonster1/1.png</key>
-            <key type="filename">src/mcMonster1/10.png</key>
-            <key type="filename">src/mcMonster1/100.png</key>
-            <key type="filename">src/mcMonster1/101.png</key>
-            <key type="filename">src/mcMonster1/102.png</key>
-            <key type="filename">src/mcMonster1/103.png</key>
-            <key type="filename">src/mcMonster1/104.png</key>
-            <key type="filename">src/mcMonster1/105.png</key>
-            <key type="filename">src/mcMonster1/106.png</key>
-            <key type="filename">src/mcMonster1/107.png</key>
-            <key type="filename">src/mcMonster1/108.png</key>
-            <key type="filename">src/mcMonster1/109.png</key>
-            <key type="filename">src/mcMonster1/11.png</key>
-            <key type="filename">src/mcMonster1/110.png</key>
-            <key type="filename">src/mcMonster1/111.png</key>
-            <key type="filename">src/mcMonster1/112.png</key>
-            <key type="filename">src/mcMonster1/113.png</key>
-            <key type="filename">src/mcMonster1/114.png</key>
-            <key type="filename">src/mcMonster1/115.png</key>
-            <key type="filename">src/mcMonster1/116.png</key>
-            <key type="filename">src/mcMonster1/117.png</key>
-            <key type="filename">src/mcMonster1/118.png</key>
-            <key type="filename">src/mcMonster1/12.png</key>
-            <key type="filename">src/mcMonster1/13.png</key>
-            <key type="filename">src/mcMonster1/14.png</key>
-            <key type="filename">src/mcMonster1/15.png</key>
-            <key type="filename">src/mcMonster1/16.png</key>
-            <key type="filename">src/mcMonster1/17.png</key>
-            <key type="filename">src/mcMonster1/18.png</key>
-            <key type="filename">src/mcMonster1/19.png</key>
-            <key type="filename">src/mcMonster1/2.png</key>
-            <key type="filename">src/mcMonster1/20.png</key>
-            <key type="filename">src/mcMonster1/21.png</key>
-            <key type="filename">src/mcMonster1/22.png</key>
-            <key type="filename">src/mcMonster1/23.png</key>
-            <key type="filename">src/mcMonster1/24.png</key>
-            <key type="filename">src/mcMonster1/25.png</key>
-            <key type="filename">src/mcMonster1/26.png</key>
-            <key type="filename">src/mcMonster1/27.png</key>
-            <key type="filename">src/mcMonster1/28.png</key>
-            <key type="filename">src/mcMonster1/29.png</key>
-            <key type="filename">src/mcMonster1/3.png</key>
-            <key type="filename">src/mcMonster1/30.png</key>
-            <key type="filename">src/mcMonster1/31.png</key>
-            <key type="filename">src/mcMonster1/32.png</key>
-            <key type="filename">src/mcMonster1/33.png</key>
-            <key type="filename">src/mcMonster1/34.png</key>
-            <key type="filename">src/mcMonster1/35.png</key>
-            <key type="filename">src/mcMonster1/36.png</key>
-            <key type="filename">src/mcMonster1/37.png</key>
-            <key type="filename">src/mcMonster1/38.png</key>
-            <key type="filename">src/mcMonster1/39.png</key>
-            <key type="filename">src/mcMonster1/4.png</key>
-            <key type="filename">src/mcMonster1/40.png</key>
-            <key type="filename">src/mcMonster1/41.png</key>
-            <key type="filename">src/mcMonster1/42.png</key>
-            <key type="filename">src/mcMonster1/43.png</key>
-            <key type="filename">src/mcMonster1/44.png</key>
-            <key type="filename">src/mcMonster1/45.png</key>
-            <key type="filename">src/mcMonster1/46.png</key>
-            <key type="filename">src/mcMonster1/47.png</key>
-            <key type="filename">src/mcMonster1/48.png</key>
-            <key type="filename">src/mcMonster1/49.png</key>
-            <key type="filename">src/mcMonster1/5.png</key>
-            <key type="filename">src/mcMonster1/50.png</key>
-            <key type="filename">src/mcMonster1/51.png</key>
-            <key type="filename">src/mcMonster1/52.png</key>
-            <key type="filename">src/mcMonster1/53.png</key>
-            <key type="filename">src/mcMonster1/54.png</key>
-            <key type="filename">src/mcMonster1/55.png</key>
-            <key type="filename">src/mcMonster1/56.png</key>
-            <key type="filename">src/mcMonster1/57.png</key>
-            <key type="filename">src/mcMonster1/58.png</key>
-            <key type="filename">src/mcMonster1/59.png</key>
-            <key type="filename">src/mcMonster1/6.png</key>
-            <key type="filename">src/mcMonster1/60.png</key>
-            <key type="filename">src/mcMonster1/61.png</key>
-            <key type="filename">src/mcMonster1/62.png</key>
-            <key type="filename">src/mcMonster1/63.png</key>
-            <key type="filename">src/mcMonster1/64.png</key>
-            <key type="filename">src/mcMonster1/65.png</key>
-            <key type="filename">src/mcMonster1/66.png</key>
-            <key type="filename">src/mcMonster1/67.png</key>
-            <key type="filename">src/mcMonster1/68.png</key>
-            <key type="filename">src/mcMonster1/69.png</key>
-            <key type="filename">src/mcMonster1/7.png</key>
-            <key type="filename">src/mcMonster1/70.png</key>
-            <key type="filename">src/mcMonster1/71.png</key>
-            <key type="filename">src/mcMonster1/72.png</key>
-            <key type="filename">src/mcMonster1/73.png</key>
-            <key type="filename">src/mcMonster1/74.png</key>
-            <key type="filename">src/mcMonster1/75.png</key>
-            <key type="filename">src/mcMonster1/76.png</key>
-            <key type="filename">src/mcMonster1/77.png</key>
-            <key type="filename">src/mcMonster1/78.png</key>
-            <key type="filename">src/mcMonster1/79.png</key>
-            <key type="filename">src/mcMonster1/8.png</key>
-            <key type="filename">src/mcMonster1/80.png</key>
-            <key type="filename">src/mcMonster1/81.png</key>
-            <key type="filename">src/mcMonster1/82.png</key>
-            <key type="filename">src/mcMonster1/83.png</key>
-            <key type="filename">src/mcMonster1/84.png</key>
-            <key type="filename">src/mcMonster1/85.png</key>
-            <key type="filename">src/mcMonster1/86.png</key>
-            <key type="filename">src/mcMonster1/87.png</key>
-            <key type="filename">src/mcMonster1/88.png</key>
-            <key type="filename">src/mcMonster1/89.png</key>
-            <key type="filename">src/mcMonster1/9.png</key>
-            <key type="filename">src/mcMonster1/90.png</key>
-            <key type="filename">src/mcMonster1/91.png</key>
-            <key type="filename">src/mcMonster1/92.png</key>
-            <key type="filename">src/mcMonster1/93.png</key>
-            <key type="filename">src/mcMonster1/94.png</key>
-            <key type="filename">src/mcMonster1/95.png</key>
-            <key type="filename">src/mcMonster1/96.png</key>
-            <key type="filename">src/mcMonster1/97.png</key>
-            <key type="filename">src/mcMonster1/98.png</key>
-            <key type="filename">src/mcMonster1/99.png</key>
-            <key type="filename">src/mcMonster2/1.png</key>
-            <key type="filename">src/mcMonster2/10.png</key>
-            <key type="filename">src/mcMonster2/100.png</key>
-            <key type="filename">src/mcMonster2/101.png</key>
-            <key type="filename">src/mcMonster2/102.png</key>
-            <key type="filename">src/mcMonster2/103.png</key>
-            <key type="filename">src/mcMonster2/104.png</key>
-            <key type="filename">src/mcMonster2/105.png</key>
-            <key type="filename">src/mcMonster2/106.png</key>
-            <key type="filename">src/mcMonster2/107.png</key>
-            <key type="filename">src/mcMonster2/108.png</key>
-            <key type="filename">src/mcMonster2/109.png</key>
-            <key type="filename">src/mcMonster2/11.png</key>
-            <key type="filename">src/mcMonster2/110.png</key>
-            <key type="filename">src/mcMonster2/111.png</key>
-            <key type="filename">src/mcMonster2/112.png</key>
-            <key type="filename">src/mcMonster2/113.png</key>
-            <key type="filename">src/mcMonster2/114.png</key>
-            <key type="filename">src/mcMonster2/115.png</key>
-            <key type="filename">src/mcMonster2/116.png</key>
-            <key type="filename">src/mcMonster2/117.png</key>
-            <key type="filename">src/mcMonster2/118.png</key>
-            <key type="filename">src/mcMonster2/119.png</key>
-            <key type="filename">src/mcMonster2/12.png</key>
-            <key type="filename">src/mcMonster2/120.png</key>
-            <key type="filename">src/mcMonster2/121.png</key>
-            <key type="filename">src/mcMonster2/122.png</key>
-            <key type="filename">src/mcMonster2/123.png</key>
-            <key type="filename">src/mcMonster2/124.png</key>
-            <key type="filename">src/mcMonster2/125.png</key>
-            <key type="filename">src/mcMonster2/126.png</key>
-            <key type="filename">src/mcMonster2/127.png</key>
-            <key type="filename">src/mcMonster2/128.png</key>
-            <key type="filename">src/mcMonster2/129.png</key>
-            <key type="filename">src/mcMonster2/13.png</key>
-            <key type="filename">src/mcMonster2/130.png</key>
-            <key type="filename">src/mcMonster2/131.png</key>
-            <key type="filename">src/mcMonster2/132.png</key>
-            <key type="filename">src/mcMonster2/133.png</key>
-            <key type="filename">src/mcMonster2/134.png</key>
-            <key type="filename">src/mcMonster2/135.png</key>
-            <key type="filename">src/mcMonster2/136.png</key>
-            <key type="filename">src/mcMonster2/137.png</key>
-            <key type="filename">src/mcMonster2/138.png</key>
-            <key type="filename">src/mcMonster2/139.png</key>
-            <key type="filename">src/mcMonster2/14.png</key>
-            <key type="filename">src/mcMonster2/140.png</key>
-            <key type="filename">src/mcMonster2/15.png</key>
-            <key type="filename">src/mcMonster2/16.png</key>
-            <key type="filename">src/mcMonster2/17.png</key>
-            <key type="filename">src/mcMonster2/18.png</key>
-            <key type="filename">src/mcMonster2/19.png</key>
-            <key type="filename">src/mcMonster2/2.png</key>
-            <key type="filename">src/mcMonster2/20.png</key>
-            <key type="filename">src/mcMonster2/21.png</key>
-            <key type="filename">src/mcMonster2/22.png</key>
-            <key type="filename">src/mcMonster2/23.png</key>
-            <key type="filename">src/mcMonster2/24.png</key>
-            <key type="filename">src/mcMonster2/25.png</key>
-            <key type="filename">src/mcMonster2/26.png</key>
-            <key type="filename">src/mcMonster2/27.png</key>
-            <key type="filename">src/mcMonster2/28.png</key>
-            <key type="filename">src/mcMonster2/29.png</key>
-            <key type="filename">src/mcMonster2/3.png</key>
-            <key type="filename">src/mcMonster2/30.png</key>
-            <key type="filename">src/mcMonster2/31.png</key>
-            <key type="filename">src/mcMonster2/32.png</key>
-            <key type="filename">src/mcMonster2/33.png</key>
-            <key type="filename">src/mcMonster2/34.png</key>
-            <key type="filename">src/mcMonster2/35.png</key>
-            <key type="filename">src/mcMonster2/36.png</key>
-            <key type="filename">src/mcMonster2/37.png</key>
-            <key type="filename">src/mcMonster2/38.png</key>
-            <key type="filename">src/mcMonster2/39.png</key>
-            <key type="filename">src/mcMonster2/4.png</key>
-            <key type="filename">src/mcMonster2/40.png</key>
-            <key type="filename">src/mcMonster2/41.png</key>
-            <key type="filename">src/mcMonster2/42.png</key>
-            <key type="filename">src/mcMonster2/43.png</key>
-            <key type="filename">src/mcMonster2/44.png</key>
-            <key type="filename">src/mcMonster2/45.png</key>
-            <key type="filename">src/mcMonster2/46.png</key>
-            <key type="filename">src/mcMonster2/47.png</key>
-            <key type="filename">src/mcMonster2/48.png</key>
-            <key type="filename">src/mcMonster2/49.png</key>
-            <key type="filename">src/mcMonster2/5.png</key>
-            <key type="filename">src/mcMonster2/50.png</key>
-            <key type="filename">src/mcMonster2/51.png</key>
-            <key type="filename">src/mcMonster2/52.png</key>
-            <key type="filename">src/mcMonster2/53.png</key>
-            <key type="filename">src/mcMonster2/54.png</key>
-            <key type="filename">src/mcMonster2/55.png</key>
-            <key type="filename">src/mcMonster2/56.png</key>
-            <key type="filename">src/mcMonster2/57.png</key>
-            <key type="filename">src/mcMonster2/58.png</key>
-            <key type="filename">src/mcMonster2/59.png</key>
-            <key type="filename">src/mcMonster2/6.png</key>
-            <key type="filename">src/mcMonster2/60.png</key>
-            <key type="filename">src/mcMonster2/61.png</key>
-            <key type="filename">src/mcMonster2/62.png</key>
-            <key type="filename">src/mcMonster2/63.png</key>
-            <key type="filename">src/mcMonster2/64.png</key>
-            <key type="filename">src/mcMonster2/65.png</key>
-            <key type="filename">src/mcMonster2/66.png</key>
-            <key type="filename">src/mcMonster2/67.png</key>
-            <key type="filename">src/mcMonster2/68.png</key>
-            <key type="filename">src/mcMonster2/69.png</key>
-            <key type="filename">src/mcMonster2/7.png</key>
-            <key type="filename">src/mcMonster2/70.png</key>
-            <key type="filename">src/mcMonster2/71.png</key>
-            <key type="filename">src/mcMonster2/72.png</key>
-            <key type="filename">src/mcMonster2/73.png</key>
-            <key type="filename">src/mcMonster2/74.png</key>
-            <key type="filename">src/mcMonster2/75.png</key>
-            <key type="filename">src/mcMonster2/76.png</key>
-            <key type="filename">src/mcMonster2/77.png</key>
-            <key type="filename">src/mcMonster2/78.png</key>
-            <key type="filename">src/mcMonster2/79.png</key>
-            <key type="filename">src/mcMonster2/8.png</key>
-            <key type="filename">src/mcMonster2/80.png</key>
-            <key type="filename">src/mcMonster2/81.png</key>
-            <key type="filename">src/mcMonster2/82.png</key>
-            <key type="filename">src/mcMonster2/83.png</key>
-            <key type="filename">src/mcMonster2/84.png</key>
-            <key type="filename">src/mcMonster2/85.png</key>
-            <key type="filename">src/mcMonster2/86.png</key>
-            <key type="filename">src/mcMonster2/87.png</key>
-            <key type="filename">src/mcMonster2/88.png</key>
-            <key type="filename">src/mcMonster2/89.png</key>
-            <key type="filename">src/mcMonster2/9.png</key>
-            <key type="filename">src/mcMonster2/90.png</key>
-            <key type="filename">src/mcMonster2/91.png</key>
-            <key type="filename">src/mcMonster2/92.png</key>
-            <key type="filename">src/mcMonster2/93.png</key>
-            <key type="filename">src/mcMonster2/94.png</key>
-            <key type="filename">src/mcMonster2/95.png</key>
-            <key type="filename">src/mcMonster2/96.png</key>
-            <key type="filename">src/mcMonster2/97.png</key>
-            <key type="filename">src/mcMonster2/98.png</key>
-            <key type="filename">src/mcMonster2/99.png</key>
-            <key type="filename">src/mcMonster3/1.png</key>
-            <key type="filename">src/mcMonster3/10.png</key>
-            <key type="filename">src/mcMonster3/100.png</key>
-            <key type="filename">src/mcMonster3/101.png</key>
-            <key type="filename">src/mcMonster3/102.png</key>
-            <key type="filename">src/mcMonster3/103.png</key>
-            <key type="filename">src/mcMonster3/104.png</key>
-            <key type="filename">src/mcMonster3/105.png</key>
-            <key type="filename">src/mcMonster3/106.png</key>
-            <key type="filename">src/mcMonster3/107.png</key>
-            <key type="filename">src/mcMonster3/108.png</key>
-            <key type="filename">src/mcMonster3/109.png</key>
-            <key type="filename">src/mcMonster3/11.png</key>
-            <key type="filename">src/mcMonster3/110.png</key>
-            <key type="filename">src/mcMonster3/111.png</key>
-            <key type="filename">src/mcMonster3/112.png</key>
-            <key type="filename">src/mcMonster3/113.png</key>
-            <key type="filename">src/mcMonster3/114.png</key>
-            <key type="filename">src/mcMonster3/115.png</key>
-            <key type="filename">src/mcMonster3/116.png</key>
-            <key type="filename">src/mcMonster3/117.png</key>
-            <key type="filename">src/mcMonster3/118.png</key>
-            <key type="filename">src/mcMonster3/119.png</key>
-            <key type="filename">src/mcMonster3/12.png</key>
-            <key type="filename">src/mcMonster3/120.png</key>
-            <key type="filename">src/mcMonster3/121.png</key>
-            <key type="filename">src/mcMonster3/122.png</key>
-            <key type="filename">src/mcMonster3/123.png</key>
-            <key type="filename">src/mcMonster3/124.png</key>
-            <key type="filename">src/mcMonster3/125.png</key>
-            <key type="filename">src/mcMonster3/126.png</key>
-            <key type="filename">src/mcMonster3/127.png</key>
-            <key type="filename">src/mcMonster3/128.png</key>
-            <key type="filename">src/mcMonster3/129.png</key>
-            <key type="filename">src/mcMonster3/13.png</key>
-            <key type="filename">src/mcMonster3/130.png</key>
-            <key type="filename">src/mcMonster3/131.png</key>
-            <key type="filename">src/mcMonster3/132.png</key>
-            <key type="filename">src/mcMonster3/133.png</key>
-            <key type="filename">src/mcMonster3/134.png</key>
-            <key type="filename">src/mcMonster3/135.png</key>
-            <key type="filename">src/mcMonster3/136.png</key>
-            <key type="filename">src/mcMonster3/137.png</key>
-            <key type="filename">src/mcMonster3/138.png</key>
-            <key type="filename">src/mcMonster3/139.png</key>
-            <key type="filename">src/mcMonster3/14.png</key>
-            <key type="filename">src/mcMonster3/140.png</key>
-            <key type="filename">src/mcMonster3/15.png</key>
-            <key type="filename">src/mcMonster3/16.png</key>
-            <key type="filename">src/mcMonster3/17.png</key>
-            <key type="filename">src/mcMonster3/18.png</key>
-            <key type="filename">src/mcMonster3/19.png</key>
-            <key type="filename">src/mcMonster3/2.png</key>
-            <key type="filename">src/mcMonster3/20.png</key>
-            <key type="filename">src/mcMonster3/21.png</key>
-            <key type="filename">src/mcMonster3/22.png</key>
-            <key type="filename">src/mcMonster3/23.png</key>
-            <key type="filename">src/mcMonster3/24.png</key>
-            <key type="filename">src/mcMonster3/25.png</key>
-            <key type="filename">src/mcMonster3/26.png</key>
-            <key type="filename">src/mcMonster3/27.png</key>
-            <key type="filename">src/mcMonster3/28.png</key>
-            <key type="filename">src/mcMonster3/29.png</key>
-            <key type="filename">src/mcMonster3/3.png</key>
-            <key type="filename">src/mcMonster3/30.png</key>
-            <key type="filename">src/mcMonster3/31.png</key>
-            <key type="filename">src/mcMonster3/32.png</key>
-            <key type="filename">src/mcMonster3/33.png</key>
-            <key type="filename">src/mcMonster3/34.png</key>
-            <key type="filename">src/mcMonster3/35.png</key>
-            <key type="filename">src/mcMonster3/36.png</key>
-            <key type="filename">src/mcMonster3/37.png</key>
-            <key type="filename">src/mcMonster3/38.png</key>
-            <key type="filename">src/mcMonster3/39.png</key>
-            <key type="filename">src/mcMonster3/4.png</key>
-            <key type="filename">src/mcMonster3/40.png</key>
-            <key type="filename">src/mcMonster3/41.png</key>
-            <key type="filename">src/mcMonster3/42.png</key>
-            <key type="filename">src/mcMonster3/43.png</key>
-            <key type="filename">src/mcMonster3/44.png</key>
-            <key type="filename">src/mcMonster3/45.png</key>
-            <key type="filename">src/mcMonster3/46.png</key>
-            <key type="filename">src/mcMonster3/47.png</key>
-            <key type="filename">src/mcMonster3/48.png</key>
-            <key type="filename">src/mcMonster3/49.png</key>
-            <key type="filename">src/mcMonster3/5.png</key>
-            <key type="filename">src/mcMonster3/50.png</key>
-            <key type="filename">src/mcMonster3/51.png</key>
-            <key type="filename">src/mcMonster3/52.png</key>
-            <key type="filename">src/mcMonster3/53.png</key>
-            <key type="filename">src/mcMonster3/54.png</key>
-            <key type="filename">src/mcMonster3/55.png</key>
-            <key type="filename">src/mcMonster3/56.png</key>
-            <key type="filename">src/mcMonster3/57.png</key>
-            <key type="filename">src/mcMonster3/58.png</key>
-            <key type="filename">src/mcMonster3/59.png</key>
-            <key type="filename">src/mcMonster3/6.png</key>
-            <key type="filename">src/mcMonster3/60.png</key>
-            <key type="filename">src/mcMonster3/61.png</key>
-            <key type="filename">src/mcMonster3/62.png</key>
-            <key type="filename">src/mcMonster3/63.png</key>
-            <key type="filename">src/mcMonster3/64.png</key>
-            <key type="filename">src/mcMonster3/65.png</key>
-            <key type="filename">src/mcMonster3/66.png</key>
-            <key type="filename">src/mcMonster3/67.png</key>
-            <key type="filename">src/mcMonster3/68.png</key>
-            <key type="filename">src/mcMonster3/69.png</key>
-            <key type="filename">src/mcMonster3/7.png</key>
-            <key type="filename">src/mcMonster3/70.png</key>
-            <key type="filename">src/mcMonster3/71.png</key>
-            <key type="filename">src/mcMonster3/72.png</key>
-            <key type="filename">src/mcMonster3/73.png</key>
-            <key type="filename">src/mcMonster3/74.png</key>
-            <key type="filename">src/mcMonster3/75.png</key>
-            <key type="filename">src/mcMonster3/76.png</key>
-            <key type="filename">src/mcMonster3/77.png</key>
-            <key type="filename">src/mcMonster3/78.png</key>
-            <key type="filename">src/mcMonster3/79.png</key>
-            <key type="filename">src/mcMonster3/8.png</key>
-            <key type="filename">src/mcMonster3/80.png</key>
-            <key type="filename">src/mcMonster3/81.png</key>
-            <key type="filename">src/mcMonster3/82.png</key>
-            <key type="filename">src/mcMonster3/83.png</key>
-            <key type="filename">src/mcMonster3/84.png</key>
-            <key type="filename">src/mcMonster3/85.png</key>
-            <key type="filename">src/mcMonster3/86.png</key>
-            <key type="filename">src/mcMonster3/87.png</key>
-            <key type="filename">src/mcMonster3/88.png</key>
-            <key type="filename">src/mcMonster3/89.png</key>
-            <key type="filename">src/mcMonster3/9.png</key>
-            <key type="filename">src/mcMonster3/90.png</key>
-            <key type="filename">src/mcMonster3/91.png</key>
-            <key type="filename">src/mcMonster3/92.png</key>
-            <key type="filename">src/mcMonster3/93.png</key>
-            <key type="filename">src/mcMonster3/94.png</key>
-            <key type="filename">src/mcMonster3/95.png</key>
-            <key type="filename">src/mcMonster3/96.png</key>
-            <key type="filename">src/mcMonster3/97.png</key>
-            <key type="filename">src/mcMonster3/98.png</key>
-            <key type="filename">src/mcMonster3/99.png</key>
+            <key type="filename">src/decor17/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.49467,0.482143</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>117,91,235,182</rect>
+                <rect>85,85,170,170</rect>
                 <key>scale9Paddings</key>
-                <rect>117,91,235,182</rect>
+                <rect>85,85,170,170</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/mcNinjaShot1/1.png</key>
-            <key type="filename">src/mcNinjaShot1/10.png</key>
-            <key type="filename">src/mcNinjaShot1/11.png</key>
-            <key type="filename">src/mcNinjaShot1/12.png</key>
-            <key type="filename">src/mcNinjaShot1/13.png</key>
-            <key type="filename">src/mcNinjaShot1/14.png</key>
-            <key type="filename">src/mcNinjaShot1/15.png</key>
-            <key type="filename">src/mcNinjaShot1/16.png</key>
-            <key type="filename">src/mcNinjaShot1/17.png</key>
-            <key type="filename">src/mcNinjaShot1/18.png</key>
-            <key type="filename">src/mcNinjaShot1/19.png</key>
-            <key type="filename">src/mcNinjaShot1/2.png</key>
-            <key type="filename">src/mcNinjaShot1/20.png</key>
-            <key type="filename">src/mcNinjaShot1/3.png</key>
-            <key type="filename">src/mcNinjaShot1/4.png</key>
-            <key type="filename">src/mcNinjaShot1/5.png</key>
-            <key type="filename">src/mcNinjaShot1/6.png</key>
-            <key type="filename">src/mcNinjaShot1/7.png</key>
-            <key type="filename">src/mcNinjaShot1/8.png</key>
-            <key type="filename">src/mcNinjaShot1/9.png</key>
-            <key type="filename">src/mcNinjaShot2/1.png</key>
-            <key type="filename">src/mcNinjaShot2/10.png</key>
-            <key type="filename">src/mcNinjaShot2/11.png</key>
-            <key type="filename">src/mcNinjaShot2/12.png</key>
-            <key type="filename">src/mcNinjaShot2/13.png</key>
-            <key type="filename">src/mcNinjaShot2/14.png</key>
-            <key type="filename">src/mcNinjaShot2/15.png</key>
-            <key type="filename">src/mcNinjaShot2/16.png</key>
-            <key type="filename">src/mcNinjaShot2/17.png</key>
-            <key type="filename">src/mcNinjaShot2/18.png</key>
-            <key type="filename">src/mcNinjaShot2/19.png</key>
-            <key type="filename">src/mcNinjaShot2/2.png</key>
-            <key type="filename">src/mcNinjaShot2/20.png</key>
-            <key type="filename">src/mcNinjaShot2/3.png</key>
-            <key type="filename">src/mcNinjaShot2/4.png</key>
-            <key type="filename">src/mcNinjaShot2/5.png</key>
-            <key type="filename">src/mcNinjaShot2/6.png</key>
-            <key type="filename">src/mcNinjaShot2/7.png</key>
-            <key type="filename">src/mcNinjaShot2/8.png</key>
-            <key type="filename">src/mcNinjaShot2/9.png</key>
+            <key type="filename">src/digitScore/1.png</key>
+            <key type="filename">src/digitScore/2.png</key>
+            <key type="filename">src/digitScore/3.png</key>
+            <key type="filename">src/digitScore/4.png</key>
+            <key type="filename">src/digitScore/5.png</key>
+            <key type="filename">src/digitScore/6.png</key>
+            <key type="filename">src/digitScore/7.png</key>
+            <key type="filename">src/digitScore/8.png</key>
+            <key type="filename">src/digitScore/9.png</key>
+            <key type="filename">src/digitScore/10.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.133333,0.769231</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>8,13,15,26</rect>
+                <key>scale9Paddings</key>
+                <rect>8,13,15,26</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/digitStar/1.png</key>
+            <key type="filename">src/digitStar/2.png</key>
+            <key type="filename">src/digitStar/3.png</key>
+            <key type="filename">src/digitStar/4.png</key>
+            <key type="filename">src/digitStar/5.png</key>
+            <key type="filename">src/digitStar/6.png</key>
+            <key type="filename">src/digitStar/7.png</key>
+            <key type="filename">src/digitStar/8.png</key>
+            <key type="filename">src/digitStar/9.png</key>
+            <key type="filename">src/digitStar/10.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.125,0.722222</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>8,14,16,27</rect>
+                <key>scale9Paddings</key>
+                <rect>8,14,16,27</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/gem1_0/1.png</key>
+            <key type="filename">src/gem1_0/2.png</key>
+            <key type="filename">src/gem1_0/3.png</key>
+            <key type="filename">src/gem1_0/4.png</key>
+            <key type="filename">src/gem1_0/5.png</key>
+            <key type="filename">src/gem1_0/6.png</key>
+            <key type="filename">src/gem1_0/7.png</key>
+            <key type="filename">src/gem1_0/8.png</key>
+            <key type="filename">src/gem1_0/9.png</key>
+            <key type="filename">src/gem1_0/10.png</key>
+            <key type="filename">src/gem1_0/11.png</key>
+            <key type="filename">src/gem1_0/12.png</key>
+            <key type="filename">src/gem1_0/13.png</key>
+            <key type="filename">src/gem1_0/14.png</key>
+            <key type="filename">src/gem1_0/15.png</key>
+            <key type="filename">src/gem1_0/16.png</key>
+            <key type="filename">src/gem1_0/17.png</key>
+            <key type="filename">src/gem1_0/18.png</key>
+            <key type="filename">src/gem1_0/19.png</key>
+            <key type="filename">src/gem1_0/20.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.517241,0.493333</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>22,19,44,38</rect>
+                <key>scale9Paddings</key>
+                <rect>22,19,44,38</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/gem2_0/1.png</key>
+            <key type="filename">src/gem2_0/2.png</key>
+            <key type="filename">src/gem2_0/3.png</key>
+            <key type="filename">src/gem2_0/4.png</key>
+            <key type="filename">src/gem2_0/5.png</key>
+            <key type="filename">src/gem2_0/6.png</key>
+            <key type="filename">src/gem2_0/7.png</key>
+            <key type="filename">src/gem2_0/8.png</key>
+            <key type="filename">src/gem2_0/9.png</key>
+            <key type="filename">src/gem2_0/10.png</key>
+            <key type="filename">src/gem2_0/11.png</key>
+            <key type="filename">src/gem2_0/12.png</key>
+            <key type="filename">src/gem2_0/13.png</key>
+            <key type="filename">src/gem2_0/14.png</key>
+            <key type="filename">src/gem2_0/15.png</key>
+            <key type="filename">src/gem2_0/16.png</key>
+            <key type="filename">src/gem2_0/17.png</key>
+            <key type="filename">src/gem2_0/18.png</key>
+            <key type="filename">src/gem2_0/19.png</key>
+            <key type="filename">src/gem2_0/20.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.517241,0.493333</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>22,19,44,38</rect>
+                <key>scale9Paddings</key>
+                <rect>22,19,44,38</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/gem3_0/1.png</key>
+            <key type="filename">src/gem3_0/2.png</key>
+            <key type="filename">src/gem3_0/3.png</key>
+            <key type="filename">src/gem3_0/4.png</key>
+            <key type="filename">src/gem3_0/5.png</key>
+            <key type="filename">src/gem3_0/6.png</key>
+            <key type="filename">src/gem3_0/7.png</key>
+            <key type="filename">src/gem3_0/8.png</key>
+            <key type="filename">src/gem3_0/9.png</key>
+            <key type="filename">src/gem3_0/10.png</key>
+            <key type="filename">src/gem3_0/11.png</key>
+            <key type="filename">src/gem3_0/12.png</key>
+            <key type="filename">src/gem3_0/13.png</key>
+            <key type="filename">src/gem3_0/14.png</key>
+            <key type="filename">src/gem3_0/15.png</key>
+            <key type="filename">src/gem3_0/16.png</key>
+            <key type="filename">src/gem3_0/17.png</key>
+            <key type="filename">src/gem3_0/18.png</key>
+            <key type="filename">src/gem3_0/19.png</key>
+            <key type="filename">src/gem3_0/20.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.517241,0.493333</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>22,19,44,38</rect>
+                <key>scale9Paddings</key>
+                <rect>22,19,44,38</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/inter_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>-0.114286,-0.117647</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>9,8,18,17</rect>
+                <key>scale9Paddings</key>
+                <rect>9,8,18,17</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/l2/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.530612,0.522388</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,17,24,34</rect>
+                <key>scale9Paddings</key>
+                <rect>12,17,24,34</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/l39/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -1043,132 +853,13 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>20,20,41,41</rect>
+                <rect>4,4,7,8</rect>
                 <key>scale9Paddings</key>
-                <rect>20,20,41,41</rect>
+                <rect>4,4,7,8</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/mcPlat/1.png</key>
-            <key type="filename">src/mcPlat/2.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.0036,0.047619</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>625,16,1250,31</rect>
-                <key>scale9Paddings</key>
-                <rect>625,16,1250,31</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/mcTanker/1.png</key>
-            <key type="filename">src/mcTanker/10.png</key>
-            <key type="filename">src/mcTanker/11.png</key>
-            <key type="filename">src/mcTanker/12.png</key>
-            <key type="filename">src/mcTanker/13.png</key>
-            <key type="filename">src/mcTanker/14.png</key>
-            <key type="filename">src/mcTanker/15.png</key>
-            <key type="filename">src/mcTanker/16.png</key>
-            <key type="filename">src/mcTanker/17.png</key>
-            <key type="filename">src/mcTanker/18.png</key>
-            <key type="filename">src/mcTanker/19.png</key>
-            <key type="filename">src/mcTanker/2.png</key>
-            <key type="filename">src/mcTanker/20.png</key>
-            <key type="filename">src/mcTanker/21.png</key>
-            <key type="filename">src/mcTanker/22.png</key>
-            <key type="filename">src/mcTanker/23.png</key>
-            <key type="filename">src/mcTanker/24.png</key>
-            <key type="filename">src/mcTanker/25.png</key>
-            <key type="filename">src/mcTanker/26.png</key>
-            <key type="filename">src/mcTanker/27.png</key>
-            <key type="filename">src/mcTanker/28.png</key>
-            <key type="filename">src/mcTanker/29.png</key>
-            <key type="filename">src/mcTanker/3.png</key>
-            <key type="filename">src/mcTanker/30.png</key>
-            <key type="filename">src/mcTanker/31.png</key>
-            <key type="filename">src/mcTanker/32.png</key>
-            <key type="filename">src/mcTanker/33.png</key>
-            <key type="filename">src/mcTanker/34.png</key>
-            <key type="filename">src/mcTanker/35.png</key>
-            <key type="filename">src/mcTanker/36.png</key>
-            <key type="filename">src/mcTanker/37.png</key>
-            <key type="filename">src/mcTanker/38.png</key>
-            <key type="filename">src/mcTanker/39.png</key>
-            <key type="filename">src/mcTanker/4.png</key>
-            <key type="filename">src/mcTanker/40.png</key>
-            <key type="filename">src/mcTanker/41.png</key>
-            <key type="filename">src/mcTanker/42.png</key>
-            <key type="filename">src/mcTanker/43.png</key>
-            <key type="filename">src/mcTanker/44.png</key>
-            <key type="filename">src/mcTanker/45.png</key>
-            <key type="filename">src/mcTanker/46.png</key>
-            <key type="filename">src/mcTanker/47.png</key>
-            <key type="filename">src/mcTanker/48.png</key>
-            <key type="filename">src/mcTanker/49.png</key>
-            <key type="filename">src/mcTanker/5.png</key>
-            <key type="filename">src/mcTanker/50.png</key>
-            <key type="filename">src/mcTanker/51.png</key>
-            <key type="filename">src/mcTanker/52.png</key>
-            <key type="filename">src/mcTanker/53.png</key>
-            <key type="filename">src/mcTanker/54.png</key>
-            <key type="filename">src/mcTanker/55.png</key>
-            <key type="filename">src/mcTanker/56.png</key>
-            <key type="filename">src/mcTanker/57.png</key>
-            <key type="filename">src/mcTanker/58.png</key>
-            <key type="filename">src/mcTanker/59.png</key>
-            <key type="filename">src/mcTanker/6.png</key>
-            <key type="filename">src/mcTanker/60.png</key>
-            <key type="filename">src/mcTanker/61.png</key>
-            <key type="filename">src/mcTanker/62.png</key>
-            <key type="filename">src/mcTanker/63.png</key>
-            <key type="filename">src/mcTanker/64.png</key>
-            <key type="filename">src/mcTanker/65.png</key>
-            <key type="filename">src/mcTanker/66.png</key>
-            <key type="filename">src/mcTanker/67.png</key>
-            <key type="filename">src/mcTanker/68.png</key>
-            <key type="filename">src/mcTanker/69.png</key>
-            <key type="filename">src/mcTanker/7.png</key>
-            <key type="filename">src/mcTanker/70.png</key>
-            <key type="filename">src/mcTanker/71.png</key>
-            <key type="filename">src/mcTanker/72.png</key>
-            <key type="filename">src/mcTanker/73.png</key>
-            <key type="filename">src/mcTanker/74.png</key>
-            <key type="filename">src/mcTanker/75.png</key>
-            <key type="filename">src/mcTanker/76.png</key>
-            <key type="filename">src/mcTanker/77.png</key>
-            <key type="filename">src/mcTanker/78.png</key>
-            <key type="filename">src/mcTanker/79.png</key>
-            <key type="filename">src/mcTanker/8.png</key>
-            <key type="filename">src/mcTanker/80.png</key>
-            <key type="filename">src/mcTanker/81.png</key>
-            <key type="filename">src/mcTanker/82.png</key>
-            <key type="filename">src/mcTanker/83.png</key>
-            <key type="filename">src/mcTanker/84.png</key>
-            <key type="filename">src/mcTanker/85.png</key>
-            <key type="filename">src/mcTanker/86.png</key>
-            <key type="filename">src/mcTanker/87.png</key>
-            <key type="filename">src/mcTanker/88.png</key>
-            <key type="filename">src/mcTanker/89.png</key>
-            <key type="filename">src/mcTanker/9.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.495146,0.544828</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>103,109,206,217</rect>
-                <key>scale9Paddings</key>
-                <rect>103,109,206,217</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/partCircle.png</key>
+            <key type="filename">src/l39_1/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -1177,14 +868,61 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>15,15,30,30</rect>
+                <rect>4,6,9,11</rect>
                 <key>scale9Paddings</key>
-                <rect>15,15,30,30</rect>
+                <rect>4,6,9,11</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/partDust/1.png</key>
-            <key type="filename">src/partDust/2.png</key>
+            <key type="filename">src/l72/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>1.055556,0.714286</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>14,5,27,10</rect>
+                <key>scale9Paddings</key>
+                <rect>14,5,27,10</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/l243/1.png</key>
+            <key type="filename">src/l243/2.png</key>
+            <key type="filename">src/l243/3.png</key>
+            <key type="filename">src/l243/4.png</key>
+            <key type="filename">src/l243/5.png</key>
+            <key type="filename">src/l243/6.png</key>
+            <key type="filename">src/l243/7.png</key>
+            <key type="filename">src/l243/8.png</key>
+            <key type="filename">src/l243/9.png</key>
+            <key type="filename">src/l243/10.png</key>
+            <key type="filename">src/l243/11.png</key>
+            <key type="filename">src/l243/12.png</key>
+            <key type="filename">src/l243/13.png</key>
+            <key type="filename">src/l243/14.png</key>
+            <key type="filename">src/l243/15.png</key>
+            <key type="filename">src/l243/16.png</key>
+            <key type="filename">src/l243/17.png</key>
+            <key type="filename">src/l243/18.png</key>
+            <key type="filename">src/l243/19.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.501706,0.473029</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>73,60,146,120</rect>
+                <key>scale9Paddings</key>
+                <rect>73,60,146,120</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/l298/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -1193,14 +931,13 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>4,4,8,7</rect>
+                <rect>10,10,21,21</rect>
                 <key>scale9Paddings</key>
-                <rect>4,4,8,7</rect>
+                <rect>10,10,21,21</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/partLight/1.png</key>
-            <key type="filename">src/partLight/2.png</key>
+            <key type="filename">src/l298_1/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -1209,51 +946,13 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>8,8,15,15</rect>
+                <rect>10,10,21,21</rect>
                 <key>scale9Paddings</key>
-                <rect>8,8,15,15</rect>
+                <rect>10,10,21,21</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">src/partSmoke/1.png</key>
-            <key type="filename">src/partSmoke/10.png</key>
-            <key type="filename">src/partSmoke/11.png</key>
-            <key type="filename">src/partSmoke/12.png</key>
-            <key type="filename">src/partSmoke/13.png</key>
-            <key type="filename">src/partSmoke/14.png</key>
-            <key type="filename">src/partSmoke/15.png</key>
-            <key type="filename">src/partSmoke/16.png</key>
-            <key type="filename">src/partSmoke/17.png</key>
-            <key type="filename">src/partSmoke/18.png</key>
-            <key type="filename">src/partSmoke/19.png</key>
-            <key type="filename">src/partSmoke/2.png</key>
-            <key type="filename">src/partSmoke/3.png</key>
-            <key type="filename">src/partSmoke/4.png</key>
-            <key type="filename">src/partSmoke/5.png</key>
-            <key type="filename">src/partSmoke/6.png</key>
-            <key type="filename">src/partSmoke/7.png</key>
-            <key type="filename">src/partSmoke/8.png</key>
-            <key type="filename">src/partSmoke/9.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.577778,0.660422</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>79,107,157,213</rect>
-                <key>scale9Paddings</key>
-                <rect>79,107,157,213</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">src/partSpark/1.png</key>
-            <key type="filename">src/partSpark/2.png</key>
-            <key type="filename">src/partSpark/3.png</key>
-            <key type="filename">src/partSpark/4.png</key>
-            <key type="filename">src/partSpark/5.png</key>
-            <key type="filename">src/partSpark/6.png</key>
+            <key type="filename">src/l298_1W/1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -1262,9 +961,773 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>41,41,83,83</rect>
+                <rect>10,10,21,21</rect>
                 <key>scale9Paddings</key>
-                <rect>41,41,83,83</rect>
+                <rect>10,10,21,21</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/l377/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>10,8,19,16</rect>
+                <key>scale9Paddings</key>
+                <rect>10,8,19,16</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcFlyer_1/1.png</key>
+            <key type="filename">src/mcFlyer_1/2.png</key>
+            <key type="filename">src/mcFlyer_1/3.png</key>
+            <key type="filename">src/mcFlyer_1/4.png</key>
+            <key type="filename">src/mcFlyer_1/5.png</key>
+            <key type="filename">src/mcFlyer_1/6.png</key>
+            <key type="filename">src/mcFlyer_1/7.png</key>
+            <key type="filename">src/mcFlyer_1/8.png</key>
+            <key type="filename">src/mcFlyer_1/9.png</key>
+            <key type="filename">src/mcFlyer_1/10.png</key>
+            <key type="filename">src/mcFlyer_1/11.png</key>
+            <key type="filename">src/mcFlyer_1/12.png</key>
+            <key type="filename">src/mcFlyer_1/13.png</key>
+            <key type="filename">src/mcFlyer_1/14.png</key>
+            <key type="filename">src/mcFlyer_1/15.png</key>
+            <key type="filename">src/mcFlyer_1/16.png</key>
+            <key type="filename">src/mcFlyer_1/17.png</key>
+            <key type="filename">src/mcFlyer_1/18.png</key>
+            <key type="filename">src/mcFlyer_1/19.png</key>
+            <key type="filename">src/mcFlyer_1/20.png</key>
+            <key type="filename">src/mcFlyer_1/21.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.512195,0.775</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>10,10,20,20</rect>
+                <key>scale9Paddings</key>
+                <rect>10,10,20,20</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcHero_2/1.png</key>
+            <key type="filename">src/mcHero_2/2.png</key>
+            <key type="filename">src/mcHero_2/3.png</key>
+            <key type="filename">src/mcHero_2/4.png</key>
+            <key type="filename">src/mcHero_2/5.png</key>
+            <key type="filename">src/mcHero_2/6.png</key>
+            <key type="filename">src/mcHero_2/7.png</key>
+            <key type="filename">src/mcHero_2/8.png</key>
+            <key type="filename">src/mcHero_2/9.png</key>
+            <key type="filename">src/mcHero_2/10.png</key>
+            <key type="filename">src/mcHero_2/11.png</key>
+            <key type="filename">src/mcHero_2/12.png</key>
+            <key type="filename">src/mcHero_2/13.png</key>
+            <key type="filename">src/mcHero_2/14.png</key>
+            <key type="filename">src/mcHero_2/15.png</key>
+            <key type="filename">src/mcHero_2/16.png</key>
+            <key type="filename">src/mcHero_2/17.png</key>
+            <key type="filename">src/mcHero_2/18.png</key>
+            <key type="filename">src/mcHero_2/19.png</key>
+            <key type="filename">src/mcHero_2/20.png</key>
+            <key type="filename">src/mcHero_2/21.png</key>
+            <key type="filename">src/mcHero_2/22.png</key>
+            <key type="filename">src/mcHero_2/23.png</key>
+            <key type="filename">src/mcHero_2/24.png</key>
+            <key type="filename">src/mcHero_2/25.png</key>
+            <key type="filename">src/mcHero_2/26.png</key>
+            <key type="filename">src/mcHero_2/27.png</key>
+            <key type="filename">src/mcHero_2/28.png</key>
+            <key type="filename">src/mcHero_2/29.png</key>
+            <key type="filename">src/mcHero_2/30.png</key>
+            <key type="filename">src/mcHero_2/31.png</key>
+            <key type="filename">src/mcHero_2/32.png</key>
+            <key type="filename">src/mcHero_2/33.png</key>
+            <key type="filename">src/mcHero_2/34.png</key>
+            <key type="filename">src/mcHero_2/35.png</key>
+            <key type="filename">src/mcHero_2/36.png</key>
+            <key type="filename">src/mcHero_2/37.png</key>
+            <key type="filename">src/mcHero_2/38.png</key>
+            <key type="filename">src/mcHero_2/39.png</key>
+            <key type="filename">src/mcHero_2/40.png</key>
+            <key type="filename">src/mcHero_2/41.png</key>
+            <key type="filename">src/mcHero_2/42.png</key>
+            <key type="filename">src/mcHero_2/43.png</key>
+            <key type="filename">src/mcHero_2/44.png</key>
+            <key type="filename">src/mcHero_2/45.png</key>
+            <key type="filename">src/mcHero_2/46.png</key>
+            <key type="filename">src/mcHero_2/47.png</key>
+            <key type="filename">src/mcHero_2/48.png</key>
+            <key type="filename">src/mcHero_2/49.png</key>
+            <key type="filename">src/mcHero_2/50.png</key>
+            <key type="filename">src/mcHero_2/51.png</key>
+            <key type="filename">src/mcHero_2/52.png</key>
+            <key type="filename">src/mcHero_2/53.png</key>
+            <key type="filename">src/mcHero_2/54.png</key>
+            <key type="filename">src/mcHero_2/55.png</key>
+            <key type="filename">src/mcHero_2/56.png</key>
+            <key type="filename">src/mcHero_2/57.png</key>
+            <key type="filename">src/mcHero_2/58.png</key>
+            <key type="filename">src/mcHero_2/59.png</key>
+            <key type="filename">src/mcHero_2/60.png</key>
+            <key type="filename">src/mcHero_2/61.png</key>
+            <key type="filename">src/mcHero_2/62.png</key>
+            <key type="filename">src/mcHero_2/63.png</key>
+            <key type="filename">src/mcHero_2/64.png</key>
+            <key type="filename">src/mcHero_2/65.png</key>
+            <key type="filename">src/mcHero_2/66.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.4375,0.690722</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>16,24,32,48</rect>
+                <key>scale9Paddings</key>
+                <rect>16,24,32,48</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcHero_4/1.png</key>
+            <key type="filename">src/mcHero_4/2.png</key>
+            <key type="filename">src/mcHero_4/3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.834646,0.809524</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>32,16,64,32</rect>
+                <key>scale9Paddings</key>
+                <rect>32,16,64,32</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcHero_6/1.png</key>
+            <key type="filename">src/mcHero_6/2.png</key>
+            <key type="filename">src/mcHero_6/3.png</key>
+            <key type="filename">src/mcHero_6/4.png</key>
+            <key type="filename">src/mcHero_6/5.png</key>
+            <key type="filename">src/mcHero_6/6.png</key>
+            <key type="filename">src/mcHero_6/7.png</key>
+            <key type="filename">src/mcHero_6/8.png</key>
+            <key type="filename">src/mcHero_6/9.png</key>
+            <key type="filename">src/mcHero_6/10.png</key>
+            <key type="filename">src/mcHero_6/11.png</key>
+            <key type="filename">src/mcHero_6/12.png</key>
+            <key type="filename">src/mcHero_6/13.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.944444,0.516129</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>9,16,18,31</rect>
+                <key>scale9Paddings</key>
+                <rect>9,16,18,31</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcHero_8/1.png</key>
+            <key type="filename">src/mcHero_8/2.png</key>
+            <key type="filename">src/mcHero_8/3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.385542,0.602564</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>21,20,42,39</rect>
+                <key>scale9Paddings</key>
+                <rect>21,20,42,39</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcHero_10/1.png</key>
+            <key type="filename">src/mcHero_10/2.png</key>
+            <key type="filename">src/mcHero_10/3.png</key>
+            <key type="filename">src/mcHero_10/4.png</key>
+            <key type="filename">src/mcHero_10/5.png</key>
+            <key type="filename">src/mcHero_10/6.png</key>
+            <key type="filename">src/mcHero_10/7.png</key>
+            <key type="filename">src/mcHero_10/8.png</key>
+            <key type="filename">src/mcHero_10/9.png</key>
+            <key type="filename">src/mcHero_10/10.png</key>
+            <key type="filename">src/mcHero_10/11.png</key>
+            <key type="filename">src/mcHero_10/12.png</key>
+            <key type="filename">src/mcHero_10/13.png</key>
+            <key type="filename">src/mcHero_10/14.png</key>
+            <key type="filename">src/mcHero_10/15.png</key>
+            <key type="filename">src/mcHero_10/16.png</key>
+            <key type="filename">src/mcHero_10/17.png</key>
+            <key type="filename">src/mcHero_10/18.png</key>
+            <key type="filename">src/mcHero_10/19.png</key>
+            <key type="filename">src/mcHero_10/20.png</key>
+            <key type="filename">src/mcHero_10/21.png</key>
+            <key type="filename">src/mcHero_10/22.png</key>
+            <key type="filename">src/mcHero_10/23.png</key>
+            <key type="filename">src/mcHero_10/24.png</key>
+            <key type="filename">src/mcHero_10/25.png</key>
+            <key type="filename">src/mcHero_10/26.png</key>
+            <key type="filename">src/mcHero_10/27.png</key>
+            <key type="filename">src/mcHero_10/28.png</key>
+            <key type="filename">src/mcHero_10/29.png</key>
+            <key type="filename">src/mcHero_10/30.png</key>
+            <key type="filename">src/mcHero_10/31.png</key>
+            <key type="filename">src/mcHero_10/32.png</key>
+            <key type="filename">src/mcHero_10/33.png</key>
+            <key type="filename">src/mcHero_10/34.png</key>
+            <key type="filename">src/mcHero_10/35.png</key>
+            <key type="filename">src/mcHero_10/36.png</key>
+            <key type="filename">src/mcHero_10/37.png</key>
+            <key type="filename">src/mcHero_10/38.png</key>
+            <key type="filename">src/mcHero_10/39.png</key>
+            <key type="filename">src/mcHero_10/40.png</key>
+            <key type="filename">src/mcHero_10/41.png</key>
+            <key type="filename">src/mcHero_10/42.png</key>
+            <key type="filename">src/mcHero_10/43.png</key>
+            <key type="filename">src/mcHero_10/44.png</key>
+            <key type="filename">src/mcHero_10/45.png</key>
+            <key type="filename">src/mcHero_10/46.png</key>
+            <key type="filename">src/mcHero_10/47.png</key>
+            <key type="filename">src/mcHero_10/48.png</key>
+            <key type="filename">src/mcHero_10/49.png</key>
+            <key type="filename">src/mcHero_10/50.png</key>
+            <key type="filename">src/mcHero_10/51.png</key>
+            <key type="filename">src/mcHero_10/52.png</key>
+            <key type="filename">src/mcHero_10/53.png</key>
+            <key type="filename">src/mcHero_10/54.png</key>
+            <key type="filename">src/mcHero_10/55.png</key>
+            <key type="filename">src/mcHero_10/56.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.496503,0.62037</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>36,27,72,54</rect>
+                <key>scale9Paddings</key>
+                <rect>36,27,72,54</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcHero_13/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>1.111111,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>7,10,14,21</rect>
+                <key>scale9Paddings</key>
+                <rect>7,10,14,21</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcIcon_0/1.png</key>
+            <key type="filename">src/mcIcon_0/2.png</key>
+            <key type="filename">src/mcIcon_0/3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.977778,0.042553</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>11,12,22,24</rect>
+                <key>scale9Paddings</key>
+                <rect>11,12,22,24</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcKunai_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.354839,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>16,4,31,9</rect>
+                <key>scale9Paddings</key>
+                <rect>16,4,31,9</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcMonster_5/1.png</key>
+            <key type="filename">src/mcMonster_5/2.png</key>
+            <key type="filename">src/mcMonster_5/3.png</key>
+            <key type="filename">src/mcMonster_5/4.png</key>
+            <key type="filename">src/mcMonster_5/5.png</key>
+            <key type="filename">src/mcMonster_5/6.png</key>
+            <key type="filename">src/mcMonster_5/7.png</key>
+            <key type="filename">src/mcMonster_5/8.png</key>
+            <key type="filename">src/mcMonster_5/9.png</key>
+            <key type="filename">src/mcMonster_5/10.png</key>
+            <key type="filename">src/mcMonster_5/11.png</key>
+            <key type="filename">src/mcMonster_5/12.png</key>
+            <key type="filename">src/mcMonster_5/13.png</key>
+            <key type="filename">src/mcMonster_5/14.png</key>
+            <key type="filename">src/mcMonster_5/15.png</key>
+            <key type="filename">src/mcMonster_5/16.png</key>
+            <key type="filename">src/mcMonster_5/17.png</key>
+            <key type="filename">src/mcMonster_5/18.png</key>
+            <key type="filename">src/mcMonster_5/19.png</key>
+            <key type="filename">src/mcMonster_5/20.png</key>
+            <key type="filename">src/mcMonster_5/21.png</key>
+            <key type="filename">src/mcMonster_5/22.png</key>
+            <key type="filename">src/mcMonster_5/23.png</key>
+            <key type="filename">src/mcMonster_5/24.png</key>
+            <key type="filename">src/mcMonster_5/25.png</key>
+            <key type="filename">src/mcMonster_5/26.png</key>
+            <key type="filename">src/mcMonster_5/27.png</key>
+            <key type="filename">src/mcMonster_5/28.png</key>
+            <key type="filename">src/mcMonster_5/29.png</key>
+            <key type="filename">src/mcMonster_5/30.png</key>
+            <key type="filename">src/mcMonster_5/31.png</key>
+            <key type="filename">src/mcMonster_5/32.png</key>
+            <key type="filename">src/mcMonster_5/33.png</key>
+            <key type="filename">src/mcMonster_5/34.png</key>
+            <key type="filename">src/mcMonster_5/35.png</key>
+            <key type="filename">src/mcMonster_5/36.png</key>
+            <key type="filename">src/mcMonster_5/37.png</key>
+            <key type="filename">src/mcMonster_5/38.png</key>
+            <key type="filename">src/mcMonster_5/39.png</key>
+            <key type="filename">src/mcMonster_5/40.png</key>
+            <key type="filename">src/mcMonster_5/41.png</key>
+            <key type="filename">src/mcMonster_5/42.png</key>
+            <key type="filename">src/mcMonster_5/43.png</key>
+            <key type="filename">src/mcMonster_5/44.png</key>
+            <key type="filename">src/mcMonster_5/45.png</key>
+            <key type="filename">src/mcMonster_5/46.png</key>
+            <key type="filename">src/mcMonster_5/47.png</key>
+            <key type="filename">src/mcMonster_5/48.png</key>
+            <key type="filename">src/mcMonster_5/49.png</key>
+            <key type="filename">src/mcMonster_5/50.png</key>
+            <key type="filename">src/mcMonster_5/51.png</key>
+            <key type="filename">src/mcMonster_5/52.png</key>
+            <key type="filename">src/mcMonster_5/53.png</key>
+            <key type="filename">src/mcMonster_5/54.png</key>
+            <key type="filename">src/mcMonster_5/55.png</key>
+            <key type="filename">src/mcMonster_5/56.png</key>
+            <key type="filename">src/mcMonster_5/57.png</key>
+            <key type="filename">src/mcMonster_5/58.png</key>
+            <key type="filename">src/mcMonster_5/59.png</key>
+            <key type="filename">src/mcMonster_5/60.png</key>
+            <key type="filename">src/mcMonster_5/61.png</key>
+            <key type="filename">src/mcMonster_5/62.png</key>
+            <key type="filename">src/mcMonster_5/63.png</key>
+            <key type="filename">src/mcMonster_5/64.png</key>
+            <key type="filename">src/mcMonster_5/65.png</key>
+            <key type="filename">src/mcMonster_5/66.png</key>
+            <key type="filename">src/mcMonster_5/67.png</key>
+            <key type="filename">src/mcMonster_5/68.png</key>
+            <key type="filename">src/mcMonster_5/69.png</key>
+            <key type="filename">src/mcMonster_5/70.png</key>
+            <key type="filename">src/mcMonster_5/71.png</key>
+            <key type="filename">src/mcMonster_5/72.png</key>
+            <key type="filename">src/mcMonster_5/73.png</key>
+            <key type="filename">src/mcMonster_5/74.png</key>
+            <key type="filename">src/mcMonster_5/75.png</key>
+            <key type="filename">src/mcMonster_5/76.png</key>
+            <key type="filename">src/mcMonster_5/77.png</key>
+            <key type="filename">src/mcMonster_5/78.png</key>
+            <key type="filename">src/mcMonster_5/79.png</key>
+            <key type="filename">src/mcMonster_5/80.png</key>
+            <key type="filename">src/mcMonster_5/81.png</key>
+            <key type="filename">src/mcMonster_5/82.png</key>
+            <key type="filename">src/mcMonster_5/83.png</key>
+            <key type="filename">src/mcMonster_5/84.png</key>
+            <key type="filename">src/mcMonster_5/85.png</key>
+            <key type="filename">src/mcMonster_5/86.png</key>
+            <key type="filename">src/mcMonster_5/87.png</key>
+            <key type="filename">src/mcMonster_5/88.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.418269,0.411765</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>52,21,104,42</rect>
+                <key>scale9Paddings</key>
+                <rect>52,21,104,42</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcShadeBody_0/1.png</key>
+            <key type="filename">src/mcShadeBody_0/2.png</key>
+            <key type="filename">src/mcShadeBody_0/3.png</key>
+            <key type="filename">src/mcShadeBody_0/4.png</key>
+            <key type="filename">src/mcShadeBody_0/5.png</key>
+            <key type="filename">src/mcShadeBody_0/6.png</key>
+            <key type="filename">src/mcShadeBody_0/7.png</key>
+            <key type="filename">src/mcShadeBody_0/8.png</key>
+            <key type="filename">src/mcShadeBody_0/9.png</key>
+            <key type="filename">src/mcShadeBody_0/10.png</key>
+            <key type="filename">src/mcShadeBody_0/11.png</key>
+            <key type="filename">src/mcShadeBody_0/12.png</key>
+            <key type="filename">src/mcShadeBody_0/13.png</key>
+            <key type="filename">src/mcShadeBody_0/14.png</key>
+            <key type="filename">src/mcShadeBody_0/15.png</key>
+            <key type="filename">src/mcShadeBody_0/16.png</key>
+            <key type="filename">src/mcShadeBody_0/17.png</key>
+            <key type="filename">src/mcShadeBody_0/18.png</key>
+            <key type="filename">src/mcShadeBody_0/19.png</key>
+            <key type="filename">src/mcShadeBody_0/20.png</key>
+            <key type="filename">src/mcShadeBody_0/21.png</key>
+            <key type="filename">src/mcShadeBody_0/22.png</key>
+            <key type="filename">src/mcShadeBody_0/23.png</key>
+            <key type="filename">src/mcShadeBody_0/24.png</key>
+            <key type="filename">src/mcShadeBody_0/25.png</key>
+            <key type="filename">src/mcShadeBody_0/26.png</key>
+            <key type="filename">src/mcShadeBody_0/27.png</key>
+            <key type="filename">src/mcShadeBody_0/28.png</key>
+            <key type="filename">src/mcShadeBody_0/29.png</key>
+            <key type="filename">src/mcShadeBody_0/30.png</key>
+            <key type="filename">src/mcShadeBody_0/31.png</key>
+            <key type="filename">src/mcShadeBody_0/32.png</key>
+            <key type="filename">src/mcShadeBody_0/33.png</key>
+            <key type="filename">src/mcShadeBody_0/34.png</key>
+            <key type="filename">src/mcShadeBody_0/35.png</key>
+            <key type="filename">src/mcShadeBody_0/36.png</key>
+            <key type="filename">src/mcShadeBody_0/37.png</key>
+            <key type="filename">src/mcShadeBody_0/38.png</key>
+            <key type="filename">src/mcShadeBody_0/39.png</key>
+            <key type="filename">src/mcShadeBody_0/40.png</key>
+            <key type="filename">src/mcShadeBody_0/41.png</key>
+            <key type="filename">src/mcShadeBody_0/42.png</key>
+            <key type="filename">src/mcShadeBody_0/43.png</key>
+            <key type="filename">src/mcShadeBody_0/44.png</key>
+            <key type="filename">src/mcShadeBody_0/45.png</key>
+            <key type="filename">src/mcShadeBody_0/46.png</key>
+            <key type="filename">src/mcShadeBody_0/47.png</key>
+            <key type="filename">src/mcShadeBody_0/48.png</key>
+            <key type="filename">src/mcShadeBody_0/49.png</key>
+            <key type="filename">src/mcShadeBody_0/50.png</key>
+            <key type="filename">src/mcShadeBody_0/51.png</key>
+            <key type="filename">src/mcShadeBody_0/52.png</key>
+            <key type="filename">src/mcShadeBody_0/53.png</key>
+            <key type="filename">src/mcShadeBody_0/54.png</key>
+            <key type="filename">src/mcShadeBody_0/55.png</key>
+            <key type="filename">src/mcShadeBody_0/56.png</key>
+            <key type="filename">src/mcShadeBody_0/57.png</key>
+            <key type="filename">src/mcShadeBody_0/58.png</key>
+            <key type="filename">src/mcShadeBody_0/59.png</key>
+            <key type="filename">src/mcShadeBody_0/60.png</key>
+            <key type="filename">src/mcShadeBody_0/61.png</key>
+            <key type="filename">src/mcShadeBody_0/62.png</key>
+            <key type="filename">src/mcShadeBody_0/63.png</key>
+            <key type="filename">src/mcShadeBody_0/64.png</key>
+            <key type="filename">src/mcShadeBody_0/65.png</key>
+            <key type="filename">src/mcShadeBody_0/66.png</key>
+            <key type="filename">src/mcShadeBody_0/67.png</key>
+            <key type="filename">src/mcShadeBody_0/68.png</key>
+            <key type="filename">src/mcShadeBody_0/69.png</key>
+            <key type="filename">src/mcShadeBody_0/70.png</key>
+            <key type="filename">src/mcShadeBody_0/71.png</key>
+            <key type="filename">src/mcShadeBody_0/72.png</key>
+            <key type="filename">src/mcShadeBody_0/73.png</key>
+            <key type="filename">src/mcShadeBody_0/74.png</key>
+            <key type="filename">src/mcShadeBody_0/75.png</key>
+            <key type="filename">src/mcShadeBody_0/76.png</key>
+            <key type="filename">src/mcShadeBody_0/77.png</key>
+            <key type="filename">src/mcShadeBody_0/78.png</key>
+            <key type="filename">src/mcShadeBody_0/79.png</key>
+            <key type="filename">src/mcShadeBody_0/80.png</key>
+            <key type="filename">src/mcShadeBody_0/81.png</key>
+            <key type="filename">src/mcShadeBody_0/82.png</key>
+            <key type="filename">src/mcShadeBody_0/83.png</key>
+            <key type="filename">src/mcShadeBody_0/84.png</key>
+            <key type="filename">src/mcShadeBody_0/85.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.480519,0.637255</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>38,26,77,51</rect>
+                <key>scale9Paddings</key>
+                <rect>38,26,77,51</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcTanker_0/1.png</key>
+            <key type="filename">src/mcTanker_0/2.png</key>
+            <key type="filename">src/mcTanker_0/3.png</key>
+            <key type="filename">src/mcTanker_0/4.png</key>
+            <key type="filename">src/mcTanker_0/5.png</key>
+            <key type="filename">src/mcTanker_0/6.png</key>
+            <key type="filename">src/mcTanker_0/7.png</key>
+            <key type="filename">src/mcTanker_0/8.png</key>
+            <key type="filename">src/mcTanker_0/9.png</key>
+            <key type="filename">src/mcTanker_0/10.png</key>
+            <key type="filename">src/mcTanker_0/11.png</key>
+            <key type="filename">src/mcTanker_0/12.png</key>
+            <key type="filename">src/mcTanker_0/13.png</key>
+            <key type="filename">src/mcTanker_0/14.png</key>
+            <key type="filename">src/mcTanker_0/15.png</key>
+            <key type="filename">src/mcTanker_0/16.png</key>
+            <key type="filename">src/mcTanker_0/17.png</key>
+            <key type="filename">src/mcTanker_0/18.png</key>
+            <key type="filename">src/mcTanker_0/19.png</key>
+            <key type="filename">src/mcTanker_0/20.png</key>
+            <key type="filename">src/mcTanker_0/21.png</key>
+            <key type="filename">src/mcTanker_0/22.png</key>
+            <key type="filename">src/mcTanker_0/23.png</key>
+            <key type="filename">src/mcTanker_0/24.png</key>
+            <key type="filename">src/mcTanker_0/25.png</key>
+            <key type="filename">src/mcTanker_0/26.png</key>
+            <key type="filename">src/mcTanker_0/27.png</key>
+            <key type="filename">src/mcTanker_0/28.png</key>
+            <key type="filename">src/mcTanker_0/29.png</key>
+            <key type="filename">src/mcTanker_0/30.png</key>
+            <key type="filename">src/mcTanker_0/31.png</key>
+            <key type="filename">src/mcTanker_0/32.png</key>
+            <key type="filename">src/mcTanker_0/33.png</key>
+            <key type="filename">src/mcTanker_0/34.png</key>
+            <key type="filename">src/mcTanker_0/35.png</key>
+            <key type="filename">src/mcTanker_0/36.png</key>
+            <key type="filename">src/mcTanker_0/37.png</key>
+            <key type="filename">src/mcTanker_0/38.png</key>
+            <key type="filename">src/mcTanker_0/39.png</key>
+            <key type="filename">src/mcTanker_0/40.png</key>
+            <key type="filename">src/mcTanker_0/41.png</key>
+            <key type="filename">src/mcTanker_0/42.png</key>
+            <key type="filename">src/mcTanker_0/43.png</key>
+            <key type="filename">src/mcTanker_0/44.png</key>
+            <key type="filename">src/mcTanker_0/45.png</key>
+            <key type="filename">src/mcTanker_0/46.png</key>
+            <key type="filename">src/mcTanker_0/47.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.367816,0.738095</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>44,32,87,63</rect>
+                <key>scale9Paddings</key>
+                <rect>44,32,87,63</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/mcTanker_3/1.png</key>
+            <key type="filename">src/mcTanker_3/2.png</key>
+            <key type="filename">src/mcTanker_3/3.png</key>
+            <key type="filename">src/mcTanker_3/4.png</key>
+            <key type="filename">src/mcTanker_3/5.png</key>
+            <key type="filename">src/mcTanker_3/6.png</key>
+            <key type="filename">src/mcTanker_3/7.png</key>
+            <key type="filename">src/mcTanker_3/8.png</key>
+            <key type="filename">src/mcTanker_3/9.png</key>
+            <key type="filename">src/mcTanker_3/10.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.583784,0.957265</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>46,29,92,58</rect>
+                <key>scale9Paddings</key>
+                <rect>46,29,92,58</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partCircle_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>10,10,21,21</rect>
+                <key>scale9Paddings</key>
+                <rect>10,10,21,21</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partDust_0/1.png</key>
+            <key type="filename">src/partDust_0/2.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.416667</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>4,3,7,6</rect>
+                <key>scale9Paddings</key>
+                <rect>4,3,7,6</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partLight_0/1.png</key>
+            <key type="filename">src/partLight_0/2.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>6,6,11,11</rect>
+                <key>scale9Paddings</key>
+                <rect>6,6,11,11</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partSmoke_0/1.png</key>
+            <key type="filename">src/partSmoke_0/2.png</key>
+            <key type="filename">src/partSmoke_0/3.png</key>
+            <key type="filename">src/partSmoke_0/4.png</key>
+            <key type="filename">src/partSmoke_0/5.png</key>
+            <key type="filename">src/partSmoke_0/6.png</key>
+            <key type="filename">src/partSmoke_0/7.png</key>
+            <key type="filename">src/partSmoke_0/8.png</key>
+            <key type="filename">src/partSmoke_0/9.png</key>
+            <key type="filename">src/partSmoke_0/10.png</key>
+            <key type="filename">src/partSmoke_0/11.png</key>
+            <key type="filename">src/partSmoke_0/12.png</key>
+            <key type="filename">src/partSmoke_0/13.png</key>
+            <key type="filename">src/partSmoke_0/14.png</key>
+            <key type="filename">src/partSmoke_0/15.png</key>
+            <key type="filename">src/partSmoke_0/16.png</key>
+            <key type="filename">src/partSmoke_0/17.png</key>
+            <key type="filename">src/partSmoke_0/18.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.577465,0.65625</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>53,72,106,144</rect>
+                <key>scale9Paddings</key>
+                <rect>53,72,106,144</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partSpark_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.478261,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>6,6,12,11</rect>
+                <key>scale9Paddings</key>
+                <rect>6,6,12,11</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/partSpark_3/1.png</key>
+            <key type="filename">src/partSpark_3/2.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.492308,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>16,16,32,32</rect>
+                <key>scale9Paddings</key>
+                <rect>16,16,32,32</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/platCorner1_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.115385,0.086957</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>6,6,13,12</rect>
+                <key>scale9Paddings</key>
+                <rect>6,6,13,12</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/platCorner2_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.115385,0.086957</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>6,6,13,12</rect>
+                <key>scale9Paddings</key>
+                <rect>6,6,13,12</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/platText1_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.251714,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>255,6,510,11</rect>
+                <key>scale9Paddings</key>
+                <rect>255,6,510,11</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/platText2_0/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.251714,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>255,6,510,11</rect>
+                <key>scale9Paddings</key>
+                <rect>255,6,510,11</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

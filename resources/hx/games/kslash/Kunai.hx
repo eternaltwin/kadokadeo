@@ -1,16 +1,28 @@
 package kslash;
 
 class Kunai extends Shoot {
-	public override function checkCol() {
-		super.checkCol();
-		if (!Cs.game.hero.flInvicible && Cs.game.hero.sTimer == null) {
-			var dx = root._x - Cs.game.hero.root._x;
-			var dy = root._y - Cs.game.hero.root._y;
+	public function new(mc:Clip) {
+		super(mc);
+		// (a second time: the kunai is updated twice per frame, like in the original)
+		Cs.game.sList.push(this);
+	}
 
-			if (Math.sqrt(dx * dx + dy * dy) < KadoKadeoManager.I(14)) {
-				Cs.game.hero.hit(this);
+	override public function checkCol() {
+		super.checkCol();
+		var hero = Cs.game.hero;
+		if (!hero.flInvicible && hero.sTimer == null) {
+			var dx = root._x - hero.root._x;
+			var dy = root._y - hero.root._y;
+
+			if (Math.sqrt(dx * dx + dy * dy) < 14) {
+				hero.hit(this);
 				kill();
 			}
 		}
+	}
+
+	override public function kill() {
+		super.kill();
+		Cs.game.sList.remove(this);
 	}
 }

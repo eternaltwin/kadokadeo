@@ -1,31 +1,14 @@
 package kslash;
 
-import mt.Timer;
-
 class Runner extends Monster {
 	var flFlyUp:Bool;
 	var flStraight:Bool;
 	var flWalk:Bool;
-	var speed:Float;
 
-	public function new(mc) {
+	public var speed:Float;
+
+	public function new(mc:Clip) {
 		super(mc);
-		mc.stopOnFrame = [36, 65, 72, 86, 95, 132];
-		mc.removeOnFrame = 118;
-		mc.onFrame.set(17, () -> mc.gotoAndPlay(5));
-		mc.onFrame.set(140, () -> mc.gotoAndPlay(5));
-		mc.onFrame.set(132, () -> mc.gotoAndPlay(127));
-		animFrame.set("walk", 1);
-		animFrame.set("walk_loop", 5);
-		animFrame.set("climb", 20);
-		animFrame.set("climbEnd", 37);
-		animFrame.set("fly_up", 53);
-		animFrame.set("fly_down", 66);
-		animFrame.set("fly_straight_up", 75);
-		animFrame.set("fly_straight_down", 87);
-		animFrame.set("death", 99);
-		animFrame.set("shootWait", 119);
-		animFrame.set("shoot", 133);
 
 		setSens(Seed.random(2) * 2 - 1);
 
@@ -35,7 +18,7 @@ class Runner extends Monster {
 		initStep(Cs.ST_FLY);
 	}
 
-	public override function initStep(n) {
+	override public function initStep(n:Int) {
 		super.initStep(n);
 		switch (step) {
 			case Cs.ST_NORMAL:
@@ -54,13 +37,13 @@ class Runner extends Monster {
 		}
 	}
 
-	public override function update() {
+	override public function update() {
 		super.update();
 		switch (step) {
 			case Cs.ST_NORMAL:
 				var dvx = sens * speed - vx;
-				var lim = KadoKadeoManager.S(0.5);
-				vx += Math.min(Math.max(-lim, dvx * KadoKadeoManager.S(0.2)), lim) * Timer.tmod;
+				var lim = 0.5;
+				vx += Math.min(Math.max(-lim, dvx * 0.2), lim) * Timer.tmod;
 			case Cs.ST_FLY:
 				if (flFlyUp && vy > 0) {
 					flFlyUp = false;
@@ -74,37 +57,35 @@ class Runner extends Monster {
 		}
 	}
 
-	public override function jumpFront(dist) {
+	override function jumpFront(dist:Int) {
 		super.jumpFront(dist);
 		flStraight = true;
 		flFlyUp = true;
 		nextAnim = "fly_straight_up";
 	}
 
-	public override function throwMonster(a, p) {
+	override public function throwAt(a:Float, p:Float) {
 		if (flGround && hp > 0) {
-			root.gotoAndStop(animFrame.get("walk_loop"));
+			root.gotoAndStop("walk_loop");
 		}
-		super.throwMonster(a, p);
+		super.throwAt(a, p);
 	}
 
 	//
-
-	public override function climb() {
+	override public function climb() {
 		super.climb();
-		root.gotoAndStop(animFrame.get("fly_up"));
+		root.gotoAndStop("fly_up");
 		flFlyUp = true;
 		flWalk = false;
 	}
 
-	public override function land() {
+	override public function land() {
 		super.land();
 		chooseWay();
 	}
 
-	public override function death() {
-		// Cs.game.spawnBonus(x,y)
-		root.gotoAndPlay(animFrame.get("death"));
+	override public function death() {
+		root.gotoAndPlay("death");
 		super.death();
 	}
 }

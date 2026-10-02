@@ -1,14 +1,12 @@
 package kslash;
 
-import mt.Timer;
-
 class Bonus {
-	public var root:ASprite;
+	public var root:Clip;
 
-	var id:Int;
-	var time:Float;
+	public var id:Int;
+	public var time:Float;
 
-	public function new(mc) {
+	public function new(mc:Clip) {
 		root = mc;
 		Cs.game.bList.push(this);
 		time = 300;
@@ -23,13 +21,13 @@ class Bonus {
 		}
 	}
 
-	public function setId(n) {
+	public function setId(n:Int) {
 		id = n;
 		root.gotoAndStop(id);
 	}
 
 	public function take() {
-		var pid = null;
+		var pid:Null<Int> = null;
 		switch (id) {
 			case 1:
 				addScore(Cs.C200);
@@ -40,6 +38,9 @@ class Bonus {
 			case 3:
 				addScore(Cs.C5000);
 				pid = 0;
+				// (no break in the original: the red gem also gives the 20 shurikens of case 4)
+				Cs.game.hero.incStar(20);
+				pid = 1;
 			case 4:
 				Cs.game.hero.incStar(20);
 				pid = 1;
@@ -58,6 +59,7 @@ class Bonus {
 			case 10:
 				Cs.game.hero.initSupa();
 		}
+		//
 
 		switch (pid) {
 			case 0:
@@ -65,65 +67,45 @@ class Bonus {
 					var p = Cs.game.newPart("partSpark");
 					var a = Seed.randVfx() * 6.28;
 					var d = Seed.randVfx() * (6 + 18 * (1 - (i / 24)));
-					p.x = root._x + Math.cos(a) * d;
-					p.y = root._y + Math.sin(a) * d;
-					p.timer = 10 + Seed.randVfx() * 10;
-					p.sleep = Math.max(0, Math.pow(i * 30, 0.5) - 8);
-					p.scale = Seed.randVfx() * 100 - p.sleep * 2;
-					p.fadeType = 0;
+					p.root._x = root._x + Math.cos(a) * d;
+					p.root._y = root._y + Math.sin(a) * d;
+					p.t = 10 + Seed.randVfx() * 10;
+					p.wt = Math.max(0, Math.pow(i * 30, 0.5) - 8);
+					p.scale = 30 + Seed.randVfx() * 100 - p.wt * 2;
+					p.root._xscale = p.scale;
+					p.root._yscale = p.scale;
+					p.ft = 0;
+
 					p.root._visible = false;
 				}
 			case 1:
 				for (i in 0...3) {
 					var p = Cs.game.newPart("partCircle");
-					p.x = root._x;
-					p.y = root._y;
+					p.root._x = root._x;
+					p.root._y = root._y;
 					p.root._rotation = Seed.randVfx() * 360;
-					p.timer = 18 - i * 3;
+					p.t = 18 - i * 3;
 					p.vs = 6 + i * 8;
 					p.vr = 8 + i * 12;
 				}
-			case 2:
-				var max = 8;
-				for (i in 0...max) {
-					for (n in 0...2) {
-						var p = Cs.game.newPart("partLight");
-						p.x = root._x;
-						p.y = root._y;
-						var a = ((i + 0.5 * n) / max) * 6.28;
-						var speed = KadoKadeoManager.S(3 + n * 2);
-						p.vx += Math.cos(a) * speed;
-						p.vy += Math.sin(a) * speed;
-						p.timer = 26 + Seed.randVfx() * 4 - n * 10;
-						p.frict = 0.9;
-					}
-				}
+			case _:
 		}
 
 		Cs.game.stats.opt[id - 1]++;
+
 		kill();
 	}
 
-	public function addScore(n) {
-		KadoKadeoManager.kkm.addScore(n);
-		var p = Cs.game.newPart(null);
-		p.x = root._x;
-		p.y = root._y;
-		p.vy = -KadoKadeoManager.I(1);
-		p.timer = 24;
-		p.field = p.root.initTextField('field', {
-			font: "Impact",
-			size: 36,
-			color: 0xFFFFFF,
-			stroke: "#000000",
-			strokeThickness: 5,
-			align: "center",
-			y: -KadoKadeoManager.I(10)
-		});
-		p.field.text = Std.string(n);
+	function addScore(n:Int) {
+		Cs.game.addScore(n);
+		var p = Cs.game.newScore(KKApi.val(n));
+		p.root._x = root._x;
+		p.root._y = root._y;
+		p.vy = -1;
+		p.t = 24;
 	}
 
-	public function kill() {
+	function kill() {
 		Cs.game.bList.remove(this);
 		root.removeMovieClip();
 	}
