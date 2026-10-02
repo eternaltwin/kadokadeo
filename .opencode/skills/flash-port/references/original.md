@@ -39,7 +39,10 @@ Before writing code, list from the sources and from `$KKP_WORK/<game>/dump_<swf>
 - what the code measures on the display (`_width`, `getBounds`, `hitTest`): gameplay cannot read the PIXI
   display, these values are exported as numbers or masks (`graphics.md`);
 - the frame rate: `swfdump.py` prints the SWF header (`rate`). The graphics libraries often say 40; the games
-  run at 32 (`mt.Timer.wantedFPS`), which is what KadoKadeo does.
+  run at 32 (`mt.Timer.wantedFPS`), which is what KadoKadeo does. But when the SWF says 40, the Flash player
+  really ran 40 frames/s with `tmod ~0.8`: everything scaled by `tmod` keeps its real-time speed, everything done
+  **once per frame without `tmod`** (score per frame, counters, timeline playheads) ran 40 times per second.
+  Mini-Race's `addScore(SCORE_ACCEL)` each frame lost 20% of its points until it gave 5 frames per 4 steps.
 
 ## Is it the released game?
 

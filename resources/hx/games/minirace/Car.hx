@@ -28,6 +28,7 @@ class Car extends Tracker {
 	public var pid:Int;
 
 	var clip:Clip;
+	var accelSteps:Int;
 
 	public function new(mc:Clip) {
 		super(mc);
@@ -38,6 +39,7 @@ class Car extends Tracker {
 		grassFrict = 0.7;
 
 		cps = 0;
+		accelSteps = 0;
 		flPlayer = false;
 		flGrass = false;
 	}
@@ -109,8 +111,14 @@ class Car extends Tracker {
 		if (flPlayer) {
 			if (Cs.game.flPress && Cs.game.step == Play) {
 				speed += acc * Timer.tmod;
-				if (!flGrass)
+				if (!flGrass) {
 					Cs.game.addScore(Cs.SCORE_ACCEL);
+					// the original adds SCORE_ACCEL once per Flash frame, not scaled by tmod: the SWF runs at 40 frames/s
+					// (tmod ~0.8), KadoKadeo at 32 steps/s, so every 4th step adds the 5th frame of the original
+					accelSteps++;
+					if (accelSteps % 4 == 0)
+						Cs.game.addScore(Cs.SCORE_ACCEL);
+				}
 			} else {
 				speed *= Math.pow(brakeFrict, Timer.tmod);
 			}
