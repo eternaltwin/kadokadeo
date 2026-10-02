@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/xianxiang.js
-xianxiang.Game
+-js ./resources/js/games/manda.js
+manda.Game

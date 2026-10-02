@@ -115,3 +115,6 @@ minirace.Game
 --next
 --js ./resources/js/games/pioutch.js
 pioutch.Game
+--next
+--js ./resources/js/games/manda.js
+manda.Game
