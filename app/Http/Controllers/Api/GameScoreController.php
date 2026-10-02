@@ -20,7 +20,7 @@ class GameScoreController extends Controller implements HasMiddleware
     public static function middleware()
     {
         return [
-            new Middleware('auth:sanctum', only: ['index', 'show', 'daily', 'dailyScores']),
+            new Middleware('auth:sanctum', only: ['index', 'show', 'daily', 'dailyScores', 'siteRecords', 'personalRecords', 'userPeriodRecords', 'competition']),
         ];
     }
 
@@ -42,6 +42,69 @@ class GameScoreController extends Controller implements HasMiddleware
             'league' => $league,
             'leagues_scores' => $leaguesScores,
         ]);
+    }
+
+    public function siteRecords(ScoreService $scoreService)
+    {
+        $records = Game::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Game $game) => [
+                'game' => [
+                    'id' => $game->id,
+                    'name' => $game->name,
+                ],
+                'record' => $scoreService->getUserBestScore($game, null)?->score,
+            ]);
+
+        return response()->json($records);
+    }
+
+    public function personalRecords(ScoreService $scoreService)
+    {
+        $userId = Auth::id();
+        $records = Game::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Game $game) => [
+                'game' => [
+                    'id' => $game->id,
+                    'name' => $game->name,
+                    'stars' => $game->stars,
+                ],
+                'score' => $scoreService->getUserBestScore($game, $userId)?->score,
+            ]);
+
+        return response()->json($records);
+    }
+
+    public function userPeriodRecords(Game $game, ScoreService $scoreService)
+    {
+        $scoresByPeriod = $scoreService->getUserBestScoresByPeriod($game, Auth::id());
+        $periods = Period::query()
+            ->orderBy('id')
+            ->get(['id'])
+            ->map(fn (Period $period) => [
+                'id' => $period->id,
+                'score' => $scoresByPeriod->get($period->id),
+            ]);
+
+        return response()->json([
+            'game' => [
+                'id' => $game->id,
+                'name' => $game->name,
+            ],
+            'periods' => $periods,
+        ]);
+    }
+
+    public function competition(ScoreService $scoreService)
+    {
+        $currentPeriodId = Period::current()->first()?->id;
+
+        return response()->json($scoreService->get1500Leaderboard($currentPeriodId));
     }
 
     public function search(Request $request, Game $game, ScoreService $scoreService)
