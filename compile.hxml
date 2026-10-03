@@ -127,3 +127,6 @@ linea.Game
 --next
 -js ./resources/js/games/alphabounce.js
 alphabounce.Game
+--next
+-js ./resources/js/games/twinspirit.js
+twinspirit.Game

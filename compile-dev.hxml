@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/alphabounce.js
-alphabounce.Game
+-js ./resources/js/games/twinspirit.js
+twinspirit.Game
