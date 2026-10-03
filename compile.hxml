@@ -133,3 +133,6 @@ twinspirit.Game
 --next
 -js ./resources/js/games/eltortuganemesis.js
 eltortuganemesis.Game
+--next
+-js ./resources/js/games/abcrevolution.js
+abcrevolution.Game

@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/eltortuganemesis.js
-eltortuganemesis.Game
+-js ./resources/js/games/abcrevolution.js
+abcrevolution.Game
