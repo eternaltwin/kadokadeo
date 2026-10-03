@@ -26,6 +26,7 @@
 - Do not hand-edit generated files in `resources/js/games/*.js` or `public/gamesdata/*.js`; edit Haxe in `resources/hx/games/*` then rebuild.
 - Add/remove a game in both `compile.hxml` and `compile-dev.hxml`.
 - `resources/js/games/build-games.mjs` bundles **every** non-`tmp*.js` file in `resources/js/games`; stale JS files are still shipped unless removed.
+- `build-games.mjs` also archives the previous version of every bundle that changed in `storage/app/game-builds` (replays are played by the version they were recorded with, see `.opencode/skills/replay-system/SKILL.md`): never delete that folder; `GAME_BUILDS=off` skips it.
 - Runtime game loading depends on DB game name -> `game_key` mapping (`App\Models\Game::getGameKeyAttribute`), so filenames must match sanitized lowercase game names (e.g. `Opalus 2` -> `opalus2.js`).
 
 ## Backend/API Conventions That Matter

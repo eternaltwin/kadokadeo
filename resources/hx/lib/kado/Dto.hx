@@ -59,4 +59,5 @@ typedef EndRunResponseDTO = {
 typedef BeginRunParamsDTO = {
 	var daily:Bool;
 	var gameId:Int;
+	@:optional var build:String;
 }

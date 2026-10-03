@@ -184,6 +184,25 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
 - Lorsque le jeu est en recordEvent et possède une grille où x et y sont inférieurs à 8 (entre 0 et 7), on peut utiliser recordEvent({k: 0-3, x: 0-7, y: 0-7}) pour encoder un event en un seul octet (k<<6 | x<<3 | y). Cela permet de réduire la taille du replay.
 - Si le jeu est en recordEvent mais n'est pas dans une grille, utiliser un autre valeur que "k" dans l'objet recordé.
 
+## Versions des jeux (replays apres une mise a jour)
+
+Un replay ne contient que les inputs: il doit etre rejoue par la version du jeu avec laquelle il a ete enregistre.
+C'est automatique, rien a faire dans le code d'un jeu:
+
+- `resources/js/games/build-games.mjs` archive a chaque build l'ancienne version de chaque bundle qui change
+  (`resources/js/games/builds/archive.mjs`, dans `storage/app/game-builds/`): un delta binaire de quelques centaines
+  d'octets par version (`delta.mjs`), et pour la planche de sprites seulement les images que la nouvelle planche n'a
+  plus ou dessine avec une autre taille / ancre (`atlas.mjs`, mini-planche de quelques Ko).
+- La page envoie `build` (hash du manifest) au debut d'une partie: `runs.game_build_id` (table `game_builds`).
+- La page replay (`runs/show.vue`) charge `run.gamedata`: le bundle de cette version, reconstruit par Laravel
+  (`/gamesdata/builds/<jeu>/<hash>.js`, `app/Support/GameBuilds`), et sa planche (`params.assetBase`).
+- `php artisan kado:game-builds:keep` (planifie chaque jour) liste les versions encore utilisees par des replays: le build
+  suivant supprime les autres.
+
+A respecter dans un jeu: charger sa planche par le chemin du manager (`<jeu>-0.json` et ses `related_multi_packs`),
+pas de chemin `/assets/img/content/...` ecrit en dur pour la planche; ne pas supprimer `storage/app/game-builds`.
+Tests: `node --test resources/js/games/builds/archive.test.mjs` et `php artisan test --filter GameBuildsTest`.
+
 ## Checklist finale
 
 - [ ] `replay.init(...)` present dans le constructeur

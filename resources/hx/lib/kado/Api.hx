@@ -21,6 +21,9 @@ class Api {
 		if (runParams.daily) {
 			req.daily = true;
 		}
+		if (runParams.build != null) {
+			req.build = runParams.build;
+		}
 		http.setPostData(haxe.Json.stringify(req));
 
 		http.onData = function(data:String) {

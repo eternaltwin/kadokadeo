@@ -8,6 +8,7 @@ use App\Http\Requests\RunStartRequest;
 use App\Http\Resources\RunBeginResource;
 use App\Http\Resources\RunResource;
 use App\Models\Game;
+use App\Models\GameBuild;
 use App\Models\Period;
 use App\Models\Run;
 use App\Services\GameService;
@@ -65,6 +66,7 @@ class RunController extends Controller implements HasMiddleware
             'seed' => $seed,
             'contract_score' => $score,
             'contract_points' => $points,
+            'game_build_id' => GameBuild::resolve($game, $request->validated('build'))?->id,
         ]);
 
         if ($dailyGame?->seed === $run->seed && $dailyGame?->game_id === $run->game_id) {
@@ -132,7 +134,7 @@ class RunController extends Controller implements HasMiddleware
     public function show(Run $run)
     {
         Gate::authorize('view', $run);
-        $run->load('game', 'user');
+        $run->load('game', 'user', 'gameBuild');
         Gate::authorize('view', $run->game);
 
         return RunResource::make($run);

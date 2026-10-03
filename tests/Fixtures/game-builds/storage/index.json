@@ -1,0 +1,39 @@
+{
+ "format": 1,
+ "games": {
+  "testgame": {
+   "current": {
+    "hash": "bee4b73f901e",
+    "atlas": "aaaaaaaaaaaa",
+    "since": "2026-10-03T10:00:00.000Z"
+   },
+   "versions": {
+    "f8df6af08735": {
+     "base": "bee4b73f901e",
+     "atlas": null,
+     "assetBase": null,
+     "legacy": true,
+     "since": null,
+     "retiredAt": "2026-10-01T10:00:00.000Z",
+     "size": 10550
+    },
+    "596f189240bb": {
+     "base": "bee4b73f901e",
+     "atlas": "bbbbbbbbbbbb",
+     "assetBase": "/gamesdata/builds/testgame/596f189240bb/",
+     "legacy": false,
+     "since": "2026-10-01T10:00:00.000Z",
+     "retiredAt": "2026-10-03T10:00:00.000Z",
+     "size": 10550
+    }
+   },
+   "atlas": {
+    "hash": "aaaaaaaaaaaa",
+    "files": []
+   },
+   "atlases": [
+    "bbbbbbbbbbbb"
+   ]
+  }
+ }
+}

@@ -7,6 +7,9 @@ const run = ref(null)
 fetchRun(runId).then((data) => {
   run.value = data.data
 })
+
+// the replay is played by the version of the game it was recorded with (run.gamedata)
+const replayGame = computed(() => run.value && { ...run.value.game, gamedata: run.value.gamedata ?? run.value.game.gamedata })
 </script>
 
 <template>
@@ -19,12 +22,13 @@ fetchRun(runId).then((data) => {
     <h2 class="m-0!">Date: {{ dayjs(run.completed_at).format('DD/MM/YYYY HH:mm') }}</h2>
     <div class="relative" :style="{ width: '600px', height: '640px' }">
       <GamesGameScript
-        :game="run.game"
+        :game="replayGame"
         :args="{
           replayData: run.replay,
           seed: run.seed,
           contractScore: run.contract_score,
           contractPoints: run.contract_points,
+          assetBase: run.gamedata?.asset_base ?? undefined,
         }"
         :game-width="600"
         :game-height="640"

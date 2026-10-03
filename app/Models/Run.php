@@ -14,7 +14,7 @@ class Run extends Model
     use HasUlids;
     use SoftDeletes;
 
-    protected $fillable = ['period_id', 'game_id', 'user_id', 'league_id', 'score', 'play_time_seconds', 'replay', 'completed_at', 'contract_score', 'contract_points', 'seed', 'score_details', 'daily_game_id', 'is_cheat'];
+    protected $fillable = ['period_id', 'game_id', 'user_id', 'league_id', 'score', 'play_time_seconds', 'replay', 'completed_at', 'contract_score', 'contract_points', 'seed', 'score_details', 'daily_game_id', 'is_cheat', 'game_build_id'];
 
     protected $casts = [
         'replay' => BinaryCast::class,
@@ -41,6 +41,12 @@ class Run extends Model
     public function league()
     {
         return $this->belongsTo(League::class);
+    }
+
+    // the version of the game the run was played with (its replay is played by the same version)
+    public function gameBuild()
+    {
+        return $this->belongsTo(GameBuild::class);
     }
 
     public function getHasReplayAttribute()

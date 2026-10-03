@@ -137,6 +137,8 @@ export function useGame(game) {
       ...args,
       name: currentGame.name.toLowerCase().replaceAll(/\W/g, ''),
       gameId: currentGame.id,
+      // version of the bundle: sent with the run, its replay is played with the same version
+      build: currentGame?.gamedata?.hash ?? null,
     })
   }
 

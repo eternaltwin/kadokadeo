@@ -78,7 +78,7 @@ class KadoRunFlow {
 	#end
 
 	public function requestContract(onSuccess:RunStartContext->Void, onError:String->Void):Void {
-		Api.askContract({daily: params.isDaily, gameId: params.gameId}, (data:Dto.ApiResponse<Dto.RunDTO>) -> {
+		Api.askContract({daily: params.isDaily, gameId: params.gameId, build: params.build}, (data:Dto.ApiResponse<Dto.RunDTO>) -> {
 			currentContext = {
 				runDetails: data.data,
 				seedHash: hashFNV1a(data.data.seed),

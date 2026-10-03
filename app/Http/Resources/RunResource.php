@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\GameBuilds\GameBuildArchive;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,6 +32,11 @@ class RunResource extends JsonResource
             'league_rank' => $this->whenHas('league_rank', $this->league_rank),
             'replay' => $this->replay,
             'has_replay' => $this->has_replay,
+            // the bundle the replay has to be played with (the version of the game it was recorded with)
+            'gamedata' => $this->when(
+                $this->has_replay && $this->relationLoaded('game'),
+                fn () => app(GameBuildArchive::class)->gamedataFor($this->game, $this->gameBuild),
+            ),
             'completed_at' => $this->completed_at,
             'is_cheat' => $this->when($isAdmin, $this->is_cheat),
         ];

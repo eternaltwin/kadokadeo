@@ -8,4 +8,8 @@ typedef GameParams = {
 	var contractScore:Int;
 	var contractPoints:Int;
 	var gameId:Int;
+	// version of the game bundle (hash of the manifest): sent when a run begins, to replay it with the same version
+	@:optional var build:String;
+	// folder of the spritesheet of an old version of the game (replays), instead of /assets/img/content/<name>/
+	@:optional var assetBase:String;
 }

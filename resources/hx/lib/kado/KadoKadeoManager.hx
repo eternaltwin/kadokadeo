@@ -371,7 +371,9 @@ class KadoKadeoManager extends Application {
 		var b = dm.empty(2);
 		this.bottomBar = new BottomBar(this, runDetails);
 		b.addChild(this.bottomBar);
-		var assetName = '/assets/img/content/' + this.params.name + '/' + this.params.name + '-0.json';
+		// (an old version of the game played for a replay has its own spritesheet: params.assetBase)
+		var assetBase = this.params.assetBase != null ? this.params.assetBase : '/assets/img/content/' + this.params.name + '/';
+		var assetName = assetBase + this.params.name + '-0.json';
 		if (loader.resources[assetName] != null) {
 			beginGame();
 		} else {

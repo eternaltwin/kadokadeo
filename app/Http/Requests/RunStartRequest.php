@@ -32,6 +32,8 @@ class RunStartRequest extends FormRequest
     {
         return [
             'daily' => 'sometimes|required|accepted',
+            // version of the game bundle (hash of the manifest), to play the replay with the same version
+            'build' => ['sometimes', 'nullable', 'string', 'regex:/^[0-9a-f]{12}$/'],
         ];
     }
 }
