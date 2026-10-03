@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/abcrevolution.js
-abcrevolution.Game
+-js ./resources/js/games/safari.js
+safari.Game

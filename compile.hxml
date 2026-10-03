@@ -136,3 +136,6 @@ eltortuganemesis.Game
 --next
 -js ./resources/js/games/abcrevolution.js
 abcrevolution.Game
+--next
+-js ./resources/js/games/safari.js
+safari.Game
