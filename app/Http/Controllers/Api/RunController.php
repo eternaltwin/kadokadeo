@@ -25,7 +25,7 @@ class RunController extends Controller implements HasMiddleware
     public static function middleware()
     {
         return [
-            new Middleware('auth:sanctum'),
+            new Middleware('auth:sanctum', except: ['publicKey']),
             new Middleware('throttle:10,1', only: ['begin']), // 10 requests per minute
         ];
     }
@@ -82,6 +82,11 @@ class RunController extends Controller implements HasMiddleware
 
     public function end(RunEndRequest $request, Run $run, RunService $runService, ScoreService $scoreService)
     {
+        // a run sent again (offline retry, lost response) must not be rewarded twice
+        if ($run->completed_at !== null) {
+            abort(409, 'Partie déjà terminée.');
+        }
+
         $user = $request->user();
         $periodId = $run->period_id ?? Period::current()->first()?->id;
         $payload = $request->validated('payload');
@@ -112,6 +117,16 @@ class RunController extends Controller implements HasMiddleware
                 'people_to_beat' => $toBeatCount,
             ],
         ];
+    }
+
+    /**
+     * The key changes with each deployment: a page opened before it asks for it again when a run cannot be sent.
+     */
+    public function publicKey(RunService $runService)
+    {
+        return response()
+            ->json(['data' => ['public_key' => $runService->getPublicKey()]])
+            ->header('Cache-Control', 'no-store');
     }
 
     public function show(Run $run)

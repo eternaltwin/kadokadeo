@@ -39,4 +39,36 @@ class Panel extends NineSlicePlane {
 	public function addContentDisplayObject(obj:pixi.core.display.DisplayObject):Void {
 		this.contentContainer.addChild(obj);
 	}
+
+	// grows to show the whole content
+	public function fitHeight(minHeight:Float):Void {
+		var bottom = contentContainer.y + contentContainer.getLocalBounds().bottom;
+		this.height = Math.max(minHeight, bottom + KadoKadeoManager.I(15));
+	}
+
+	// a centered message (server connection, run sending...), with an optional smaller line under it
+	public function showMessage(title:String, message:String, ?hint:String):Void {
+		setTitle(title);
+		clearContent();
+		var text = new pixi.core.text.Text(message, {
+			fontFamily: 'Fredoka Bold',
+			fontSize: 30,
+			fill: 0x78c3c9,
+			align: 'center',
+		});
+		addContentDisplayObject(text);
+		text.x = (this.width - text.width) / 2;
+		text.y = KadoKadeoManager.I(23);
+		if (hint != null) {
+			var hintText = new pixi.core.text.Text(hint, {
+				fontFamily: 'Fredoka Bold',
+				fontSize: 22,
+				fill: 0xFF6400,
+				align: 'center',
+			});
+			addContentDisplayObject(hintText);
+			hintText.x = (this.width - hintText.width) / 2;
+			hintText.y = text.y + text.height + KadoKadeoManager.I(4);
+		}
+	}
 }

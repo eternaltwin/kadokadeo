@@ -1,5 +1,6 @@
 <script setup>
 import Announcement from '@/components/message/Announcement.vue'
+import PendingRuns from '@/components/message/PendingRuns.vue'
 import Kalendrier from '@/components/nav/Kalendrier.vue'
 import Navbar from '@/components/nav/Navbar.vue'
 import Starbar from '@/components/nav/Starbar.vue'
@@ -29,6 +30,7 @@ const authStore = useAuthStore()
   </header>
 
   <Announcement style="width: 890px; margin: 20px 60px 40px 60px; font-size: 0.85em" />
+  <PendingRuns style="width: 890px; margin: 0 60px 40px 60px; font-size: 0.85em" />
 
   <main id="container">
     <section id="bodySection" class="w-full flex">

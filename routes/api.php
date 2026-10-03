@@ -22,6 +22,7 @@ Route::get('/games/{game}/scores', [App\Http\Controllers\Api\GameScoreController
 Route::get('/games/{game}/ranking', [App\Http\Controllers\Api\GameScoreController::class, 'search'])->whereNumber('game');
 
 Route::prefix('/runs')->group(function () {
+    Route::get('/public-key', [App\Http\Controllers\Api\RunController::class, 'publicKey']);
     Route::get('/{run}', [App\Http\Controllers\Api\RunController::class, 'show'])->whereUlid('run');
     Route::post('/games/{game}', [App\Http\Controllers\Api\RunController::class, 'begin'])->whereNumber('game');
     Route::post('/{run}/finish', [App\Http\Controllers\Api\RunController::class, 'end'])->whereUlid('run');

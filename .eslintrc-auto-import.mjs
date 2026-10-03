@@ -86,6 +86,7 @@ export default {
     "useLeagueStore": true,
     "useLink": true,
     "useModel": true,
+    "usePendingRunsStore": true,
     "usePeriodStore": true,
     "useProfile": true,
     "useRoute": true,

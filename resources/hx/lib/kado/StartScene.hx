@@ -79,18 +79,7 @@ class StartScene extends Container {
 		this.interactive = false;
 		overlay.visible = true;
 		panel.visible = true;
-		panel.setTitle("");
-
-		var text = new pixi.core.text.Text('CONNEXION AU\nSERVEUR EN COURS...', {
-			fontFamily: 'Fredoka Bold',
-			fontSize: 30,
-			fill: 0x78c3c9,
-			align: 'center',
-		});
-		panel.clearContent();
-		panel.addContentDisplayObject(text);
-		text.x = (panel.width - text.width) / 2;
-		text.y = KadoKadeoManager.I(23);
+		panel.showMessage("", 'CONNEXION AU\nSERVEUR EN COURS...');
 	}
 
 	public function showContract(contract:Dto.RunDTO):Void {

@@ -7,6 +7,7 @@ enum RunState {
 	ReadyToStart;
 	Playing;
 	SubmittingRun;
+	SubmitFailed;
 	EndScreen;
 	ReplayTransition;
 }
@@ -116,6 +117,7 @@ class KadoRunFlow {
 			case ReadyToStart: "ReadyToStart";
 			case Playing: "Playing";
 			case SubmittingRun: "SubmittingRun";
+			case SubmitFailed: "SubmitFailed";
 			case EndScreen: "EndScreen";
 			case ReplayTransition: "ReplayTransition";
 		}
@@ -128,7 +130,8 @@ class KadoRunFlow {
 
 		return switch ([from, to]) {
 			case [Boot, Intro] | [Intro, ContractLoading] | [Intro, Playing] | [ContractLoading, ReadyToStart] | [ContractLoading, Intro] |
-				[ReadyToStart, Playing] | [Playing, SubmittingRun] | [Playing, EndScreen] | [SubmittingRun, EndScreen] | [EndScreen, ReplayTransition] |
+				[ReadyToStart, Playing] | [Playing, SubmittingRun] | [Playing, EndScreen] | [SubmittingRun, EndScreen] | [SubmittingRun, SubmitFailed] |
+				[SubmitFailed, EndScreen] | [EndScreen, ReplayTransition] |
 				[ReplayTransition, Intro]:
 				true;
 			case _:

@@ -40,13 +40,13 @@ class KadoKadeoManager extends Application {
 	var startScene:StartScene;
 	var gameOverScreen:GameOver = null;
 	var endScene:EndScene = null;
+	var submitPopup:SubmitPopup = null;
 	var bottomBar:BottomBar = null;
 	var replayHud:ReplayHud = null;
 	var touchOverlay:TouchControlsOverlay = null;
 
 	var runDetails:Dto.RunDTO;
 	var endRunDetails:Dto.EndRunResponseDTO;
-	var crypto:KadoCrypto = new KadoCrypto();
 	var endRunClient:KadoEndRun;
 	var runFlow:KadoRunFlow;
 	var params:GameParams;
@@ -107,7 +107,7 @@ class KadoKadeoManager extends Application {
 		this.canvas = canvas;
 		this.gameClass = gameClass;
 		this.params = params;
-		this.endRunClient = new KadoEndRun(crypto);
+		this.endRunClient = new KadoEndRun();
 		this.runFlow = new KadoRunFlow(params);
 		this.root = new ASprite();
 		this.dm = new DepthManager(root);
@@ -321,6 +321,8 @@ class KadoKadeoManager extends Application {
 				requestContractFromIntro();
 			case ReadyToStart:
 				startGame();
+			case SubmitFailed:
+				displayEndScene(neutralEndRunDetails());
 			case EndScreen:
 				if (endScene != null) {
 					endScene.handleReplayClick();
@@ -480,6 +482,14 @@ class KadoKadeoManager extends Application {
 			gameOverScreen = null;
 		}
 
+		if (submitPopup != null) {
+			if (submitPopup.parent != null) {
+				submitPopup.parent.removeChild(submitPopup);
+			}
+			submitPopup.destroy({children: true});
+			submitPopup = null;
+		}
+
 		if (endScene != null) {
 			if (endScene.parent != null) {
 				endScene.parent.removeChild(endScene);
@@ -519,21 +529,18 @@ class KadoKadeoManager extends Application {
 		gameOverScreen = new GameOver(() -> {
 			if (wasInReplay) {
 				runFlow.transition(EndScreen, "replay-ended");
-				this.displayEndScene({
-					is_best: false,
-					previous_star: -1,
-					current_star: -1,
-					people_to_beat: -1,
-				});
+				this.displayEndScene(neutralEndRunDetails());
 			} else {
-				// TODO: show loading screen
 				runFlow.transition(SubmittingRun, "submit-end-run");
-				makeEndRunHttpRequest(params).then((endRunDetails:Dto.EndRunResponseDTO) -> {
+				submitPopup = new SubmitPopup(this);
+				this.stage.addChild(submitPopup);
+				var request = KadoEndRun.buildRequest(runFlow.getRunDetails(), score, runFlow.currentTimestamp(), replay.encodeReplayString(), params,
+					AntiCheat.getPayload());
+				makeEndRunHttpRequest(request).then((endRunDetails:Dto.EndRunResponseDTO) -> {
 					this.displayEndScene(endRunDetails);
 					emitWindowEvent("gameFinished", endRunDetails);
-				}).catchError((_) -> {
-					// TODO: show error
-					trace(_);
+				}, (error:Dynamic) -> {
+					onSubmitFailed(request, Api.toError(error));
 				});
 			}
 		});
@@ -848,9 +855,45 @@ class KadoKadeoManager extends Application {
 		untyped evts.dispatchEvent(new CustomEvent(eventName, {detail: detail}));
 	}
 
-	private function makeEndRunHttpRequest(params:Dynamic):Promise<Dto.EndRunResponseDTO> {
+	// the end screen without result (replay watched, run not sent)
+	inline function neutralEndRunDetails():Dto.EndRunResponseDTO {
+		return {
+			is_best: false,
+			previous_star: -1,
+			current_star: -1,
+			people_to_beat: -1,
+		};
+	}
+
+	// the run is kept in the local storage, to see why it was not sent and to send it again later from the site
+	function onSubmitFailed(request:Null<Dto.EndRunPlainDTO>, error:Dto.ApiError):Void {
+		trace('Run not sent: ' + error.status + ' ' + error.message);
+		var stored = request != null && PendingRuns.save({
+			run_id: request.run_id,
+			game_id: params.gameId,
+			game_name: params.name,
+			saved_at: new js.lib.Date().toISOString(),
+			request: request,
+			error: error,
+			attempts: 1,
+		});
+		runFlow.transition(SubmitFailed, "submit-failed");
+		if (submitPopup != null) {
+			submitPopup.showFailure(stored);
+		}
+		emitWindowEvent("runSubmitFailed", {
+			run_id: request == null ? null : request.run_id,
+			stored: stored,
+			error: error,
+		});
+	}
+
+	private function makeEndRunHttpRequest(request:Null<Dto.EndRunPlainDTO>):Promise<Dto.EndRunResponseDTO> {
 		#if !debug
-		return endRunClient.submit(runFlow.getRunDetails(), score, runFlow.currentTimestamp(), replay.encodeReplayString(), params, AntiCheat.getPayload())
+		if (request == null) {
+			return cast Promise.reject(Api.toError("Missing run details"));
+		}
+		return endRunClient.submit(request)
 			.then((data) -> {
 				endRunDetails = data;
 				return endRunDetails;

@@ -12,6 +12,37 @@ typedef ApiResponse<T> = {
 	data:T,
 };
 
+// a request that failed: status 0 when the server could not be reached (no network)
+typedef ApiError = {
+	var status:Int;
+	var message:String;
+}
+
+// the run before encryption (what the server decodes)
+typedef EndRunPlainDTO = {
+	var run_id:String;
+	var score:Int;
+	var timestamp:Int;
+	var replay:String;
+	var data:Dynamic;
+	var ac:Dynamic;
+}
+
+// a run that could not be sent, kept in the local storage to be sent again later
+typedef PendingRunDTO = {
+	var run_id:String;
+	var game_id:Int;
+	var game_name:String;
+	var saved_at:String;
+	var request:EndRunPlainDTO;
+	var error:ApiError;
+	var attempts:Int;
+}
+
+typedef PublicKeyDTO = {
+	var public_key:String;
+}
+
 typedef EndRunRequestDTO = {
 	var payload:String;
 	var key:String;
