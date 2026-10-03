@@ -130,3 +130,6 @@ alphabounce.Game
 --next
 -js ./resources/js/games/twinspirit.js
 twinspirit.Game
+--next
+-js ./resources/js/games/eltortuganemesis.js
+eltortuganemesis.Game
