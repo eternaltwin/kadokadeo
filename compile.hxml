@@ -124,3 +124,6 @@ drakhan.Game
 --next
 -js ./resources/js/games/linea.js
 linea.Game
+--next
+-js ./resources/js/games/alphabounce.js
+alphabounce.Game

@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/magmax.js
-magmax.Game
+-js ./resources/js/games/alphabounce.js
+alphabounce.Game
