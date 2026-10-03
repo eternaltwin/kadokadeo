@@ -1,63 +1,103 @@
 package magmax;
 
-import common_haxe_avm1.display.BBox;
-import pixi.core.text.Text;
+import haxe.io.UInt16Array;
+import kado.TouchControlsConfig.TouchControlsMode;
+import magmax.MC.Plans;
+import magmax.Monster.Bonus;
+import magmax.Monster.Part;
+import pixi.core.display.Container;
+import pixi.core.textures.Texture;
 import pixi.filters.colormatrix.ColorMatrixFilter;
-import kado.KadoKadeoManager;
-import mt.DepthManager;
-import mt.Timer;
-import magmax.monsters.*;
 
-class PartsSprite extends ASprite {
-	public var vx:Float;
-	public var vy:Float;
-	public var partx:Float;
-	public var party:Float;
-	public var by:Float;
-}
-
-class BonusSprite extends ASprite {
-	public var t:Int;
-	public var time:Float;
-	public var col:BBox;
-}
-
-class ComboMcSprite extends ASprite {
-	public var c:Text;
-}
-
+// Game.mt of the original
 @:expose('GameMagmax')
 class Game implements kado.GameInterface {
-	public var dmanager:DepthManager;
-	public var bonus:Array<BonusSprite>;
+	// a floating joystick (8 directions) gives the arrows; the button fires (Space: the hero keeps its direction while
+	// it shoots)
+	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
+		mode: TouchControlsMode.JOYSTICK,
+		joystick: {
+			x: 0.2,
+			y: 0.75,
+			radius: 84,
+			deadZone: 0.25,
+			dynamicCenter: true,
+			directions: 8,
+		},
+		buttons: [
+			{
+				id: "fire",
+				label: "✹",
+				rightPx: 20,
+				bottomPx: 40,
+				size: 96,
+				keyCode: KeyboardManager.SPACE,
+			}
+		],
+	};
+
+	// ZQSD / WASD move like the arrows, Enter shoots like Space and Control
+	public static var KEY_ALIASES = KeyboardManager.ALIASES_MOVE.concat(KeyboardManager.ALIASES_ENTER_SPACE);
+
+	// Flash played Magmax at 40 frames/s (the rate of gaunt.swf and of the KadoKado loader) with Timer.wantedFPS = 32
+	public static inline var FLASH_FPS = 40;
+
+	public var dmanager:Plans;
 	public var tirs:Array<Tir>;
 	public var monsters:Array<Monster>;
+	public var bonus:Array<Bonus>;
 	public var hero:Hero;
-	public var game_over:Bool;
 	public var level:Int;
+	public var game_over:Bool;
+	public var stats:{g:Array<Int>, k:Array<Int>, b:Array<Int>, c:Array<Int>};
 
-	var parts:Array<PartsSprite>;
-	var bg:ASprite;
+	var parts:Array<Part>;
+	var bg:MC;
 	var last_dead:Float;
 	var time:Float;
 	var combo:Int;
-	var combo_mc:ComboMcSprite;
-	var death:ASprite;
+	var combo_mc:MC;
+	var death:MC;
 
-	public var stats:{
-		g:Array<Int>,
-		k:Array<Int>,
-		b:Array<Int>,
-		c:Array<Int>
-	};
+	var root:ASprite;
+	var isReplay:Bool;
+	// Flash frames still owed, in quarters (5 per step)
+	var frameAcc:Int = 0;
+	var frameCount:Int = 0;
+	var over:Bool = false;
 
-	public function new(root:ASprite, ?isReplay:Bool = false) {
+	public function new(mc:ASprite, ?isReplay:Bool = false) {
+		this.isReplay = isReplay;
+		var keys = new UInt16Array(6);
+		keys[0] = KeyboardManager.LEFT;
+		keys[1] = KeyboardManager.RIGHT;
+		keys[2] = KeyboardManager.UP;
+		keys[3] = KeyboardManager.DOWN;
+		keys[4] = KeyboardManager.SPACE;
+		keys[5] = KeyboardManager.CONTROL;
+		KadoKadeoManager.kkm.replay.init({
+			recordedKeys: keys,
+			recordInputs: true,
+			recordEvents: false,
+			recordMousePosition: false,
+			recordedMouseButtons: new UInt16Array(0),
+		});
+		MC.clearAll();
+		Clip.reset();
+		setTiming();
+
+		// the original's 300x300 pixels, drawn x2
+		root = mc.createEmptyMovieClip("scene", 0);
+		root._xscale = root._yscale = 100 * Clip.K;
+		root.updateState();
+
 		level = 1;
 		time = 0;
 		combo = 0;
 		last_dead = -1000;
-		dmanager = new DepthManager(root);
-		bg = dmanager.attach("bg", Cs.PLAN_BG);
+		game_over = false;
+		dmanager = new Plans(root);
+		bg = dmanager.attach(new MC("bg"), Const.PLAN_BG);
 		hero = new Hero(this);
 		tirs = new Array();
 		parts = new Array();
@@ -70,28 +110,54 @@ class Game implements kado.GameInterface {
 			b: [0, 0, 0, 0, 0, 0]
 		};
 		genMonster();
+
+		MC.displayAll(1);
+		warmShaders();
+	}
+
+	// one Flash frame of the original: tmod ~0.8 (Timer: 0.95 * tmod + 0.05 * deltaT * 32 settles on 32 / 40) and
+	// deltaT 1 / 40 s
+	static function setTiming() {
+		Timer.tmod = 32 / FLASH_FPS;
+		Timer.deltaT = 1 / FLASH_FPS;
+	}
+
+	// the colour transform of the code (monster hit, red hero) is a ColorMatrixFilter: its shader compiled now, not
+	// at the first hit
+	function warmShaders() {
+		var renderer:Dynamic = KadoKadeoManager.kkm.renderer;
+		if (renderer == null)
+			return;
+		var holder = new Container();
+		var s = new pixi.core.sprites.Sprite(Texture.WHITE);
+		var cm = new ColorMatrixFilter();
+		cm.matrix = [1, 0, 0, 0, 0.5, 0, 1, 0, 0, 0.5, 0, 0, 1, 0, 0.5, 0, 0, 0, 1, 0];
+		s.filters = [cm];
+		holder.addChild(s);
+		var rt:Dynamic = (cast pixi.core.textures.RenderTexture : Dynamic).create({width: 32, height: 32});
+		renderer.render(holder, {renderTexture: rt, clear: true});
+		holder.destroy({children: true});
+		rt.destroy(true);
+	}
+
+	public function addScore(n:Int) {
+		// (nothing after KKApi.gameOver: the end screen is up)
+		if (!over)
+			KadoKadeoManager.kkm.addScore(n);
 	}
 
 	function genMonster() {
 		var t = 0;
 
 		if (level >= 10)
-			t = Cs.randomProbas([3, 1]);
+			t = Const.randomProbas([3, 1]);
 		if (level >= 20)
-			t = Cs.randomProbas([1, 4]);
+			t = Const.randomProbas([1, 4]);
 		if (level >= 30)
-			t = Cs.randomProbas([3, 2, 1]);
+			t = Const.randomProbas([3, 2, 1]);
 
 		stats.g[t]++;
-		var m:Monster = null;
-		switch (t) {
-			case 0:
-				m = new Firebomb(this);
-			case 1:
-				m = new Heliflower(this);
-			case 2:
-				m = new Cyblock(this);
-		}
+		var m = new Monster(this, t);
 		monsters.push(m);
 		level++;
 	}
@@ -99,163 +165,28 @@ class Game implements kado.GameInterface {
 	public function gameOver() {
 		if (!game_over) {
 			game_over = true;
-			death = dmanager.attach("death", Cs.PLAN_PART);
-			death.play();
-			death.removeOnFrame = death._totalframes;
+			death = dmanager.attach(new MC("death"), Const.PLAN_PART);
 			death._x = hero.x;
 			death._y = hero.y;
 			hero.mc._visible = false;
 		}
 	}
 
-	public function addPart(p) {
+	public function addPart(p:Part) {
 		parts.push(p);
 	}
 
 	public function doCombo() {
-		var txts = ["DOUBLE BLAST !", "MULTI BLAST !", "ULTRA BLAST !", "MAGMAX !!!"];
 		if (time - last_dead < 2.5) {
-			if (combo < Cs.COMBOS.length) {
+			if (combo < Const.COMBOS.length) {
 				if (combo_mc != null)
 					combo_mc.removeMovieClip();
-				combo_mc = cast dmanager.empty(2);
-				combo_mc.c = combo_mc.initTextField('c', {
-					font: 'Impact',
-					size: 30,
-					color: 0xFFFFFF,
-					stroke: "#000000",
-					strokeThickness: KadoKadeoManager.I(2)
-				});
-				combo_mc._y = KadoKadeoManager.I(300);
-				combo_mc.c.text = txts[combo];
-				combo_mc._totalframes = 22;
-				combo_mc.removeOnFrame = combo_mc._totalframes;
-				combo_mc.play();
-
-				var colorFilter = new ColorMatrixFilter();
-				colorFilter.matrix = [
-					133 / 256,         0,         0, 0, 122 / 255,
-					        0, 133 / 256,         0, 0,         0,
-					        0,         0, 133 / 256, 0,         0,
-					        0,         0,         0, 1,         0
-				];
-				combo_mc.filters = [colorFilter];
-				var compt = 30;
-
-				combo_mc.onFrame.set(1, function() {});
-				combo_mc.onFrame.set(2, function() {
-					combo_mc._y -= KadoKadeoManager.I(6);
-					colorFilter.matrix = [
-						92 / 256,        0,        0, 0, 163 / 255,
-						       0, 92 / 256,        0, 0,  78 / 255,
-						       0,        0, 92 / 256, 0,  78 / 255,
-						       0,        0,        0, 1,         0
-					];
-				});
-				combo_mc.onFrame.set(3, function() {
-					combo_mc._y -= KadoKadeoManager.I(6);
-					colorFilter.matrix = [
-						59 / 256,        0,        0, 0, 196 / 255,
-						       0, 59 / 256,        0, 0, 142 / 255,
-						       0,        0, 59 / 256, 0, 142 / 255,
-						       0,        0,        0, 1,         0
-					];
-				});
-				combo_mc.onFrame.set(4, function() {
-					combo_mc._y -= KadoKadeoManager.I(6);
-					colorFilter.matrix = [
-						33 / 256,        0,        0, 0, 222 / 255,
-						       0, 33 / 256,        0, 0, 191 / 255,
-						       0,        0, 33 / 256, 0, 191 / 255,
-						       0,        0,        0, 1,         0
-					];
-				});
-				combo_mc.onFrame.set(5, function() {
-					combo_mc._y -= KadoKadeoManager.I(3);
-					colorFilter.matrix = [
-						15 / 256,        0,        0, 0, 240 / 255,
-						       0, 15 / 256,        0, 0, 227 / 255,
-						       0,        0, 15 / 256, 0, 227 / 255,
-						       0,        0,        0, 1,         0
-					];
-				});
-				combo_mc.onFrame.set(6, function() {
-					combo_mc._y -= KadoKadeoManager.I(2);
-					colorFilter.matrix = [
-						4 / 256,       0,       0, 0, 251 / 255,
-						      0, 4 / 256,       0, 0, 248 / 255,
-						      0,       0, 4 / 256, 0, 248 / 255,
-						      0,       0,       0, 1,         0
-					];
-				});
-				combo_mc.onFrame.set(7, function() {
-					combo_mc._y -= KadoKadeoManager.I(1);
-					colorFilter.matrix = [
-						0, 0, 0, 0, 255,
-						0, 0, 0, 0, 255,
-						0, 0, 0, 0, 255,
-						0, 0, 0, 1,   0
-					];
-				});
-				combo_mc.onFrame.set(8, function() {
-					combo_mc._y -= KadoKadeoManager.I(1);
-					colorFilter.matrix = [
-						85 / 256,        0,        0, 0, 170 / 255,
-						       0, 85 / 256,        0, 0, 170 / 255,
-						       0,        0, 85 / 256, 0, 170 / 255,
-						       0,        0,        0, 1,         0
-					];
-				});
-				combo_mc.onFrame.set(9, function() {
-					combo_mc._y -= KadoKadeoManager.I(1);
-					colorFilter.matrix = [
-						171 / 256,         0,         0, 0, 85 / 255,
-						        0, 171 / 256,         0, 0, 85 / 255,
-						        0,         0, 171 / 256, 0, 85 / 255,
-						        0,         0,         0, 1,        0
-					];
-				});
-				combo_mc.onFrame.set(10, function() {
-					combo_mc._y -= KadoKadeoManager.I(1);
-					combo_mc.filters = [];
-				});
-				combo_mc.onFrame.set(11, function() {
-					combo_mc._y += KadoKadeoManager.I(1);
-					if (compt-- > 0) {
-						combo_mc.gotoAndPlay(10);
-					}
-				});
-				combo_mc.onFrame.set(12, function() {
-					combo_mc._y += KadoKadeoManager.I(2);
-				});
-				combo_mc.onFrame.set(13, function() {
-					combo_mc._y += KadoKadeoManager.I(2);
-				});
-				combo_mc.onFrame.set(14, function() {
-					combo_mc._y += KadoKadeoManager.I(2);
-				});
-				combo_mc.onFrame.set(15, function() {
-					combo_mc._y += KadoKadeoManager.I(2);
-				});
-				combo_mc.onFrame.set(16, function() {
-					combo_mc._y += KadoKadeoManager.I(2);
-				});
-				combo_mc.onFrame.set(17, function() {
-					combo_mc._y += KadoKadeoManager.I(2);
-				});
-				combo_mc.onFrame.set(18, function() {
-					combo_mc._y += KadoKadeoManager.I(2);
-				});
-				combo_mc.onFrame.set(19, function() {
-					combo_mc._y += KadoKadeoManager.I(2);
-				});
-				combo_mc.onFrame.set(20, function() {
-					combo_mc._y += KadoKadeoManager.I(2);
-				});
-				combo_mc.onFrame.set(21, function() {
-					combo_mc._y += KadoKadeoManager.I(3);
-				});
-				KadoKadeoManager.kkm.addScore(Cs.COMBOS[combo]);
+				combo_mc = dmanager.attach(new MC("comment"), 2);
+				combo_mc._y = 300;
+				var c = combo_mc.clip.getClip("c");
+				if (c != null)
+					c.gotoAndStop(combo + 1);
+				addScore(KKApi.val(Const.COMBOS[combo]));
 				stats.c[combo]++;
 				combo++;
 			}
@@ -264,11 +195,36 @@ class Game implements kado.GameInterface {
 		last_dead = time;
 	}
 
+	// ---------------------------------------------------------------- KadoKadeo step: 5 Flash frames every 4 steps
 	public function update(delta:Float) {
+		frameAcc += 5;
+		while (frameAcc >= 4) {
+			frameAcc -= 4;
+			flashFrame();
+		}
+		MC.displayAll(frameAcc / 4);
+	}
+
+	function flashFrame() {
+		setTiming();
+		MC.frameStart();
+		main();
+		frameCount++;
+		#if debug
+		untyped js.Browser.window.__state = state();
+		#end
+	}
+
+	// main() of the original: one Flash frame
+	function main() {
 		time += Timer.deltaT;
 
-		if (game_over && death != null && death._name == null) {
+		if (game_over && death != null && death.removed) {
 			death = null;
+			over = true;
+			#if debug
+			untyped js.Browser.window.__over = state();
+			#end
 			KadoKadeoManager.kkm.gameOver(stats);
 		}
 
@@ -279,41 +235,114 @@ class Game implements kado.GameInterface {
 		var i = 0;
 		while (i < monsters.length) {
 			if (!monsters[i].update())
-				monsters.splice(i, 1);
-			else
-				i++;
+				monsters.splice(i--, 1);
+			i++;
 		}
 		i = 0;
 		while (i < tirs.length) {
 			if (!tirs[i].update())
-				tirs.splice(i, 1);
-			else
-				i++;
+				tirs.splice(i--, 1);
+			i++;
 		}
 		i = 0;
 		while (i < parts.length) {
 			var p = parts[i];
-			p.partx += p.vx * Timer.tmod;
-			p.party += p.vy * Timer.tmod;
-			if (p.party > 0) {
-				p.party *= -1;
+			p.x += p.vx * Timer.tmod;
+			p.y += p.vy * Timer.tmod;
+			if (p.y > 0) {
+				p.y *= -1;
 				p.vy *= -0.5;
 			}
-			p._rotation += (p.vx / KadoKadeoManager.S(1)) * 5 * Timer.tmod;
+			p._rotation += p.vx * 5 * Timer.tmod;
 			p._alpha -= 5;
 			if (p._alpha <= 0) {
 				p.removeMovieClip();
-				parts.splice(i, 1);
-			} else {
-				i++;
+				parts.splice(i--, 1);
 			}
-			p.vy += KadoKadeoManager.S(1) * Timer.tmod;
-			p._x = p.partx;
-			p._y = p.by + p.party;
+			p.vy += Timer.tmod;
+			p._x = p.x;
+			p._y = p.by + p.y;
+			i++;
 		}
-		dmanager.compact(Cs.PLAN_HERO);
-		dmanager.ysort(Cs.PLAN_HERO);
+		dmanager.compact(Const.PLAN_HERO);
+		dmanager.ysort(Const.PLAN_HERO);
 	}
 
-	public function destroy() {}
+	#if debug
+	// end state compared between a game and its replay (test harness)
+	function state():Dynamic {
+		return {
+			frame: frameCount,
+			score: KadoKadeoManager.kkm.score.get(),
+			level: level,
+			hx: hero.x,
+			hy: hero.y,
+			mons: monsters.length,
+			tirs: tirs.length,
+			bonus: bonus.length,
+			over: game_over,
+			stats: haxe.Json.stringify(stats),
+		};
+	}
+
+	// test harness: clips drawn by the runtime on a page ([name, frame, x, y, scale, {nested instance: frame}]), to
+	// compare with the SWF (examples/magmax/ncheck.mjs, ref.py)
+	public function debugShow(list:Array<Array<Dynamic>>, bgColor:Int) {
+		var stage:Dynamic = untyped KadoKadeoManager.kkm.stage;
+		var box = new ASprite();
+		var g = box.getGraphics();
+		g.beginFill(bgColor);
+		g.drawRect(0, 0, 600, 640);
+		g.endFill();
+		// the option particles on their first frame, like the reference
+		Clip.random = n -> 0;
+		for (o in list) {
+			var c = new Clip(o[0], 2);
+			// nested clips driven by the code: before and after the frame change (clips created on the new frame)
+			for (pass in 0...2) {
+				if (pass == 1)
+					c.gotoAndStop(o[1]);
+				if (o.length > 5)
+					for (k in Reflect.fields(o[5])) {
+						var sub = c.getClip(k);
+						if (sub != null)
+							sub.gotoAndStop(Reflect.field(o[5], k));
+					}
+			}
+			c._x = o[2];
+			c._y = o[3];
+			c._xscale = c._yscale = o[4] * 100;
+			box.addChild(c);
+		}
+		Clip.random = Seed.random;
+		box.updateState();
+		box.updateGraphics(1);
+		stage.addChild(box);
+	}
+	#end
+
+	// the joystick presses the arrows (read by Hero.update like the keyboard, recorded in the replay)
+	public function pollTouchControls():Void {
+		var joystick = KadoKadeoManager.kkm.getTouchJoystickState();
+		if (joystick == null)
+			return;
+		var ax = joystick.active ? joystick.dirX : 0;
+		var ay = joystick.active ? joystick.dirY : 0;
+		setKey(KeyboardManager.LEFT, ax < 0);
+		setKey(KeyboardManager.RIGHT, ax > 0);
+		setKey(KeyboardManager.UP, ay < 0);
+		setKey(KeyboardManager.DOWN, ay > 0);
+	}
+
+	inline function setKey(keyCode:Int, down:Bool):Void {
+		if (down)
+			KeyboardManager.setKeyDown(keyCode);
+		else
+			KeyboardManager.setKeyUp(keyCode);
+	}
+
+	public function destroy():Void {
+		MC.clearAll();
+		Clip.reset();
+	}
 }
