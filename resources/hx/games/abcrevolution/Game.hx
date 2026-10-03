@@ -13,7 +13,8 @@ import pixi.filters.colormatrix.ColorMatrixFilter;
 // Teddy, Particules, Dico of the abcrevolution folder) and the graphics of its SWF. Words roll on three shelves from
 // the right: type their letters (keyboard, A-Z) before the boxes fall on the teddy bear. The game runs in the Flash
 // pixels of the original (300 x 300), drawn x2.
-@:expose('GameAbcRevolution')
+
+@:expose('GameABCRevolution')
 class Game implements kado.GameInterface {
 	public static inline var K = 2;
 
@@ -772,7 +773,28 @@ class Score {
 				target.filters = null;
 			} else {
 				// setTransform: red offset 100 * flash_time (of 255)
-				color.matrix = [1, 0, 0, 0, Std.int(100 * flash_time) / 255, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+				color.matrix = [
+					1,
+					0,
+					0,
+					0,
+					Std.int(100 * flash_time) / 255,
+					0,
+					1,
+					0,
+					0,
+					0,
+					0,
+					0,
+					1,
+					0,
+					0,
+					0,
+					0,
+					0,
+					1,
+					0
+				];
 				target.filters = [color];
 			}
 		}
@@ -911,7 +933,12 @@ class TouchKeys extends ASprite {
 	static inline var GAP = 1;
 	static inline var TOP = 300 - 3 * (KH + GAP);
 
-	var keys:Array<{code:Int, x:Float, y:Float, g:Graphics}>;
+	var keys:Array<{
+		code:Int,
+		x:Float,
+		y:Float,
+		g:Graphics
+	}>;
 	var held:Map<Int, Int>;
 	var ops:Array<{code:Int, down:Bool}>;
 	var sent:Map<Int, Bool>;
@@ -950,7 +977,12 @@ class TouchKeys extends ASprite {
 				l._y = y + KH / 2;
 				l.updateState();
 				addChild(l);
-				keys.push({code: c.charCodeAt(0), x: x, y: y, g: g});
+				keys.push({
+					code: c.charCodeAt(0),
+					x: x,
+					y: y,
+					g: g
+				});
 			}
 		}
 		canvas = KadoKadeoManager.kkm.canvas;
