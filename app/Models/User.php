@@ -95,6 +95,13 @@ class User extends Authenticatable implements FilamentUser
         return $this->ban_reason?->message() ?? 'Votre compte a été banni.';
     }
 
+    // players log in with Eternaltwin and have no password, but Laravel compares it (as a string) with the hash
+    // in the "remember me" cookie, still held by those who logged in when the OAuth callback was a web route
+    public function getAuthPassword(): string
+    {
+        return $this->password ?? '';
+    }
+
     public function getNameAttribute(): string
     {
         return $this->display_name;
