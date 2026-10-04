@@ -33,7 +33,8 @@ function getStarImage(game) {
 <template>
   <NavTabs
     :items="[
-      { label: 'Tous les jeux', value: 'all', route: { name: 'games.index' } },
+      {
+        label: 'Favoris', value: 'favs', route: {name: 'games.index'} },
       ...categories.map((cat) => ({
         label: cat.name,
         value: cat.name,
