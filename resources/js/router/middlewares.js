@@ -10,12 +10,13 @@ registerMiddleware('auth', ({ next }) => {
   }
 
   if (!authStore.isAuthenticated) {
-    authStore.fetchUser().catch((e) => {
-      if (e.response.status === 401) {
+    authStore.fetchUser().then(() => {
+      next()
+    }).catch((e) => {
+      if (e.response?.status === 401 || e.response?.data?.banned) {
         authStore.resetToken()
         return next('/login')
       }
-    }).then(() => {
       next()
     })
   } else {

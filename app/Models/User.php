@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\BanReason;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,6 +38,8 @@ class User extends Authenticatable implements FilamentUser
         return [
             'last_seen_at' => 'datetime',
             'password' => 'hashed',
+            'banned_at' => 'datetime',
+            'ban_reason' => BanReason::class,
         ];
     }
 
@@ -79,7 +82,17 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_admin;
+        return $this->is_admin && !$this->isBanned();
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->banned_at !== null;
+    }
+
+    public function banMessage(): string
+    {
+        return $this->ban_reason?->message() ?? 'Votre compte a été banni.';
     }
 
     public function getNameAttribute(): string

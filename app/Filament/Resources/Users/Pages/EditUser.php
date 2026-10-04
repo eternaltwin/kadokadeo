@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Pages;
 
+use App\Filament\Resources\Users\Actions\ModerationActions;
 use App\Filament\Resources\Users\UserResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -13,6 +14,7 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            ...ModerationActions::all(),
             DeleteAction::make(),
         ];
     }

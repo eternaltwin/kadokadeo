@@ -17,12 +17,25 @@ export const useAuthStore = defineStore('auth', () => {
   const redStars = computed(() => stars.red - stars.purple)
   const purpleStars = computed(() => stars.purple)
 
+  // reason of the ban, shown on the login page (App.vue redirects there when it is set)
+  const banMessage = ref(null)
+
   const isAuthenticated = computed(() => !!user.value)
 
   if (token.value) {
     client.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
     window.Kado.token = token.value
   }
+
+  // a banned user is logged out on their next request (App\Http\Middleware\EnsureUserIsNotBanned)
+  client.interceptors.response.use(null, (e) => {
+    if (e.response?.status === 403 && e.response.data?.banned) {
+      setUser(null)
+      resetToken()
+      banMessage.value = e.response.data.message
+    }
+    return Promise.reject(e)
+  })
 
   window.evts.addEventListener('gameFinished', (e) => {
     const endRunDetails = e.detail
@@ -69,6 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('kado:token', res.data.token)
     client.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
     window.Kado.token = token.value
+    banMessage.value = null
     setUser(res.data.user)
   }
 
@@ -88,6 +102,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     user,
     token,
+    banMessage,
     isAuthenticated,
     fetchUser,
     login,

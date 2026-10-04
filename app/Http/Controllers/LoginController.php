@@ -82,6 +82,12 @@ class LoginController extends Controller implements HasMiddleware
 
         // Check if the user already exists in the database
         $dbUser = User::where('etwin_id', $userUuid->toString())->first();
+        if ($dbUser?->isBanned()) {
+            return response()->json([
+                'message' => $dbUser->banMessage(),
+                'banned' => true,
+            ], 403);
+        }
         if ($dbUser) {
             $dbUser->fill($attrs);
         } else {

@@ -7,7 +7,7 @@ const error = ref(null)
 authStore.login(route.query?.code, route.query?.state).then(() => {
   router.push({ path: '/' })
 }).catch((e) => {
-  error.value = e
+  error.value = e.response?.data?.message || e.message
 })
 </script>
 

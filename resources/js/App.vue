@@ -1,14 +1,25 @@
 <script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import DefaultLayout from '@/layouts/default.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const layouts = {
   DefaultLayout,
 }
 
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+
+// banned while browsing: back to the login page, which shows the reason
+watch(() => authStore.banMessage, (message) => {
+  if (message) {
+    router.push({ name: 'login' })
+  }
+})
+
 const layout = computed(() => {
   return layouts[route.meta?.layout || 'DefaultLayout']
 })

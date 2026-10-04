@@ -1,4 +1,5 @@
 <script setup>
+const authStore = useAuthStore()
 </script>
 
 <template>
@@ -10,6 +11,7 @@
       <p>Plus de 70 jeux exclusifs à débloquer !</p>
       <h2 style="margin-left:0;">Plein d'amis</h2>
       <p>... et d'adversaires dans une communauté de joueurs pleine de bonne humeur !</p>
+      <MessageError v-if="authStore.banMessage">{{ authStore.banMessage }}</MessageError>
       <p class="center btnHomepagePlay">
         <a href="/login" title="S'identifier / s'inscrire">
           {{ '>> Jouer <<' }}
