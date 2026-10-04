@@ -1,6 +1,7 @@
 package linea;
 
 import haxe.io.UInt16Array;
+import kado.TouchControlsConfig.TouchButtonShape;
 import kado.TouchControlsConfig.TouchControlsMode;
 import linea.Dotter.DOT;
 import linea.MC.Plans;
@@ -170,17 +171,47 @@ class UI extends MC {
 class Game implements kado.GameInterface {
 	public static inline var K = 2;
 
-	// a floating joystick (8 directions) gives the arrows
+	// square arrows: up / down under the left thumb, left / right under the right thumb (both held for a diagonal)
 	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
-		mode: TouchControlsMode.JOYSTICK,
-		joystick: {
-			x: 0.2,
-			y: 0.75,
-			radius: 84,
-			deadZone: 0.25,
-			dynamicCenter: true,
-			directions: 8,
-		},
+		mode: TouchControlsMode.KEYBOARD,
+		buttons: [
+			{
+				id: "up",
+				label: "^",
+				leftPx: 16,
+				bottomPx: 92,
+				size: 64,
+				keyCode: KeyboardManager.UP,
+				shape: TouchButtonShape.SQUARE,
+			},
+			{
+				id: "down",
+				label: "v",
+				leftPx: 16,
+				bottomPx: 20,
+				size: 64,
+				keyCode: KeyboardManager.DOWN,
+				shape: TouchButtonShape.SQUARE,
+			},
+			{
+				id: "left",
+				label: "<",
+				rightPx: 92,
+				bottomPx: 20,
+				size: 64,
+				keyCode: KeyboardManager.LEFT,
+				shape: TouchButtonShape.SQUARE,
+			},
+			{
+				id: "right",
+				label: ">",
+				rightPx: 20,
+				bottomPx: 20,
+				size: 64,
+				keyCode: KeyboardManager.RIGHT,
+				shape: TouchButtonShape.SQUARE,
+			},
+		],
 	};
 
 	// ZQSD / WASD move like the arrows
@@ -1058,26 +1089,6 @@ class Game implements kado.GameInterface {
 
 	function getSpeed(speed:Int) {
 		return Math.round(speed / 10);
-	}
-
-	// the joystick presses the arrows (read by onKeyDown like the keyboard, recorded in the replay)
-	public function pollTouchControls():Void {
-		var joystick = KadoKadeoManager.kkm.getTouchJoystickState();
-		if (joystick == null)
-			return;
-		var ax = joystick.active ? joystick.dirX : 0;
-		var ay = joystick.active ? joystick.dirY : 0;
-		setKey(KeyboardManager.LEFT, ax < 0);
-		setKey(KeyboardManager.RIGHT, ax > 0);
-		setKey(KeyboardManager.UP, ay < 0);
-		setKey(KeyboardManager.DOWN, ay > 0);
-	}
-
-	inline function setKey(keyCode:Int, down:Bool):Void {
-		if (down)
-			KeyboardManager.setKeyDown(keyCode);
-		else
-			KeyboardManager.setKeyUp(keyCode);
 	}
 
 	public function destroy():Void {

@@ -1,5 +1,6 @@
 package kanjisadventure;
 
+import kado.TouchControlsConfig.TouchButtonShape;
 import haxe.io.UInt16Array;
 import kado.TouchControlsConfig.TouchControlsMode;
 import pixi.core.text.Text;
@@ -30,30 +31,57 @@ class Game implements kado.GameInterface {
 	// turn based on a grid: a 4 way joystick (it follows the finger) and the shuriken button.
 	// The items of the bag and the shop are tapped (or 1-5 on a keyboard)
 	public static var TOUCH_CONTROLS:kado.TouchControlsConfig = {
-		mode: TouchControlsMode.JOYSTICK,
-		joystick: {
-			x: 0.18,
-			y: 0.8,
-			radius: 84,
-			deadZone: 0.25,
-			dynamicCenter: true,
-			directions: 4,
-		},
+		mode: TouchControlsMode.KEYBOARD,
 		buttons: [
 			{
-				id: "shoot",
-				label: "✦",
-				rightPx: 14,
-				bottomPx: 14,
-				size: 84,
+				id: "up",
+				label: "^",
+				leftPx: 64,
+				bottomPx: 76,
+				size: 56,
+				keyCode: KeyboardManager.UP,
+				shape: TouchButtonShape.SQUARE,
+			},
+			{
+				id: "left",
+				label: "<",
+				leftPx: 8,
+				bottomPx: 20,
+				size: 56,
+				keyCode: KeyboardManager.LEFT,
+				shape: TouchButtonShape.SQUARE,
+			},
+			{
+				id: "right",
+				label: ">",
+				leftPx: 120,
+				bottomPx: 20,
+				size: 56,
+				keyCode: KeyboardManager.RIGHT,
+				shape: TouchButtonShape.SQUARE,
+			},
+			{
+				id: "down",
+				label: "v",
+				leftPx: 64,
+				bottomPx: 20,
+				size: 56,
+				keyCode: KeyboardManager.DOWN,
+				shape: TouchButtonShape.SQUARE,
+			},
+			{
+				id: "action",
+				label: "+",
+				rightPx: 12,
+				bottomPx: 20,
+				size: 80,
 				keyCode: KeyboardManager.SPACE,
 			}
 		],
 	};
 
 	// ZQSD / WASD move like the arrows, Enter and Control throw a shuriken like Space
-	public static var KEY_ALIASES = KeyboardManager.ALIASES_MOVE.concat(KeyboardManager.ALIASES_ENTER_SPACE)
-		.concat(KeyboardManager.ALIASES_CONTROL_SPACE);
+	public static var KEY_ALIASES = KeyboardManager.ALIASES_MOVE.concat(KeyboardManager.ALIASES_ENTER_SPACE).concat(KeyboardManager.ALIASES_CONTROL_SPACE);
 
 	public static var DP_ITEMS = 4;
 	public static var DP_INTER = 3;
