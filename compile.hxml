@@ -145,3 +145,6 @@ paradice.Game
 --next
 -js ./resources/js/games/schizofuzz.js
 schizofuzz.Game
+--next
+-js ./resources/js/games/electrolink.js
+electrolink.Game
