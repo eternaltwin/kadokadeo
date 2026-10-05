@@ -148,3 +148,6 @@ schizofuzz.Game
 --next
 -js ./resources/js/games/electrolink.js
 electrolink.Game
+--next
+-js ./resources/js/games/hexile.js
+hexile.Game

@@ -88,7 +88,7 @@ class GameSeeder extends Seeder
             ['name' => 'Bactery', 'image_path' => '/assets/img/games/Bactery.png', 'is_active' => true, 'stars' => [10612, 13734, 15294]],
             ['name' => 'Binary', 'image_path' => '/assets/img/games/Binary.png', 'is_active' => true, 'stars' => [19388, 40931, 51702]],
             ['name' => 'QuadriKolor', 'image_path' => '/assets/img/games/QuadriKolor.png', 'is_active' => false, 'stars' => [17427, 26600, 31186]],
-            ['name' => 'Hexile', 'image_path' => '/assets/img/games/Hexile.png', 'is_active' => false, 'stars' => [17413, 19866, 21092]],
+            ['name' => 'Hexile', 'image_path' => '/assets/img/games/Hexile.png', 'is_active' => true, 'stars' => [17413, 19866, 21092]],
             ['name' => "Kanji's Adventure", 'image_path' => "/assets/img/games/Kanji's_Adventure.png", 'is_active' => true, 'stars' => [18700, 56100, 74800]],
             ['name' => 'Razor', 'image_path' => '/assets/img/games/Razor.png', 'is_active' => false, 'stars' => [33459, 44997, 50766]],
             ['name' => 'Spiroule', 'image_path' => '/assets/img/games/Spiroule.png', 'is_active' => false, 'stars' => [46817, 82830, 100837]],

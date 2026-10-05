@@ -146,6 +146,10 @@ node harness/rc.mjs check $KKP_WORK/rc_base.jsonl 9341      # "state 60% SAME | 
 - Headless Chrome on macOS hides the page at the first input event unless it is brought to the front: `cdp.mjs`
   does it in `goto`. A test whose game seems frozen (frames stop advancing) with a custom navigation must do the
   same (`Page.bringToFront`).
-- One DevTools port per running script; kill browsers left by an interrupted script (`pkill -f kk-cdp-profile`).
+- One DevTools port per running script; kill browsers left by an interrupted script (`pkill -f kk-cdp-profile-<port>`:
+  a bare `pkill -f kk-cdp-profile` also closes the browsers of the other sessions).
+  The browser profile is per port (`kk-cdp-profile-<port>`): two sessions using the same `PORT` share one browser
+  (the second script drives the first one's page, `CDP timeout` errors on both sides). Several sessions at the same
+  time: give each its own range of ports, and check a port is free (`curl 127.0.0.1:<port>/json`) before using it.
 - Debug build for the tests (`__over`, seed 123), production build only to check it compiles.
 - Look at the screenshots before claiming a display is right.
