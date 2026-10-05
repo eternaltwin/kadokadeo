@@ -262,6 +262,10 @@ class Clip extends ASprite {
 	}
 
 	override public function nextFrame() {
+		// a timeline of one frame does not loop in Flash: its frame is neither placed nor run again, so what the code
+		// changed in it stays (the Volt ball keeps turning by `smc.smc._rotation += vx * 10`)
+		if (def.n == 1)
+			return;
 		var f = frame + 1;
 		if (f > def.n)
 			f = 1;
