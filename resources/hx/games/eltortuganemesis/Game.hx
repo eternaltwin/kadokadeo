@@ -786,6 +786,7 @@ class Game implements kado.GameInterface {
 			v.visible = qix.lazers != null;
 		qix.gfx._x = qix.x;
 		qix.gfx._y = qix.y;
+		qix.gfx.sync();
 		etincelle.visible = lazerSpark != null;
 		if (lazerSpark != null) {
 			etincelle._x = lazerSpark.pos.x;

@@ -36,6 +36,64 @@ class Sym extends ASprite {
 	}
 }
 
+// the symbol of the dog (Ovni): its `sub` holds two nested clips whose timelines keep playing on their own, drawn
+// apart from the frames of the sub (a new sub, from gotoAndStop, starts them again on their frame 1)
+// - the beam under the flying saucer (sub 1): yellow, green, white, one per frame;
+// - the lit lamp going round the rim: 8 lamps of 2 frames, a patch over the frame of the sub (what covers the lamp
+//   in the sub is in the patch)
+class Ovni extends Sym {
+	static inline var LAMPS = 8;
+
+	var beam:Mc;
+	var lamp:OvniLamp;
+	// first frame of each sub in the lamp patches
+	var lampBase:Array<Int>;
+
+	public function new() {
+		super("ovni", Data.SUB_OVNI);
+		beam = new Mc("ovnibeam");
+		addChildAt(beam, 0);
+		lamp = new OvniLamp();
+		addChild(lamp);
+		lampBase = [];
+		var n = 0;
+		for (c in Data.SUB_OVNI) {
+			lampBase.push(n);
+			n += c;
+		}
+		gotoAndStop(1);
+	}
+
+	override public function gotoAndStop(f:Dynamic) {
+		super.gotoAndStop(f);
+		if (beam == null)
+			return;
+		beam.visible = frame == 1;
+		beam.gotoAndPlay(1);
+		lamp.age = 0;
+	}
+
+	// the lamp over the frame shown by the sub
+	public function sync() {
+		lamp.show((lampBase[frame - 1] + sub.cur - 1) * LAMPS + ((lamp.age % (LAMPS * 2)) >> 1) + 1);
+	}
+}
+
+// the timeline of the lit lamp: one frame of the Flash player per advance
+class OvniLamp extends Mc {
+	public var age:Int;
+
+	public function new() {
+		super("ovnilamp", false);
+		age = 0;
+	}
+
+	override public function advance() {
+		if (!dead)
+			age++;
+	}
+}
+
 class Cursor {
 	public var oldPos:PVector;
 	public var pos:PVector;
@@ -128,7 +186,7 @@ class Qix {
 
 	public var x:Float;
 	public var y:Float;
-	public var gfx:Sym;
+	public var gfx:Ovni;
 
 	var mover:Mover;
 	var state:QixState;
@@ -142,7 +200,7 @@ class Qix {
 	public function new() {
 		x = 0;
 		y = 0;
-		gfx = new Sym("ovni", Data.SUB_OVNI);
+		gfx = new Ovni();
 		mover = new Mover();
 		mover.x = W / 2;
 		mover.y = H / 2;

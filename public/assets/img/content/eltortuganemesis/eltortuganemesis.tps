@@ -500,15 +500,15 @@
             <key type="filename">src/ovni1/23.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.794979</point_f>
+                <point_f>0.5,1.386861</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>48,60,95,120</rect>
+                <rect>48,34,95,68</rect>
                 <key>scale9Paddings</key>
-                <rect>48,60,95,120</rect>
+                <rect>48,34,95,68</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -542,15 +542,15 @@
             <key type="filename">src/ovni2/28.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.502203,0.773663</point_f>
+                <point_f>0.504425,0.773663</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>57,61,114,122</rect>
+                <rect>56,61,113,122</rect>
                 <key>scale9Paddings</key>
-                <rect>57,61,114,122</rect>
+                <rect>56,61,113,122</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -567,15 +567,542 @@
             <key type="filename">src/ovni3/11.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.502262,0.786611</point_f>
+                <point_f>0.504505,0.786611</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>55,60,110,120</rect>
+                <rect>56,60,111,120</rect>
                 <key>scale9Paddings</key>
-                <rect>55,60,110,120</rect>
+                <rect>56,60,111,120</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/ovnibeam/1.png</key>
+            <key type="filename">src/ovnibeam/2.png</key>
+            <key type="filename">src/ovnibeam/3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.497143,0.721591</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>44,44,88,88</rect>
+                <key>scale9Paddings</key>
+                <rect>44,44,88,88</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">src/ovnilamp/1.png</key>
+            <key type="filename">src/ovnilamp/2.png</key>
+            <key type="filename">src/ovnilamp/3.png</key>
+            <key type="filename">src/ovnilamp/4.png</key>
+            <key type="filename">src/ovnilamp/5.png</key>
+            <key type="filename">src/ovnilamp/6.png</key>
+            <key type="filename">src/ovnilamp/7.png</key>
+            <key type="filename">src/ovnilamp/8.png</key>
+            <key type="filename">src/ovnilamp/9.png</key>
+            <key type="filename">src/ovnilamp/10.png</key>
+            <key type="filename">src/ovnilamp/11.png</key>
+            <key type="filename">src/ovnilamp/12.png</key>
+            <key type="filename">src/ovnilamp/13.png</key>
+            <key type="filename">src/ovnilamp/14.png</key>
+            <key type="filename">src/ovnilamp/15.png</key>
+            <key type="filename">src/ovnilamp/16.png</key>
+            <key type="filename">src/ovnilamp/17.png</key>
+            <key type="filename">src/ovnilamp/18.png</key>
+            <key type="filename">src/ovnilamp/19.png</key>
+            <key type="filename">src/ovnilamp/20.png</key>
+            <key type="filename">src/ovnilamp/21.png</key>
+            <key type="filename">src/ovnilamp/22.png</key>
+            <key type="filename">src/ovnilamp/23.png</key>
+            <key type="filename">src/ovnilamp/24.png</key>
+            <key type="filename">src/ovnilamp/25.png</key>
+            <key type="filename">src/ovnilamp/26.png</key>
+            <key type="filename">src/ovnilamp/27.png</key>
+            <key type="filename">src/ovnilamp/28.png</key>
+            <key type="filename">src/ovnilamp/29.png</key>
+            <key type="filename">src/ovnilamp/30.png</key>
+            <key type="filename">src/ovnilamp/31.png</key>
+            <key type="filename">src/ovnilamp/32.png</key>
+            <key type="filename">src/ovnilamp/33.png</key>
+            <key type="filename">src/ovnilamp/34.png</key>
+            <key type="filename">src/ovnilamp/35.png</key>
+            <key type="filename">src/ovnilamp/36.png</key>
+            <key type="filename">src/ovnilamp/37.png</key>
+            <key type="filename">src/ovnilamp/38.png</key>
+            <key type="filename">src/ovnilamp/39.png</key>
+            <key type="filename">src/ovnilamp/40.png</key>
+            <key type="filename">src/ovnilamp/41.png</key>
+            <key type="filename">src/ovnilamp/42.png</key>
+            <key type="filename">src/ovnilamp/43.png</key>
+            <key type="filename">src/ovnilamp/44.png</key>
+            <key type="filename">src/ovnilamp/45.png</key>
+            <key type="filename">src/ovnilamp/46.png</key>
+            <key type="filename">src/ovnilamp/47.png</key>
+            <key type="filename">src/ovnilamp/48.png</key>
+            <key type="filename">src/ovnilamp/49.png</key>
+            <key type="filename">src/ovnilamp/50.png</key>
+            <key type="filename">src/ovnilamp/51.png</key>
+            <key type="filename">src/ovnilamp/52.png</key>
+            <key type="filename">src/ovnilamp/53.png</key>
+            <key type="filename">src/ovnilamp/54.png</key>
+            <key type="filename">src/ovnilamp/55.png</key>
+            <key type="filename">src/ovnilamp/56.png</key>
+            <key type="filename">src/ovnilamp/57.png</key>
+            <key type="filename">src/ovnilamp/58.png</key>
+            <key type="filename">src/ovnilamp/59.png</key>
+            <key type="filename">src/ovnilamp/60.png</key>
+            <key type="filename">src/ovnilamp/61.png</key>
+            <key type="filename">src/ovnilamp/62.png</key>
+            <key type="filename">src/ovnilamp/63.png</key>
+            <key type="filename">src/ovnilamp/64.png</key>
+            <key type="filename">src/ovnilamp/65.png</key>
+            <key type="filename">src/ovnilamp/66.png</key>
+            <key type="filename">src/ovnilamp/67.png</key>
+            <key type="filename">src/ovnilamp/68.png</key>
+            <key type="filename">src/ovnilamp/69.png</key>
+            <key type="filename">src/ovnilamp/70.png</key>
+            <key type="filename">src/ovnilamp/71.png</key>
+            <key type="filename">src/ovnilamp/72.png</key>
+            <key type="filename">src/ovnilamp/73.png</key>
+            <key type="filename">src/ovnilamp/74.png</key>
+            <key type="filename">src/ovnilamp/75.png</key>
+            <key type="filename">src/ovnilamp/76.png</key>
+            <key type="filename">src/ovnilamp/77.png</key>
+            <key type="filename">src/ovnilamp/78.png</key>
+            <key type="filename">src/ovnilamp/79.png</key>
+            <key type="filename">src/ovnilamp/80.png</key>
+            <key type="filename">src/ovnilamp/81.png</key>
+            <key type="filename">src/ovnilamp/82.png</key>
+            <key type="filename">src/ovnilamp/83.png</key>
+            <key type="filename">src/ovnilamp/84.png</key>
+            <key type="filename">src/ovnilamp/85.png</key>
+            <key type="filename">src/ovnilamp/86.png</key>
+            <key type="filename">src/ovnilamp/87.png</key>
+            <key type="filename">src/ovnilamp/88.png</key>
+            <key type="filename">src/ovnilamp/89.png</key>
+            <key type="filename">src/ovnilamp/90.png</key>
+            <key type="filename">src/ovnilamp/91.png</key>
+            <key type="filename">src/ovnilamp/92.png</key>
+            <key type="filename">src/ovnilamp/93.png</key>
+            <key type="filename">src/ovnilamp/94.png</key>
+            <key type="filename">src/ovnilamp/95.png</key>
+            <key type="filename">src/ovnilamp/96.png</key>
+            <key type="filename">src/ovnilamp/97.png</key>
+            <key type="filename">src/ovnilamp/98.png</key>
+            <key type="filename">src/ovnilamp/99.png</key>
+            <key type="filename">src/ovnilamp/100.png</key>
+            <key type="filename">src/ovnilamp/101.png</key>
+            <key type="filename">src/ovnilamp/102.png</key>
+            <key type="filename">src/ovnilamp/103.png</key>
+            <key type="filename">src/ovnilamp/104.png</key>
+            <key type="filename">src/ovnilamp/105.png</key>
+            <key type="filename">src/ovnilamp/106.png</key>
+            <key type="filename">src/ovnilamp/107.png</key>
+            <key type="filename">src/ovnilamp/108.png</key>
+            <key type="filename">src/ovnilamp/109.png</key>
+            <key type="filename">src/ovnilamp/110.png</key>
+            <key type="filename">src/ovnilamp/111.png</key>
+            <key type="filename">src/ovnilamp/112.png</key>
+            <key type="filename">src/ovnilamp/113.png</key>
+            <key type="filename">src/ovnilamp/114.png</key>
+            <key type="filename">src/ovnilamp/115.png</key>
+            <key type="filename">src/ovnilamp/116.png</key>
+            <key type="filename">src/ovnilamp/117.png</key>
+            <key type="filename">src/ovnilamp/118.png</key>
+            <key type="filename">src/ovnilamp/119.png</key>
+            <key type="filename">src/ovnilamp/120.png</key>
+            <key type="filename">src/ovnilamp/121.png</key>
+            <key type="filename">src/ovnilamp/122.png</key>
+            <key type="filename">src/ovnilamp/123.png</key>
+            <key type="filename">src/ovnilamp/124.png</key>
+            <key type="filename">src/ovnilamp/125.png</key>
+            <key type="filename">src/ovnilamp/126.png</key>
+            <key type="filename">src/ovnilamp/127.png</key>
+            <key type="filename">src/ovnilamp/128.png</key>
+            <key type="filename">src/ovnilamp/129.png</key>
+            <key type="filename">src/ovnilamp/130.png</key>
+            <key type="filename">src/ovnilamp/131.png</key>
+            <key type="filename">src/ovnilamp/132.png</key>
+            <key type="filename">src/ovnilamp/133.png</key>
+            <key type="filename">src/ovnilamp/134.png</key>
+            <key type="filename">src/ovnilamp/135.png</key>
+            <key type="filename">src/ovnilamp/136.png</key>
+            <key type="filename">src/ovnilamp/137.png</key>
+            <key type="filename">src/ovnilamp/138.png</key>
+            <key type="filename">src/ovnilamp/139.png</key>
+            <key type="filename">src/ovnilamp/140.png</key>
+            <key type="filename">src/ovnilamp/141.png</key>
+            <key type="filename">src/ovnilamp/142.png</key>
+            <key type="filename">src/ovnilamp/143.png</key>
+            <key type="filename">src/ovnilamp/144.png</key>
+            <key type="filename">src/ovnilamp/145.png</key>
+            <key type="filename">src/ovnilamp/146.png</key>
+            <key type="filename">src/ovnilamp/147.png</key>
+            <key type="filename">src/ovnilamp/148.png</key>
+            <key type="filename">src/ovnilamp/149.png</key>
+            <key type="filename">src/ovnilamp/150.png</key>
+            <key type="filename">src/ovnilamp/151.png</key>
+            <key type="filename">src/ovnilamp/152.png</key>
+            <key type="filename">src/ovnilamp/153.png</key>
+            <key type="filename">src/ovnilamp/154.png</key>
+            <key type="filename">src/ovnilamp/155.png</key>
+            <key type="filename">src/ovnilamp/156.png</key>
+            <key type="filename">src/ovnilamp/157.png</key>
+            <key type="filename">src/ovnilamp/158.png</key>
+            <key type="filename">src/ovnilamp/159.png</key>
+            <key type="filename">src/ovnilamp/160.png</key>
+            <key type="filename">src/ovnilamp/161.png</key>
+            <key type="filename">src/ovnilamp/162.png</key>
+            <key type="filename">src/ovnilamp/163.png</key>
+            <key type="filename">src/ovnilamp/164.png</key>
+            <key type="filename">src/ovnilamp/165.png</key>
+            <key type="filename">src/ovnilamp/166.png</key>
+            <key type="filename">src/ovnilamp/167.png</key>
+            <key type="filename">src/ovnilamp/168.png</key>
+            <key type="filename">src/ovnilamp/169.png</key>
+            <key type="filename">src/ovnilamp/170.png</key>
+            <key type="filename">src/ovnilamp/171.png</key>
+            <key type="filename">src/ovnilamp/172.png</key>
+            <key type="filename">src/ovnilamp/173.png</key>
+            <key type="filename">src/ovnilamp/174.png</key>
+            <key type="filename">src/ovnilamp/175.png</key>
+            <key type="filename">src/ovnilamp/176.png</key>
+            <key type="filename">src/ovnilamp/177.png</key>
+            <key type="filename">src/ovnilamp/178.png</key>
+            <key type="filename">src/ovnilamp/179.png</key>
+            <key type="filename">src/ovnilamp/180.png</key>
+            <key type="filename">src/ovnilamp/181.png</key>
+            <key type="filename">src/ovnilamp/182.png</key>
+            <key type="filename">src/ovnilamp/183.png</key>
+            <key type="filename">src/ovnilamp/184.png</key>
+            <key type="filename">src/ovnilamp/185.png</key>
+            <key type="filename">src/ovnilamp/186.png</key>
+            <key type="filename">src/ovnilamp/187.png</key>
+            <key type="filename">src/ovnilamp/188.png</key>
+            <key type="filename">src/ovnilamp/189.png</key>
+            <key type="filename">src/ovnilamp/190.png</key>
+            <key type="filename">src/ovnilamp/191.png</key>
+            <key type="filename">src/ovnilamp/192.png</key>
+            <key type="filename">src/ovnilamp/193.png</key>
+            <key type="filename">src/ovnilamp/194.png</key>
+            <key type="filename">src/ovnilamp/195.png</key>
+            <key type="filename">src/ovnilamp/196.png</key>
+            <key type="filename">src/ovnilamp/197.png</key>
+            <key type="filename">src/ovnilamp/198.png</key>
+            <key type="filename">src/ovnilamp/199.png</key>
+            <key type="filename">src/ovnilamp/200.png</key>
+            <key type="filename">src/ovnilamp/201.png</key>
+            <key type="filename">src/ovnilamp/202.png</key>
+            <key type="filename">src/ovnilamp/203.png</key>
+            <key type="filename">src/ovnilamp/204.png</key>
+            <key type="filename">src/ovnilamp/205.png</key>
+            <key type="filename">src/ovnilamp/206.png</key>
+            <key type="filename">src/ovnilamp/207.png</key>
+            <key type="filename">src/ovnilamp/208.png</key>
+            <key type="filename">src/ovnilamp/209.png</key>
+            <key type="filename">src/ovnilamp/210.png</key>
+            <key type="filename">src/ovnilamp/211.png</key>
+            <key type="filename">src/ovnilamp/212.png</key>
+            <key type="filename">src/ovnilamp/213.png</key>
+            <key type="filename">src/ovnilamp/214.png</key>
+            <key type="filename">src/ovnilamp/215.png</key>
+            <key type="filename">src/ovnilamp/216.png</key>
+            <key type="filename">src/ovnilamp/217.png</key>
+            <key type="filename">src/ovnilamp/218.png</key>
+            <key type="filename">src/ovnilamp/219.png</key>
+            <key type="filename">src/ovnilamp/220.png</key>
+            <key type="filename">src/ovnilamp/221.png</key>
+            <key type="filename">src/ovnilamp/222.png</key>
+            <key type="filename">src/ovnilamp/223.png</key>
+            <key type="filename">src/ovnilamp/224.png</key>
+            <key type="filename">src/ovnilamp/225.png</key>
+            <key type="filename">src/ovnilamp/226.png</key>
+            <key type="filename">src/ovnilamp/227.png</key>
+            <key type="filename">src/ovnilamp/228.png</key>
+            <key type="filename">src/ovnilamp/229.png</key>
+            <key type="filename">src/ovnilamp/230.png</key>
+            <key type="filename">src/ovnilamp/231.png</key>
+            <key type="filename">src/ovnilamp/232.png</key>
+            <key type="filename">src/ovnilamp/233.png</key>
+            <key type="filename">src/ovnilamp/234.png</key>
+            <key type="filename">src/ovnilamp/235.png</key>
+            <key type="filename">src/ovnilamp/236.png</key>
+            <key type="filename">src/ovnilamp/237.png</key>
+            <key type="filename">src/ovnilamp/238.png</key>
+            <key type="filename">src/ovnilamp/239.png</key>
+            <key type="filename">src/ovnilamp/240.png</key>
+            <key type="filename">src/ovnilamp/241.png</key>
+            <key type="filename">src/ovnilamp/242.png</key>
+            <key type="filename">src/ovnilamp/243.png</key>
+            <key type="filename">src/ovnilamp/244.png</key>
+            <key type="filename">src/ovnilamp/245.png</key>
+            <key type="filename">src/ovnilamp/246.png</key>
+            <key type="filename">src/ovnilamp/247.png</key>
+            <key type="filename">src/ovnilamp/248.png</key>
+            <key type="filename">src/ovnilamp/249.png</key>
+            <key type="filename">src/ovnilamp/250.png</key>
+            <key type="filename">src/ovnilamp/251.png</key>
+            <key type="filename">src/ovnilamp/252.png</key>
+            <key type="filename">src/ovnilamp/253.png</key>
+            <key type="filename">src/ovnilamp/254.png</key>
+            <key type="filename">src/ovnilamp/255.png</key>
+            <key type="filename">src/ovnilamp/256.png</key>
+            <key type="filename">src/ovnilamp/257.png</key>
+            <key type="filename">src/ovnilamp/258.png</key>
+            <key type="filename">src/ovnilamp/259.png</key>
+            <key type="filename">src/ovnilamp/260.png</key>
+            <key type="filename">src/ovnilamp/261.png</key>
+            <key type="filename">src/ovnilamp/262.png</key>
+            <key type="filename">src/ovnilamp/263.png</key>
+            <key type="filename">src/ovnilamp/264.png</key>
+            <key type="filename">src/ovnilamp/265.png</key>
+            <key type="filename">src/ovnilamp/266.png</key>
+            <key type="filename">src/ovnilamp/267.png</key>
+            <key type="filename">src/ovnilamp/268.png</key>
+            <key type="filename">src/ovnilamp/269.png</key>
+            <key type="filename">src/ovnilamp/270.png</key>
+            <key type="filename">src/ovnilamp/271.png</key>
+            <key type="filename">src/ovnilamp/272.png</key>
+            <key type="filename">src/ovnilamp/273.png</key>
+            <key type="filename">src/ovnilamp/274.png</key>
+            <key type="filename">src/ovnilamp/275.png</key>
+            <key type="filename">src/ovnilamp/276.png</key>
+            <key type="filename">src/ovnilamp/277.png</key>
+            <key type="filename">src/ovnilamp/278.png</key>
+            <key type="filename">src/ovnilamp/279.png</key>
+            <key type="filename">src/ovnilamp/280.png</key>
+            <key type="filename">src/ovnilamp/281.png</key>
+            <key type="filename">src/ovnilamp/282.png</key>
+            <key type="filename">src/ovnilamp/283.png</key>
+            <key type="filename">src/ovnilamp/284.png</key>
+            <key type="filename">src/ovnilamp/285.png</key>
+            <key type="filename">src/ovnilamp/286.png</key>
+            <key type="filename">src/ovnilamp/287.png</key>
+            <key type="filename">src/ovnilamp/288.png</key>
+            <key type="filename">src/ovnilamp/289.png</key>
+            <key type="filename">src/ovnilamp/290.png</key>
+            <key type="filename">src/ovnilamp/291.png</key>
+            <key type="filename">src/ovnilamp/292.png</key>
+            <key type="filename">src/ovnilamp/293.png</key>
+            <key type="filename">src/ovnilamp/294.png</key>
+            <key type="filename">src/ovnilamp/295.png</key>
+            <key type="filename">src/ovnilamp/296.png</key>
+            <key type="filename">src/ovnilamp/297.png</key>
+            <key type="filename">src/ovnilamp/298.png</key>
+            <key type="filename">src/ovnilamp/299.png</key>
+            <key type="filename">src/ovnilamp/300.png</key>
+            <key type="filename">src/ovnilamp/301.png</key>
+            <key type="filename">src/ovnilamp/302.png</key>
+            <key type="filename">src/ovnilamp/303.png</key>
+            <key type="filename">src/ovnilamp/304.png</key>
+            <key type="filename">src/ovnilamp/305.png</key>
+            <key type="filename">src/ovnilamp/306.png</key>
+            <key type="filename">src/ovnilamp/307.png</key>
+            <key type="filename">src/ovnilamp/308.png</key>
+            <key type="filename">src/ovnilamp/309.png</key>
+            <key type="filename">src/ovnilamp/310.png</key>
+            <key type="filename">src/ovnilamp/311.png</key>
+            <key type="filename">src/ovnilamp/312.png</key>
+            <key type="filename">src/ovnilamp/313.png</key>
+            <key type="filename">src/ovnilamp/314.png</key>
+            <key type="filename">src/ovnilamp/315.png</key>
+            <key type="filename">src/ovnilamp/316.png</key>
+            <key type="filename">src/ovnilamp/317.png</key>
+            <key type="filename">src/ovnilamp/318.png</key>
+            <key type="filename">src/ovnilamp/319.png</key>
+            <key type="filename">src/ovnilamp/320.png</key>
+            <key type="filename">src/ovnilamp/321.png</key>
+            <key type="filename">src/ovnilamp/322.png</key>
+            <key type="filename">src/ovnilamp/323.png</key>
+            <key type="filename">src/ovnilamp/324.png</key>
+            <key type="filename">src/ovnilamp/325.png</key>
+            <key type="filename">src/ovnilamp/326.png</key>
+            <key type="filename">src/ovnilamp/327.png</key>
+            <key type="filename">src/ovnilamp/328.png</key>
+            <key type="filename">src/ovnilamp/329.png</key>
+            <key type="filename">src/ovnilamp/330.png</key>
+            <key type="filename">src/ovnilamp/331.png</key>
+            <key type="filename">src/ovnilamp/332.png</key>
+            <key type="filename">src/ovnilamp/333.png</key>
+            <key type="filename">src/ovnilamp/334.png</key>
+            <key type="filename">src/ovnilamp/335.png</key>
+            <key type="filename">src/ovnilamp/336.png</key>
+            <key type="filename">src/ovnilamp/337.png</key>
+            <key type="filename">src/ovnilamp/338.png</key>
+            <key type="filename">src/ovnilamp/339.png</key>
+            <key type="filename">src/ovnilamp/340.png</key>
+            <key type="filename">src/ovnilamp/341.png</key>
+            <key type="filename">src/ovnilamp/342.png</key>
+            <key type="filename">src/ovnilamp/343.png</key>
+            <key type="filename">src/ovnilamp/344.png</key>
+            <key type="filename">src/ovnilamp/345.png</key>
+            <key type="filename">src/ovnilamp/346.png</key>
+            <key type="filename">src/ovnilamp/347.png</key>
+            <key type="filename">src/ovnilamp/348.png</key>
+            <key type="filename">src/ovnilamp/349.png</key>
+            <key type="filename">src/ovnilamp/350.png</key>
+            <key type="filename">src/ovnilamp/351.png</key>
+            <key type="filename">src/ovnilamp/352.png</key>
+            <key type="filename">src/ovnilamp/353.png</key>
+            <key type="filename">src/ovnilamp/354.png</key>
+            <key type="filename">src/ovnilamp/355.png</key>
+            <key type="filename">src/ovnilamp/356.png</key>
+            <key type="filename">src/ovnilamp/357.png</key>
+            <key type="filename">src/ovnilamp/358.png</key>
+            <key type="filename">src/ovnilamp/359.png</key>
+            <key type="filename">src/ovnilamp/360.png</key>
+            <key type="filename">src/ovnilamp/361.png</key>
+            <key type="filename">src/ovnilamp/362.png</key>
+            <key type="filename">src/ovnilamp/363.png</key>
+            <key type="filename">src/ovnilamp/364.png</key>
+            <key type="filename">src/ovnilamp/365.png</key>
+            <key type="filename">src/ovnilamp/366.png</key>
+            <key type="filename">src/ovnilamp/367.png</key>
+            <key type="filename">src/ovnilamp/368.png</key>
+            <key type="filename">src/ovnilamp/369.png</key>
+            <key type="filename">src/ovnilamp/370.png</key>
+            <key type="filename">src/ovnilamp/371.png</key>
+            <key type="filename">src/ovnilamp/372.png</key>
+            <key type="filename">src/ovnilamp/373.png</key>
+            <key type="filename">src/ovnilamp/374.png</key>
+            <key type="filename">src/ovnilamp/375.png</key>
+            <key type="filename">src/ovnilamp/376.png</key>
+            <key type="filename">src/ovnilamp/377.png</key>
+            <key type="filename">src/ovnilamp/378.png</key>
+            <key type="filename">src/ovnilamp/379.png</key>
+            <key type="filename">src/ovnilamp/380.png</key>
+            <key type="filename">src/ovnilamp/381.png</key>
+            <key type="filename">src/ovnilamp/382.png</key>
+            <key type="filename">src/ovnilamp/383.png</key>
+            <key type="filename">src/ovnilamp/384.png</key>
+            <key type="filename">src/ovnilamp/385.png</key>
+            <key type="filename">src/ovnilamp/386.png</key>
+            <key type="filename">src/ovnilamp/387.png</key>
+            <key type="filename">src/ovnilamp/388.png</key>
+            <key type="filename">src/ovnilamp/389.png</key>
+            <key type="filename">src/ovnilamp/390.png</key>
+            <key type="filename">src/ovnilamp/391.png</key>
+            <key type="filename">src/ovnilamp/392.png</key>
+            <key type="filename">src/ovnilamp/393.png</key>
+            <key type="filename">src/ovnilamp/394.png</key>
+            <key type="filename">src/ovnilamp/395.png</key>
+            <key type="filename">src/ovnilamp/396.png</key>
+            <key type="filename">src/ovnilamp/397.png</key>
+            <key type="filename">src/ovnilamp/398.png</key>
+            <key type="filename">src/ovnilamp/399.png</key>
+            <key type="filename">src/ovnilamp/400.png</key>
+            <key type="filename">src/ovnilamp/401.png</key>
+            <key type="filename">src/ovnilamp/402.png</key>
+            <key type="filename">src/ovnilamp/403.png</key>
+            <key type="filename">src/ovnilamp/404.png</key>
+            <key type="filename">src/ovnilamp/405.png</key>
+            <key type="filename">src/ovnilamp/406.png</key>
+            <key type="filename">src/ovnilamp/407.png</key>
+            <key type="filename">src/ovnilamp/408.png</key>
+            <key type="filename">src/ovnilamp/409.png</key>
+            <key type="filename">src/ovnilamp/410.png</key>
+            <key type="filename">src/ovnilamp/411.png</key>
+            <key type="filename">src/ovnilamp/412.png</key>
+            <key type="filename">src/ovnilamp/413.png</key>
+            <key type="filename">src/ovnilamp/414.png</key>
+            <key type="filename">src/ovnilamp/415.png</key>
+            <key type="filename">src/ovnilamp/416.png</key>
+            <key type="filename">src/ovnilamp/417.png</key>
+            <key type="filename">src/ovnilamp/418.png</key>
+            <key type="filename">src/ovnilamp/419.png</key>
+            <key type="filename">src/ovnilamp/420.png</key>
+            <key type="filename">src/ovnilamp/421.png</key>
+            <key type="filename">src/ovnilamp/422.png</key>
+            <key type="filename">src/ovnilamp/423.png</key>
+            <key type="filename">src/ovnilamp/424.png</key>
+            <key type="filename">src/ovnilamp/425.png</key>
+            <key type="filename">src/ovnilamp/426.png</key>
+            <key type="filename">src/ovnilamp/427.png</key>
+            <key type="filename">src/ovnilamp/428.png</key>
+            <key type="filename">src/ovnilamp/429.png</key>
+            <key type="filename">src/ovnilamp/430.png</key>
+            <key type="filename">src/ovnilamp/431.png</key>
+            <key type="filename">src/ovnilamp/432.png</key>
+            <key type="filename">src/ovnilamp/433.png</key>
+            <key type="filename">src/ovnilamp/434.png</key>
+            <key type="filename">src/ovnilamp/435.png</key>
+            <key type="filename">src/ovnilamp/436.png</key>
+            <key type="filename">src/ovnilamp/437.png</key>
+            <key type="filename">src/ovnilamp/438.png</key>
+            <key type="filename">src/ovnilamp/439.png</key>
+            <key type="filename">src/ovnilamp/440.png</key>
+            <key type="filename">src/ovnilamp/441.png</key>
+            <key type="filename">src/ovnilamp/442.png</key>
+            <key type="filename">src/ovnilamp/443.png</key>
+            <key type="filename">src/ovnilamp/444.png</key>
+            <key type="filename">src/ovnilamp/445.png</key>
+            <key type="filename">src/ovnilamp/446.png</key>
+            <key type="filename">src/ovnilamp/447.png</key>
+            <key type="filename">src/ovnilamp/448.png</key>
+            <key type="filename">src/ovnilamp/449.png</key>
+            <key type="filename">src/ovnilamp/450.png</key>
+            <key type="filename">src/ovnilamp/451.png</key>
+            <key type="filename">src/ovnilamp/452.png</key>
+            <key type="filename">src/ovnilamp/453.png</key>
+            <key type="filename">src/ovnilamp/454.png</key>
+            <key type="filename">src/ovnilamp/455.png</key>
+            <key type="filename">src/ovnilamp/456.png</key>
+            <key type="filename">src/ovnilamp/457.png</key>
+            <key type="filename">src/ovnilamp/458.png</key>
+            <key type="filename">src/ovnilamp/459.png</key>
+            <key type="filename">src/ovnilamp/460.png</key>
+            <key type="filename">src/ovnilamp/461.png</key>
+            <key type="filename">src/ovnilamp/462.png</key>
+            <key type="filename">src/ovnilamp/463.png</key>
+            <key type="filename">src/ovnilamp/464.png</key>
+            <key type="filename">src/ovnilamp/465.png</key>
+            <key type="filename">src/ovnilamp/466.png</key>
+            <key type="filename">src/ovnilamp/467.png</key>
+            <key type="filename">src/ovnilamp/468.png</key>
+            <key type="filename">src/ovnilamp/469.png</key>
+            <key type="filename">src/ovnilamp/470.png</key>
+            <key type="filename">src/ovnilamp/471.png</key>
+            <key type="filename">src/ovnilamp/472.png</key>
+            <key type="filename">src/ovnilamp/473.png</key>
+            <key type="filename">src/ovnilamp/474.png</key>
+            <key type="filename">src/ovnilamp/475.png</key>
+            <key type="filename">src/ovnilamp/476.png</key>
+            <key type="filename">src/ovnilamp/477.png</key>
+            <key type="filename">src/ovnilamp/478.png</key>
+            <key type="filename">src/ovnilamp/479.png</key>
+            <key type="filename">src/ovnilamp/480.png</key>
+            <key type="filename">src/ovnilamp/481.png</key>
+            <key type="filename">src/ovnilamp/482.png</key>
+            <key type="filename">src/ovnilamp/483.png</key>
+            <key type="filename">src/ovnilamp/484.png</key>
+            <key type="filename">src/ovnilamp/485.png</key>
+            <key type="filename">src/ovnilamp/486.png</key>
+            <key type="filename">src/ovnilamp/487.png</key>
+            <key type="filename">src/ovnilamp/488.png</key>
+            <key type="filename">src/ovnilamp/489.png</key>
+            <key type="filename">src/ovnilamp/490.png</key>
+            <key type="filename">src/ovnilamp/491.png</key>
+            <key type="filename">src/ovnilamp/492.png</key>
+            <key type="filename">src/ovnilamp/493.png</key>
+            <key type="filename">src/ovnilamp/494.png</key>
+            <key type="filename">src/ovnilamp/495.png</key>
+            <key type="filename">src/ovnilamp/496.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.504425,0.77551</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>56,61,113,122</rect>
+                <key>scale9Paddings</key>
+                <rect>56,61,113,122</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
