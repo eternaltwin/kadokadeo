@@ -45,7 +45,12 @@ class BONUS extends AOBJECT {
 	public var b2:Hit;
 	public var b3:Hit;
 	public var b4:Hit;
+	// scored (every star taken, or the lines went past it)
 	public var hit:Bool = false;
+	// stars taken so far, and where the last ones were (for the score shown)
+	public var taken:Int = 0;
+	public var hitX:Int = 0;
+	public var hitY:Int = 0;
 
 	public function new() {
 		super();
@@ -609,12 +614,15 @@ class Game implements kado.GameInterface {
 			}
 
 			var mult = 0;
-			var x = 0;
-			var y = 0;
 
 			var linked = dotter.getStarted();
 			var first = linked[0];
 			if (first != null && first.x > b.x + b._width) {
+				// the lines went past it: the stars taken are scored
+				if (b.taken > 0) {
+					scoreBonus(b);
+					continue;
+				}
 				var ph = new Phys(b);
 				ph.timer = 10;
 				ph.fadeType = 5;
@@ -644,28 +652,33 @@ class Game implements kado.GameInterface {
 					mult++;
 				}
 
-				x = d.x;
-				y = d.y;
+				b.hitX = d.x;
+				b.hitY = d.y;
 			}
 
-			if (mult <= 0)
-				continue;
+			// the original scored the bonus on the first frame a star was taken and ignored the stars the other lines
+			// reached on the next frames: they add up until the 4 are taken or the lines go past it
+			b.taken += mult;
+			if (b.taken >= 4)
+				scoreBonus(b);
+		}
+	}
 
-			b.hit = true;
+	function scoreBonus(b:BONUS) {
+		b.hit = true;
 
-			if (mult >= 4) {
-				score(x, y - 50, "mcBonusCombo", KKApi.val(Const.BONUS_COMBO));
-				var s = KKApi.val(Const.BONUS_COMBO);
-				PBonus += s;
-				addScore(s);
-				continue;
-			}
-
-			score(x, y - 50, "mcBonusScore", KKApi.val(Const.BASE_SCORE), mult, 20);
-			var s = KKApi.val(Const.BASE_SCORE) * mult;
+		if (b.taken >= 4) {
+			score(b.hitX, b.hitY - 50, "mcBonusCombo", KKApi.val(Const.BONUS_COMBO));
+			var s = KKApi.val(Const.BONUS_COMBO);
 			PBonus += s;
 			addScore(s);
+			return;
 		}
+
+		score(b.hitX, b.hitY - 50, "mcBonusScore", KKApi.val(Const.BASE_SCORE), b.taken, 20);
+		var s = KKApi.val(Const.BASE_SCORE) * b.taken;
+		PBonus += s;
+		addScore(s);
 	}
 
 	function removeBonus(mc:Hit, b:BONUS, sleep = 0) {

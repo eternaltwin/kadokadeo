@@ -110,26 +110,31 @@ class Dotter {
 		});
 		// (Lambda.filter gave a List in Haxe 1, an Array now)
 		var first = linked[0];
-		var last = linked[linked.length - 1];
+		// the group's bounds and the place of a joining line: the lowest line already in the group (the original took
+		// the last line started, the joining one too, and gave it the place readyCount * margin, the one of another
+		// line if one in the middle broke)
+		var last = null;
+		for (dot in linked)
+			if (dot.ready && (last == null || dot.y > last.y))
+				last = dot;
+		if (last == null)
+			last = linked[linked.length - 1];
 		var min = margin;
 
 		// Lignes groupées
 		var free = Lambda.filter(dots, function(dot:DOT) {
 			return !dot.started;
 		});
-		var aim = Lambda.filter(dots, function(dot:DOT) {
-			return !dot.ready;
-		});
 		var idx = -2;
 		var firstWent = false;
-		var count = aim.length;
+		var below = if (last != null && last.ready) last.y - first.y + min else 0;
 		for (dot in linked) {
 			idx++;
 			var dx = 0;
 			var dy = 0;
 
 			if (!dot.ready) {
-				var dest = if (dot.idx == 0) min * (dots.length - aim.length) else (dot.idx) * min;
+				var dest = if (dot.idx == 0) below else (dot.idx) * min;
 
 				// On est arrivé à la bonne position
 				if (Math.abs(first.x - dot.x) <= 3 && Math.abs(first.y + dest - dot.y) <= 3) {
@@ -174,33 +179,24 @@ class Dotter {
 				continue;
 			}
 
-			if (count == 1) {
-				if ((dot.y <= yMargin + marginThickness && ySpeed > 0)
-					|| (dot.y >= this.height - yMargin - marginThickness && ySpeed < 0)
-					|| (dot.y < this.height - yMargin - marginThickness && dot.y > yMargin)) {
-					dy = ySpeed;
-					cannotGoY = false;
-				} else {
-					cannotGoY = true;
-				}
+			// the lines of the group move together (the original moved each one alone, stopping on its own at the
+			// margins, while exactly one line was joining: `count == 1` counted those, and the group got squeezed)
+			if ((first.y <= (yMargin - marginThickness) && ySpeed > 0)
+				|| (dot.idx == first.idx && dot.y <= yMargin - marginThickness && ySpeed > 0)
+				|| (dot.y >= this.height - yMargin - marginThickness && ySpeed < 0)
+				|| (first.y >= this.height - yMargin - marginThickness && ySpeed < 0)
+				|| (last.y >= this.height - yMargin - marginThickness && ySpeed < 0)
+				|| (last.y <= this.height - yMargin - marginThickness && first.y >= yMargin && dot.y >= yMargin)
+				|| firstWent) {
+				if (dot.idx == first.idx)
+					firstWent = true;
+				dy = ySpeed;
+				cannotGoY = false;
 			} else {
-				if ((first.y <= (yMargin - marginThickness) && ySpeed > 0)
-					|| (dot.idx == first.idx && dot.y <= yMargin - marginThickness && ySpeed > 0)
-					|| (dot.y >= this.height - yMargin - marginThickness && ySpeed < 0)
-					|| (first.y >= this.height - yMargin - marginThickness && ySpeed < 0)
-					|| (last.y >= this.height - yMargin - marginThickness && ySpeed < 0)
-					|| (last.y <= this.height - yMargin - marginThickness && first.y >= yMargin && dot.y >= yMargin)
-					|| firstWent) {
-					if (dot.idx == first.idx)
-						firstWent = true;
-					dy = ySpeed;
-					cannotGoY = false;
-				} else {
-					if (dot.idx == first.idx)
-						firstWent = false;
-					dy = 0;
-					cannotGoY = true;
-				}
+				if (dot.idx == first.idx)
+					firstWent = false;
+				dy = 0;
+				cannotGoY = true;
 			}
 
 			if (dot.x <= xMargin && xSpeed > 0 || (dot.x >= this.height - xMargin && xSpeed < 0) || (dot.x > xMargin && dot.x < this.height - xMargin)) {
