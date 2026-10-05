@@ -3,12 +3,13 @@ import { existsSync } from 'node:fs'
 import { mkdir, readdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 
-import { build } from 'esbuild'
-
 import { openArchive } from './builds/archive.mjs'
+import { bundleGame } from './builds/bundle.mjs'
 
 const sourceDir = 'resources/js/games'
 const outputDir = 'public/gamesdata'
+// not public: the bundles are minified, their source maps are only for us (crash reports)
+const sourceMapDir = 'storage/app/game-sourcemaps'
 
 const games = (await readdir(sourceDir))
   .filter((fileName) => !fileName.startsWith('tmp') && fileName.endsWith('.js'))
@@ -19,6 +20,7 @@ const games = (await readdir(sourceDir))
   }))
 
 await mkdir(outputDir, { recursive: true })
+await mkdir(sourceMapDir, { recursive: true })
 
 const manifest = {}
 
@@ -33,26 +35,18 @@ const archive =
       })
 
 for (const game of games) {
-  const result = await build({
-    entryPoints: [game.entry],
-    outfile: game.output,
-    bundle: true,
-    platform: 'browser',
-    format: 'iife',
-    target: 'es2018',
-    sourcemap: true,
-    logLevel: 'info',
-    write: false,
-  })
+  const { code, map } = await bundleGame(game.entry)
 
   // the new bundle is archived before it replaces the previous one on disk
-  const bundle = result.outputFiles.find((f) => f.path.endsWith('.js'))
-  const outputBuffer = Buffer.from(bundle.contents)
+  const outputBuffer = code
   if (archive) {
     const previous = existsSync(game.output) ? await readFile(game.output) : null
     await archive.addBundle(basename(game.output, '.js'), outputBuffer, previous)
   }
-  for (const file of result.outputFiles) await writeFile(file.path, file.contents)
+  await writeFile(game.output, code)
+  await writeFile(join(sourceMapDir, `${basename(game.output)}.map`), map)
+  // source maps published by the builds before
+  await unlink(`${game.output}.map`).catch(() => {})
   const hash = createHash('sha1').update(outputBuffer).digest('hex').slice(0, 12)
 
   manifest[basename(game.output)] = {

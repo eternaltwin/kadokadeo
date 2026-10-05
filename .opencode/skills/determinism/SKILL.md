@@ -46,3 +46,11 @@ Contraintes :
 - ne pas casser la syntaxe Haxe
 - utiliser les seed de vfx pour les randoms purement visuels
 - utiliser les seed de gameplay pour les randoms qui influencent la logique du jeu
+
+## Tirages mélangés par les frames (anti-triche)
+
+Hors jeu du jour, `KadoKadeoManager.updatePhysics` appelle `Seed.stir(frame, entrées)` au début de chaque frame : l'état du random de gameplay dépend de la frame et des touches / boutons changés (les prochaines pièces ne se déduisent plus de la seed). Le replay le note (`FLAG_RNG_STIR`) et se rejoue à l'identique. Conséquences :
+
+- un tirage `Seed.rand()` / `Seed.random()` doit se faire **pendant l'étape de physique** (`update` du jeu), jamais au rendu, dans un événement DOM ou un callback asynchrone : sinon il dépend du moment et le replay diverge ;
+- un tirage fait dans le constructeur du jeu (avant la première frame) n'est pas mélangé : générer les niveaux / pièces au moment où ils arrivent plutôt que tout au départ ;
+- vérifier un portage avec `harness/rc.mjs record` (partie live puis son replay : `MATCH`).

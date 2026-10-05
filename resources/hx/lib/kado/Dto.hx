@@ -6,6 +6,8 @@ typedef RunDTO = {
 	var contract_score:Int;
 	var contract_points:Int;
 	var seed:String;
+	// the daily game: the same seed for every player, the draws are not stirred (Seed.stir)
+	@:optional var shared_seed:Bool;
 };
 
 typedef ApiResponse<T> = {

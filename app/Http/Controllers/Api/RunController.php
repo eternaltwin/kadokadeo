@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\RunVerification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RunEndRequest;
 use App\Http\Requests\RunStartRequest;
 use App\Http\Resources\RunBeginResource;
 use App\Http\Resources\RunResource;
+use App\Jobs\VerifyRunReplay;
 use App\Models\Game;
 use App\Models\GameBuild;
 use App\Models\Period;
 use App\Models\Run;
 use App\Services\GameService;
 use App\Services\LeagueService;
+use App\Services\ReplayVerifier;
 use App\Services\RunService;
 use App\Services\ScoreService;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -82,7 +85,7 @@ class RunController extends Controller implements HasMiddleware
         return new RunBeginResource($run);
     }
 
-    public function end(RunEndRequest $request, Run $run, RunService $runService, ScoreService $scoreService)
+    public function end(RunEndRequest $request, Run $run, RunService $runService, ScoreService $scoreService, ReplayVerifier $replayVerifier)
     {
         // a run sent again (offline retry, lost response) must not be rewarded twice
         if ($run->completed_at !== null) {
@@ -105,6 +108,12 @@ class RunController extends Controller implements HasMiddleware
         } catch (\Throwable $e) {
             info(sprintf('RunController@end: user %d run end failed: %s', Auth::id(), $e->getMessage()));
             throw new BadRequestException($e->getMessage());
+        }
+
+        // the score is sent by the game: the replay of a run that counts is played again on the server
+        if ($replayVerifier->shouldVerify($run, $previousBestScore)) {
+            $run->update(['verification' => RunVerification::PENDING]);
+            VerifyRunReplay::dispatch($run->id);
         }
 
         $leaderBoardQuery = $scoreService->getLeaderBoard($run->game, $periodId, $run->league_id);
@@ -137,6 +146,6 @@ class RunController extends Controller implements HasMiddleware
         $run->load('game', 'user', 'gameBuild');
         Gate::authorize('view', $run->game);
 
-        return RunResource::make($run);
+        return RunResource::make($run)->withReplay();
     }
 }

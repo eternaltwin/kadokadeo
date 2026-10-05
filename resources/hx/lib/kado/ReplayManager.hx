@@ -51,6 +51,8 @@ class ReplayManager {
 	// version 3: the inputs / buttons are written as their code, not as their index in the init params
 	private static inline var FLAG_KEY_CODES:Int = 16;
 	private static inline var FLAG_BUTTON_CODES:Int = 32;
+	// the gameplay draws of the game are stirred by the frames and the inputs (kado.Seed.stir)
+	private static inline var FLAG_RNG_STIR:Int = 64;
 	private static inline var EVENT_ENCODING_PACKED_GRID:Int = 0;
 	private static inline var EVENT_ENCODING_SERIALIZED:Int = 1;
 	private static inline var DEFLATE_LEVEL:Int = 9;
@@ -88,6 +90,9 @@ class ReplayManager {
 	private var lastRecordedMouseX:Int = 0;
 	private var lastRecordedMouseY:Int = 0;
 	private var hasLastRecordedMouse:Bool = false;
+	private var rngStir:Bool = false;
+	// inputs and mouse buttons changed on the current frame (recorded or replayed): see getFrameSignature
+	private var frameSignature:Int = 0;
 
 	public function new(?replayData:String = null) {
 		this.replayData = parseReplayString(replayData);
@@ -173,6 +178,23 @@ class ReplayManager {
 		return currentFrame;
 	}
 
+	// recording: written in the replay. Playing: read from the replay (false for the replays recorded before it)
+	public function setRngStir(enabled:Bool):Void {
+		if (this.replayData == null) {
+			rngStir = enabled;
+		}
+	}
+
+	public inline function hasRngStir():Bool {
+		return rngStir;
+	}
+
+	// hash of the inputs and mouse buttons changed on the current frame, after beginFrame: built from the record of the
+	// frame, so the live game and its replay give the same one (the order of the changes in the frame doesn't matter)
+	public inline function getFrameSignature():Int {
+		return frameSignature;
+	}
+
 	// number of frames of the replay being played: -1 if the replay does not say it (older replays)
 	public inline function getTotalFrames():Int {
 		return totalFrames;
@@ -233,6 +255,7 @@ class ReplayManager {
 		if (frameEvents.length > 0) {
 			frameEvents = [];
 		}
+		frameSignature = 0;
 
 		if (this.isPlaying) {
 			applyFrame(currentFrame);
@@ -255,6 +278,8 @@ class ReplayManager {
 		if (hasTrackedMouseButtons) {
 			captureFrameMouseButtons();
 		}
+
+		frameSignature = signatureOf(frameRecords.get(currentFrame));
 
 		if (this.shouldRecordEvents && pendingEvents.length > 0) {
 			var record = getOrCreateFrameRecord(currentFrame);
@@ -358,6 +383,8 @@ class ReplayManager {
 			flags |= FLAG_KEY_CODES;
 		if (buttonIndex == null)
 			flags |= FLAG_BUTTON_CODES;
+		if (rngStir)
+			flags |= FLAG_RNG_STIR;
 		output.writeByte(flags);
 
 		writeInitParams(output, flags);
@@ -394,6 +421,7 @@ class ReplayManager {
 			return;
 		}
 		var record = playRecords[playCursor++];
+		frameSignature = signatureOf(record);
 
 		if (record.mousePosition != null) {
 			playMouseX = record.mousePosition.x;
@@ -428,6 +456,30 @@ class ReplayManager {
 				frameEvents.push(event);
 			}
 		}
+	}
+
+	static function signatureOf(record:Null<ReplayFrameRecord>):Int {
+		if (record == null) {
+			return 0;
+		}
+		var signature = 0;
+		for (input in record.inputs) {
+			signature ^= hashChange((input.keyCode << 1) | (input.isDown ? 1 : 0));
+		}
+		if (record.mouseButtons != null) {
+			for (change in record.mouseButtons) {
+				signature ^= hashChange(0x40000 | (change.button << 1) | (change.isDown ? 1 : 0));
+			}
+		}
+		return signature;
+	}
+
+	static inline function hashChange(x:Int):Int {
+		x = (x + 1) * 0x2C1B3;
+		x ^= x << 13;
+		x ^= x >>> 17;
+		x ^= x << 5;
+		return x;
 	}
 
 	private function captureFrameInputs():Void {
@@ -634,6 +686,7 @@ class ReplayManager {
 			throw "Unsupported replay version " + version;
 		}
 		var flags = input.readByte();
+		rngStir = (flags & FLAG_RNG_STIR) != 0;
 
 		var target = new IntMap<ReplayFrameRecord>();
 		readInitParams(input, flags, version);

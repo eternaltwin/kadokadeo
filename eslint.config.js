@@ -78,4 +78,12 @@ export default defineConfig([
       '@stylistic/space-before-blocks': ['error'],
     },
   },
+
+  // Node scripts (run on the server)
+  {
+    files: ['resources/js/replay-verifier/**/*.mjs'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
 ])

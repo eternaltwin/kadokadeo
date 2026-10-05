@@ -27,6 +27,10 @@ class RunPolicy
             return $this->deny('No replay for this run');
         }
 
+        if ($run->isHiddenDailyFor($user)) {
+            return $this->deny('The replays of the daily game are shown the next day');
+        }
+
         return $this->allow();
     }
 }

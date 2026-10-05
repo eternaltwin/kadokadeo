@@ -2,13 +2,17 @@
 
 namespace Tests\Feature;
 
+use App\Enums\RunVerification;
+use App\Jobs\VerifyRunReplay;
 use App\Models\Game;
 use App\Models\Run;
 use App\Models\User;
 use App\Services\RunService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use Tests\Unit\ReplayHeaderTest;
 
 class RunEndTest extends TestCase
 {
@@ -66,5 +70,58 @@ class RunEndTest extends TestCase
 
         $this->assertSame(150, $run->fresh()->score);
         $this->assertSame(5, $user->fresh()->kado_points);
+    }
+
+    private function finishWithReplay(Run $run, string $replay): Run
+    {
+        Sanctum::actingAs($run->user);
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 10,
+            'timestamp' => now()->timestamp,
+            'replay' => $replay,
+            'data' => [],
+            'ac' => 0,
+        ]))->assertOk();
+
+        return $run->fresh();
+    }
+
+    public function test_a_replay_without_the_stirred_draws_is_flagged_outside_the_daily_game(): void
+    {
+        config(['kado.require_rng_stir' => true]);
+        $pending = fn () => Run::factory()->create(['score' => 0, 'completed_at' => null]);
+
+        $this->assertTrue($this->finishWithReplay($pending(), ReplayHeaderTest::replay(1))->is_cheat);
+        $this->assertFalse($this->finishWithReplay($pending(), ReplayHeaderTest::replay(1 | 64))->is_cheat);
+    }
+
+    public function test_the_daily_game_is_not_stirred(): void
+    {
+        config(['kado.require_rng_stir' => true]);
+        $game = Game::factory()->create();
+        $daily = \App\Models\DailyGame::create(['day' => today(), 'game_id' => $game->id, 'seed' => 'daily', 'contract_score' => 0, 'contract_points' => 0]);
+        $run = Run::factory()->for($game)->create(['score' => 0, 'completed_at' => null, 'daily_game_id' => $daily->id]);
+
+        $this->assertFalse($this->finishWithReplay($run, ReplayHeaderTest::replay(1))->is_cheat);
+    }
+
+    public function test_replays_without_the_stir_are_accepted_until_it_is_required(): void
+    {
+        config(['kado.require_rng_stir' => false]);
+        $run = Run::factory()->create(['score' => 0, 'completed_at' => null]);
+
+        $this->assertFalse($this->finishWithReplay($run, ReplayHeaderTest::replay(1))->is_cheat);
+    }
+
+    public function test_the_end_of_a_new_best_run_queues_its_verification(): void
+    {
+        Queue::fake();
+        config(['kado.replay_verifier.enabled' => true]);
+
+        $run = $this->finishWithReplay(Run::factory()->create(['score' => 0, 'completed_at' => null]), ReplayHeaderTest::replay(1 | 64));
+
+        Queue::assertPushed(VerifyRunReplay::class, fn ($job) => $job->runId === $run->id);
+        $this->assertSame(RunVerification::PENDING, $run->verification);
     }
 }

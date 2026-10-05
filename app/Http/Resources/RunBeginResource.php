@@ -20,6 +20,8 @@ class RunBeginResource extends JsonResource
             'contract_score' => $this->contract_score,
             'contract_points' => $this->contract_points,
             'seed' => $this->seed,
+            // the daily game: the same seed (and pieces) for every player, the draws are not stirred (kado.Seed.stir)
+            'shared_seed' => $this->daily_game_id !== null,
         ];
     }
 }

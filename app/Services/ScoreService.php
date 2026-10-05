@@ -35,6 +35,7 @@ class ScoreService
                 'runs.score',
                 'runs.play_time_seconds',
                 'runs.rank_position',
+                'runs.daily_game_id',
                 DB::raw('CASE WHEN runs.replay IS NULL THEN NULL ELSE 1 END as replay')
             )
             ->orderByDesc('runs.score')

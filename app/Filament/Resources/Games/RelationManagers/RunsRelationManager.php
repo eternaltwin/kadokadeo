@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Games\RelationManagers;
 
+use App\Filament\Resources\Runs\RunVerificationTable;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -126,9 +127,11 @@ class RunsRelationManager extends RelationManager
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                ...RunVerificationTable::columns(),
             ])
             ->filters([
                 TrashedFilter::make(),
+                RunVerificationTable::filter(),
                 Filter::make('completed_at')
                     ->default(true)
                     ->label('Parties terminées')
@@ -140,6 +143,8 @@ class RunsRelationManager extends RelationManager
             ])
             ->recordActions([
                 EditAction::make(),
+                RunVerificationTable::replayAction(),
+                RunVerificationTable::action(),
                 DissociateAction::make(),
                 DeleteAction::make(),
                 ForceDeleteAction::make(),

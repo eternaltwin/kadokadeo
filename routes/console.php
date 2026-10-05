@@ -6,6 +6,7 @@ use App\Console\Commands\KeepGameBuilds;
 use App\Console\Commands\PrepareDailyGame;
 use App\Console\Commands\PrepareNewPeriod;
 use App\Console\Commands\ResetDailyGames;
+use App\Models\ReplayVerification;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command(ResetDailyGames::class)->daily();
@@ -14,3 +15,5 @@ Schedule::command(PrepareDailyGame::class)->daily();
 Schedule::command(PrepareNewPeriod::class)->weeklyOn(1);
 // versions of the games still used by replays (the next build removes the others)
 Schedule::command(KeepGameBuilds::class)->daily();
+// the verifications of replays that went well, after 30 days (App\Models\ReplayVerification)
+Schedule::command('model:prune', ['--model' => [ReplayVerification::class]])->daily();

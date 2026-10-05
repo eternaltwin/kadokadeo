@@ -2,6 +2,27 @@ import { ref, toValue } from 'vue'
 
 const scriptRegistry = {}
 
+// ANTI CHEAT: a game bundle doesn't put its classes on window (resources/js/games/build-games.mjs): it gives them
+// to this hook, which it deletes. Kept installed only while a bundle is loading.
+function installRegisterHook() {
+  window.__kadoRegisterGame = (exports, script) => {
+    const entry = Object.values(scriptRegistry).find((e) => e.node === script)
+    if (entry) {
+      entry.exports = exports
+    }
+    // another bundle still loading
+    if (Object.values(scriptRegistry).some((e) => !e.loaded && e !== entry)) {
+      installRegisterHook()
+    }
+  }
+}
+
+function removeRegisterHookWhenIdle() {
+  if (Object.values(scriptRegistry).every((e) => e.loaded)) {
+    delete window.__kadoRegisterGame
+  }
+}
+
 function loadScript(url) {
   const existing = scriptRegistry[url]
   if (existing) {
@@ -13,22 +34,48 @@ function loadScript(url) {
   script.src = url
   script.dataset.kadoGameScript = url
 
-  const promise = new Promise((resolve, reject) => {
-    script.addEventListener('load', () => resolve())
-    script.addEventListener('error', () => reject(new Error(`Failed to load game script: ${url}`)))
-  })
-
-  scriptRegistry[url] = {
+  const entry = {
     node: script,
-    promise,
+    promise: null,
     refCount: 1,
+    loaded: false,
+    exports: null,
   }
+  entry.promise = new Promise((resolve, reject) => {
+    script.addEventListener('load', () => {
+      entry.loaded = true
+      removeRegisterHookWhenIdle()
+      resolve()
+    })
+    script.addEventListener('error', () => {
+      entry.loaded = true
+      removeRegisterHookWhenIdle()
+      reject(new Error(`Failed to load game script: ${url}`))
+    })
+  })
+  scriptRegistry[url] = entry
 
+  installRegisterHook()
   document.body.appendChild(script)
-  return promise
+  return entry.promise
 }
 
-function unloadScript(url, globalName) {
+// the classes given by the bundle: KadoKadeo and Game<Name>
+function getGameClasses(url, globalName) {
+  const entry = scriptRegistry[url]
+  if (!entry) {
+    return {}
+  }
+  if (!entry.exports) {
+    // bundles built before the classes were hidden (old versions, played for their replays) put them on window
+    entry.exports = { KadoKadeo: window.KadoKadeo, [globalName]: window[globalName] }
+    delete window.KadoKadeo
+    delete window[globalName]
+  }
+  return { KadoKadeo: entry.exports.KadoKadeo, gameClass: entry.exports[globalName] }
+}
+
+function unloadScript(url) {
   const entry = scriptRegistry[url]
   if (!entry) {
     return
@@ -41,11 +88,6 @@ function unloadScript(url, globalName) {
 
   entry.node?.remove()
   delete scriptRegistry[url]
-
-  if (globalName && window[globalName]) {
-    delete window[globalName]
-  }
-  delete window.KadoKadeo
 }
 
 export function useGame(game) {
@@ -91,7 +133,7 @@ export function useGame(game) {
     gameInstance = null
 
     if (activeScript) {
-      unloadScript(activeScript.src, activeScript.global)
+      unloadScript(activeScript.src)
     }
     activeScript = null
     PIXI.utils.destroyTextureCache()
@@ -118,22 +160,19 @@ export function useGame(game) {
     await loadScript(config.src)
 
     if (token != loadToken) {
-      unloadScript(config.src, config.global)
+      unloadScript(config.src)
       return
     }
 
-    const gameClass = window[config.global]
-    if (typeof window.KadoKadeo !== 'function' || typeof gameClass !== 'function') {
-      console.error('Game globals are missing:', {
-        kadoKadeo: window.KadoKadeo,
-        gameClass,
-      })
-      unloadScript(config.src, config.global)
-      throw new Error(`Game globals are missing for ${config.src} - ${config.global}`)
+    const { KadoKadeo, gameClass } = getGameClasses(config.src, config.global)
+    if (typeof KadoKadeo !== 'function' || typeof gameClass !== 'function') {
+      console.error('Game classes are missing:', { kadoKadeo: KadoKadeo, gameClass })
+      unloadScript(config.src)
+      throw new Error(`Game classes are missing for ${config.src} - ${config.global}`)
     }
 
     activeScript = config
-    gameInstance = new window.KadoKadeo(canvas, gameClass, {
+    gameInstance = new KadoKadeo(canvas, gameClass, {
       ...args,
       name: currentGame.name.toLowerCase().replaceAll(/\W/g, ''),
       gameId: currentGame.id,

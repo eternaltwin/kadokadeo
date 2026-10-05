@@ -46,6 +46,7 @@ class KadoKadeoManager extends Application {
 	var touchOverlay:TouchControlsOverlay = null;
 
 	var runDetails:Dto.RunDTO;
+	var systemTickerListener:Float->Void;
 	var endRunDetails:Dto.EndRunResponseDTO;
 	var endRunClient:KadoEndRun;
 	var runFlow:KadoRunFlow;
@@ -135,7 +136,10 @@ class KadoKadeoManager extends Application {
 		ff = new FixedFramerate(updatePhysics);
 		initDebugFpsDisplay();
 
-		untyped Ticker.system.add(systemTicker);
+		// ANTI CHEAT: a closure, not the method (Haxe binds a method with a `scope` field: the manager would be reachable
+		// from the global PIXI.Ticker.system)
+		systemTickerListener = (delta:Float) -> systemTicker(delta);
+		untyped Ticker.system.add(systemTickerListener);
 		this.ticker.add(() -> {
 			updateReplayHud();
 			if (seekTarget == null && catchUpTarget == null)
@@ -229,6 +233,7 @@ class KadoKadeoManager extends Application {
 			if (runFlow.state == Playing && game != null) {
 				pollGameTouchControls();
 				replay.beginFrame();
+				Seed.stir(replay.getCurrentFrame(), replay.getFrameSignature());
 				pollManagerShortcuts();
 				gameRoot.update();
 				game.update(dt);
@@ -413,6 +418,9 @@ class KadoKadeoManager extends Application {
 		replayPaused = false;
 		setReplaySpeed(1);
 		var isReplay = this.replay.isPlayingReplay();
+		// the daily game gives the same pieces to every player: no stir (a replay says if it was recorded with it)
+		this.replay.setRngStir(runDetails == null || runDetails.shared_seed != true);
+		Seed.setStirEnabled(this.replay.hasRngStir());
 		if (isReplay) {
 			this.gameRoot.interactive = false;
 			this.gameRoot.interactiveChildren = false;
@@ -562,7 +570,7 @@ class KadoKadeoManager extends Application {
 		reset();
 		destroyDebugFpsDisplay();
 		this.ticker.stop();
-		untyped Ticker.system.remove(systemTicker);
+		untyped Ticker.system.remove(systemTickerListener);
 		Browser.document.removeEventListener("visibilitychange", onVisibilityChange);
 		untyped Ticker.system.stop();
 		this.root = null;

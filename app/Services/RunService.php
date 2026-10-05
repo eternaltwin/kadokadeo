@@ -4,7 +4,10 @@ namespace App\Services;
 
 use App\Models\GamePeriodStar;
 use App\Models\Run;
+use App\Models\UserPoint;
+use App\Support\ReplayHeader;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -78,7 +81,7 @@ class RunService
         $replay = data_get($decoded, 'replay');
         $data = data_get($decoded, 'data');
         $antiCheat = data_get($decoded, 'ac', 0);
-        $isCheat = $this->isAntiCheatFlagged($antiCheat);
+        $isCheat = $this->isAntiCheatFlagged($antiCheat) || !$this->hasExpectedRngStir($run, $replay);
 
         $end = Carbon::createFromTimestamp($timestamp);
         $realEnd = now();
@@ -110,6 +113,30 @@ class RunService
         }
 
         return $run;
+    }
+
+    // a run found cheated after it was rewarded (App\Jobs\VerifyRunReplay): out of the leaderboards, its contract
+    // points taken back (the sum of its points: called again, it takes nothing more)
+    public function flagAsCheat(Run $run): void
+    {
+        DB::transaction(function () use ($run) {
+            $run->update(['is_cheat' => true]);
+            $reward = (int) UserPoint::where('source_type', Run::class)->where('source_id', $run->id)->sum('delta');
+            if ($reward > 0) {
+                $user = $run->user;
+                $user->decrement('kado_points', $reward);
+                $user->userPoints()->create([
+                    'period_id' => $run->period_id,
+                    'delta' => -$reward,
+                    'reason' => 'cheated run',
+                    'source_type' => Run::class,
+                    'source_id' => $run->id,
+                ]);
+            }
+        });
+        if ($run->period_id) {
+            cache()->forget("promotion_scores_{$run->game_id}_{$run->period_id}");
+        }
     }
 
     public function rewardStars(Run $run)
@@ -157,6 +184,19 @@ class RunService
             }
         }
         $userPeriodStars->save();
+    }
+
+    // apart from the daily game, the game stirs its draws with the frames and the inputs (the coming pieces can't be
+    // listed from the seed): a replay without it comes from a modified game. Replays of older versions (no header
+    // flag) are accepted while their game version is still the one sent by the page.
+    private function hasExpectedRngStir(Run $run, ?string $replay): bool
+    {
+        $header = ReplayHeader::parse($replay);
+        if ($run->daily_game_id !== null || $header === null) {
+            return true;
+        }
+
+        return $header->hasRngStir() || !config('kado.require_rng_stir');
     }
 
     private function isAntiCheatFlagged(?int $antiCheat): bool

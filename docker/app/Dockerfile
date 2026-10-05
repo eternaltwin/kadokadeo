@@ -13,12 +13,16 @@ RUN apt-get update && apt-get install -y \
     supervisor \
     cron \
     haxe \
+    chromium \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl zip pdo pdo_pgsql pgsql \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# the replay verifier (resources/js/replay-verifier/verify.mjs, App\Jobs\VerifyRunReplay): Node 22+ and Chromium
+COPY --from=docker.io/library/node:22-bookworm-slim /usr/local/bin/node /usr/local/bin/node
 
 WORKDIR /www
 
