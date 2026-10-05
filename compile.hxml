@@ -142,3 +142,6 @@ safari.Game
 --next
 -js ./resources/js/games/paradice.js
 paradice.Game
+--next
+-js ./resources/js/games/schizofuzz.js
+schizofuzz.Game

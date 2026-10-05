@@ -207,3 +207,11 @@ Look at the pages (and show them to the user) before saying the graphics are rig
 - A text field in a device font (not embedded: Paradice's multiplier panel in Verdana Bold Italic): glyph images
   drawn from the system TTF with its own metrics (`ttf_layout` in `paradice_assets.py`), laid out at run time like
   the embedded ones (`paradice/Txt.hx`).
+- A glow filter or a blend mode on a nested clip whose parts move on their own (Schizo Fuzz: the hero's outline on
+  its `sub`, the `add` flash of the acorn): `Exporter.effects = True` keeps them on the CLIP layers (`fl`, `bl`), the
+  game's `Clip` applies them at run time (`schizofuzz/FlashGlow.hx`: Flash's glow, a box blur of the alpha drawn under
+  the clip; PIXI blends sprites, not containers: `add` is given to every picture inside). Baking a glow in each part
+  would draw outlines inside the picture. A `lighten` layer inside a FLAT image: `SWF.lighten = True` (swfrender
+  draws it normally otherwise, as the renders made before it did).
+- `swfdump.py` prints the first 99 frames of a sprite: read the labels of a longer timeline in `swfrender`
+  (`G.sprites[sid].labels`); Schizo Fuzz's `launch` label (frame 136) only shows there.

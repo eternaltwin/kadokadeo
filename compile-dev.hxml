@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/paradice.js
-paradice.Game
+-js ./resources/js/games/schizofuzz.js
+schizofuzz.Game

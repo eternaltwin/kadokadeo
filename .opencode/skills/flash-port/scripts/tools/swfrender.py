@@ -401,6 +401,16 @@ def blend_into(canvas, layer, blend):
         canvas += layer
 
 
+def blend_lighten(canvas, layer):
+    """Flash 'lighten' (the brighter colour per channel), premultiplied: Cs (1 - ab) + Cb (1 - as) + max(as Cb, ab Cs).
+    Opt-in (SWF.lighten = True): without it the layer is drawn normally, as the renders made before it were"""
+    la, ca = layer[..., 3:4], canvas[..., 3:4]
+    cs, cb = layer[..., :3], canvas[..., :3]
+    rgb = cs * (1 - ca) + cb * (1 - la) + np.maximum(la * cb, ca * cs)
+    canvas[..., 3:4] = ca + la * (1 - ca)
+    canvas[..., :3] = rgb
+
+
 class Renderer:
     def __init__(self, swf, out_scale=2):
         self.swf = swf
@@ -493,7 +503,10 @@ class Renderer:
                 self.draw(cmd[1], layer, O)
                 for f in cmd[2]:
                     layer = apply_filter(layer, f, Z)
-                blend_into(canvas, layer, cmd[3])
+                if cmd[3] == 'lighten' and getattr(self.swf, 'lighten', False):
+                    blend_lighten(canvas, layer)
+                else:
+                    blend_into(canvas, layer, cmd[3])
                 continue
             if cmd[0] == 'mask':
                 g = cmd[1]

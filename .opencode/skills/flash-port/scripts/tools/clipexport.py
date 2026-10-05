@@ -108,6 +108,9 @@ class Exporter:
         self.white_solid = False
         self._subtree = {}
         self.warnings = 0
+        # nested clips keep their glow filters ('fl': [[blurX, blurY, strength, 0xRRGGBB, alpha, passes]]) and blend
+        # mode ('bl'), applied at run time (the game's Clip); off: they are dropped (FLAT images always compose them)
+        self.effects = False
 
     # ------------------------------------------------------------------ helpers
     @staticmethod
@@ -482,6 +485,25 @@ class Exporter:
         self.log('clip %-14s sprite %-4d %-4s frames=%-3d layers=%-2d res=%.2f' % (cname, sid, strategy, n, len(out_layers), res))
         return cname
 
+    def clip_effects(self, cname, li, rows, out):
+        """glow filters and blend mode of a nested clip (the same on every frame of the layer)"""
+        fls = {repr(e.get('filters') or []) for e in rows.values()}
+        bls = {e.get('blend') for e in rows.values()}
+        if len(fls) > 1 or len(bls) > 1:
+            self.warn('%s layer %d: filters or blend mode change over frames (first kept)' % (cname, li))
+        e = rows[min(rows)]
+        fl = []
+        for f in e.get('filters') or []:
+            if f['type'] != 'glow' or f.get('inner') or f.get('knockout'):
+                self.warn('%s layer %d: %s filter dropped' % (cname, li, f['type']))
+                continue
+            r, g, b, a = f['color']
+            fl.append([f['blurX'], f['blurY'], f['strength'], (r << 16) | (g << 8) | b, round(a / 255.0, 4), f.get('passes', 1)])
+        if fl:
+            out['fl'] = fl
+        if e.get('blend') not in (None, 'normal', 'layer'):
+            out['bl'] = e['blend']
+
     def auto_strategy(self, states):
         chars, cxs, masks = set(), set(), False
         for st in states.values():
@@ -630,7 +652,9 @@ class Exporter:
         wh = white or need_white
         if kind == 'clip':
             out['k'] = 2
-            out['a'] = self.export(e0['inst'].sid, ctrl=ctrl, cx=bake, res=child_res, white=wh, stack=stack)
+            out['a'] = self.export(e0['inst'].sid, ctrl=ctrl, cx=bake, res=child_res, white=wh)
+            if self.effects:
+                self.clip_effects(cname, li, rows, out)
         else:
             if stack and kind == 'cut':
                 for e in rows.values():
