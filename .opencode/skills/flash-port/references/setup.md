@@ -17,6 +17,7 @@ for the final `make compile-games`.
 | Haxe 4.3.7 + libs `pixijs`, `crypto`, `jsImport` | compile a game outside Docker (`harness/build.sh`) | `haxe -version`, `haxelib list` |
 | Python 3.10+ with `pillow numpy scipy fonttools` | SWF rendering, sheet packing | `python3 -c "import PIL, numpy, scipy, fontTools"` |
 | JPEXS FFDec (26.x) + Java 8+ | rasterizes the SWF shapes, exports bitmaps, fonts, scripts | `java -version` |
+| `rsvg-convert` (librsvg) | shape layers of the clips exported with `stack=True` (code-driven alpha) | `rsvg-convert --version` |
 | Node.js 22+ | test scripts (they use the global `WebSocket` of Node 22) | `node --version` |
 | Chrome, Edge or Chromium | headless browser driven by the tests | |
 | `npx` (comes with Node) | runs esbuild when the repository's `node_modules` was installed inside Docker | |

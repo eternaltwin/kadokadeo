@@ -6,7 +6,7 @@
   named children can be forced to a given frame (code-driven clips), hidden, or color transformed
 - composition is done at Z (supersampled) in premultiplied float, then downscaled to the output scale.
 """
-import os, struct, zlib, math
+import os, struct, zlib, math, re, io, subprocess
 import numpy as np
 from PIL import Image
 import swfdump as S
@@ -69,6 +69,7 @@ class SWF:
     def __init__(self, path, shapes_dir, Z=4):
         self.Z = Z
         self.shapes_dir = shapes_dir
+        self.svg_dir = None   # FFDec SVG export of the shapes (svg_<n>/), needed by shape_layers
         raw = open(path, 'rb').read()
         data = raw[:8] + (zlib.decompress(raw[8:]) if raw[:3] == b'CWS' else raw[8:])
         b = S.Bits(data, 8)
@@ -153,6 +154,54 @@ class SWF:
             im = Image.open(p).convert('RGBA')
             self._shape_cache[cid] = im
         return self._shape_cache[cid]
+
+    def shape_layers(self, cid):
+        """the shape as groups of fills that do not overlap, drawn one after the other: Flash composes the shape
+        layers of a shape (fills drawn over other fills) one by one, so under an alpha < 1 the lower ones show
+        through the upper ones (a single image would let the background through instead).
+        -> virtual shape ids (cid, i) with the bounds of cid, each rendered by rsvg-convert from the FFDec SVG on
+        the grid of the FFDec PNG; [cid] when no fill overlaps another (or no SVG / bitmap fills)"""
+        key = ('layers', cid)
+        if key in self._shape_cache:
+            return self._shape_cache[key]
+        out = [cid]
+        p = os.path.join(self.svg_dir, '%d.svg' % cid) if self.svg_dir else None
+        if p and os.path.exists(p) and cid not in getattr(self, 'morphs', ()):
+            svg = open(p).read()
+            paths = re.findall(r'<path [^>]*/>', svg)
+            if len(paths) > 1 and 'pattern' not in svg and '<image' not in svg:
+                w, h = self.shape_image(cid).size
+                svg = re.sub(r'height="[^"]*px" width="[^"]*px"', 'height="%gpx" width="%gpx"' % (h / self.Z, w / self.Z),
+                             svg, count=1)
+                parts = re.split(r'<path [^>]*/>', svg)
+
+                def render(keep):
+                    s = parts[0] + ''.join(paths[i] + parts[i + 1] if i in keep else parts[i + 1] for i in range(len(paths)))
+                    r = subprocess.run(['rsvg-convert', '-z', str(self.Z)], input=s.encode(), capture_output=True, check=True)
+                    im = Image.open(io.BytesIO(r.stdout)).convert('RGBA')
+                    assert im.size == (w, h), (cid, im.size, (w, h))
+                    return im
+
+                # consecutive fills grouped while they do not overlap (anti-aliased edges shared by two fills of
+                # the same shape layer cover each pixel at most half and half: not an overlap)
+                groups, acc = [], None
+                for i in range(len(paths)):
+                    a = np.asarray(render({i}), dtype=np.float32)[..., 3] / 255.0
+                    if acc is None or (np.minimum(acc, a) > 0.6).sum() > 4:
+                        groups.append([i])
+                        acc = a
+                    else:
+                        groups[-1].append(i)
+                        acc = np.maximum(acc, a)
+                if len(groups) > 1:
+                    out = []
+                    for gi, g in enumerate(groups):
+                        v = (cid, gi)
+                        self.shapes[v] = self.shapes[cid]
+                        self._shape_cache[v] = render(set(g))
+                        out.append(v)
+        self._shape_cache[key] = out
+        return out
 
     def sid(self, name_or_id):
         return self.names[name_or_id] if isinstance(name_or_id, str) else name_or_id

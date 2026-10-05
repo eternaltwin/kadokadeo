@@ -100,6 +100,12 @@ class Exporter:
         self.code_for = {}             # sid -> instance names driven by the code in nested clips
         self.families = []             # sets of shapes drawn as one shared image sequence (frame by frame animations)
         self.family_res = None         # resolution of the family sequences (None: the one each use needs)
+        # (SWF rendered at zoom 1, shape ids filled with a bitmap): a CUT layer drawing only those shapes is rendered
+        # from that SWF at res 0.5, the bitmaps at their native resolution (None: every shape from self.G)
+        self.bitmaps = None
+        # a layer whose frames mix plain colours and a solid colour (multiply 0 + offset) is drawn with a black tint +
+        # an additive white silhouette on its solid frames (False: the colour of its first frame is baked)
+        self.white_solid = False
         self._subtree = {}
         self.warnings = 0
 
@@ -195,9 +201,10 @@ class Exporter:
         return t
 
     # ------------------------------------------------------------------ rendering
-    def render(self, cmd_lists, scale, margin=0.5):
+    def render(self, cmd_lists, scale, margin=0.5, G=None):
         """command lists drawn on a common canvas at `scale` px per world unit -> (images, registration px)"""
-        rd = R.Renderer(self.G, scale)
+        G = G or self.G
+        rd = R.Renderer(G, scale)
         bb = None
         for cmds in cmd_lists:
             b = rd.bounds(cmds) if cmds else None
@@ -210,7 +217,7 @@ class Exporter:
         oy = math.floor((bb[1] - margin) / step) * step
         ex = math.ceil((bb[2] + margin) / step) * step
         ey = math.ceil((bb[3] + margin) / step) * step
-        Z = self.G.Z
+        Z = G.Z
         Wz, Hz = int(round((ex - ox) * Z)), int(round((ey - oy) * Z))
         W, H = int(round((ex - ox) * scale)), int(round((ey - oy) * scale))
         imgs = []
@@ -224,14 +231,14 @@ class Exporter:
             imgs.append(im.convert('RGBA'))
         return imgs, (-ox * scale, -oy * scale)
 
-    def write_anims(self, name, cmds, ents, res, white, white_cmds):
+    def write_anims(self, name, cmds, ents, res, white, white_cmds, G=None):
         """an animation (and its white silhouette `name`W on the same canvas when `white`)"""
         if not white:
-            imgs, reg = self.render(cmds, K * res)
+            imgs, reg = self.render(cmds, K * res, G=G)
             self.write_anim(name, imgs, reg)
             return
         wc = [white_cmds(e) for e in ents]
-        imgs, reg = self.render(cmds + wc, K * res)
+        imgs, reg = self.render(cmds + wc, K * res, G=G)
         self.write_anim(name, imgs[:len(cmds)], reg)
         self.write_anim(name + 'W', imgs[len(cmds):], reg)
 
@@ -270,7 +277,19 @@ class Exporter:
             return None
         return (inst.sid, inst.frame, tuple(sorted((d, self.inst_key(x['inst']), x['char']) for d, x in inst.display.items())))
 
-    def leaves_anim(self, ents, bake, res, white=False):
+    def bitmap_only(self, ents):
+        """the entries draw only shapes filled with a bitmap (see self.bitmaps)"""
+        if self.bitmaps is None:
+            return False
+        ids = set()
+        for e in ents:
+            for c in self.entry_cmds(e, R.NOCX):
+                if c[0] != 'shape':
+                    return False
+                ids.add(c[1])
+        return bool(ids) and ids <= set(self.bitmaps[1])
+
+    def leaves_anim(self, ents, bake, res, white=False, G=None):
         """one image per distinct entry (shape / frozen sprite) on a common canvas -> (anim, {entry key: frame})"""
         keys = []
         cmds = []
@@ -289,15 +308,16 @@ class Exporter:
                 keys.append(k)
                 uents.append(e)
                 cmds.append(self.entry_cmds(e, bake))
-        lkey = (tuple(keys), cx_key(bake), res, white)
+        lkey = (tuple(keys), cx_key(bake), res, white) + ((id(G),) if G is not None else ())
         if lkey not in self.leaves:
             name = self.uname('%sl%d' % (self.prefix, ents[0]['char']))
-            self.write_anims(name, cmds, uents, res, white, lambda e: self.entry_cmds(e, WHITE))
+            self.write_anims(name, cmds, uents, res, white, lambda e: self.entry_cmds(e, WHITE), G=G)
             self.leaves[lkey] = name
         return self.leaves[lkey], {k: i + 1 for i, k in enumerate(keys)}
 
     # ------------------------------------------------------------------ clips
-    def export(self, sid, name=None, ctrl=None, strategy=None, code=(), frames=None, cx=None, res=1.0, cut_depths=(), white=False):
+    def export(self, sid, name=None, ctrl=None, strategy=None, code=(), frames=None, cx=None, res=1.0, cut_depths=(), white=False,
+               stack=False):
         """export sprite `sid` as a clip; returns the clip name.
         ctrl: frames forced for nested sprites (by sid or instance name), as in swfrender
         strategy: 'flat' | 'cut' | None (automatic)
@@ -305,7 +325,10 @@ class Exporter:
         frames: frames of the clip used by the game (the others stay empty), None = all
         cx: colour transform baked in the clip (inherited from the parent instance)
         res: resolution of the textures (1 = K px per world unit)
-        cut_depths: depths kept as CUT layers in the FLAT strategy (sparse particles...)"""
+        cut_depths: depths kept as CUT layers in the FLAT strategy (sparse particles...)
+        stack: the code gives the clip an alpha < 1 (`_alpha`): Flash applies it to every shape (and shape layer)
+               on its own, so a FLAT layer becomes several layers of shapes that do not overlap (Pixi applies the
+               alpha of a container to each sprite on its own too), see stack_layers; nested clips as well"""
         ctrl = dict(ctrl or {})
         cx = cx or R.NOCX
         code = tuple(code) or self.code_for.get(sid, ())
@@ -314,7 +337,7 @@ class Exporter:
         sub = self.subtree(sid)
         ctrl = {k: v for k, v in ctrl.items() if k in sub}
         vkey = (sid, tuple(sorted((str(k), str(v)) for k, v in ctrl.items())), strategy, tuple(code), tuple(frames or ()),
-                cx_key(cx), res, tuple(cut_depths), white)
+                cx_key(cx), res, tuple(cut_depths), white, stack)
         if vkey in self.variants:
             return self.variants[vkey]
         G = self.G
@@ -426,11 +449,18 @@ class Exporter:
                 self.warn('%s: layer order of frame %d differs from the merged order %s' % (cname, f, [(lk[1], pos[lk]) for lk in lst]))
                 break
 
-        out_layers = [self.build_layer(cname, layers[lk], n, pids, ctrl, cx, res, i, white) for i, lk in enumerate(order)]
+        # (a FLAT layer of a stacked clip gives several layers: out index of the first one of each)
+        out_layers, at = [], {}
         for i, lk in enumerate(order):
+            at[lk] = len(out_layers)
+            if stack and layers[lk]['kind'] == 'flat':
+                out_layers += self.stack_layers(cname, layers[lk], n, cx, res, i, white)
+            else:
+                out_layers.append(self.build_layer(cname, layers[lk], n, pids, ctrl, cx, res, i, white, stack))
+        for lk in order:
             m = layers[lk]['masked']
-            if m is not None and m in pos:
-                out_layers[i]['mk'] = pos[m]
+            if m is not None and m in at:
+                out_layers[at[lk]]['mk'] = at[m]
 
         cdef = dict(n=n, r=res, layers=out_layers)
         if white:
@@ -465,7 +495,64 @@ class Exporter:
             return 'flat'
         return 'cut' if len(chars) * 3 < len(states) else 'flat'
 
-    def build_layer(self, cname, L, n, pids, ctrl, cx_in, res, li, white):
+    def stack_layers(self, cname, L, n, cx_in, res, li, white):
+        """a FLAT layer of a stacked clip: the shapes of each frame (split in their shape layers) drawn in order,
+        cut in slices of shapes that do not overlap -> one FLAT layer per slice (k=0, `<clip>_<li>s<j>`)"""
+        rows = L['rows']
+        frames = sorted(rows)
+        rd = R.Renderer(self.G, K)
+
+        def expand(cmds):
+            out = []
+            for c in cmds:
+                if c[0] == 'shape':
+                    out += [('shape', v) + c[2:] for v in self.G.shape_layers(c[1])]
+                else:
+                    out.append(c)
+            return out
+
+        slices, wslices = {}, {}
+        for f in frames:
+            cmds = expand(self.group_cmds(rows[f], cx_in))
+            wcmds = expand(self.group_cmds(rows[f], WHITE))
+            assert len(cmds) == len(wcmds), (cname, f)
+            bb = rd.bounds(cmds)
+            groups, acc = [], None
+            if bb:
+                Z = self.G.Z
+                O = (bb[0] - 1, bb[1] - 1)
+                shape = (int((bb[3] - bb[1] + 2) * Z) + 1, int((bb[2] - bb[0] + 2) * Z) + 1, 4)
+                for i, c in enumerate(cmds):
+                    cv = np.zeros(shape, dtype=np.float32)
+                    rd.draw([c], cv, O)
+                    a = cv[..., 3]
+                    if acc is None or (np.minimum(acc, a) > 0.6).sum() > 4:
+                        groups.append([i])
+                        acc = a
+                    else:
+                        groups[-1].append(i)
+                        acc = np.maximum(acc, a)
+            slices[f] = [[cmds[i] for i in g] for g in groups]
+            wslices[f] = [[wcmds[i] for i in g] for g in groups]
+        out = []
+        for j in range(max(len(s) for s in slices.values())):
+            fs = [f for f in frames if j < len(slices[f])]
+            uniq, ids, idx = [], {}, {}
+            for f in fs:
+                c = slices[f][j]
+                h = hashlib.sha1(repr(c).encode()).hexdigest()
+                if h not in ids:
+                    ids[h] = len(uniq) + 1
+                    uniq.append(c)
+                idx[f] = ids[h]
+            aname = self.uname('%s_%ds%d' % (cname, li, j))
+            ufr = sorted(set(idx.values()))
+            first = {v: f for f, v in sorted(idx.items(), reverse=True)}
+            self.write_anims(aname, uniq, [first[v] for v in ufr], res, white, lambda f: wslices[f][j])
+            out.append(dict(k=0, a=aname, t=[idx.get(f, 0) for f in range(1, n + 1)]))
+        return out
+
+    def build_layer(self, cname, L, n, pids, ctrl, cx_in, res, li, white, stack=False):
         kind, rows = L['kind'], L['rows']
         if kind == 'flat':
             frames = sorted(rows)
@@ -499,6 +586,8 @@ class Exporter:
         modes = {f: (('tint', (1, 1, 1)) if kind == 'mask' else colour_mode(c)) for f, c in cols.items()}
         constant = len({cx_key(c) for c in cols.values()}) == 1
         need_white = not constant and any(md[0] == 'tintadd' for md in modes.values())
+        if self.white_solid and not constant and any(md[0] == 'solid' for md in modes.values()):
+            need_white = True
         bake = None
         for f in rows:
             mode, v = modes[f]
@@ -533,16 +622,25 @@ class Exporter:
             if any(chars <= set(F) for F in self.families):
                 child_res = self.family_res   # one shared sequence for every use of the family
 
+        alt = None
+        if kind == 'cut' and self.bitmap_only(list(rows.values())):
+            alt, child_res = self.bitmaps[0], 0.5
         out = {}
         tex = None
         wh = white or need_white
         if kind == 'clip':
             out['k'] = 2
-            out['a'] = self.export(e0['inst'].sid, ctrl=ctrl, cx=bake, res=child_res, white=wh)
+            out['a'] = self.export(e0['inst'].sid, ctrl=ctrl, cx=bake, res=child_res, white=wh, stack=stack)
         else:
+            if stack and kind == 'cut':
+                for e in rows.values():
+                    cm = self.entry_cmds(e, R.NOCX)
+                    if len(cm) > 1 or (cm and cm[0][0] == 'shape' and len(self.G.shape_layers(cm[0][1])) > 1):
+                        self.warn('%s layer %d: CUT layer of several shapes or shape layers in a stacked clip (one image)' % (cname, li))
+                        break
             out['k'] = 1 if kind == 'cut' else 3
             ents = [rows[f] for f in sorted(rows)]
-            out['a'], tex = self.leaves_anim(ents, bake, child_res, wh and kind == 'cut')
+            out['a'], tex = self.leaves_anim(ents, bake, child_res, wh and kind == 'cut', G=alt)
             if len(tex) > 1:
                 out['t'] = [tex[(rows[f]['char'], self.inst_key(rows[f]['inst']))] if f in rows else 0 for f in range(1, n + 1)]
         if name:

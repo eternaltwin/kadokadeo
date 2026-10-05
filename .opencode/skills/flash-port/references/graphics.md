@@ -115,7 +115,16 @@ Cases met in K-Slash:
   the death pieces take the skin frame (`['x', 'skin']`).
 
 Code-driven colour (`Color.setTransform` in the original): reproduce Flash's integer rounding (`Cs.setPercentColor`)
-with a `ColorMatrixFilter`, warmed at start (shader).
+with a `ColorMatrixFilter`, warmed at start (shader). `setTransform` also replaces the alpha (`aa: 100`): a clip
+given an `_alpha` by the code becomes opaque (Paradice `MC.setPercentColor`).
+
+Code-driven alpha (`mc._alpha = ...` on a clip of several shapes): Flash applies it to every shape, and to every
+shape layer of a shape (fills drawn over other fills), on its own; a flattened image under the same alpha lets the
+background through where Flash shows the lower shapes. Export such clips with `stack=True` (`clipexport`): their
+FLAT layers are cut in slices of shapes that do not overlap (shapes split by `swfrender` `shape_layers`, from the
+FFDec SVG export rendered by `rsvg-convert`: set `svg_dir` on the SWF), one texture each; Pixi applies a container's
+alpha to each sprite, like Flash. Paradice balls (`root._alpha = 45 + random * 45`): an opaque square under the gem
+body keeps it almost opaque in Flash, only the white glass shows the decor.
 
 ## Bitmaps, decor, measured values
 
@@ -189,3 +198,12 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   a FLAT image, but `clipexport` has no blend or filter layer of its own. Pioutch needed blend layers and filters
   baked per clip: extend `clipexport.py` with new options, without changing what the existing options produce
   (rebuild K-Slash afterwards: the repository must stay unchanged).
+- Bitmaps inside animated clips (Paradice: the portraits sliding in, the board of the multiplier panel):
+  `Exporter.bitmaps = (SWF loaded from shp1_*, ids of the bitmap-filled shapes)` renders every CUT layer drawing
+  only those shapes from the zoom 1 export at res 0.5 (native pixels); the vector layers of the same clip keep res 1.
+- A nested clip under a solid colour (multiply 0 + offset) on some frames only (Paradice: the penguin eye that
+  becomes the chick's beak): `Exporter.white_solid = True` draws those frames with a black tint + an additive white
+  silhouette instead of baking the colour of the first frame.
+- A text field in a device font (not embedded: Paradice's multiplier panel in Verdana Bold Italic): glyph images
+  drawn from the system TTF with its own metrics (`ttf_layout` in `paradice_assets.py`), laid out at run time like
+  the embedded ones (`paradice/Txt.hx`).

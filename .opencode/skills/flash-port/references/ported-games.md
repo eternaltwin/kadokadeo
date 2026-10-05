@@ -16,6 +16,7 @@ To change their graphics, write a new `<game>_assets.py` / `<game>_data.py` from
 | Kanji's Adventure (`kanjisadventure`) | turn-based roguelike | a full bot (stairs, items, fights, bag, shop), `Ent.display(true)`, many monsters on screen; older `S()` / `I()` scaling |
 | Ellon in the Dark (`elloninthedark`) | action | nested animations, score text, tentacle strokes; the `null` pitfall (Golgoth `shootRate`); older `S()` / `I()` scaling |
 | Xian Xiang (`xianxiang`) | puzzle, mouse | the simplest port |
+| Paradice (`paradice`) | puzzle, keyboard | a 40 frames/s original emulated in the game (5 Flash frames per 4 steps, clips shown one Flash frame late, `MC.hx` / `Clip.hx` from Magmax), a random body frame that is game state (`Clip.randomB`), bitmaps at native resolution inside clips (`Exporter.bitmaps`), text fields as glyph images including a device font (`Txt.hx`), whitening by tint + additive silhouette (`MC.setPercentColor`), tooling in `scripts/examples/paradice/` |
 
 Shared code these ports added to `resources/hx/lib` (now on `main`): key aliases and the floating joystick
 (`KeyboardManager`, `TouchControlsOverlay`, `TouchControlsConfig`), replay format v3, seeking and the replay

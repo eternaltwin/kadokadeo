@@ -139,3 +139,6 @@ abcrevolution.Game
 --next
 -js ./resources/js/games/safari.js
 safari.Game
+--next
+-js ./resources/js/games/paradice.js
+paradice.Game
