@@ -1,0 +1,126 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - staging
+      - main
+
+# One deployment at a time per branch, the next push waits for the current one
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: ctype, curl, dom, fileinfo, filter, hash, intl, mbstring, openssl, pcre, pdo, pdo_pgsql, pdo_sqlite, session, tokenizer, xml, zip
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          # RSA keys of the run submissions (config/kado.php)
+          mkdir -p storage/app/private
+          openssl genrsa -out storage/app/private/privkey.pem 2048
+          openssl rsa -in storage/app/private/privkey.pem -pubout -out storage/app/private/pubkey.pem
+          # No Vite build in CI: the views point to a dev server instead of reading public/build/manifest.json
+          echo "http://localhost:5173" > public/hot
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Generate application key
+        run: php artisan key:generate --ansi
+
+      - name: Run tests
+        run: php artisan test
+
+  deploy:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update the release of the channel
+        env:
+          CONFIG_REPO_TOKEN: ${{ secrets.CONFIG_REPO_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -eu
+
+          if [ -z "${CONFIG_REPO_TOKEN:-}" ]; then
+            echo "ERROR: CONFIG_REPO_TOKEN is not set"
+            exit 1
+          fi
+
+          case "$BRANCH" in
+            staging) CHANNEL="staging"; LABEL="Staging" ;;
+            main) CHANNEL="production"; LABEL="Production" ;;
+            *) echo "ERROR: no channel for the branch $BRANCH"; exit 1 ;;
+          esac
+
+          FILE_PATH="pousty/apps/kadokadeo/channels/${CHANNEL}.json"
+          FILE_URL="https://gitlab.com/api/v4/projects/eternaltwin%2Fconfig/repository/files/$(printf '%s' "$FILE_PATH" | jq -sRr @uri)"
+
+          # Helper to curl and capture HTTP status + body to a file
+          curl_with_status() {
+            # $1: method, $2: url, $3: data file (optional), $4: output file
+            method="$1"; url="$2"; dataFile="${3:-}"; outFile="$4"
+
+            if [ -n "$dataFile" ]; then
+              curl -sS -w "%{http_code}" -o "$outFile" \
+                --request "$method" \
+                --header "PRIVATE-TOKEN: ${CONFIG_REPO_TOKEN}" \
+                --header "Content-Type: application/json" \
+                --data-binary @"$dataFile" \
+                "$url"
+            else
+              curl -sS -w "%{http_code}" -o "$outFile" \
+                --request "$method" \
+                --header "PRIVATE-TOKEN: ${CONFIG_REPO_TOKEN}" \
+                "$url"
+            fi
+          }
+
+          echo "Fetching ${FILE_PATH}..."
+          GET_STATUS=$(curl_with_status "GET" "${FILE_URL}?ref=main" "" "get.json")
+          if [ "$GET_STATUS" -lt 200 ] || [ "$GET_STATUS" -ge 300 ]; then
+            echo "ERROR: Failed to GET ${FILE_PATH} (HTTP $GET_STATUS)"
+            cat get.json || true
+            exit 1
+          fi
+          RAW=$(jq -r '.content' get.json | base64 -d)
+
+          if [ "$(printf '%s' "$RAW" | jq -r '.release')" = "$COMMIT_SHA" ]; then
+            echo "${CHANNEL}.json is already on release=$COMMIT_SHA, nothing to do"
+            exit 0
+          fi
+
+          printf '%s' "$RAW" \
+            | jq --arg hash "$COMMIT_SHA" '.release = $hash' \
+            | jq -Rs --arg msg "[Kado²] ${LABEL} ${COMMIT_SHA}" '{branch: "main", commit_message: $msg, content: .}' \
+            > payload.json
+
+          echo "Updating ${CHANNEL}.json to release=$COMMIT_SHA..."
+          PUT_STATUS=$(curl_with_status "PUT" "$FILE_URL" "payload.json" "put.json")
+          if [ "$PUT_STATUS" -lt 200 ] || [ "$PUT_STATUS" -ge 300 ]; then
+            echo "ERROR: Failed to update ${FILE_PATH} (HTTP $PUT_STATUS)"
+            cat put.json || true
+            exit 1
+          fi
+
+          echo "Success:"
+          jq '.' put.json || cat put.json
