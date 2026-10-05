@@ -31,9 +31,13 @@ class UserController extends Controller implements \Illuminate\Routing\Controlle
     {
         $user = $request->user();
 
-        $user->load(['stars' => function ($query) {
-            $query->where('period_id', Period::current()->first()?->id);
-        }]);
+        $user->load([
+            'stars' => fn ($query) => $query->where('period_id', Period::current()->first()?->id),
+        ]);
+
+        if (config('kado.achievements.enabled')) {
+            $user->load('achievementProgress');
+        }
 
         return UserResource::make($user);
     }
@@ -64,6 +68,14 @@ class UserController extends Controller implements \Illuminate\Routing\Controlle
             'best_period_runs' => RunResource::collection($bestRuns),
             'current_leagues' => $currentLeagues,
             'max_stars' => $maxStars,
+            'achievements' => config('kado.achievements.enabled')
+                ? $user->achievementProgress->map(function ($progress) {
+                    return [
+                        'achievement_id' => $progress->achievement_id,
+                        'completed_level' => $progress->completed_level,
+                    ];
+                })
+                : [],
         ]);
     }
 

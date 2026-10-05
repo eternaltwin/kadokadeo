@@ -10,8 +10,6 @@ class Cs {
 	public static var CDIF = 0.7; // 0.7;
 
 	// SCORES
-	public static var SCORE_ASTEROID = KKApi.aconst([50, 75, 150, 200, 300]);
-	public static var C5 = KKApi.const(5);
 	public static var C0 = KKApi.const(0);
 	public static var C500 = KKApi.const(500);
 
@@ -57,20 +55,5 @@ class Cs {
 		var dx = o1.x - o2.x;
 		var dy = o1.y - o2.y;
 		return Math.atan2(dy, dx);
-	}
-
-	// CHAIN MC COMMAND
-	public static function allGoto(mc:ASprite, key:String, fr:Int) {
-		trace("FIXME: allGoto", key, fr);
-		// var f = fun(str) {
-		// 	var mmc:ASprite = Std.getVar(mc, str);
-		// 	if (mmc._visible) {
-		// 		if (str.substr(0, key.length) == key) {
-		// 			mmc.gotoAndStop(Std.string(fr));
-		// 		}
-		// 		allGoto(mmc, key, fr);
-		// 	}
-		// };
-		// downcast(Std).forin(mc, f);
 	}
 }

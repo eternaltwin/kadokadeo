@@ -19,7 +19,7 @@ class GamesTable
             ->columns([
                 ImageColumn::make('image_path')
                     ->label('Image')
-                    ->state(fn ($record) => config('app.url') . $record->image_path)
+                    ->state(fn ($record) => config('app.url').$record->image_path)
                     ->checkFileExistence(false),
                 TextColumn::make('name')
                     ->label('Nom')
@@ -30,8 +30,8 @@ class GamesTable
                 IconColumn::make('is_active')
                     ->label('Actif')
                     ->boolean(),
-                IconColumn::make('is_official')
-                    ->label('Officiel')
+                IconColumn::make('is_arkadeo')
+                    ->label('Jeu Arkadéo')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->label('Créé le')

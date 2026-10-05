@@ -28,7 +28,15 @@ class Game implements kado.GameInterface {
 	public var nlevels:Int;
 	public var curGroup:Array<Bille>;
 
-	var stats:{t:Array<Int>, g:Array<Int>} = {t: [], g: []};
+	var stats:{
+		t:Array<Int>,
+		g:Array<Int>,
+		d:Array<Array<Int>>
+	} = {
+		t: [],
+		g: [],
+		d: [],
+	};
 
 	public var bg:ASprite;
 	public var lock:Bool;
@@ -102,6 +110,11 @@ class Game implements kado.GameInterface {
 	}
 
 	function destroyCurrentGroup() {
+		stats.d.push([
+			currentHoveredCell.x,
+			currentHoveredCell.y,
+			level.billes[currentHoveredCell.x][currentHoveredCell.y].id
+		]);
 		for (x in 0...Const.LVL_WIDTH) {
 			for (y in 0...Const.LVL_HEIGHT) {
 				var b = level.billes[x][y];

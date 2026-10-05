@@ -55,3 +55,4 @@ compose.override.yaml
 docker/database-data
 .eslintcache
 .haxelib
+kadokadeo.dump

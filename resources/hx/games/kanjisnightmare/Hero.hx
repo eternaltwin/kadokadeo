@@ -479,6 +479,7 @@ class Hero extends Phys {
 				gp.speed = GSPEED;
 				gp.flFly = true;
 				gp.orient();
+				Cs.game.stats.gu += 1;
 			}
 			updateInterface();
 		}

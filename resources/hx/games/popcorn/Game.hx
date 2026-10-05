@@ -40,57 +40,51 @@ class Game implements kado.GameInterface {
 	public static var DP_PART = 8;
 
 	static var TOLERANCE = 30;
-
-	static var DEBUG = false;
-
 	static var SCROLL_DECAL = -KadoKadeoManager.I(50);
-
-	public var step:Int;
-
-	var timer:Float;
-	var flasher:Float;
-	var grey:Float;
-
-	public var ly:Float;
-
-	var glow:Float;
-	var glowSpeed:Float;
-	var scrollSpeed:Float;
-
-	public var dm:DepthManager;
-	public var gdm:DepthManager;
-
-	var gpList:Array<GpListSprite>;
-
-	public var cList:Array<Corn>;
-
-	public var map:ASprite;
-	public var bg:ASprite;
-
-	var lim:ASprite;
-	var plan:Array<GamePlanLayer>;
-
-	public var animator:Array<GameAnimSprite>;
-
-	public var lvl:RenderTexture;
-
-	var collisionMask:Uint8Array;
-
-	public var hero:Hero;
-	public var boss:Boss;
-
 	static var POPCORN_SHAPE = [
 		{x: -8.0, y: 9.0, r: 11.0},
 		{x: -11.0, y: -8.0, r: 13.0},
 		{x: 11.0, y: 0.0, r: 19.0}
 	];
 
-	public var focus:PointWithGetter;
-
-	var stats:{};
+	var timer:Float;
+	var flasher:Float;
+	var grey:Float;
+	var glow:Float;
+	var glowSpeed:Float;
+	var scrollSpeed:Float;
+	var lim:ASprite;
+	var plan:Array<GamePlanLayer>;
+	var gpList:Array<GpListSprite>;
+	var collisionMask:Uint8Array;
 	var root:ASprite;
 	var spaceWasDown:Bool = false;
 	var enterWasDown:Bool = false;
+
+	public var step:Int;
+	public var ly:Float;
+	public var dm:DepthManager;
+	public var gdm:DepthManager;
+
+	public var cList:Array<Corn>;
+	public var map:ASprite;
+	public var bg:ASprite;
+
+	public var animator:Array<GameAnimSprite>;
+	public var lvl:RenderTexture;
+	public var hero:Hero;
+	public var boss:Boss;
+	public var focus:PointWithGetter;
+
+	public var stats:{
+		e:Array<Int>, // events
+		tr:Int, // top reached (count)
+		bhf:Array<Int>, // boss hit frames
+	} = {
+		e: [],
+		tr: 0,
+		bhf: [],
+	};
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		this.root = root;

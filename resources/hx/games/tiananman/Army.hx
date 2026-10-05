@@ -1,12 +1,9 @@
 package tiananman;
 
-import js.html.CSS;
-import pixi.filters.colormatrix.ColorMatrixFilter;
 import common_haxe_avm1.display.BBox;
 import tiananman.tanks.*;
 import pixi.core.math.shapes.Rectangle;
 import pixi.core.text.Text;
-import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
 import mt.bumdum.Lib;
 

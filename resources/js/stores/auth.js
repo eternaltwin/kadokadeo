@@ -5,6 +5,7 @@ import { client } from '@/composables/useApi'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
+  const achievementProgress = ref([])
   const stars = reactive({
     green: 0,
     orange: 0,
@@ -53,11 +54,36 @@ export const useAuthStore = defineStore('auth', () => {
         stars.purple += 1
       }
     }
+    const p = achievementProgress.value
+    console.log('currentProgress:', p)
+    console.log('achievement_updates:', endRunDetails.achievement_updates)
+    for (let au of endRunDetails?.achievement_updates ?? []) {
+      const pr = p.find((ap) => ap.achievement_id === au.id)
+      if (pr) {
+        pr.current_value = au.progress
+        pr.completed_level = au.completed_level
+      } else {
+        p.push({
+          achievement_id: au.id,
+          current_value: au.progress,
+          completed_level: au.completed_level,
+          completed_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        })
+      }
+      if (au.type === 'unlocked') {
+        const achievementStore = useAchievementStore()
+        achievementStore.addUnlockedAchievement(au)
+      }
+    }
+    achievementProgress.value = [...p]
   })
 
   const setUser = (u) => {
     user.value = u
-    if (u && u.stars) {
+    if (!u) {
+      return
+    }
+    if (u.stars) {
       stars.green = u.stars.green_stars
       stars.orange = u.stars.orange_stars
       stars.red = u.stars.red_stars
@@ -67,6 +93,11 @@ export const useAuthStore = defineStore('auth', () => {
       stars.orange = 0
       stars.red = 0
       stars.purple = 0
+    }
+    if (u.achievement_progress) {
+      achievementProgress.value = u.achievement_progress
+    } else {
+      achievementProgress.value = []
     }
   }
 
@@ -114,5 +145,6 @@ export const useAuthStore = defineStore('auth', () => {
     orangeStars,
     redStars,
     purpleStars,
+    achievementProgress,
   }
 })

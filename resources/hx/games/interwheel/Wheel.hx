@@ -9,21 +9,23 @@ class Wheel extends Element {
 
 	public var a:Float;
 	public var speed:Float;
+	public var mList:Array<{mc:ASprite, a:Float}>;
+	public var id:Int;
 
 	var fr:Int;
 	var aBoom:Float;
-	var mList:Array<{mc:ASprite, a:Float}>;
 	var wh:ASprite;
 	var sh:ASprite;
 	var light:ASprite;
 
-	public function new() {
+	public function new(id:Int) {
 		super();
 		a = 0;
 		speed = (Seed.random(2) * 2 - 1) * (0.1 + Seed.rand() * 0.1);
 		skin = "mcWheel";
 		fr = Seed.randomVfx(5) + 1;
 		mList = new Array();
+		this.id = id;
 	}
 
 	override function update() {

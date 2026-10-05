@@ -15,8 +15,6 @@ class DashlightSprite extends ASprite {
 
 @:expose('GameStarfang')
 class Game implements kado.GameInterface {
-	public static var FL_CHEAT = false;
-
 	public static var DP_INTERFACE = 12;
 	public static var DP_SHOT = 10;
 	public static var DP_PARTS = 9;
@@ -27,37 +25,28 @@ class Game implements kado.GameInterface {
 	public static var DP_BG = 3;
 
 	public var stats:{
-		k:Array<Int>,
 		b:Array<Int>,
+		kb:Array<Int>, // kill with bonuses
+		l:Array<Array<Int>>, // levels: 1 per level [asteroid1, asteroid2, asteroid3, asteroid4, asteroid5, shotCount, framesOnLevel]
 	};
 
-	var flCheatReady:Bool;
-
-	var lvl:Int;
 	var step:Int;
-
-	public var flOption:Bool;
-
 	var monsterlvl:Float;
 	var phaseTimer:Float;
 	var scrollDash:Float;
 	var scrollSpeed:Float;
-
-	public var shotList:Array<Shot>;
-	public var badsList:Array<Bads>;
-	public var bonusList:Array<Bonus>;
-
 	var dashLightList:Array<DashlightSprite>;
-
-	public var dm:DepthManager;
-
-	public var hero:Hero;
-
-	public var root:ASprite;
-
 	var bg:ASprite;
 	var draw:ASprite;
 
+	public var lvl:Int;
+	public var flOption:Bool;
+	public var shotList:Array<Shot>;
+	public var badsList:Array<Bads>;
+	public var bonusList:Array<Bonus>;
+	public var dm:DepthManager;
+	public var hero:Hero;
+	public var root:ASprite;
 	public var inter:Inter;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
@@ -100,37 +89,16 @@ class Game implements kado.GameInterface {
 
 		draw = dm.empty(DP_DRAW);
 		stats = {
-			k: [0, 0, 0, 0, 0],
 			b: [],
+			kb: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			l: [],
 		};
 
 		lvl = 1;
+		stats.l.push([0, 0, 0, 0, 0, 0, 0]);
 
 		initStep(1);
-
-		if (FL_CHEAT) {
-			flCheatReady = true;
-		}
 	}
-
-	// function onKeyPress(){
-	// 	if(flCheatReady){
-	// 		var n = KeyboardManager.lastDown;
-	// 		if(n>=96 && n<107 ){
-	// 			hero.updateSecondary(n-96);
-	// 		}
-	// 		if(n>=49 && n<54 ){
-	// 			hero.updateWeapon(n-49);
-	// 		}
-	// 		if(n>=54 && n<59 ){
-	// 			hero.updateSecondary(n-54);
-	// 		}
-	// 	}
-	// 	flCheatReady = false;
-	// }
-	// function onKeyRelease(){
-	// 	flCheatReady = true;
-	// }
 
 	function initStep(n) {
 		step = n;
@@ -153,6 +121,7 @@ class Game implements kado.GameInterface {
 				flOption = true;
 				genMonsters();
 			case 2:
+				stats.l.push([0, 0, 0, 0, 0, 0, 0]);
 				lvl++;
 				if (hero != null) {
 					hero.wings[0].trg = 0;
@@ -176,6 +145,7 @@ class Game implements kado.GameInterface {
 			case 1: // PLAY;
 				if (hero != null) {
 					hero.control();
+					stats.l[lvl - 1][6]++;
 				}
 				if (badsList.length == 0 && bonusList.length == 0)
 					initStep(2);

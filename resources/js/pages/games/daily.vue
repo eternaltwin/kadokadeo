@@ -37,9 +37,9 @@ onUnmounted(() => {
     <div v-else class="relative">
       <h2>{{ game.name }}</h2>
       <GamesGameScript :game="game"
-                  :args="{ isDaily: true }"
-                  :game-width="600"
-                  :game-height="640" />
+                       :args="{ isDaily: true }"
+                       :game-width="600"
+                       :game-height="640" />
     </div>
   </div>
 </template>

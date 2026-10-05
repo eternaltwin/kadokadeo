@@ -19,8 +19,8 @@ class Game implements kado.GameInterface {
 	var hero:Hero;
 
 	public var bals:Array<Ballon>;
+	public var level:Int;
 
-	var level:Int;
 	var nblacks:Int;
 	var time:Float;
 	var nbals:Int;
@@ -32,9 +32,11 @@ class Game implements kado.GameInterface {
 	var have_effect:Bool;
 	var waitTimer:Float;
 
-	var stats:{
+	public var stats:{
 		c:Array<Int>,
 		m:Int,
+		pa:Array<Array<Int>>, // per action [pop100, pop250, pop500, pop1000, pop5000, popBlack]
+		bb:Array<Array<Int>>, // black balloons : [[level, nbalsRemaining]]
 	};
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
@@ -71,7 +73,9 @@ class Game implements kado.GameInterface {
 		waitTimer = 0;
 		stats = {
 			m: 0,
-			c: [0, 0, 0, 0, 0, 0]
+			c: [0, 0, 0, 0, 0],
+			pa: [],
+			bb: [],
 		};
 		hero = new Hero(this);
 		level = -1;
@@ -124,7 +128,7 @@ class Game implements kado.GameInterface {
 		return false;
 	}
 
-	public function getBallon(b:Ballon):Void {
+	public function getBallon(b:Ballon):Int {
 		if (b.t == last) {
 			bcounter++;
 		} else {
@@ -139,18 +143,25 @@ class Game implements kado.GameInterface {
 			pa.removeOnFrame = 19;
 			KadoKadeoManager.kkm.gameOver(stats);
 			hero.doGameOver();
-		} else {
-			var f = Std.int(Math.min(bcounter - 1, Cs.POINTS.length - 1));
-			var s = Cs.POINTS[f];
-			stats.c[f]++;
-			KadoKadeoManager.kkm.addScore(s);
-			b.plop(f);
-			nbals--;
-			(cast counter : Dynamic).field.text = Std.string(nbals);
+
+			b.destroy();
+			bals.remove(b);
+			time = 0;
+
+			return 5;
 		}
+		var f = Std.int(Math.min(bcounter - 1, Cs.POINTS.length - 1));
+		var s = Cs.POINTS[f];
+		stats.c[f]++;
+		KadoKadeoManager.kkm.addScore(s);
+		b.plop(f);
+		nbals--;
+		(cast counter : Dynamic).field.text = Std.string(nbals);
 		b.destroy();
 		bals.remove(b);
 		time = 0;
+
+		return Std.int(Math.min(bcounter - 1, Cs.POINTS.length - 1));
 	}
 
 	public function update(delta:Float):Void {
@@ -171,6 +182,7 @@ class Game implements kado.GameInterface {
 			time = 0;
 			nblacks++;
 			bals.push(new Ballon(this, 3));
+			stats.bb.push([level, nbals]);
 		}
 
 		if (getBalsLength() > 6 && Seed.random(10000) == 0) {

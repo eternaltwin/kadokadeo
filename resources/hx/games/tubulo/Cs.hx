@@ -20,10 +20,10 @@ class Cs {
 
 	// GAMEPLAY
 	public static var COL_MAX = 3;
-	public static var TUBE_SPEED = 0.35;
+	public static var TUBE_SPEED = 0.175;
 
-	public static var CHRONO_MAX = 1500;
-	public static var CHRONO_BONUS = 250;
+	public static var CHRONO_MAX = 1500 * 2;
+	public static var CHRONO_BONUS = 250 * 2;
 
 	// GFX
 	// TOOLS

@@ -2,16 +2,13 @@ package travoltax;
 
 import haxe.io.UInt16Array;
 import pixi.core.Pixi.BlendModes;
-import pixi.core.display.DisplayObject;
 import pixi.filters.colormatrix.ColorMatrixFilter;
 import common_haxe_avm1.KKApi;
 import common_haxe_avm1.display.ASprite;
 import kado.KadoKadeoManager;
 import kado.Seed;
 import mt.DepthManager;
-import mt.Timer;
 import pixi.core.math.Matrix;
-import pixi.core.math.Point;
 import pixi.core.math.shapes.Rectangle;
 import pixi.core.text.Text;
 import pixi.core.textures.RenderTexture;
@@ -84,6 +81,7 @@ class Game implements kado.GameInterface {
 	public var currentOption:Option;
 
 	var brushSquare:ASprite;
+	var achievementStartFrame:Int;
 
 	public var step:Step;
 	public var piece:Piece;
@@ -93,7 +91,14 @@ class Game implements kado.GameInterface {
 	public var dm:DepthManager;
 	public var root:ASprite;
 	public var bg:BgSprite;
-	public var stats:{_o:Array<Int>, _l:Array<Int>, _g:Array<Int>};
+	public var stats:{
+		_o:Array<Int>,
+		_l:Array<Int>,
+		_g:Array<Int>,
+		_c:Array<Int>, // contracts
+		_t:Int, // time (in frames) survived to 7 blocks in line 17 (index 5)
+		_cc:Int, // clear grid count
+	};
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayKeys = new UInt16Array(13);
@@ -127,7 +132,14 @@ class Game implements kado.GameInterface {
 		levelTimer = 0;
 		options = [];
 		contrats = [];
-		stats = {_o: [], _l: [], _g: [0, 0, 0]};
+		stats = {
+			_o: [],
+			_l: [],
+			_g: [0, 0, 0],
+			_c: [],
+			_t: null,
+			_cc: 0,
+		};
 
 		initBg();
 		initGrid();
@@ -238,6 +250,14 @@ class Game implements kado.GameInterface {
 			}
 		}
 		step = Play;
+
+		// check if line 18 is filled for achievement
+		if (achievementStartFrame == null && grid[5].filter(function(cell) return cell != null).length >= 7) {
+			achievementStartFrame = KadoKadeoManager.kkm.replay.getCurrentFrame();
+		}
+		if (grid[Cs.YMAX - 1].filter(function(cell) return cell != null).length == 0) {
+			stats._cc += 1;
+		}
 	}
 
 	function updatePlay() {}
@@ -401,6 +421,12 @@ class Game implements kado.GameInterface {
 	// GAMEOVER
 	function initGameOver() {
 		step = GameOver;
+		if (achievementStartFrame != null) {
+			stats._t = KadoKadeoManager.kkm.replay.getCurrentFrame() - achievementStartFrame;
+		} else {
+			stats._t = 0;
+		}
+
 		KadoKadeoManager.kkm.gameOver(stats);
 		if (piece != null) {
 			piece.explode();
@@ -753,6 +779,7 @@ class Game implements kado.GameInterface {
 		mc.field.text = "";
 		KadoKadeoManager.kkm.addScore(Cs.getContratScore(id));
 		contrats[id] = null;
+		stats._c.push(id);
 
 		for (i in 0...32) {
 			var sp = new Part(dm.attach("partPix", DP_INTER));

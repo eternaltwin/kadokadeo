@@ -3510,6 +3510,7 @@ __metadata:
     vite-svg-loader: "npm:^5.1.1"
     vue: "npm:^3.5.22"
     vue-eslint-parser: "npm:^10.2.0"
+    vue-lazyload: "npm:^3.0.0"
     vue-router: "npm:^4.6.3"
     yauzl: "npm:^3.4.0"
   languageName: unknown
@@ -4081,6 +4082,13 @@ __metadata:
   peerDependencies:
     eslint: ^8.57.0 || ^9.0.0
   checksum: 10/53673fd5df42e79e834809ce552f53972f2e03bae08ef7cc66e679e88e9ad3b939ac12f9332ed33e14c953649616ca17698169719670b6a752d219685015aa87
+  languageName: node
+  linkType: hard
+
+"vue-lazyload@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "vue-lazyload@npm:3.0.0"
+  checksum: 10/43038bc14e08aab3dbee5d66b4ca465a404fdeee51b1334df112982dc712943b3d9a51a62767dc7f9737d28f77c1b9d130e37a8a0f5912c485ff3f464f075bad
   languageName: node
   linkType: hard
 

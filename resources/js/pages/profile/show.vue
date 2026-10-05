@@ -10,6 +10,7 @@ const { isLoading: isHistoryLoading, error: historyError, results: historyResult
 
 const { fetchProfile, isLoading, error } = useProfile()
 const leagueStore = useLeagueStore()
+const achievementStore = useAchievementStore()
 
 const profile = ref(null)
 
@@ -60,6 +61,16 @@ function getStarId(run) {
   const { getStarIdFromScore } = useGameModel(run.game)
   return getStarIdFromScore(run.score)
 }
+
+const gameAchievements = computed(() => {
+  return achievementStore.achievements?.reduce((acc, achievement) => {
+    if (!acc[achievement.game.name]) {
+      acc[achievement.game.name] = []
+    }
+    acc[achievement.game.name].push(achievement)
+    return acc
+  }, {})
+})
 </script>
 
 <template>
@@ -75,7 +86,7 @@ function getStarId(run) {
         <div v-if="isLoading">Loading...</div>
         <MessageError v-else-if="error">Error: {{ error }}</MessageError>
         <div v-else-if="profile">
-          <div v-if="item.value === 'me'">
+          <div v-if="item.value === 'me'" class="space-y-4">
             <h1 class="mt-0 text-center">Profil de {{ profile.data.display_name }}</h1>
             <div v-if="feathersCount > 0" class="flex justify-center items-center gap-1 mb-4">
               <img v-for="i in feathersCount"
@@ -139,37 +150,67 @@ function getStarId(run) {
 
             <h2>Classements</h2>
 
-            <table>
-              <thead>
-                <tr class="text-kado-orange uppercase text-sm *:px-2 *:text-right">
-                  <th>Niveau</th>
-                  <th>Position</th>
-                  <th>Jeu</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="run in profile.best_period_runs.sort((a, b) => a.game.name.localeCompare(b.game.name))" :key="run.id">
-                  <td>
-                    <img v-if="run.league_id" :src="`/gfx/leagues/${run.league_id}.png`" />
-                  </td>
-                  <td class="text-right">
-                    <Number color="orange" :value="run.league_rank" />
-                  </td>
-                  <td class="text-left">
-                    <div class="flex items-center gap-2">
-                      <component :is="getStarImage(run)" class="size-4" />
-                      <RouterLink :to="{ name: 'games.show', params: { id: run.game.id } }">
-                        {{ run.game.name }}
-                      </RouterLink>
+            <div class="px-2">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-kado-orange uppercase text-sm *:px-2 *:text-right">
+                    <th>Niveau</th>
+                    <th>Position</th>
+                    <th>Jeu</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="run in profile.best_period_runs.sort((a, b) => a.game.name.localeCompare(b.game.name))" :key="run.id">
+                    <td>
+                      <img v-if="run.league_id" :src="`/gfx/leagues/${run.league_id}.png`" />
+                    </td>
+                    <td class="text-right">
+                      <Number color="orange" :value="run.league_rank" />
+                    </td>
+                    <td class="text-left">
+                      <div class="flex items-center gap-2">
+                        <component :is="getStarImage(run)" class="size-4" />
+                        <RouterLink :to="{ name: 'games.show', params: { id: run.game.id } }">
+                          {{ run.game.name }}
+                        </RouterLink>
+                      </div>
+                    </td>
+                    <td class="text-right">
+                      <Number color="blue" :value="run.score" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <template v-if="achievementStore.enabled">
+              <h2>Succès</h2>
+              <div class="px-4" v-lazy-container="{ selector: 'img', attempt: 1 }">
+                <div v-for="(gameAs, game) in gameAchievements" :key="game">
+                  <h3>{{ game }}</h3>
+                  <div class="flex flex-wrap gap-2 py-2">
+                    <div v-for="ac in gameAs" :key="ac.id" class="flex flex-wrap">
+                      <div class="relative"
+                           v-for="level of ac.levels"
+                           :key="level.id"
+                           :title="`${level.title}\n${level.description}`"
+                           :class="{'grayscale-90': ac.level_user_counts[level.level - 1] === 0 }"
+                      >
+                        <img :data-src="`/gfx/achievements/bg${ac.levels.length === 3 ? level.level - 1 : ''}.png`" class="size-10 justify-self-center"/>
+                        <img
+                          :data-src="level.icon"
+                          data-loading="/gfx/achievements/loading.png"
+                          data-error="/gfx/achievements/error.png"
+                          class="absolute top-[2.5px] left-[2.5px] grid size-[35px] rounded-sm"
+                        />
+                      </div>
                     </div>
-                  </td>
-                  <td class="text-right">
-                    <Number color="blue" :value="run.score" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+
+                </div>
+              </div>
+            </template>
 
             <h2>Historique</h2>
 
@@ -181,7 +222,7 @@ function getStarId(run) {
               <button
                 @click="fetchGameHistory()"
                 :disabled="isHistoryLoading"
-                class="text-orange-400 underline cursor-pointer hover:text-orange-500"
+                class="py-2 text-orange-400 underline cursor-pointer hover:text-orange-500"
               >
                 Charger plus de résultats
               </button>

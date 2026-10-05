@@ -30,6 +30,11 @@ return [
         'jackpot' => env('KADO_POIDS_PLUME_JACKPOT', 0),
     ],
 
+    // off: nothing is evaluated on runs / league changes and nothing is shown to players (the admin stays available)
+    'achievements' => [
+        'enabled' => (bool) env('KADO_ACHIEVEMENTS_ENABLED', false),
+    ],
+
     // versions of the game bundles kept for their replays (written by resources/js/games/build-games.mjs)
     'game_builds' => [
         'path' => env('KADO_GAME_BUILDS_PATH', storage_path('app/game-builds')),

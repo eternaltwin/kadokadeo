@@ -6,28 +6,39 @@ const game = toRef(dailyGameStore, 'game')
 
 <template>
   <Loader v-if="dailyGameStore.isDailyGameLoading" />
-  <div v-else-if="game" class="gameOfTheDay mx-auto mb-10 h-36">
+  <div v-else-if="game" class="mx-auto mb-10 w-full max-w-[700px] md:h-[142px]">
     <RouterLink
-      class="gameBoxDay block z-[2] relative h-full w-full"
-      :class="{ 'grayscale': dailyGameStore.position !== null }"
+      class="relative z-[2] flex w-full flex-col overflow-hidden md:h-full md:flex-row decoration-0"
+      :class="{ grayscale: dailyGameStore.position !== null }"
       :to="{ name: 'games.daily' }"
       :title="`Jouer au jeu du jour`"
     >
-      <div class="__bg z-[1] h-full w-full"></div>
-      <div class="gameBoxImg">
-        <img :src="game.image_path" :alt="game.name" />
-        <h3 class="font-normal text-kado-pink-900 text-xl w-full text-center leading-5">{{ game.name }}</h3>
+      <div class="relative w-full aspect-[113/71] bg-[url('/gfx/gameBoxDayLeft.png')] bg-no-repeat bg-[length:100%_100%] md:w-[226px] md:h-[142px] md:aspect-auto md:shrink-0">
+        <div class="absolute left-[15.93%] top-[5.63%] w-[77.88%] md:left-9 md:top-2 md:w-[176px]">
+          <img class="w-full h-auto" :src="game.image_path" :alt="game.name" />
+          <h3 class="w-full text-center text-xl font-normal leading-5 text-kado-pink-900">
+            {{ game.name }}
+          </h3>
+        </div>
       </div>
-      <div class="gameBoxDayText">
+      <div class="relative min-h-[142px] flex-1 bg-gameBoxDayRight bg-no-repeat bg-[length:100%_100%] text-sm font-normal text-kado-pink-900">
+        <div class="absolute -top-8 text-[#F8D3E1] font-junegull text-shadow-sm text-shadow-[#ED7DA9] text-lg w-full text-center">JEU DU JOUR</div>
         Le jeu du jour est choisi aléatoirement chaque jour à minuit (UTC). La partie est identique pour tous les joueurs.
-        <div class="flex gap-1 items-center">
-          Contrat : <Number :value="dailyGame.contract_score" color="blue" /> pts pour gagner <Number :value="dailyGame.contract_points" color="green" /> <img class="size-4" src="/gfx/iconKadoPoints.gif" alt="icone points Kado" />
+        <div class="flex items-center gap-1">
+          Contrat :
+          <Number :value="dailyGame.contract_score" color="blue" />
+          pts pour gagner
+          <Number :value="dailyGame.contract_points" color="green" />
+          <img class="size-4" src="/gfx/iconKadoPoints.gif" alt="icone points Kado" />
         </div>
-        <div v-if="!dailyGameStore.isScoresLoading" class="flex gap-1 items-center">
-          Nombre de parties restantes : <Number :value="dailyGameStore.position === null ? 1 : 0" color="orange" /> <img class="size-4" src="/gfx/iconGemOrange.gif" alt="icone gemme orange" />
+        <div v-if="!dailyGameStore.isScoresLoading" class="flex items-center gap-1">
+          Nombre de parties restantes :
+          <Number :value="dailyGameStore.position === null ? 1 : 0" color="orange" />
+          <img class="size-4" src="/gfx/iconGemOrange.gif" alt="icone gemme orange" />
         </div>
-        <div v-if="dailyGameStore.position !== null" class="flex gap-1 items-center">
-          Votre position actuelle : <Number :value="dailyGameStore.position" color="green" />
+        <div v-if="dailyGameStore.position !== null" class="flex items-center gap-1">
+          Votre position actuelle :
+          <Number :value="dailyGameStore.position" color="green" />
         </div>
       </div>
     </RouterLink>
@@ -35,11 +46,11 @@ const game = toRef(dailyGameStore, 'game')
 </template>
 
 <style scoped>
-div.gameOfTheDay {
-    width: 700px;
-}
-
-.__bg {
-    background: url("/gfx/gameBoxDay.png") no-repeat;
+.bg-gameBoxDayRight {
+  border-style: solid;
+  border-width: 35px 15px 30px 15px;
+  border-image-source: url("/gfx/gameBoxDayRight.png");
+  border-image-slice: 35 15 30 15 fill;
+  border-image-repeat: repeat stretch;
 }
 </style>

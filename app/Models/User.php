@@ -78,6 +78,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(PoidsPlumeResult::class);
     }
 
+    public function achievementProgress()
+    {
+        return $this->hasMany(UserAchievementProgress::class);
+    }
+
     //
 
     public function canAccessPanel(Panel $panel): bool

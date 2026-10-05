@@ -366,6 +366,7 @@ class Hero extends Phys {
 		updateBoxes();
 
 		Cs.game.stats.b.push([Std.int(Stykades.dif), 100 + id]);
+		Cs.game.stats.sak[id].push([0, 0]);
 		switch (id) {
 			case Hero.WP_PLASMA:
 				var shot = newShot(0, 14, 18);
@@ -373,6 +374,10 @@ class Hero extends Phys {
 				shot.damage = 50;
 				shot.flPierce = true;
 				shot.bList.push(11);
+				var idx = Cs.game.stats.sak[Hero.WP_PLASMA].length - 1;
+				shot.onKill = () -> {
+					Cs.game.stats.sak[Hero.WP_PLASMA][idx][0] += 1;
+				}
 			// shot.vr = (Math.random()*2-1)*10
 			case Hero.WP_SIDER:
 				if (onde != null)
@@ -399,6 +404,8 @@ class Hero extends Phys {
 						list.push(b);
 					for (s in Cs.game.shotList)
 						list.push(s);
+					Cs.game.stats.sak[id][Cs.game.stats.sak[id].length - 1][0] = Cs.game.badsList.length;
+					Cs.game.stats.sak[id][Cs.game.stats.sak[id].length - 1][1] = Cs.game.shotList.length;
 
 					while (list.length > 0) {
 						var b = list.pop();
@@ -462,6 +469,10 @@ class Hero extends Phys {
 					var shot = newMissile(6.28 * i / max);
 					shot.sleep = 6;
 					shot.timer = 60;
+					var idx = Cs.game.stats.sak[Hero.WP_MISSILE].length - 1;
+					shot.onKill = () -> {
+						Cs.game.stats.sak[Hero.WP_MISSILE][idx][0] += 1;
+					}
 				}
 			case null:
 				Cs.game.bt = {trg: 0.3, timer: 100, val: 1};
@@ -469,6 +480,10 @@ class Hero extends Phys {
 		}
 		// CLEAN SHOOT
 		var list = Cs.game.shotList.copy();
+		if (id != Hero.WP_VOID) {
+			var idx = Cs.game.stats.sak[id].length - 1;
+			Cs.game.stats.sak[id][idx][1] = list.length;
+		}
 		for (i in 0...list.length) {
 			var shot = list[i];
 			if (shot.flGood != true)
@@ -493,18 +508,20 @@ class Hero extends Phys {
 					a[1] = Std.int(a[1] - Timer.tmod);
 				while (flFire && a[1] <= 0 && blackHole == null && laserRay == null) {
 					switch (i) {
-						case 0: // PLASMA
+						case WP_PLASMA:
 							switch (a[0]) {
 								case 1:
 									var shot = newShot(0, 12, 14);
 									shot.ray = KadoKadeoManager.I(6);
 									shot.damage = 1;
+									shot.onKill = () -> Cs.game.stats.spk[WP_PLASMA] += 1;
 								case 2:
 									for (n in 0...2) {
 										var shot = newShot(0, 12, 14);
 										shot.ray = KadoKadeoManager.I(6);
 										shot.x = x + (n * 2 - 1) * KadoKadeoManager.I(5);
 										shot.damage = 1;
+										shot.onKill = () -> Cs.game.stats.spk[WP_PLASMA] += 1;
 									}
 								case 3:
 									{
@@ -513,6 +530,7 @@ class Hero extends Phys {
 										shot.setScale(150);
 										shot.damage = 2;
 										shot.flPierce = true;
+										shot.onKill = () -> Cs.game.stats.spk[WP_PLASMA] += 1;
 									}
 									for (n in 0...2) {
 										var sens = n * 2 - 1;
@@ -520,6 +538,7 @@ class Hero extends Phys {
 										shot.ray = KadoKadeoManager.I(8);
 										shot.x = x + sens * KadoKadeoManager.I(5);
 										shot.damage = 1;
+										shot.onKill = () -> Cs.game.stats.spk[WP_PLASMA] += 1;
 									}
 								case _:
 									{
@@ -528,6 +547,7 @@ class Hero extends Phys {
 										shot.setScale(100 + a[0] * 25);
 										shot.damage = 1 + (a[0] * 0.5);
 										shot.flPierce = true;
+										shot.onKill = () -> Cs.game.stats.spk[WP_PLASMA] += 1;
 									}
 									for (n in 0...2) {
 										var sens = n * 2 - 1;
@@ -536,12 +556,13 @@ class Hero extends Phys {
 											shot.ray = KadoKadeoManager.I(8);
 											shot.x = x + sens * KadoKadeoManager.I(5 + k * 5);
 											shot.damage = 1;
+											shot.onKill = () -> Cs.game.stats.spk[WP_PLASMA] += 1;
 										}
 									}
 							}
 							a[1] += 8;
 
-						case 5: // MISSILES
+						case WP_MISSILE:
 							for (n in 0...2) {
 								var sens = n * 2 - 1;
 								for (k in 0...a[0]) {
@@ -551,11 +572,12 @@ class Hero extends Phys {
 									var ec = 0.5 + a[0] * 0.2;
 
 									var shot = newMissile(sens * 1.9 + ec * c);
+									shot.onKill = () -> Cs.game.stats.spk[WP_MISSILE] += 1;
 								}
 							}
 							a[1] += 40; // 50;
 
-						case 1: // SIDER
+						case WP_SIDER:
 							for (n in 0...2) {
 								var max = Std.int(Math.min(a[0], 6));
 								for (k in 0...max) {
@@ -568,6 +590,7 @@ class Hero extends Phys {
 
 									var shot = newShot(sens * (1.57 - rollY * 0.05) + ec * c, 14, 16);
 									shot.damage = 0.85;
+									shot.onKill = () -> Cs.game.stats.spk[WP_SIDER] += 1;
 									// shot.root._xscale = sens*100
 									shot.x += sens * KadoKadeoManager.I(14);
 									shot.y += KadoKadeoManager.I(16);
@@ -585,8 +608,7 @@ class Hero extends Phys {
 							}
 							a[1] += 5;
 
-						case 2: // LASER
-
+						case WP_LASER:
 							// SEEK
 							if (laserTrg == null || laserTrg.flDeath) {
 								var dist = 1 / 0;
@@ -712,8 +734,8 @@ class Hero extends Phys {
 							laserList = list;
 
 							a[1] = 0.1;
-						case 4: // VOID BALLS
 
+						case WP_VOID:
 							var shot = newShot((Seed.rand() * 2 - 1) * (0.3 + a[0] * 0.15), 10, 17);
 							shot.damage = 1.2;
 							shot.orient();
@@ -721,10 +743,13 @@ class Hero extends Phys {
 							shot.bList.push(4);
 							shot.speed = KadoKadeoManager.I(12);
 							shot.decal = Seed.rand() * 628;
+							shot.onKill = () -> Cs.game.stats.spk[WP_VOID] += 1;
 
 							a[1] += 18 / (a[0] * 4);
-						case 3: // SPEED UP
+
+						case WP_SPEED:
 							a[1] = 0.1;
+
 						case _:
 					}
 				}
@@ -800,7 +825,10 @@ class Hero extends Phys {
 				if (b == null)
 					continue;
 				if (Math.abs(b.x - x) < (KadoKadeoManager.I(8) * laserRay._xscale / 100) + b.ray && b.y < y) {
-					b.damage(2.5 * Timer.tmod);
+					var isDead = b.damage(2.5 * Timer.tmod);
+					if (isDead) {
+						Cs.game.stats.sak[Hero.WP_SPEED][Cs.game.stats.sak[Hero.WP_SPEED].length - 1][0] += 1;
+					}
 				}
 			}
 		} else {
@@ -826,8 +854,11 @@ class Hero extends Phys {
 			}
 
 			if (b != null && flStrike && b.getDist({x: onde._x, y: onde._y}) < onde._xscale * 0.5) {
-				b.damage(5);
+				var isDead = b.damage(5);
 				onde.list.push(b);
+				if (isDead) {
+					Cs.game.stats.sak[Hero.WP_SIDER][Cs.game.stats.sak[Hero.WP_SIDER].length - 1][0] += 1;
+				}
 			}
 		}
 

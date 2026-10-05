@@ -1,5 +1,6 @@
 package f1champion;
 
+import common_haxe_avm1.kac.ProtectedInt;
 import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
 import pixi.core.graphics.Graphics;
@@ -41,7 +42,11 @@ class Game implements kado.GameInterface {
 
 	public var chkdata:{
 		n:Int,
-		b:Array<Int>
+		b:Array<Int>,
+		o:Int, // out (times vehicle went out of bounds)
+		m:Int, // max kilometers without going out of bounds
+		so:Int, // speed over 230 km/h (frames)
+		l:Array<Int>, // life percentage after returning in bounds or collecting life
 	};
 
 	var pos:Float;
@@ -50,6 +55,10 @@ class Game implements kado.GameInterface {
 	var lock:Bool;
 	var score:Float;
 	var oil_time:Float;
+	var speed_over_230_kmh:Int = 0;
+	var is_inbounds:Bool = true;
+
+	public var km_without_out_of_bounds:ProtectedInt;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayKeys = new UInt16Array(8);
@@ -68,6 +77,7 @@ class Game implements kado.GameInterface {
 		});
 
 		this.mc = root;
+		km_without_out_of_bounds = new ProtectedInt(0);
 		dmanager = new DepthManager(root);
 		shadow = dmanager.attach("shadow", Cs.PLAN_F1);
 		shadow._xscale = Cs.CAR_SCALE;
@@ -124,7 +134,11 @@ class Game implements kado.GameInterface {
 		trails = [[], [], [], []];
 		chkdata = {
 			n: 0,
-			b: [0, 0, 0, 0]
+			b: [0, 0, 0, 0, 0],
+			o: 0,
+			m: 0,
+			so: 0,
+			l: [],
 		};
 		parts = new Array();
 		options = new Array();
@@ -137,7 +151,16 @@ class Game implements kado.GameInterface {
 			.beginFill(0xFFFFFF)
 			.drawRect(0, 0, life._width * lifepts / Cs.MAXLIFE, life._height)
 			.endFill();
-		speed.text = Std.int(Math.pow(level.cur_speed / KadoKadeoManager.I(1), 0.75) * 30) + " KM/H";
+		var speedValue = Std.int(Math.pow(level.cur_speed / KadoKadeoManager.I(1), 0.75) * 30);
+		speed.text = speedValue + " KM/H";
+		if (speedValue >= 230 && is_inbounds) {
+			speed_over_230_kmh += 1;
+		} else {
+			if (speed_over_230_kmh > chkdata.so) {
+				chkdata.so = speed_over_230_kmh;
+			}
+			speed_over_230_kmh = 0;
+		}
 	}
 
 	function slowDown() {
@@ -256,11 +279,13 @@ class Game implements kado.GameInterface {
 	}
 
 	function getOption(id:Int) {
+		chkdata.b[id]++;
 		switch (id) {
 			case 0:
 				lifepts += 20;
 				if (lifepts > Cs.MAXLIFE)
 					lifepts = Cs.MAXLIFE;
+				chkdata.l.push(Std.int(lifepts * 100 / Cs.MAXLIFE));
 			case 1 | 2 | 3:
 				var mc = new Phys(dmanager.empty(Cs.PLAN_INTERFACE));
 				mc.root._x = f1._x;
@@ -274,9 +299,7 @@ class Game implements kado.GameInterface {
 				});
 				txt.text = Std.string(KKApi.val(BONUS[id - 1]));
 				KadoKadeoManager.kkm.addScore(BONUS[id - 1]);
-				chkdata.b[id]++;
 			case 4:
-				chkdata.b[0]++;
 				oil_time += 2 + Seed.random(200) / 100;
 		}
 	}
@@ -429,19 +452,18 @@ class Game implements kado.GameInterface {
 		updateOptions(dp);
 		if (oil_time >= 0)
 			oil_time -= Timer.deltaT;
-		if (!lock && level.wallContains(f1._x, f1._y)) {
+		var isOutOfBounds = level.wallContains(f1._x, f1._y);
+		if (isOutOfBounds && is_inbounds) {
+			is_inbounds = false;
+			chkdata.o++;
+			chkdata.m = Std.int(Math.max(chkdata.m, km_without_out_of_bounds.get()));
+			km_without_out_of_bounds = 0;
+		} else if (!isOutOfBounds && !is_inbounds) {
+			is_inbounds = true;
+			chkdata.l.push(Std.int(lifepts * 100 / Cs.MAXLIFE));
+		}
+		if (!lock && isOutOfBounds) {
 			lifepts -= Timer.tmod * level.cur_speed / 2 / KadoKadeoManager.I(1);
-			// var p = new Phys(dmanager.empty(Cs.PLAN_PART));
-			// p.root._x = Math.random() * Cs.WIDTH / 2 + Cs.WIDTH / 4;
-			// p.root._y = 50;
-			// p.root.initTextField("field", {
-			// 	font: "Junegull-Regular",
-			// 	size: 70,
-			// 	color: 0xFF0000,
-			// 	align: "center",
-			// }).text = "HORS PISTE";
-			// p.timer = 1;
-			// p.fadeLimit = 0;
 			for (_ in 0...3)
 				slowDown();
 			genParticules();

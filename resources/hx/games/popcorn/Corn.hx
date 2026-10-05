@@ -86,6 +86,7 @@ class Corn extends Phys {
 					frame = 0;
 					root._rotation = Seed.rand() * 360;
 					Cs.game.stampPopcorn(x, y, root._rotation);
+					Cs.game.stats.e.push(1);
 				}
 			}
 		}

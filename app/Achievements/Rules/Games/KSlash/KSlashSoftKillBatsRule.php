@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Achievements\Rules\Games\KSlash;
+
+use App\Achievements\AchievementRuleResult;
+use App\Achievements\Events\GameRunCompleted;
+use App\Models\UserAchievementProgress;
+
+class KSlashSoftKillBatsRule extends KSlashRule
+{
+    public function achievementKey(): string
+    {
+        return 'soft_kill_bats';
+    }
+
+    public function evaluate(object $event, UserAchievementProgress $progress): AchievementRuleResult
+    {
+        if (!$this->validate($event)) {
+            return AchievementRuleResult::unchanged($progress->current_value);
+        }
+
+        $softKills = data_get($event->stats, 'sk', []);
+
+        return AchievementRuleResult::increment($progress->current_value, $softKills[3]);
+    }
+}

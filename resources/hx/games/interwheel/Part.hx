@@ -30,7 +30,7 @@ class Part extends Phys {
 
 	public override function kill() {
 		if (deathScore != null)
-			KadoKadeoManager.kkm.addScore(deathScore);
+			Cs.game.addScore(deathScore);
 		super.kill();
 	}
 }

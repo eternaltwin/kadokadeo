@@ -6,6 +6,7 @@ use App\Filament\Resources\Games\Pages\CreateGame;
 use App\Filament\Resources\Games\Pages\EditGame;
 use App\Filament\Resources\Games\Pages\ListGames;
 use App\Filament\Resources\Games\Pages\ViewGame;
+use App\Filament\Resources\Games\RelationManagers\AchievementsRelationManager;
 use App\Filament\Resources\Games\RelationManagers\ControlsRelationManager;
 use App\Filament\Resources\Games\RelationManagers\RunsRelationManager;
 use App\Filament\Resources\Games\Schemas\GameForm;
@@ -51,6 +52,7 @@ class GameResource extends Resource
         return [
             RunsRelationManager::class,
             ControlsRelationManager::class,
+            AchievementsRelationManager::class,
         ];
     }
 

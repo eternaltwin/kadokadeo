@@ -73,8 +73,26 @@ class Game implements kado.GameInterface {
 
 	//
 	public var stats:{
-		k:Array<Array<Int>>,
-		b:Array<Array<Int>>
+		k:Array<Array<Int>>, // kills (score)
+		b:Array<Array<Int>>, // bonuses (and sacrifices)
+		spk:Array<Int>, // special kills ([weapon0KillCount, weapon1KillCount, ...])
+		sak:Array<Array<Array<Int>>>, // sacrifices kills per sacrifice per use
+		/*
+			(
+				[
+					[
+						[sacrifice0KillCount1, sacrifice0ProjectileCount1],
+						[sacrifice0KillCount2, sacrifice0ProjectileCount2],
+					],
+					[
+						[sacrifice0KillCount1, sacrifice0ProjectileCount1],
+						[sacrifice0KillCount2, sacrifice0ProjectileCount2],
+					],
+				]
+			)
+		 */
+		mesc:Int, // max ennemy shot count (on screen)
+		w:Array<Int>, // waves
 	};
 
 	public var gfxMode:Int;
@@ -156,7 +174,11 @@ class Game implements kado.GameInterface {
 
 		stats = {
 			k: [],
-			b: []
+			b: [],
+			spk: [0, 0, 0, 0, 0, 0],
+			sak: [[], [], [], [], [], []],
+			mesc: 0,
+			w: [],
 		};
 
 		initStep(0);
@@ -208,6 +230,17 @@ class Game implements kado.GameInterface {
 		}
 	}
 
+	function updateMaxEnemyShotCount() {
+		var count = 0;
+		for (shot in shotList) {
+			if (shot.flGood != true)
+				count++;
+		}
+		if (count > stats.mesc) {
+			stats.mesc = count;
+		}
+	}
+
 	//
 	public function update(delta:Float) {
 		frameId++;
@@ -218,8 +251,8 @@ class Game implements kado.GameInterface {
 			updateBulletTime();
 		updateFlash();
 		updatePlasma();
+		updateMaxEnemyShotCount();
 
-		// SPRITE
 		mt.bumdum.Sprite.updateAll();
 
 		// trace({

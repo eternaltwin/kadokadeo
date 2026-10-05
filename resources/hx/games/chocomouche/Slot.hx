@@ -174,6 +174,7 @@ class Slot extends Phys {
 		if (canBeClicked())
 			return;
 
+		Game.me.stats.c[Game.me.stats.c.length - 1]++;
 		Game.me.recordSlotClick(pos);
 
 		imReleased();
@@ -213,6 +214,7 @@ class Slot extends Phys {
 	public function discover():Bool {
 		state = Discovered;
 		var n = getAdjacentBomb();
+		Game.me.stats.d[Game.me.stats.d.length - 1].push(n);
 		slot.gotoAndStop(if (n == 0) MC_EMPTY else n);
 		if (n > 0)
 			launchParts();
@@ -237,6 +239,7 @@ class Slot extends Phys {
 				discoverBomb();
 				bomb = true;
 				Game.me.explode(pos);
+				Game.me.stats.d[Game.me.stats.d.length - 1].push(-1);
 		}
 		Game.me.resetTime(bomb);
 	}

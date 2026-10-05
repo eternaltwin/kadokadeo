@@ -604,6 +604,7 @@ class Stykades {
 	}
 
 	public static function genMonster(n) {
+		Cs.game.stats.w.push(n);
 		switch (n) {
 			case 10 | 11 | 12:
 				var b = newStorm(n - 10);

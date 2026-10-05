@@ -9,6 +9,7 @@
     <script type="text/javascript">
         window.Kado = {
             public_key: '{{ str_replace("\n", "\\n", app(App\Services\RunService::class)->getPublicKey()) }}',
+            achievements_enabled: @json((bool) config('kado.achievements.enabled')),
         }
         window.evts = new EventTarget();
         // window.evts.addEventListener('score', console.log);
@@ -24,7 +25,7 @@
 
 <body>
     @include('components.validation-errors')
-    <div id="app"></div>
+    <div id="app" class="w-full"></div>
 </body>
 
 </html>

@@ -66,7 +66,9 @@ class Game implements kado.GameInterface {
 		hm:Int,
 		jp:Int,
 		pl:Int,
-		bl:Int
+		ws:Array<Array<Int>>, // wheel stats
+		mfh:Int, // max fall height
+		was:Int, // water score
 	};
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
@@ -104,7 +106,9 @@ class Game implements kado.GameInterface {
 			hm: 0,
 			jp: 0,
 			pl: 0,
-			bl: 0
+			ws: [],
+			mfh: 0,
+			was: 0,
 		};
 
 		maxHeight = 0;
@@ -168,7 +172,7 @@ class Game implements kado.GameInterface {
 	function initWheels() {
 		var list = new Array();
 
-		var ow = new Wheel();
+		var ow = new Wheel(-1);
 		ow.ray = (Cs.mcw - 2 * (Cs.SIDE + Cs.SPACE)) * 0.5;
 		ow.x = Cs.mcw * 0.5; // Math.random()*Cs.mcw - Cs.SIDE*2
 		ow.y = 0;
@@ -181,7 +185,7 @@ class Game implements kado.GameInterface {
 			var c2 = Num.mm(0, (i / Cs.WMAX) + (Seed.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
 			var c3 = Num.mm(0, (i / Cs.WMAX) + (Seed.rand() * 2 - 1) * Cs.DIF_RANDOMIZER, 1);
 
-			var w = new Wheel();
+			var w = new Wheel(i * 2);
 			w.ray = Cs.WHEEL_RAY_MIN + (1 - c2) * (Cs.WHEEL_RAY_MAX - Cs.WHEEL_RAY_MIN) + Seed.rand() * Cs.WHEEL_RAY_RANDOM;
 			w.speed = Cs.WHEEL_SPEED_MIN + c3 * (Cs.WHEEL_SPEED_MAX - Cs.WHEEL_SPEED_MIN) + Seed.rand() * Cs.WHEEL_SPEED_RANDOM;
 
@@ -212,7 +216,7 @@ class Game implements kado.GameInterface {
 
 			// INTER WHEEL
 			if (Seed.rand() > c) {
-				var nw = new Wheel();
+				var nw = new Wheel(i + 1);
 				nw.y = Num.q((w.y + ow.y) * 0.5);
 				var tr = 0;
 				while (true) {
@@ -314,6 +318,13 @@ class Game implements kado.GameInterface {
 		}
 	}
 
+	public function addScore(score:Int) {
+		if (stats.pl > 0) {
+			stats.was += score;
+		}
+		KadoKadeoManager.kkm.addScore(score);
+	}
+
 	public function update(delta:Float) {
 		timer -= Timer.tmod;
 		#if debug
@@ -332,7 +343,7 @@ class Game implements kado.GameInterface {
 
 				var dx = -blob.y - maxHeight;
 				if (dx > 0)
-					KadoKadeoManager.kkm.addScore(KKApi.const(Std.int(dx)));
+					addScore(KKApi.const(Std.int(dx)));
 				maxHeight = Math.max(-blob.y, maxHeight);
 				var n = Std.int(maxHeight * 0.2);
 				panel.txt.text = n + "m";

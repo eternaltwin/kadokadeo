@@ -120,6 +120,7 @@ class Hero extends Ent {
 				flControl = true;
 				flInvicible = false;
 				teleport();
+				Cs.game.stats.respawn++;
 			}
 		} else {
 			if (root._rotation != 0)
@@ -162,6 +163,9 @@ class Hero extends Ent {
 									if (vy > 0) {
 										vy = -8;
 										m.harm(21);
+										if (m.hp < 0) {
+											Cs.game.stats.sk[m.id]++;
+										}
 									}
 									return;
 								}
@@ -171,6 +175,7 @@ class Hero extends Ent {
 							}
 						} else {
 							burst(m);
+							Cs.game.stats.supak++;
 						}
 					}
 					i++;
@@ -383,6 +388,9 @@ class Hero extends Ent {
 	}
 
 	function throwStar(trg:Monster) {
+		if (Cs.game.stats.fssc == 0) {
+			Cs.game.stats.fssc = KadoKadeoManager.kkm.score;
+		}
 		incStar(-1);
 		cooldown = 2;
 		var a = getAng(trg != null ? trg.root : null);
@@ -404,6 +412,7 @@ class Hero extends Ent {
 	public function incStar(n:Int) {
 		star = Std.int(Math.min(Math.max(0, star + n), 200));
 		Cs.game.setStarField(star);
+		Cs.game.stats.maxs = Std.int(Math.max(Cs.game.stats.maxs, star));
 	}
 
 	public function hit(s:Shoot) {

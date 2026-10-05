@@ -24,13 +24,16 @@ class Bonus {
 	}
 
 	function activate():Void {
+		game.stats.b[id]++;
 		switch (id) {
 			case 0:
 				game.flash(0x00FF00);
 				game.blob_timer = 5;
+				game.stats.bp[0].push(0);
 			case 1:
 				game.flash(0xFF0000);
 				game.hero.super_grapin_time = 20;
+				game.stats.bp[1].push(0);
 			case 2:
 				var b = game.blobs.copy();
 				for (blob in b) {
@@ -38,8 +41,8 @@ class Bonus {
 				}
 				game.flash(0x0000FF);
 				game.hero.special();
+				game.stats.bp[2].push(b.length);
 			case 3:
-				game.stats.b++;
 				game.flash(0xFFFFFF);
 				KadoKadeoManager.kkm.addScore(Cs.C5000);
 			case _:

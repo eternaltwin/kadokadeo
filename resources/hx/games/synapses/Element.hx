@@ -195,6 +195,7 @@ class Element extends Phys {
 					if (col == 0) {
 						var sc = KKApi.cadd(Cs.SCORE_CEL_BASE, Cs.SCORE_CEL_MULTI * KKApi.const(el.lvl));
 						KadoKadeoManager.kkm.addScore(sc);
+						Game.me.stats.cn[Game.me.lvl].push(sc);
 						Game.me.fxScore(el.x, el.y, KKApi.val(sc));
 					}
 				}

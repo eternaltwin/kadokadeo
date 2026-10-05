@@ -7,6 +7,7 @@ const { isLoading, get } = useApi()
 const authStore = useAuthStore()
 const periodStore = usePeriodStore()
 const leagueStore = useLeagueStore()
+const achievementStore = useAchievementStore()
 let intervalId = null
 
 const scores = ref([])
@@ -18,14 +19,16 @@ const league = ref(null)
 const leaguesScores = ref({})
 const palliers = computed(() => {
   const s = []
-  if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[0]) {
-    s.push({ score: props.game.stars[0], points: 0, img: '/gfx/iconGreenStar.gif', alt: 'Etoile verte' })
-  }
-  if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[1]) {
-    s.push({ score: props.game.stars[1], points: 0, img: '/gfx/iconOrangeStar.gif', alt: 'Etoile orange' })
-  }
-  if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[2]) {
-    s.push({ score: props.game.stars[2], points: 0, img: '/gfx/iconRedStar.gif', alt: 'Etoile rouge' })
+  if (props.game.stars?.length > 2) {
+    if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[0]) {
+      s.push({ score: props.game.stars[0], points: 0, img: '/gfx/iconGreenStar.gif', alt: 'Etoile verte' })
+    }
+    if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[1]) {
+      s.push({ score: props.game.stars[1], points: 0, img: '/gfx/iconOrangeStar.gif', alt: 'Etoile orange' })
+    }
+    if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[2]) {
+      s.push({ score: props.game.stars[2], points: 0, img: '/gfx/iconRedStar.gif', alt: 'Etoile rouge' })
+    }
   }
   if (personalBestForPeriod.value) {
     s.push({ score: personalBestForPeriod.value.score, points: null, img: '/gfx/iconBlueArrow.gif', alt: 'Record période' })
@@ -78,122 +81,127 @@ onUnmounted(() => {
 refreshScores()
 
 const selectedTab = ref('gameRules')
+
+const menus = [
+  { id: 'gameRules', label: 'Règles', icon: '/gfx/iconGameRules.png' },
+  { id: 'gameStars', label: 'Paliers', icon: '/gfx/iconGameStars.png' },
+  { id: 'gameRanking', label: 'Classement', icon: '/gfx/iconGameRanking.png' },
+  ...(achievementStore.enabled ? [{ id: 'achievements', label: 'Succès', icon: '/gfx/iconAchievements.png' }] : []),
+]
 </script>
 
 <template>
-  <div class="overflow-y-auto overflow-x-hidden text-xs absolute w-[303px] top-[23px] right-[23px]" :class="isZoomed ? 'h-[640px]' : 'h-[320px]'">
-    <nav v-if="!isZoomed" class="gameNav">
-      <ul>
-        <li :class="{'showed': selectedTab === 'gameRules'}" @click="selectedTab = 'gameRules'">
-          <a class="flex items-center justify-center gap-1"
-             href="#"
-             title="Présentation"
-             @click.prevent="">
-            <img src="/gfx/iconGameRules.png" alt="iconGameRules.png" />
-            Règles
-          </a>
-        </li>
-        <li :class="{'showed': selectedTab === 'gameStars'}" @click="selectedTab = 'gameStars'">
-          <a class="flex items-center justify-center gap-1"
-             href="#"
-             title="Mon score / Mes paliers"
-             @click.prevent="">
-            <img src="/gfx/iconGameStars.png" alt="iconGameStars.png" />
-            Paliers
-            <img v-if="league" :src="`/gfx/leagues/${league.level}.png`" :alt="league.name" />
-          </a>
-        </li>
-        <li :class="{'showed': selectedTab === 'gameRanking'}" @click="selectedTab = 'gameRanking'">
-          <a class="flex items-center justify-center gap-1"
-             href="#"
-             title="Classement général"
-             @click.prevent="">
-            <img src="/gfx/iconGameRanking.png" alt="iconGameRanking.png" />
-            Classement
-          </a>
+  <div :class="{ 'grid @md:grid-cols-2': isZoomed }">
+    <nav v-if="!isZoomed">
+      <ul class="flex items-stretch">
+        <li v-for="menu in menus"
+            :key="menu.id"
+            @click="selectedTab = menu.id"
+            class="flex items-center justify-center text-center gap-1 pt-0.5 cursor-pointer h-7 px-2 @md:flex-1"
+            :class="selectedTab === menu.id ? 'flex-1 bg-kado-cream borderactive text-kado-orange font-bold' : 'text-kado-blue bordernormal bg-kado-cyan-700/10 hover:bg-kado-cyan-200 hover:text-kado-orange hover:pt-1'"
+            :title="menu.label">
+          <img v-if="menu.icon" :src="menu.icon" :alt="menu.label" />
+          <div class="overflow-hidden" :class="selectedTab === menu.id ? 'w-full' : 'w-0 @md:w-full'">{{ menu.label }}</div>
         </li>
       </ul>
     </nav>
 
-    <h3 v-if="isZoomed" class="text-center">Règles</h3>
+    <div>
+      <h3 v-if="isZoomed" class="text-center">Règles</h3>
 
-    <article id="gameRules" :class="selectedTab === 'gameRules' ? '' : notZoomedHiddenState">
-      <p>{{ game.description ?? '[WIP description]' }}</p>
-      <hr />
-      <GamesGameControls :game="game" />
-    </article>
+      <article id="gameRules" :class="selectedTab === 'gameRules' ? '' : notZoomedHiddenState">
+        <p>{{ game.description ?? '[WIP description]' }}</p>
+        <hr />
+        <GamesGameControls :game="game" />
+      </article>
+    </div>
 
-    <h3 v-if="isZoomed" class="flex justify-center">Paliers <img  v-if="league" :src="`/gfx/leagues/${league.level}.png`" :alt="league.name" /></h3>
+    <div>
+      <h3 v-if="isZoomed" class="flex justify-center">Paliers <img  v-if="league" :src="`/gfx/leagues/${league.level}.png`" :alt="league.name" /></h3>
 
-    <article id="gameStars" :class="selectedTab === 'gameStars' ? '' : notZoomedHiddenState">
-      <table class="border-0 **:border-0 whiteFirst">
-        <thead>
-          <tr class="noBackground">
-            <th scope="col">Record période</th>
-            <th scope="col">Mon record</th>
-            <th scope="col">Record du monde</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td scope="row">
-              <Number :value="Math.max(personalBestForPeriod?.score ?? 0, currentScore)" color="orange" />
-            </td>
-            <td>
-              <Number :value="Math.max(personalBest?.score ?? 0, currentScore)" color="orange" />
-            </td>
-            <td>
-              <Number :value="Math.max(worldsBest?.score ?? 0, currentScore)" color="orange" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <article id="gameStars" :class="selectedTab === 'gameStars' ? '' : notZoomedHiddenState">
+        <table class="border-0 **:border-0 whiteFirst">
+          <thead>
+            <tr class="noBackground">
+              <th scope="col">Record période</th>
+              <th scope="col">Mon record</th>
+              <th scope="col">Record du monde</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td scope="row">
+                <Number :value="Math.max(personalBestForPeriod?.score ?? 0, currentScore)" color="orange" />
+              </td>
+              <td>
+                <Number :value="Math.max(personalBest?.score ?? 0, currentScore)" color="orange" />
+              </td>
+              <td>
+                <Number :value="Math.max(worldsBest?.score ?? 0, currentScore)" color="orange" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <h3 class="text-right">Objectifs</h3>
-      <table class="gameGoals border-0 **:border-0">
-        <thead>
-          <tr class="noBackground">
-            <th scope="col" style="width:30px;"></th>
-            <th scope="col" class="textLeft">Paliers</th>
-            <th scope="col" class="textRight">Valeur</th>
-          </tr>
-        </thead>
-        <tbody class="twoColoured">
-          <tr v-for="(pallier, index) in palliers" :key="index" :class="{'opacity-35': nextPallierIndex < index}">
-            <td scope="row">
-              <img v-if="nextPallierIndex === index" src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
-            </td>
-            <td class="textLeft">
-              <img :src="pallier.img" :alt="pallier.alt" /> <Number :value="pallier.score" color="orange" />
-            </td>
-            <td class="textRight">
-              <template v-if="pallier.points !== null">
-                <Number :value="pallier.points" color="green" />
-                <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
-              </template>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </article>
+        <h3 class="text-right">Objectifs</h3>
+        <table class="gameGoals border-0 **:border-0">
+          <thead>
+            <tr class="noBackground">
+              <th scope="col" style="width:30px;"></th>
+              <th scope="col" class="textLeft">Paliers</th>
+              <th scope="col" class="textRight">Valeur</th>
+            </tr>
+          </thead>
+          <tbody class="twoColoured">
+            <tr v-for="(pallier, index) in palliers" :key="index" :class="{'opacity-35': nextPallierIndex < index}">
+              <td scope="row">
+                <img v-if="nextPallierIndex === index" src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
+              </td>
+              <td class="textLeft">
+                <img :src="pallier.img" :alt="pallier.alt" /> <Number :value="pallier.score" color="orange" />
+              </td>
+              <td class="textRight">
+                <template v-if="pallier.points !== null">
+                  <Number :value="pallier.points" color="green" />
+                  <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
+                </template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
 
-    <h3 v-if="isZoomed" class="text-center">Classement</h3>
+    <div>
+      <h3 v-if="isZoomed" class="text-center">Classement</h3>
 
-    <article id="gameRanking" :class="selectedTab === 'gameRanking' ? '' : notZoomedHiddenState">
-      <Loader v-if="isLoading">Chargement des scores...</Loader>
-      <GamesGameScoreTable v-else :scores="scores" style="margin:0 auto" />
-      <p class="center bold">
-        <RouterLink :to="{ name: 'games.ranking', params: { id: game.id }, query: { period: periodStore.period?.id, league: league?.id } }">
-          Classement de ce jeu
-        </RouterLink>
-      </p>
-    </article>
+      <article id="gameRanking" :class="selectedTab === 'gameRanking' ? '' : notZoomedHiddenState">
+        <Loader v-if="isLoading">Chargement des scores...</Loader>
+        <GamesGameScoreTable v-else :scores="scores" style="margin:0 auto" />
+        <p class="center bold">
+          <RouterLink :to="{ name: 'games.ranking', params: { id: game.id }, query: { period: periodStore.period?.id, league: league?.id } }">
+            Classement de ce jeu
+          </RouterLink>
+        </p>
+      </article>
+    </div>
+
+    <div v-if="achievementStore.enabled">
+      <h3 v-if="isZoomed" class="text-center">Succès</h3>
+
+      <article id="achievements" :class="selectedTab === 'achievements' ? '' : notZoomedHiddenState">
+        <Loader v-if="achievementStore.isLoading">Chargement des succès...</Loader>
+        <template v-else>
+          <GamesGameAchievements :game="game" />
+        </template>
+      </article>
+    </div>
   </div>
 </template>
 
 <style scoped>
+@reference "@/../css/app.css";
 article {
-  width: 287px;
   margin: 8px;
 }
 
@@ -216,5 +224,23 @@ h3 {
   color: var(--color-kado-blue);
   border-bottom: 3px double var(--color-kado-blue);
   letter-spacing: 1px;
+}
+
+.bordernormal {
+  @apply border-t-2 border-t-white
+  border-l border-l-white
+  border-r border-r-kado-cyan-750
+  border-b border-b-kado-cyan-750
+  hover:border-t-2 hover:border-t-kado-cyan-750
+  hover:border-l hover:border-l-kado-cyan-750
+  hover:border-r hover:border-r-white
+  hover:border-b hover:border-b-white;
+}
+
+.borderactive {
+  @apply border-t-0
+  border-l-0
+  border-r-0
+  border-b border-b-kado-orange;
 }
 </style>

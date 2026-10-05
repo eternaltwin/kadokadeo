@@ -43,6 +43,7 @@ class Hero {
 	var frame:Float;
 	var death_time:Float;
 	var isEnd:Bool = false;
+	var climbHeight:Int = 0;
 
 	public function new(g:Game) {
 		game = g;
@@ -197,6 +198,13 @@ class Hero {
 			climbFalling(p);
 		}
 
+		if (state == END_CLIMB_LEFT || state == END_CLIMB_RIGHT) {
+			var ch = (climbHeight - y) / Cs.BLK_HEIGHT;
+			if (ch > game.data.ch) {
+				game.data.ch = Std.int(ch);
+			}
+		}
+
 		flRun = false;
 		switch (state) {
 			case NORMAL:
@@ -220,6 +228,7 @@ class Hero {
 						r += 20 * Timer.tmod;
 						if (r >= 20) {
 							state = CLIMB_LEFT;
+							climbHeight = Std.int(y);
 						}
 					}
 				} else if (isRightPressed()) {
@@ -235,6 +244,7 @@ class Hero {
 						r -= 20 * Timer.tmod;
 						if (r <= -20) {
 							state = CLIMB_RIGHT;
+							climbHeight = Std.int(y);
 						}
 					}
 				} else {

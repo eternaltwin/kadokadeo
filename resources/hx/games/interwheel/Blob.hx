@@ -21,6 +21,7 @@ class Blob extends Phys {
 
 	public var step:Int;
 
+	var beginFlyHeight:Int;
 	var inst:Float;
 	var blop:Float;
 	var wet:Float;
@@ -54,6 +55,8 @@ class Blob extends Phys {
 				frict = 1;
 				vx = 0;
 				vy = 0;
+				var mfh = Std.int(y * 0.2) - beginFlyHeight;
+				Cs.game.stats.mfh = Std.int(Math.max(Cs.game.stats.mfh, mfh));
 			case 2:
 				root._rotation = 0;
 				Cs.game.focus = cast {x: this.x, y: this.y};
@@ -69,6 +72,7 @@ class Blob extends Phys {
 				weight = WEIGHT;
 				frict = 0.98;
 				blop = 0.6;
+				beginFlyHeight = Std.int(y * 0.2);
 			case 2: // GRAB
 				var ba = getAng(cw) + 3.14;
 				wa = Num.hMod(cw.a - ba, 3.14);
@@ -77,6 +81,7 @@ class Blob extends Phys {
 				Cs.game.focus = cast {x: Cs.mcw / 2, y: cw.y - Cs.VIEW_WHEEL}; // upcast(cw)
 				ox = x;
 				oy = y;
+				Cs.game.stats.ws.push([cw.id, cw.mList.length]);
 			case 3:
 				root.gotoAndPlay(20);
 			case 4:
@@ -241,12 +246,15 @@ class Blob extends Phys {
 	public function checkWater() {
 		var flw = Num.q(y - RAY) > Num.q(Cs.game.water._y);
 
-		if (flWater) {
-			if (!flw) {
+		if (!flWater) {
+			if (flw) {
 				Cs.game.stats.pl++;
+				// trace("plongeon");
 			}
 		} else {
-			if (flw) {}
+			if (!flw) {
+				// trace('remonte');
+			}
 		}
 
 		flWater = flw;

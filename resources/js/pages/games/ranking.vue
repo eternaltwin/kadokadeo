@@ -27,7 +27,7 @@ fetchGameRanking()
 
 <template>
   <Loader v-if="isGameLoading" />
-  <div v-else-if="game" class="relative w-3/4">
+  <div v-else-if="game" class="relative w-full">
     <h2>Classement général de {{ game.name }}</h2>
 
     <div class="flex gap-4 my-4 justify-center items-center">

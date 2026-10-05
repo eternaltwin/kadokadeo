@@ -29,6 +29,7 @@ class Hero extends Phys {
 
 	var speed:Float;
 	var frame:Float;
+	var wasOutsideBounds:Bool = false;
 
 	public var jumpPower:Float;
 
@@ -100,6 +101,7 @@ class Hero extends Phys {
 				px = Std.int(x);
 				py = Std.int(y);
 				frame = 0;
+				Cs.game.stats.e.push(3);
 		}
 	}
 
@@ -162,6 +164,13 @@ class Hero extends Phys {
 		}
 		if (y > Cs.HEIGHT) {
 			Cs.game.initStep(9);
+		}
+		if (y < 0 && !wasOutsideBounds) {
+			wasOutsideBounds = true;
+			Cs.game.stats.tr += 1;
+		}
+		if (y >= 0) {
+			wasOutsideBounds = false;
 		}
 	}
 
@@ -377,6 +386,7 @@ class Hero extends Phys {
 			//
 			trg.explode(-vx * 0.5, -vy * 0.5);
 			trg = null;
+			Cs.game.stats.e.push(0);
 		}
 	}
 

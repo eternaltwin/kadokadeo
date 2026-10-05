@@ -44,7 +44,7 @@ class Spark extends Phys {
 
 		if (Num.q(getDist(cast {x: Cs.game.blob.x, y: Cs.game.blob.y})) < Blob.RAY + KadoKadeoManager.I(8)) {
 			blast();
-			KadoKadeoManager.kkm.addScore(score);
+			Cs.game.addScore(score);
 			kill();
 		}
 

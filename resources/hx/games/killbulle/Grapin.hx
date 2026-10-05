@@ -79,6 +79,13 @@ class Grapin {
 				var pts = Std.int(b.size / 2) * KKApi.val(Cs.C20);
 				game.stats.s++;
 				game.stats.ts += pts;
+				game.stats.p.push(Std.int(b.size));
+				if (game.blob_timer > 0) {
+					game.stats.bp[0][game.stats.bp[0].length - 1] += 1;
+				}
+				if (game.hero.super_grapin_time > 0) {
+					game.stats.bp[1][game.stats.bp[1].length - 1] += 1;
+				}
 				KadoKadeoManager.kkm.addScore(KKApi.const(pts));
 
 				if (superg) {

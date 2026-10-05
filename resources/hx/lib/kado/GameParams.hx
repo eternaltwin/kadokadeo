@@ -12,4 +12,6 @@ typedef GameParams = {
 	@:optional var build:String;
 	// folder of the spritesheet of an old version of the game (replays), instead of /assets/img/content/<name>/
 	@:optional var assetBase:String;
+	var canvasWidth:Int;
+	var canvasHeight:Int;
 }

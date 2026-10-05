@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class TopPlayersWidget extends BaseWidget
 {
-    protected static ?string $heading = 'Top joueurs';
+    protected static ?string $heading = 'Top players';
 
     protected int|string|array $columnSpan = 'full';
 

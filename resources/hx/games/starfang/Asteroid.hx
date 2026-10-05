@@ -48,8 +48,8 @@ class Asteroid extends Bads {
 		checkWarp();
 	}
 
-	override function hit(shot) {
-		super.hit(shot);
+	override function hit(shot):Bool {
+		var isExploded = super.hit(shot);
 		var x = shot.x;
 		var y = shot.y;
 		var ang = getAng({x: shot.x, y: shot.y});
@@ -68,6 +68,12 @@ class Asteroid extends Bads {
 				p.root._rotation = Seed.randVfx() * 360;
 			}
 		}
+
+		if (isExploded) {
+			Cs.game.stats.kb[type]++;
+		}
+
+		return isExploded;
 	}
 
 	function getRandomPart(gid:Int):Part {
@@ -128,6 +134,8 @@ class Asteroid extends Bads {
 			bonus.x = x;
 			bonus.y = y;
 		}
+
+		Cs.game.stats.l[Cs.game.lvl - 1][type]++;
 
 		//
 		if (size > destructPoint) {

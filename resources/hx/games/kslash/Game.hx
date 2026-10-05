@@ -94,7 +94,18 @@ class Game implements kado.GameInterface {
 
 	public var optList:Array<Bool>;
 
-	public var stats:{opt:Array<Int>, bads:Array<Int>, dif:Int};
+	public var stats:{
+		opt:Array<Int>,
+		bads:Array<Int>,
+		dif:Int,
+		k:Array<Int>,
+		sk:Array<Int>,
+		respawn:Int,
+		supak:Int,
+		fssc:Int,
+		maxs:Int,
+		maxb:Int,
+	};
 
 	public var dm:DepthManager;
 	public var mdm:DepthManager;
@@ -155,8 +166,18 @@ class Game implements kado.GameInterface {
 		nsList = [];
 		iconList = [];
 		planList = [];
-
-		stats = {opt: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bads: [0, 0, 0, 0, 0], dif: 0};
+		stats = {
+			opt: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			bads: [0, 0, 0, 0, 0],
+			dif: null,
+			k: [0, 0, 0, 0, 0],
+			sk: [0, 0, 0, 0, 0],
+			respawn: 0,
+			supak: 0,
+			fssc: 0,
+			maxs: 0,
+			maxb: 0,
+		};
 
 		initMap();
 		planList.push({mc: bg, c: 0.13});
@@ -246,7 +267,14 @@ class Game implements kado.GameInterface {
 	}
 
 	function initPlat() {
-		platList = [{x: 0, y: YMAX - 1, w: XMAX, mc: null}];
+		platList = [
+			{
+				x: 0,
+				y: YMAX - 1,
+				w: XMAX,
+				mc: null
+			}
+		];
 		var y = YMAX - 1;
 
 		while (y > 8) {
@@ -254,7 +282,12 @@ class Game implements kado.GameInterface {
 			var x = Seed.random(4);
 			while (x < XMAX) {
 				var w = 2 + Seed.random(8);
-				platList.push({x: x, y: y, w: w, mc: null});
+				platList.push({
+					x: x,
+					y: y,
+					w: w,
+					mc: null
+				});
 				x += w + 2 + Std.int(Seed.random(8) * (1 - (y / YMAX)));
 			}
 		}
@@ -393,6 +426,7 @@ class Game implements kado.GameInterface {
 				m.y = YMAX - (2 + (Seed.random(6)) * Cs.PLAT_ECART);
 		}
 
+		m.id = id;
 		monsterLevel += m.stLevel;
 		return m;
 	}
@@ -415,8 +449,10 @@ class Game implements kado.GameInterface {
 		while (iconList.length > 0)
 			iconList.pop().removeMovieClip();
 		var x = Cs.mcw;
+		var max = 0;
 		for (i in 0...optList.length) {
 			if (optList[i]) {
+				max += i << i;
 				var mc = Clip.attach(dm, "mcIcon", DP_INTER);
 				mc.gotoAndStop(i + 1);
 				mc._x = x;
@@ -425,6 +461,7 @@ class Game implements kado.GameInterface {
 				iconList.push(mc);
 			}
 		}
+		stats.maxb = Std.int(Math.max(stats.maxb, max));
 	}
 
 	public function setStarField(n:Int) {

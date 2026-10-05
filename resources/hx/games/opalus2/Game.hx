@@ -57,6 +57,12 @@ class Game implements kado.GameInterface {
 	public var dm:DepthManager;
 	public var gdm:DepthManager;
 
+	var stats:{
+		l:Array<Array<Int>>, // [colorType, colorCount, fallenCount] for each turn
+		f:Array<Array<Int>>, // fallenCount per color for each turn: [[fallenCount1, fallenCount2, ...], [fallenCount1, fallenCount2, ...], ...]
+		mm:Array<Int>, // min/max uncovered balls [xmin, ymin, xmax, ymax]
+	};
+
 	var glow:Array<ASprite>;
 	var fList:Array<Part>;
 	var bg:ASprite;
@@ -74,9 +80,6 @@ class Game implements kado.GameInterface {
 	var cullTargetY:Float;
 	var cullTargetW:Float;
 	var cullTargetH:Float;
-
-	var stats:{};
-
 	var grid:Array<Array<GridElem>>;
 	var bgHoleX:Float;
 	var bgHoleY:Float;
@@ -120,6 +123,11 @@ class Game implements kado.GameInterface {
 		glowDec = 0;
 		hoverColor = -1;
 		hoveredCell = null;
+		stats = {
+			l: [],
+			f: [],
+			mm: [7, 7, 7, 7],
+		};
 
 		initGrid();
 		turn = Cs.TURN;
@@ -172,6 +180,10 @@ class Game implements kado.GameInterface {
 		updatePanelPosition();
 
 		// Replaced GPU mask with logical culling.
+
+		// DONT REPRODUCE THIS FOR ANY OTHER GAME. THIS IS NOT HOW ITS SUPPOSED TO BE DONE
+		// Events should not be listened for deterministic games.
+		// To have a deterministic game, you have to check if mouse button is clicked or check the X and Y position of the mouse, DONT USE EVENTS.
 		map.onPress = function() {
 			onMapPress();
 		};
@@ -229,6 +241,7 @@ class Game implements kado.GameInterface {
 		switch (step) {
 			case 0: // CHOICE
 				initSel();
+				updateMinMax();
 
 			case 1: // DESTROY
 				timer = Cs.TIME_EXPLODE;
@@ -249,13 +262,16 @@ class Game implements kado.GameInterface {
 						p.root.gotoAndStop(mc._currentframe);
 						free(pos.x, pos.y);
 						fList.push(p);
+						stats.f[stats.f.length - 1][mc._currentframe - 1]++;
 					}
+					stats.l[stats.l.length - 1][2] = fList.length;
 				}
 
 			case 9: // ENDGAME
 				timer = 4;
 				cullTargetW = 0;
 				cullTargetH = 0;
+				updateMinMax();
 		}
 	}
 
@@ -281,6 +297,7 @@ class Game implements kado.GameInterface {
 						var ball = grid[p.x][p.y];
 						blast(ball);
 						KadoKadeoManager.kkm.addScore(KKApi.cadd(Cs.SCORE_BALL, bonus));
+						stats.l[stats.l.length - 1][1]++;
 						free(p.x, p.y);
 					}
 				}
@@ -289,6 +306,7 @@ class Game implements kado.GameInterface {
 					if (list.length > 0) {
 						dList = list;
 						bonus = KKApi.cadd(Cs.SCORE_BONUS, bonus);
+						trace('bonus');
 						initStep(1);
 					} else {
 						initStep(2);
@@ -351,6 +369,32 @@ class Game implements kado.GameInterface {
 		var prc = 50 + Math.cos(glowDec / 100) * 30;
 		for (mc in glow) {
 			Col.setPercentColor(mc, prc, 0xFFFFFF);
+		}
+	}
+
+	public function updateMinMax():Void {
+		for (x in 0...Cs.GRID_MAX) {
+			for (y in 0...Cs.GRID_MAX) {
+				// [xmin, ymin, xmax, ymax]
+
+				if (grid[x][y] == null) {
+					if (x < stats.mm[0]) {
+						stats.mm[0] = x;
+					}
+
+					if (y < stats.mm[1]) {
+						stats.mm[1] = y;
+					}
+
+					if (x > stats.mm[2]) {
+						stats.mm[2] = x;
+					}
+
+					if (y > stats.mm[3]) {
+						stats.mm[3] = y;
+					}
+				}
+			}
 		}
 	}
 
@@ -433,6 +477,8 @@ class Game implements kado.GameInterface {
 		for (p in dList) {
 			grid[p.x][p.y].flDead = true;
 		}
+		stats.l.push([id, 0, 0]);
+		stats.f.push([0, 0, 0, 0, 0, 0, 0]);
 		emptySel();
 		turn = KKApi.cadd(turn, Cs.DEC_TURN);
 		panel.field.text = Std.string(KKApi.val(turn));

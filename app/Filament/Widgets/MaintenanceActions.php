@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Achievement;
 use Filament\Notifications\Notification;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Artisan;
@@ -11,7 +12,7 @@ class MaintenanceActions extends Widget
 {
     protected string $view = 'filament.widgets.maintenance-actions';
 
-    // protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 3;
 
@@ -50,6 +51,69 @@ class MaintenanceActions extends Widget
             Notification::make()
                 ->title('Impossible de préparer une nouvelle période.')
                 ->body('Une période est peut-être déjà en cours.')
+                ->danger()
+                ->send();
+        }
+    }
+
+    public function migrate(): void
+    {
+        try {
+            Artisan::call('migrate', ['--force' => true]);
+
+            Notification::make()
+                ->title('OK!')
+                ->body(Artisan::output())
+                ->success()
+                ->send();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            Notification::make()
+                ->title('Unable to migrate.')
+                ->body(Artisan::output())
+                ->danger()
+                ->send();
+        }
+    }
+
+    public function migrateRollback(): void
+    {
+        try {
+            Artisan::call('migrate:rollback', ['--force' => true]);
+
+            Notification::make()
+                ->title('OK!')
+                ->body(Artisan::output())
+                ->success()
+                ->send();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            Notification::make()
+                ->title('Unable to rollback migration.')
+                ->body(Artisan::output())
+                ->danger()
+                ->send();
+        }
+    }
+
+    public function deleteAchievements(): void
+    {
+        try {
+            Achievement::query()->delete();
+            Artisan::call('db:seed', ['--force' => true, '--class' => 'AchievementsSeeder']);
+
+            Notification::make()
+                ->title('OK!')
+                ->success()
+                ->send();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            Notification::make()
+                ->title('Unable to delete achievements.')
+                ->body('Check logs for details and try again.')
                 ->danger()
                 ->send();
         }

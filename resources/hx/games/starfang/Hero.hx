@@ -25,6 +25,7 @@ class Hero extends Phys {
 
 	public var mainFlame:Float;
 	public var mainFlameTrg:Float;
+	public var shots = 0;
 
 	// var weapon:{selected:Int, cd:Float, power:Array<Int>}
 	var weaponSelected:Int;
@@ -368,6 +369,7 @@ class Hero extends Phys {
 				vy -= shot.vy * 0.1;
 		}
 		weaponCooldown = cd;
+		Cs.game.stats.l[Cs.game.lvl - 1][5]++;
 	}
 
 	function fireSecondary() {

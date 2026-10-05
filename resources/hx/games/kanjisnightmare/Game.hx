@@ -1,5 +1,6 @@
 package kanjisnightmare;
 
+import pixi.filters.extras.GlowFilter;
 import common_haxe_avm1.KeyboardManager;
 import common_haxe_avm1.MouseManager;
 import haxe.io.Bytes;
@@ -12,7 +13,6 @@ import pixi.core.math.shapes.Rectangle;
 import pixi.core.sprites.Sprite as PixiSprite;
 import pixi.core.textures.Texture;
 import pixi.filters.colormatrix.ColorMatrixFilter;
-import pixi.filters.extras.GlowFilter;
 
 // decor plan: the 4 cave layers (type 0, repeated) and the elements that scroll by (type 1)
 typedef PlanInfo = {mc:ASprite, c:Float, w:Float, x:Float, y:Float, dy:Float, type:Int};
@@ -98,8 +98,12 @@ class Game implements kado.GameInterface {
 
 	var plans:Array<PlanInfo>;
 
-	public var stats:{opt:Array<Int>, bads:Array<Int>, dif:Int};
-
+	public var stats:{
+		opt:Array<Int>,
+		bads:Array<Int>,
+		dif:Int,
+		gu:Int
+	};
 	public var dm:DepthManager;
 	public var mdm:DepthManager;
 	public var hero:Hero;
@@ -178,7 +182,12 @@ class Game implements kado.GameInterface {
 		genPlatCoef = 10;
 		handicap = 0;
 
-		stats = {opt: [for (i in 0...26) 0], bads: [0, 0, 0], dif: 0};
+		stats = {
+			opt: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			bads: [0, 0, 0],
+			dif: null,
+			gu: 0, // grapins used
+		};
 
 		scrollMin = map._x + 300;
 

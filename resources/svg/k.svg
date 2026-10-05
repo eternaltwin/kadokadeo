@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="0" y2="17" gradientUnits="userSpaceOnUse">
+      <stop offset=".53" stop-color="#89bc24"/>
+      <stop offset=".53" stop-color="#c4f75f"/>
+    </linearGradient>
+    <linearGradient id="bevel" x1="0" y1="0" x2="0" y2="17" gradientUnits="userSpaceOnUse">
+      <stop offset=".53" stop-color="#617d82"/>
+      <stop offset=".53" stop-color="#2f3c3c"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="3" x2="0" y2="9.4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c9d3ce"/>
+      <stop offset="1" stop-color="#eaeeef"/>
+    </linearGradient>
+    <linearGradient id="shade" x1="0" y1="8" x2="0" y2="14" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5d6f70"/>
+      <stop offset="1" stop-color="#415253"/>
+    </linearGradient>
+    <linearGradient id="kGlass" x1="0" y1="4" x2="0" y2="9" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e3f6bc"/>
+      <stop offset="1" stop-color="#f2fdda"/>
+    </linearGradient>
+    <linearGradient id="kShade" x1="0" y1="8" x2="0" y2="12" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c4f75f"/>
+      <stop offset="1" stop-color="#b4e552"/>
+    </linearGradient>
+    <linearGradient id="kLineGlass" x1="0" y1="3" x2="0" y2="9" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#adbe8d"/>
+      <stop offset="1" stop-color="#d4dec0"/>
+    </linearGradient>
+    <linearGradient id="kLineShade" x1="0" y1="8" x2="0" y2="13" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#648c14"/>
+      <stop offset="1" stop-color="#47670d"/>
+    </linearGradient>
+    <path id="k" d="M6 4H8V7L10 4H12.2L9.53 8L12.2 12H10L8 9V12H6Z"/>
+    <clipPath id="inner">
+      <circle cx="8.5" cy="8.5" r="5.5"/>
+    </clipPath>
+    <clipPath id="lower">
+      <path d="M2 9.4Q8.5 7 15 9.4V15H2Z"/>
+    </clipPath>
+  </defs>
+  <circle cx="8.5" cy="8.5" r="8.5" fill="#fff"/>
+  <circle cx="8.5" cy="8.5" r="7.5" fill="url(#ring)"/>
+  <circle cx="8.5" cy="8.5" r="6.5" fill="url(#bevel)"/>
+  <g clip-path="url(#inner)" stroke-width="1.7" stroke-linejoin="round" paint-order="stroke">
+    <rect x="3" y="3" width="11" height="11" fill="url(#glass)"/>
+    <use href="#k" fill="url(#kGlass)" stroke="url(#kLineGlass)"/>
+    <g clip-path="url(#lower)">
+      <rect x="3" y="3" width="11" height="11" fill="url(#shade)"/>
+      <use href="#k" fill="url(#kShade)" stroke="url(#kLineShade)"/>
+    </g>
+  </g>
+</svg>

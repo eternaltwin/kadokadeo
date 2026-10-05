@@ -11,8 +11,9 @@ Route::get('/users/{user:etwin_id}/history', [App\Http\Controllers\Api\UserContr
 
 Route::get('/announcement', [App\Http\Controllers\Api\AnnouncementController::class, 'show'])
     ->middleware('cache.headers:public;max_age=60;etag');
+Route::get('/achievements', [App\Http\Controllers\Api\AchievementController::class, 'index']);
 
-Route::get('/period/current',[App\Http\Controllers\Api\PeriodController::class, 'current']);
+Route::get('/period/current', [App\Http\Controllers\Api\PeriodController::class, 'current']);
 
 Route::get('/daily/game', [App\Http\Controllers\Api\GameController::class, 'daily']);
 Route::get('/daily/scores', [App\Http\Controllers\Api\GameScoreController::class, 'dailyScores']);

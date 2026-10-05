@@ -98,13 +98,12 @@ class KadoKadeoManager extends Application {
 	public function new(canvas:CanvasElement, gameClass:Class<GameInterface>, params:GameParams) {
 		super({
 			view: canvas,
-			width: 600,
-			height: 640,
+			width: params.canvasWidth,
+			height: params.canvasHeight,
 			// Keep logical coordinates at 600 x 640; Vue controls the CSS size.
 			resolution: Math.max(1, Browser.window.devicePixelRatio),
 			backgroundColor: 0x80c0e6e9
 		});
-
 		this.canvas = canvas;
 		this.gameClass = gameClass;
 		this.params = params;
@@ -578,7 +577,6 @@ class KadoKadeoManager extends Application {
 	}
 
 	// REPLAY SEEKING
-
 	// length of the replay in frames (older replays do not store it: estimated, it grows while they are played)
 	public function getReplayLength():Int {
 		var total = replay.getTotalFrames();
@@ -732,7 +730,10 @@ class KadoKadeoManager extends Application {
 	// ANTI CHEAT: NO PAUSE BY HIDING THE TAB
 
 	function canCatchUp():Bool {
-		return runFlow.state == Playing && game != null && gameOverScreen == null && !replay.isPlayingReplay()
+		return runFlow.state == Playing
+			&& game != null
+			&& gameOverScreen == null
+			&& !replay.isPlayingReplay()
 			&& Reflect.field(gameClass, "ALLOW_PAUSE") != true;
 	}
 
@@ -909,6 +910,7 @@ class KadoKadeoManager extends Application {
 				return endRunDetails;
 			});
 		#else
+		trace(params);
 		return Promise.resolve({
 			is_best: true,
 			previous_star: -1,

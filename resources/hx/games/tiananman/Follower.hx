@@ -32,6 +32,7 @@ class Follower {
 	public var y:Float;
 
 	public var points:Int;
+	public var pointFrames:Int;
 	public var mcPoints:McPointsSprite;
 
 	public var shield:Float;
@@ -72,6 +73,7 @@ class Follower {
 			Game.me.toGrab.push(this);
 
 			points = KKApi.val(Cs.FOLLOW_POINTS);
+			pointFrames = 0;
 			mcPoints = cast Game.me.mdm.empty(Game.DP_POINTS);
 			mcPoints._field = mcPoints.initTextField("_field", {
 				font: "Arial",
@@ -149,6 +151,7 @@ class Follower {
 		if (step == Wait && !waitDownPoints && points > KKApi.val(Cs.MIN_POINTS)) {
 			points = Std.int(Math.max(KKApi.val(Cs.MIN_POINTS), Std.int(points - mt.Timer.tmod * 15)));
 			mcPoints._field.text = Std.string(points);
+			pointFrames += 1;
 		}
 
 		if (effect != null) {
@@ -211,10 +214,14 @@ class Follower {
 
 		step = Follow;
 
+		Game.me.stats.fc.push([pointFrames, Game.me.fMult, Game.me.fever ? 1 : 0]);
 		var k = KKApi.cmult(KKApi.const(points), KKApi.const(Std.int(1 + Game.me.fMult * 0.2)));
 		if (Game.me.fever)
 			k = KKApi.const(Std.int(KKApi.val(k) * 1.12));
 		Game.me.addScore(k);
+		if (Game.me.lifeFollowers == 1) {
+			Game.me.stats.lfsc += k;
+		}
 
 		Game.me.addToFever(points);
 

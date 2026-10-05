@@ -1,19 +1,29 @@
 <script setup></script>
 
 <template>
-  <nav id="topNav">
-    <ul>
+  <nav>
+    <ul class="flex justify-around">
       <li>
-        <RouterLink :to="{ name: 'games.index' }" id="topNavGames">
-          <span>Jeux</span>
+        <RouterLink :to="{ name: 'games.index' }">
+          <img src="/gfx/menuGames.png" alt="Jeux" class="h-fit w-auto" />
         </RouterLink>
       </li>
       <li class="grayscale">
-        <RouterLink to="/" id="topNavCompetition"><span>Site</span></RouterLink>
+        <RouterLink to="/">
+          <img src="/gfx/menuCompetition.png" alt="Compétition" class="h-fit w-auto" />
+        </RouterLink>
       </li>
       <li>
-        <RouterLink :to="{ name: 'profile.index' }" id="topNavProfile"><span>Kado</span></RouterLink>
+        <RouterLink :to="{ name: 'profile.index' }">
+          <img src="/gfx/menuProfile.png" alt="Profil" class="h-fit w-auto" />
+        </RouterLink>
       </li>
     </ul>
   </nav>
 </template>
+
+<style scoped>
+ul li:hover {
+  background: url('/gfx/menuHover.png') no-repeat;
+}
+</style>

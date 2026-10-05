@@ -11,6 +11,7 @@ class Monster extends Ent {
 	public var stClimbWait:Float;
 	public var stShootWait:Float;
 	public var score:Int;
+	public var id:Int;
 
 	// VARIABLES
 	public var flClimbAnim:Bool;
@@ -126,6 +127,7 @@ class Monster extends Ent {
 		Cs.game.addScore(score);
 		Cs.game.spawnBonus(root._x, root._y, getDrop());
 		Cs.game.monsterLevel -= stLevel;
+		Cs.game.stats.k[id]++;
 		leaveSquare();
 		Cs.game.mList.remove(this);
 	}

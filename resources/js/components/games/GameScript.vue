@@ -2,13 +2,10 @@
 const props = defineProps({
   game: { type: Object, required: true },
   args: { type: Object, default: () => ({}) },
-  gameWidth: { type: Number, default: 300 },
-  gameHeight: { type: Number, default: 320 },
   canvasStyle: { type: Object, default: () => ({}) },
 })
 
 const canvas = ref(null)
-const attrs = useAttrs()
 const { mount, destroy, invalidate, crash } = useGame(() => props.game)
 const showTechnicalDetails = ref(false)
 const copyFeedback = ref('')
@@ -59,6 +56,8 @@ async function copyTechnicalDetails() {
 async function mountGame() {
   await mount(canvas.value, {
     ...props.args,
+    canvasWidth: props.game.is_arkadeo ? 600 : 600,
+    canvasHeight: props.game.is_arkadeo ? 460 : 640,
     // seed:'123',
     // replayData: '',
   })
@@ -75,7 +74,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="relative" :style="{ width: props.gameWidth + 'px', height: props.gameHeight + 'px', ...attrs.style ?? {} }">
+  <div class="relative w-full">
     <div v-if="crash" class="error absolute top-2 right-2 left-2 z-20">
       <div class="text-xs">
         <p>Un problème technique est survenu pendant la partie.</p>
@@ -114,11 +113,10 @@ onBeforeUnmount(() => {
     </div>
     <canvas
       ref="canvas"
-      :width="900"
-      :height="960"
+      :width="game.is_arkadeo ? 600 : 900"
+      :height="game.is_arkadeo ? 460 : 960"
+      class="w-full"
       :style="{
-        width: gameWidth + 'px',
-        height: gameHeight + 'px',
         touchAction: 'none',
         userSelect: 'none',
         ...props.canvasStyle,

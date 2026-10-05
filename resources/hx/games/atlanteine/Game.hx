@@ -182,7 +182,9 @@ class Game implements kado.GameInterface {
 	public var mcDisplay:McBmp;
 	public var prec:Map;
 	public var mcTimer:AnonSprite14226607;
-	public var stats:{_f:Int, _b:Array<Int>, _s:Int};
+	public var stats:{
+		s:Array<Array<Int>>, // [per level: [boxesInLevel, ghostsInLevel, boxesMoved, ghostsKilledBySelf, ghostsKilledByBlock, timesKilledByWater, movesCount, hasPushedInLevel]]
+	};
 
 	// var dbg:Graphics;
 
@@ -195,6 +197,10 @@ class Game implements kado.GameInterface {
 
 		xmax = Std.int(mcw / SIZE);
 		ymax = Std.int(mch / SIZE);
+
+		stats = {
+			s: [],
+		};
 
 		dif = 0;
 		level = 1;
@@ -246,7 +252,20 @@ class Game implements kado.GameInterface {
 				break;
 		}
 		drawLevel();
-		// root.update();
+		var boxesInLevel = 0;
+		for (a in grid) {
+			for (mc in a.filter(n -> n != null)) {
+				if (mc == BLOCK) {
+					boxesInLevel++;
+				}
+			}
+		}
+		#if debug
+		if (stats.s.length > 0) {
+			trace(stats.s[stats.s.length - 1]);
+		}
+		#end
+		stats.s.push([boxesInLevel, ghostList.length, 0, 0, 0, 0, 0, 0]);
 	}
 
 	public function update(ts:Float) {
@@ -428,6 +447,7 @@ class Game implements kado.GameInterface {
 			return;
 
 		if (d != null && (flControl || lastDir != d)) {
+			stats.s[stats.s.length - 1][6]++;
 			flControl = false;
 			lastDir = d;
 			var dir = DIR[d];
@@ -444,6 +464,7 @@ class Game implements kado.GameInterface {
 					}
 					grid[x + dir[0] * 2][y + dir[1] * 2] = BLOCK;
 					grid[x + dir[0]][y + dir[1]] = EMPTY;
+					stats.s[stats.s.length - 1][2]++;
 
 					step = Move;
 					move = {d: d, coef: 0.0};
@@ -530,6 +551,7 @@ class Game implements kado.GameInterface {
 					}
 					mcBall.filters = [];
 					killBall();
+					stats.s[stats.s.length - 1][5]++;
 					break;
 				case OUT:
 					finishLevel();
@@ -611,6 +633,7 @@ class Game implements kado.GameInterface {
 			var dist = ball.getDist({x: g.x, y: g.y});
 			if (dist < KadoKadeoManager.I(10)) {
 				g.explode();
+				stats.s[stats.s.length - 1][3]++;
 				killBall();
 				ball.kill();
 				levelTimer = Math.max(levelTimer - 100, 0);
@@ -774,6 +797,9 @@ class Game implements kado.GameInterface {
 
 		mcOut.gotoAndPlay(2);
 
+		if (pushInfo != null) {
+			stats.s[stats.s.length - 1][7] = 1;
+		}
 		// BONUS CAISSE
 		if (FL_BONUS_BLOCK && pushInfo == null) {
 			for (a in elements)

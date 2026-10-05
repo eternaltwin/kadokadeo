@@ -1,18 +1,15 @@
 package tubulo;
 
+import common_haxe_avm1.kac.ProtectedInt;
 import pixi.filters.colormatrix.ColorMatrixFilter;
 import pixi.core.math.shapes.Circle;
-import common_haxe_avm1.KeyboardManager;
 import common_haxe_avm1.MouseManager;
 import haxe.io.UInt16Array;
 import pixi.core.text.Text;
-import common_haxe_avm1.KKApi;
 import common_haxe_avm1.pixi.DropShadowFilter;
 import kado.Seed;
-import pixi.core.math.shapes.Rectangle;
 import pixi.core.graphics.Graphics;
 import mt.bumdum.Sprite;
-import mt.bumdum.Phys;
 import mt.bumdum.Lib;
 
 enum Step {
@@ -46,8 +43,6 @@ class TubeSprite extends ASprite {
 
 @:expose('GameTubulo')
 class Game implements kado.GameInterface {
-	public static var FL_DEBUG = false;
-
 	public static var DP_BG = 0;
 	public static var DP_TUBES = 3;
 
@@ -55,15 +50,19 @@ class Game implements kado.GameInterface {
 	var moveCoef:Float;
 	var chrono:Float;
 	var inMove:Int;
-	var lvl:Int;
-
-	var lvlc:Int;
+	var lvl:ProtectedInt;
 	var score:Int;
 
 	var par:Int;
 	var moveNum:Int;
 
-	var stats:{_t:Array<Array<Int>>, _e:Array<Int>, _r:Array<Int>};
+	var stats:{
+		_t:Array<Array<Int>>,
+		_e:Array<Int>,
+		_r:Array<Int>,
+		_l:Array<Array<Int>>,
+		_cl:Array<Float>
+	};
 
 	public var grid:Array<Array<TubeSprite>>;
 	public var tubes:Array<TubeSprite>;
@@ -113,11 +112,12 @@ class Game implements kado.GameInterface {
 			_t: [[]],
 			_e: [],
 			_r: [],
+			_l: [],
+			_cl: [],
 		}
 
 		//
-		lvl = 0;
-		lvlc = 156;
+		lvl = new ProtectedInt(0);
 		KadoKadeoManager.kkm.addScore(Cs.SCORE_START);
 
 		initGrid();
@@ -234,8 +234,6 @@ class Game implements kado.GameInterface {
 
 	// UPDATE
 	public function update(delta:Float) {
-		mt.Timer.tmod *= 0.5;
-
 		applyReplayEvents();
 		updateMouseEvents();
 
@@ -384,8 +382,6 @@ class Game implements kado.GameInterface {
 		if (chrono >= Cs.CHRONO_MAX) {
 			hideInterface();
 			step = GameOver;
-			if (lvlc / Math.pow(2, lvl) != 156)
-				KKApi.flagCheater();
 			KadoKadeoManager.kkm.gameOver(stats);
 		}
 	}
@@ -430,11 +426,11 @@ class Game implements kado.GameInterface {
 
 		stats._e.push(moveNum - par);
 		stats._t.push([]);
-		lvl++;
-		lvlc *= 2;
+		lvl += 1;
 		KadoKadeoManager.kkm.addScore(Cs.SCORE_LEVEL);
 		initAnim(1);
 		chrono = Math.max(chrono - Cs.CHRONO_BONUS, 0);
+		stats._cl.push(chrono);
 	}
 
 	function initPlay() {
@@ -558,10 +554,13 @@ class Game implements kado.GameInterface {
 			}
 		}
 
+		var cols = [0, 0, 0];
 		for (mc in tubes) {
 			// mc.smc.gotoAndStop(mc.id + 1); // OLD
 			mc.gotoAndStop(getTubeFrame(mc.id, getTubeLocalFrame(mc))); // NEW
+			cols[mc.id]++;
 		}
+		stats._l.push(cols);
 	}
 
 	inline function getTubeFrame(id:Int, frame:Int) {
@@ -577,8 +576,9 @@ class Game implements kado.GameInterface {
 			return;
 		stats._r.push(lvl);
 		setScore(score);
-		chrono = Math.min(chrono + 50, Cs.CHRONO_MAX);
+		chrono = Math.min(chrono + 100, Cs.CHRONO_MAX);
 		initAnim(1);
+		stats._l.splice(lvl, 1);
 	}
 
 	function setScore(value:Int) {

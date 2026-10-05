@@ -206,7 +206,10 @@ class Bads extends Phys {
 						p.root.blendMode = BlendModes.ADD;
 						// p.plasmaId = 1
 					}
-					damage((0.02 + power * 0.05) * Timer.tmod);
+					var isDead = damage((0.02 + power * 0.05) * Timer.tmod);
+					if (isDead) {
+						Cs.game.stats.spk[Hero.WP_LASER] += 1;
+					}
 					break;
 				}
 			}
@@ -224,7 +227,10 @@ class Bads extends Phys {
 					var score = o.r * 1.2;
 					if (o.g == 0 && score > lim) {
 						var c = (score - lim) / (255 - lim);
-						damage((0.07 + 1 * c) * Timer.tmod * 2);
+						var isDead = damage((0.07 + 1 * c) * Timer.tmod * 2);
+						if (isDead) {
+							Cs.game.stats.spk[Hero.WP_SPEED] += 1;
+						}
 						if (Seed.randomVfx(Std.int(Math.max(1, 2 / Timer.tmod))) == 0) {
 							var mc = Cs.game.dm.attach("partStatic", Game.DP_PARTS);
 							mc.removeOnFrame = 5;
@@ -248,7 +254,10 @@ class Bads extends Phys {
 			h.explode();
 		}
 		score = null;
-		damage(10);
+		var isDead = damage(10);
+		if (isDead && Cs.game.hero.invincibleTimer != null) {
+			Cs.game.stats.sak[Hero.WP_LASER][Cs.game.stats.sak[Hero.WP_LASER].length - 1][0] += 1;
+		}
 	}
 
 	public function bounceFamily() {
@@ -543,17 +552,20 @@ class Bads extends Phys {
 	}
 
 	// HIT
-	public function hit(shot:Shot) {
-		damage(shot.damage);
+	public function hit(shot:Shot):Bool {
+		return damage(shot.damage);
 	}
 
-	public function damage(n:Float) {
+	public function damage(n:Float):Bool {
 		flash = 100;
 		hp -= n;
 		if (hp <= 0) {
-			if (!flDeath)
+			if (!flDeath) {
 				die();
+				return true;
+			}
 		}
+		return false;
 	}
 
 	public function die() {

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Achievements\Events\LeagueChanged;
 use App\Models\Game;
 use App\Models\League;
 use App\Models\LeagueMembership;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class LeagueService
 {
-    public function __construct(private readonly ScoreService $scoreService) {}
+    public function __construct(private readonly ScoreService $scoreService, private readonly AchievementService $achievementService) {}
 
     public function getBeginnerLeague(): League
     {
@@ -158,6 +159,14 @@ class LeagueService
 
                     $this->storeHighestMembership($run->user_id, $game->id, $nextPeriod->id, $nextLeague);
                     $this->rewardPromotion($promotion);
+                    $this->achievementService->handleLeagueChanged(new LeagueChanged(
+                        user: $run->user,
+                        game: $game,
+                        period: $nextPeriod,
+                        fromLeague: $league,
+                        toLeague: $nextLeague,
+                        promotion: $promotion,
+                    ));
                 }
             }
         }

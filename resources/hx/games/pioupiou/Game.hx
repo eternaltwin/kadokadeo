@@ -41,7 +41,14 @@ class Game implements kado.GameInterface {
 	public var dmanager:DepthManager;
 	public var interf:DepthManager;
 	public var scroll:ASprite;
-	public var data:{b:Array<Int>, l:Int};
+	public var data:{
+		b:Array<Int>, // bubbles gathered [green, blue, red]
+		l:Int, // meters
+		fbl:Int, // first bubble level
+		fb:Array<Int>, // falling bubbles gathered [green, blue, red]
+		bp:Array<Int>, // bubble popped [green, blue, red]
+		ch:Int, // max climb height
+	};
 
 	var bg:ASprite;
 	var meter:ASprite;
@@ -81,7 +88,14 @@ class Game implements kado.GameInterface {
 		setMeter(0);
 		level = new Level(this);
 		hero = new Hero(this);
-		data = {b: [0, 0, 0], l: 0};
+		data = {
+			b: [0, 0, 0],
+			l: 0,
+			fbl: 0,
+			fb: [0, 0, 0],
+			bp: [0, 0, 0],
+			ch: 0,
+		};
 	}
 
 	public function setMeter(n:Int):Void {

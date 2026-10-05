@@ -2,11 +2,8 @@ package travoltax.opt;
 
 import kado.Seed;
 import travoltax.Common.Cs;
-import travoltax.Common.Step;
 import travoltax.Game;
 import travoltax.Option;
-import mt.bumdum.Lib;
-import mt.bumdum.Phys;
 
 class Contrat extends Option {
 	var inc:Float;

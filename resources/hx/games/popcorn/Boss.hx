@@ -224,6 +224,8 @@ class Boss extends Phys {
 			mc.gotoAndStop(frame);
 		}
 
+		Cs.game.stats.e.push(2);
+		Cs.game.stats.bhf.push(KadoKadeoManager.kkm.replay.getCurrentFrame());
 		// S
 		if (life > 0) {
 			step = 3;

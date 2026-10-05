@@ -21,9 +21,11 @@ class Game implements kado.GameInterface {
 	public var level:Int;
 	public var updates:Array<Void->Bool>;
 	public var stats:{
-		b:Int,
+		b:Array<Int>,
 		s:Int,
-		ts:Int
+		ts:Int,
+		p:Array<Int>,
+		bp:Array<Array<Int>>, // bubbles popped with bonuses
 	};
 
 	public var blob_timer:Float;
@@ -62,7 +64,9 @@ class Game implements kado.GameInterface {
 		stats = {
 			s: 0,
 			ts: 0,
-			b: 0
+			p: [],
+			b: [0, 0, 0, 0],
+			bp: [[], [], [], []],
 		};
 		updates = [];
 		hero = new Hero(this);

@@ -1,7 +1,6 @@
 package kaskade2;
 
 import pixi.core.math.shapes.Polygon;
-import pixi.core.graphics.Graphics;
 import mt.bumdum.Phys;
 import mt.Timer;
 

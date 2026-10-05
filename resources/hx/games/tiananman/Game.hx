@@ -11,7 +11,6 @@ import common_haxe_avm1.display.BBox;
 import kado.KadoKadeoManager;
 import mt.bumdum.Sprite;
 import mt.bumdum.Phys;
-import mt.bumdum.Part;
 import mt.bumdum.Plasma;
 import mt.bumdum.Lib;
 
@@ -65,6 +64,7 @@ class Game implements kado.GameInterface {
 	static public var me:Game;
 
 	var timer:Float;
+	var frame:Int;
 
 	public var difficulty:Float;
 	public var isPaused:Bool;
@@ -103,6 +103,13 @@ class Game implements kado.GameInterface {
 	public var fever:Bool;
 	public var feverTimer:Float;
 	public var feverStock:Int;
+	public var stats:{
+		fc:Array<Array<Int>>, // followers collected : [[pts, fMult, fever], ...]
+		vd:Array<Int>, // vehicles destroyed [v type]
+		f:Array<Int>, // fever count [frame]
+		fl:Array<Int>, // followers lost [frame]
+		lfsc:Int, // last follower score
+	};
 
 	var feverFlash:Int;
 	var feverLastCol:Int;
@@ -137,6 +144,14 @@ class Game implements kado.GameInterface {
 		mdm = new mt.DepthManager(root);
 
 		flGameOver = false;
+
+		stats = {
+			fc: [],
+			vd: [0, 0, 0, 0, 0],
+			f: [],
+			fl: [],
+			lfsc: 0,
+		}
 
 		initBg();
 		initGame();
@@ -266,6 +281,7 @@ class Game implements kado.GameInterface {
 		isPaused = true;
 
 		step = Wait;
+		frame = 0;
 	}
 
 	public function setPause() {
@@ -298,6 +314,7 @@ class Game implements kado.GameInterface {
 
 	public function update(delta:Float) {
 		applyReplayEvents();
+		frame++;
 
 		if (isPaused && mcStart.isClicked()) {
 			start();
@@ -335,7 +352,7 @@ class Game implements kado.GameInterface {
 		switch (step) {
 			case Wait:
 				if (flGameOver) {
-					KadoKadeoManager.kkm.gameOver({});
+					KadoKadeoManager.kkm.gameOver(stats);
 					step = GameOver;
 					return;
 				}
@@ -355,7 +372,7 @@ class Game implements kado.GameInterface {
 				// ####################
 
 				if (flGameOver) {
-					KadoKadeoManager.kkm.gameOver({});
+					KadoKadeoManager.kkm.gameOver(stats);
 					step = GameOver;
 					return;
 				}
@@ -542,6 +559,7 @@ class Game implements kado.GameInterface {
 					if (fever) {
 						if (a.mc._bBox.hitTestBbox(f.mc._bBox)) {
 							a.explose();
+							stats.vd[a.level]++;
 							break;
 						}
 					} else { // kill
@@ -561,6 +579,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function killFollower(f:Follower, ?a:Army) {
+		stats.fl.push(frame);
 		var frameNb = Seed.randomVfx(4) + 1;
 		var scroutch = mdm.attach("bloodPart" + frameNb, DP_BLOOD);
 		scroutch.play();
@@ -869,6 +888,7 @@ class Game implements kado.GameInterface {
 		feverTimer = 100.0;
 		feverFlash = 0;
 		feverGlow = 0.0;
+		stats.f.push(frame);
 	}
 
 	public function updateFever() {

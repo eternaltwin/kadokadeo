@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Achievements\Events\GameRunCompleted;
 use App\Enums\RunVerification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RunEndRequest;
@@ -13,6 +14,7 @@ use App\Models\Game;
 use App\Models\GameBuild;
 use App\Models\Period;
 use App\Models\Run;
+use App\Services\AchievementService;
 use App\Services\GameService;
 use App\Services\LeagueService;
 use App\Services\ReplayVerifier;
@@ -85,7 +87,7 @@ class RunController extends Controller implements HasMiddleware
         return new RunBeginResource($run);
     }
 
-    public function end(RunEndRequest $request, Run $run, RunService $runService, ScoreService $scoreService, ReplayVerifier $replayVerifier)
+    public function end(RunEndRequest $request, Run $run, RunService $runService, ScoreService $scoreService, ReplayVerifier $replayVerifier, AchievementService $achievementService)
     {
         // a run sent again (offline retry, lost response) must not be rewarded twice
         if ($run->completed_at !== null) {
@@ -105,6 +107,16 @@ class RunController extends Controller implements HasMiddleware
             $decoded = $runService->decodeRun($payload, $key, $sign);
             $run = $runService->confirmRun($run, $decoded);
             $runService->rewardStars($run);
+            if (!$run->is_cheat) {
+                $achievementUpdates = $achievementService->handleGameRunCompleted(new GameRunCompleted(
+                    user: $user,
+                    game: $run->game,
+                    run: $run,
+                    stats: $run->score_details ?? [],
+                ));
+            } else {
+                $achievementUpdates = [];
+            }
         } catch (\Throwable $e) {
             info(sprintf('RunController@end: user %d run end failed: %s', Auth::id(), $e->getMessage()));
             throw new BadRequestException($e->getMessage());
@@ -126,6 +138,7 @@ class RunController extends Controller implements HasMiddleware
                 'previous_star' => $previousStar,
                 'current_star' => $run->is_cheat ? $previousStar : $run->game->getStarFromScore($run->score),
                 'people_to_beat' => $toBeatCount,
+                'achievement_updates' => $achievementUpdates,
             ],
         ];
     }

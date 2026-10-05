@@ -285,6 +285,12 @@ class Level {
 				mc._y = b.mc._y + KadoKadeoManager.I(16);
 				KadoKadeoManager.kkm.addScore(Cs.BONUS_POINTS[b.type]);
 				game.data.b[b.type]++;
+				if (game.data.fbl == null) {
+					game.data.fbl = level;
+				}
+				if (b.falling) {
+					game.data.fb[b.type]++;
+				}
 				b.destroy();
 				bonuses.splice(i, 1);
 				continue;
@@ -298,6 +304,7 @@ class Level {
 				var bl = getFalling(p.x, p.y + 1);
 				if (bl == null || bl.dy > Cs.BLK_HEIGHT * 95 / 100) {
 					b.destroy();
+					game.data.bp[b.type]++;
 					bonuses.splice(i, 1);
 					continue;
 				}

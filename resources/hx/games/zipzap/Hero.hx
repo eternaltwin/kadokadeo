@@ -42,6 +42,7 @@ class Hero {
 
 	public function action():Void {
 		if (!lock) {
+			game.stats.pa.push([0, 0, 0, 0, 0, 0]);
 			lock = true;
 			moving = (x < KadoKadeoManager.I(150)) ? 1 : -1;
 			mc.gotoAndPlay(30);
@@ -141,7 +142,8 @@ class Hero {
 				dx = Num.q(this.x - b.x + KadoKadeoManager.I(12));
 				dy = Num.q(this.y - b.y + KadoKadeoManager.I(10));
 				if (dx * dx + dy * dy < r) {
-					game.getBallon(b);
+					var idx = game.getBallon(b);
+					game.stats.pa[game.stats.pa.length - 1][idx]++;
 				}
 				i++;
 			}

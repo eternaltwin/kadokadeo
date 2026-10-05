@@ -13,7 +13,7 @@ class Game extends Model
 
     public const GAMES_MANIFEST_CACHE_KEY = 'gamesdata_manifest';
 
-    protected $fillable = ['name', 'description', 'category_id', 'image_path', 'stars', 'is_active', 'is_official'];
+    protected $fillable = ['name', 'description', 'category_id', 'image_path', 'stars', 'is_active', 'is_arkadeo'];
 
     protected $casts = [
         'stars' => 'json',
@@ -135,6 +135,11 @@ class Game extends Model
     public function periodStars()
     {
         return $this->hasMany(GamePeriodStar::class);
+    }
+
+    public function achievements()
+    {
+        return $this->hasMany(Achievement::class);
     }
 
     public function getStarFromScore(int $score): int

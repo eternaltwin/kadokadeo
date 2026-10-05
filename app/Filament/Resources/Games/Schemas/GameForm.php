@@ -35,8 +35,8 @@ class GameForm
                 Toggle::make('is_active')
                     ->label('Actif')
                     ->required(),
-                Toggle::make('is_official')
-                    ->label('Officiel')
+                Toggle::make('is_arkadeo')
+                    ->label('Jeu Arkadéo')
                     ->required(),
             ]);
     }

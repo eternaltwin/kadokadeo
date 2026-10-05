@@ -1,3 +1,5 @@
+// import pako from 'pako'
+
 export function formatScore(score) {
   return Number(score).toLocaleString('fr-FR').replaceAll(/\u202f/g, ' ')
 }
@@ -27,3 +29,10 @@ export function updateAtMidnight() {
     setTimeout(resolve, msUntilMidnight)
   })
 }
+
+// export function decodeReplay(replay) {
+//   // const decoded = atob(replay)
+//   const decompressed = pako.inflate(Uint8Array.fromBase64(replay))
+//   return decompressed
+//   // return JSON.parse(decompressed)
+// }

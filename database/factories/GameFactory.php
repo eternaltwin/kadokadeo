@@ -18,7 +18,7 @@ class GameFactory extends Factory
             'category_id' => Category::factory(),
             'stars' => [10, 20, 30, 40],
             'is_active' => true,
-            'is_official' => true,
+            'is_arkadeo' => false,
         ];
     }
 }

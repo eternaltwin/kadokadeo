@@ -8,7 +8,6 @@ class Bads extends Phys {
 	var flDeath:Bool;
 	var hp:Float;
 	var score:Int;
-	var mid:Int;
 
 	var dif:Float;
 	var spawnDist:Float;
@@ -19,7 +18,6 @@ class Bads extends Phys {
 		super(mc);
 		score = Cs.C5;
 		dif = 1;
-		mid = 0;
 	}
 
 	function initStartPosition() {
@@ -118,17 +116,20 @@ class Bads extends Phys {
 		damage(10);
 	}
 
-	function hit(shot:Shot) {
-		damage(shot.damage);
+	function hit(shot:Shot):Bool {
+		return damage(shot.damage);
 	}
 
-	function damage(n:Float) {
+	function damage(n:Float):Bool {
 		flash = 100;
 		hp -= n;
 		if (hp <= 0) {
-			if (!flDeath)
+			if (!flDeath) {
 				explode();
+				return true;
+			}
 		}
+		return false;
 	}
 
 	function explode() {
@@ -160,8 +161,6 @@ class Bads extends Phys {
 
 		// SCORE
 		KadoKadeoManager.kkm.addScore(score);
-		//
-		Cs.game.stats.k[mid]++;
 		kill();
 	}
 

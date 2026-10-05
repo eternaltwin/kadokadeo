@@ -21,8 +21,8 @@ class GameInfolist
                 IconEntry::make('is_active')
                     ->label('Actif')
                     ->boolean(),
-                IconEntry::make('is_official')
-                    ->label('Officiel')
+                IconEntry::make('is_arkadeo')
+                    ->label('Jeu Arkadéo')
                     ->boolean(),
                 TextEntry::make('created_at')
                     ->label('Créé le')

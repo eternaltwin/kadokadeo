@@ -69,6 +69,7 @@ class Ghost extends Phys {
 
 		if (!game.isFree(px, py)) {
 			explode();
+			game.stats.s[game.stats.s.length - 1][4]++;
 			return;
 		}
 

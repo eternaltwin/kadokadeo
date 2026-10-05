@@ -19,6 +19,11 @@ class Influx extends ASprite {
 	public var sc:Float;
 }
 
+typedef LevelStats = {
+	to:Int, // timeout ?
+	es:Array<Int>, // ennemies scores
+};
+
 @:expose('GameSynapses')
 class Game implements kado.GameInterface {
 	public static var FL_TEST = false;
@@ -68,9 +73,13 @@ class Game implements kado.GameInterface {
 
 	public var sx:Float;
 	public var sy:Float;
-
 	public var ex:Float;
 	public var ey:Float;
+
+	public var stats:{
+		cn:Array<Array<Int>>, // connected neurons [[score1, score2, ...], [...], ...] one array per level
+		ls:Array<LevelStats>, // level stats
+	}
 
 	// DEBUG
 	public var bmpGrid:RenderTexture;
@@ -101,6 +110,11 @@ class Game implements kado.GameInterface {
 
 		initBg();
 		initGrid();
+
+		stats = {
+			cn: [],
+			ls: [],
+		};
 
 		lvl = 0;
 		var h = new Hunter(0);
@@ -159,6 +173,12 @@ class Game implements kado.GameInterface {
 		influxSpeed = KadoKadeoManager.I(1);
 
 		action = updatePlay;
+
+		stats.cn.push([]);
+		stats.ls.push({
+			to: 0,
+			es: [],
+		});
 
 		var h = hunters[0];
 		h.initPlay();
@@ -269,8 +289,10 @@ class Game implements kado.GameInterface {
 			txt.text = Std.string(counter);
 			txt.y = -txt.height / 2;
 
-			if (counter == 0)
+			if (counter == 0) {
+				stats.ls[lvl].to = 1;
 				initResolve();
+			}
 		}
 
 		// if( FL_TEST && flash.Key.isDown(flash.Key.SPACE) )initResolve();
@@ -327,6 +349,7 @@ class Game implements kado.GameInterface {
 			if (winner == null || h.first.size > winner.first.size) {
 				winner = h;
 			}
+			stats.ls[lvl].es.push(Std.int(h.first.size));
 		}
 		for (h in hunters) {
 			if (h != winner) {
@@ -377,7 +400,7 @@ class Game implements kado.GameInterface {
 					winner.scoreField.visible = false;
 				}
 			} else {
-				KadoKadeoManager.kkm.gameOver(null);
+				KadoKadeoManager.kkm.gameOver(stats);
 				action = null;
 			}
 		}

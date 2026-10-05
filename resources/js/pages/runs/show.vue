@@ -20,19 +20,26 @@ const replayGame = computed(() => run.value && { ...run.value.game, gamedata: ru
     <h2 class="m-0!">Score: {{ run.score }}</h2>
     <h2 class="m-0!">Jeu: {{ run.game.name }}</h2>
     <h2 class="m-0!">Date: {{ dayjs(run.completed_at).format('DD/MM/YYYY HH:mm') }}</h2>
-    <div class="relative" :style="{ width: '600px', height: '640px' }">
-      <GamesGameScript
-        :game="replayGame"
-        :args="{
-          replayData: run.replay,
-          seed: run.seed,
-          contractScore: run.contract_score,
-          contractPoints: run.contract_points,
-          assetBase: run.gamedata?.asset_base ?? undefined,
-        }"
-        :game-width="600"
-        :game-height="640"
-      />
+    <h2 class="m-0!">Temps: {{ formatTime(run.play_time_seconds) }}</h2>
+
+
+    <div class="max-w-full w-fit max-h-full h-fit m-auto overflow-y-auto pt-5">
+      <div class="flex flex-col">
+        <div class="relative gameint1 mx-auto max-w-full! shrink-0" :class="[run.game.is_arkadeo ? 'aspect-arkadeo' : 'aspect-kadokado']">
+          <GamesGameScript
+            :game="run.game"
+            :args="{
+              replayData: run.replay,
+              seed: run.seed,
+              contractScore: run.contract_score,
+              contractPoints: run.contract_points,
+              assetBase: run.gamedata?.asset_base ?? undefined,
+            }"
+            :game-width="300"
+            :game-height="320"
+          />
+        </div>
+      </div>
     </div>
   </template>
 </template>

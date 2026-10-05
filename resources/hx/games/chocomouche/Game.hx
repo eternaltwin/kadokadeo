@@ -70,6 +70,15 @@ class Game implements kado.GameInterface {
 	public var left:Int;
 
 	public var toUpdate:Array<ASprite> = [];
+	public var stats:{
+		d:Array<Array<Int>>, // discovered slots per level: -2 for timeout, -1 for fly, 0-8 for others
+		c:Array<Int>, // clicked slots per level
+		p:Array<Int>, // points per level
+		t:Array<Int>, // time per level
+	};
+
+	var beginFrame:Int;
+	var points:Int;
 
 	public function new(root:ASprite) {
 		KadoKadeoManager.kkm.replay.init({
@@ -91,6 +100,12 @@ class Game implements kado.GameInterface {
 
 		mcGrid = dm.empty(DP_SLOT);
 		gdm = new mt.DepthManager(mcGrid);
+		stats = {
+			d: [],
+			c: [],
+			p: [],
+			t: []
+		};
 		initGrid();
 		step = Play;
 	}
@@ -116,7 +131,7 @@ class Game implements kado.GameInterface {
 		switch (step) {
 			case Play:
 				if (flGameOver) {
-					KadoKadeoManager.kkm.gameOver({});
+					KadoKadeoManager.kkm.gameOver(stats);
 					step = GameOver;
 				}
 				updateTime();
@@ -217,6 +232,9 @@ class Game implements kado.GameInterface {
 		level++;
 		getLevelBonus();
 		timer = 100;
+		stats.t.push(KadoKadeoManager.kkm.replay.getCurrentFrame() - beginFrame);
+		stats.p.push(KadoKadeoManager.kkm.score - points);
+		points = KadoKadeoManager.kkm.score;
 
 		setNextLevel(true);
 		prepareLevel();
@@ -265,6 +283,10 @@ class Game implements kado.GameInterface {
 			}
 		}
 		setGridGlow();
+
+		stats.d.push([]);
+		stats.c.push(0);
+		beginFrame = KadoKadeoManager.kkm.replay.getCurrentFrame();
 	}
 
 	public function setGridGlow() {
@@ -384,6 +406,7 @@ class Game implements kado.GameInterface {
 		} else {
 			lifeLoss();
 			resetTime();
+			Game.me.stats.d[Game.me.stats.d.length - 1].push(-2);
 		}
 	}
 

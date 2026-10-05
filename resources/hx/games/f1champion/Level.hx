@@ -274,6 +274,7 @@ class Level {
 		pos += dp;
 		if (pos > DELTA) {
 			game.chkdata.n++;
+			game.km_without_out_of_bounds += 1;
 			pos -= DELTA;
 			scroll._prevState.y = pos - DELTA - dp;
 			initLevel();

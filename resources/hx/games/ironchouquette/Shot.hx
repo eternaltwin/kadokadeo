@@ -25,6 +25,9 @@ class Shot extends Phys {
 	public var thruster:{vx:Float, vy:Float, sleep:Float}
 	public var queue:String;
 	public var skin:Int;
+	public var onKill:Void->Void;
+
+	var alreadyHit = false;
 
 	public function new(mc) {
 		super(mc);
@@ -204,8 +207,13 @@ class Shot extends Phys {
 			}
 		} else {
 			var h = Cs.game.hero;
-			if (h.invincibleTimer != null)
+			if (h.invincibleTimer != null) {
+				if (!alreadyHit) {
+					Cs.game.stats.sak[Hero.WP_LASER][Cs.game.stats.sak[Hero.WP_LASER].length - 1][1] += 1;
+					alreadyHit = true;
+				}
 				return;
+			}
 			var dist = getDist({x: h.x, y: h.y});
 			if (dist < Cs.game.hero.ray + ray) {
 				Cs.game.hero.hit(this);
@@ -217,7 +225,11 @@ class Shot extends Phys {
 	public function hit(b) {
 		onHit(b);
 		var hp = b.hp;
-		b.hit(this);
+		var isDead = b.hit(this);
+
+		if (onKill != null && isDead) {
+			onKill();
+		}
 
 		if (!flInvincible) {
 			if (flPierce && hp < damage) {
