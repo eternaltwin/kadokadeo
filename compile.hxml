@@ -154,3 +154,6 @@ hexile.Game
 --next
 -js ./resources/js/games/redraid.js
 redraid.Game
+--next
+-js ./resources/js/games/judocommando.js
+judocommando.Game

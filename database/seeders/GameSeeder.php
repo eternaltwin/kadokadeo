@@ -35,7 +35,7 @@ class GameSeeder extends Seeder
             ['name' => 'Mini-Race', 'image_path' => '/assets/img/games/Mini-Race.png', 'is_active' => true, 'stars' => [23567, 57234, 74068]],
             ['name' => 'Kavern', 'image_path' => '/assets/img/games/Kavern.png', 'is_active' => true, 'stars' => [27421, 48514, 59061], 'description' => "Aidez PiouPiou à explorer de sombres cavernes ! Ramassez des légumes pour gagner des points et des capsules d'énergie pour survivre plus longtemps."],
             ['name' => 'Twin Spirit', 'image_path' => '/assets/img/games/Twin_Spirit.png', 'is_active' => false, 'stars' => [29884, 63089, 79691]],
-            ['name' => 'Judo Commando', 'image_path' => '/assets/img/games/Judo_Commando.png', 'is_active' => false, 'stars' => [24212, 72636, 96848]],
+            ['name' => 'Judo Commando', 'image_path' => '/assets/img/games/Judo_Commando.png', 'is_active' => true, 'stars' => [24212, 72636, 96848]],
             ['name' => 'Tianan Man', 'image_path' => '/assets/img/games/Tianan_Man.png', 'is_active' => true, 'stars' => [40809, 142834, 193847]],
             ['name' => 'ZipZap', 'image_path' => '/assets/img/games/ZipZap.png', 'is_active' => true, 'stars' => [15258, 24795, 29563]],
             ['name' => 'Kill Bulle', 'image_path' => '/assets/img/games/Kill_Bulle.png', 'is_active' => true, 'stars' => [12609, 37827, 50436], 'description' => 'Retrouvrez Kanji le Ninja dans une nouvelle aventure ! Utilisez le grapin de façon à détruire les bulles bondissantes et gagnez ainsi un max de points.'],

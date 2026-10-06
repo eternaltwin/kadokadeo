@@ -213,5 +213,12 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   the clip; PIXI blends sprites, not containers: `add` is given to every picture inside). Baking a glow in each part
   would draw outlines inside the picture. A `lighten` layer inside a FLAT image: `SWF.lighten = True` (swfrender
   draws it normally otherwise, as the renders made before it did).
+- Pixel art in Flash's "low" quality (Judo Commando: `root._quality = "low"`, bitmaps never smoothed): FFDec draws
+  bitmap fills without smoothing at any zoom, so export the shapes at the zoom of the textures (`-zoom 2`, 2 px per
+  Flash pixel), load them with `SWF.nearest = True` (nearest sampling instead of bicubic) and set
+  `Exporter.fixed_res = 1.0` (every layer at that resolution, the matrices applied at run time); at run time the sheet
+  is sampled without smoothing (`baseTexture.scaleMode = NEAREST`) and the sprites drawn on whole pixels
+  (`roundPixels`). `Exporter.frames_for` gives the frames used by nested clips (the animation sets that the code only
+  sends to their labels).
 - `swfdump.py` prints the first 99 frames of a sprite: read the labels of a longer timeline in `swfrender`
   (`G.sprites[sid].labels`); Schizo Fuzz's `launch` label (frame 136) only shows there.

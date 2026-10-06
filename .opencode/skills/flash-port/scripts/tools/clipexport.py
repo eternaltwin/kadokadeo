@@ -111,6 +111,10 @@ class Exporter:
         # nested clips keep their glow filters ('fl': [[blurX, blurY, strength, 0xRRGGBB, alpha, passes]]) and blend
         # mode ('bl'), applied at run time (the game's Clip); off: they are dropped (FLAT images always compose them)
         self.effects = False
+        # every CUT / CLIP / MASK layer at this resolution (None: the one its scale needs); with a SWF rendered with
+        # `nearest` at the zoom K x fixed_res, the textures are the Flash pixels and the matrices are applied at run time
+        self.fixed_res = None
+        self.frames_for = {}           # sid -> frames used by the game in nested clips (as `frames` of export)
 
     # ------------------------------------------------------------------ helpers
     @staticmethod
@@ -230,7 +234,7 @@ class Exporter:
                 rd.draw(cmds, canvas, (ox, oy))
             im = Image.fromarray(np.clip(canvas * 255 + 0.5, 0, 255).astype(np.uint8), 'RGBa')
             if (W, H) != (Wz, Hz):
-                im = im.resize((W, H), Image.LANCZOS)
+                im = im.resize((W, H), Image.NEAREST if getattr(G, 'nearest', False) else Image.LANCZOS)
             imgs.append(im.convert('RGBA'))
         return imgs, (-ox * scale, -oy * scale)
 
@@ -337,6 +341,8 @@ class Exporter:
         code = tuple(code) or self.code_for.get(sid, ())
         if strategy is None:
             strategy = self.strategy_for.get(sid)
+        if frames is None:
+            frames = self.frames_for.get(sid)
         sub = self.subtree(sid)
         ctrl = {k: v for k, v in ctrl.items() if k in sub}
         vkey = (sid, tuple(sorted((str(k), str(v)) for k, v in ctrl.items())), strategy, tuple(code), tuple(frames or ()),
@@ -639,6 +645,8 @@ class Exporter:
             child_res = lod(smax)
         if name in ('arm', 'leg0', 'leg1', 'head'):
             child_res = res   # parts turned by the code: same resolution as the body around them
+        if self.fixed_res is not None:
+            child_res = self.fixed_res
         if kind == 'cut' and self.family_res and all(e['inst'] is None for e in rows.values()):
             chars = {e['char'] for e in rows.values()}
             if any(chars <= set(F) for F in self.families):

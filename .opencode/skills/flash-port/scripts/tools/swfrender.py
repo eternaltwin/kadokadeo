@@ -70,6 +70,9 @@ class SWF:
         self.Z = Z
         self.shapes_dir = shapes_dir
         self.svg_dir = None   # FFDec SVG export of the shapes (svg_<n>/), needed by shape_layers
+        # Flash "low" quality (pixel art, Judo Commando): shapes placed with nearest sampling instead of bicubic (use
+        # an export at the zoom of the output, so that nothing is resized)
+        self.nearest = False
         raw = open(path, 'rb').read()
         data = raw[:8] + (zlib.decompress(raw[8:]) if raw[:3] == b'CWS' else raw[8:])
         b = S.Bits(data, 8)
@@ -550,7 +553,8 @@ class Renderer:
             tt = t - np.array([bx0, by0])
             off = -Ai @ tt
             data = (Ai[0, 0], Ai[0, 1], off[0], Ai[1, 0], Ai[1, 1], off[1])
-            src = im.convert('RGBa').transform((bx1 - bx0, by1 - by0), Image.AFFINE, data, resample=Image.BICUBIC)
+            rs = Image.NEAREST if getattr(self.swf, 'nearest', False) else Image.BICUBIC
+            src = im.convert('RGBa').transform((bx1 - bx0, by1 - by0), Image.AFFINE, data, resample=rs)
             arr = np.asarray(src, dtype=np.float32) / 255.0
             mult, add = c['mult'], c['add']
             if mult != [1.0, 1.0, 1.0, 1.0] or add != [0, 0, 0, 0]:
