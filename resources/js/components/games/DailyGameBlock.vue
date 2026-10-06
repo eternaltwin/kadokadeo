@@ -1,4 +1,6 @@
 <script setup>
+import KadoPoints from '@svg/k.svg'
+
 const dailyGameStore = useDailyGameStore()
 const dailyGame = toRef(dailyGameStore, 'dailyGame')
 const game = toRef(dailyGameStore, 'game')
@@ -29,7 +31,7 @@ const game = toRef(dailyGameStore, 'game')
           <Number :value="dailyGame.contract_score" color="blue" />
           pts pour gagner
           <Number :value="dailyGame.contract_points" color="green" />
-          <img class="size-4" src="/gfx/iconKadoPoints.gif" alt="icone points Kado" />
+          <KadoPoints class="inline size-4" />
         </div>
         <div v-if="!dailyGameStore.isScoresLoading" class="flex items-center gap-1">
           Nombre de parties restantes :

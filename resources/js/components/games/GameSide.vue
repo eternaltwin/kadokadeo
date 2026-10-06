@@ -1,4 +1,6 @@
 <script setup>
+import KadoPoints from '@svg/k.svg'
+
 const props = defineProps({
   game: { type: Object, required: true },
   isZoomed: { type: Boolean, default: false },
@@ -163,7 +165,7 @@ const menus = [
               <td class="textRight">
                 <template v-if="pallier.points !== null">
                   <Number :value="pallier.points" color="green" />
-                  <img src="/gfx/iconKadoPoints.gif" alt="Points Kado" />
+                  <KadoPoints class="inline size-[17px]" />
                 </template>
               </td>
             </tr>

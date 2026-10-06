@@ -1,4 +1,6 @@
 <script setup>
+import KadoPoints from '@svg/k.svg'
+
 const props = defineProps({
   achievement: { type: Object, required: true },
 })
@@ -54,7 +56,7 @@ const achievementImages = computed(() => {
           <div class="font-semibold text-kado-pink-400">{{ displayedLevel.title }}</div>
           <div v-if="nextLevel" class="flex gap-1 items-center shrink-0">
             <Number :value="displayedLevel.reward" />
-            <img class="size-4" src="/gfx/iconKadoPoints.gif" alt="Kado" />
+            <KadoPoints class="inline size-4" />
           </div>
         </div>
         <div>{{ displayedLevel.description }}</div>
