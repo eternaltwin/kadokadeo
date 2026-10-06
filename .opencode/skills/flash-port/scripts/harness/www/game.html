@@ -58,9 +58,7 @@
     }
     window.kk = new KadoKadeo(document.getElementById('c'), window[cls], {
       name: game, gameId: 1, replayData: q.get('replay'), seed: q.get('seed') || '123',
-      contractScore: 0, contractPoints: 0, isDaily: false,
-      // the size GameScript.vue gives a KadoKado game
-      canvasWidth: 600, canvasHeight: 640 });
+      contractScore: 0, contractPoints: 0, isDaily: false, canvasWidth: 600, canvasHeight: 640 });
   }));
 </script>
 </body>

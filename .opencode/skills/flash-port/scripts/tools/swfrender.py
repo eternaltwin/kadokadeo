@@ -73,6 +73,7 @@ class SWF:
         # Flash "low" quality (pixel art, Judo Commando): shapes placed with nearest sampling instead of bicubic (use
         # an export at the zoom of the output, so that nothing is resized)
         self.nearest = False
+        self.nested_masks = False   # True: a mask placed under another mask is masked by it (see Renderer.collect)
         raw = open(path, 'rb').read()
         data = raw[:8] + (zlib.decompress(raw[8:]) if raw[:3] == b'CWS' else raw[8:])
         b = S.Bits(data, 8)
@@ -438,7 +439,9 @@ class Renderer:
                 group = dict(mask=[], items=[])
                 self._emit(e, m, c, hide, group['mask'])
                 masks.append((d, e['clip'], group))
-                out.append(('mask', group))
+                # (nested_masks: a mask inside the range of another one is masked by it too, like Flash; off: drawn
+                # outside of it, as the renders made before this option)
+                (target if getattr(self.swf, 'nested_masks', False) else out).append(('mask', group))
                 continue
             if e.get('filters') or e.get('blend') not in (None, 'normal', 'layer'):
                 sub = []

@@ -163,3 +163,6 @@ klinkersurprise.Game
 --next
 -js ./resources/js/games/cyclopean.js
 cyclopean.Game
+--next
+-js ./resources/js/games/cosmocrash.js
+cosmocrash.Game
