@@ -151,3 +151,6 @@ electrolink.Game
 --next
 -js ./resources/js/games/hexile.js
 hexile.Game
+--next
+-js ./resources/js/games/redraid.js
+redraid.Game
