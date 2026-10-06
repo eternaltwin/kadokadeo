@@ -934,7 +934,8 @@ class Mon extends Human {
 		var hdy = heroPy() - py;
 		var b = a.copy();
 		for (sq in b) {
-			if ((sq.y - py) * hdy <= 0)
+			// (a <= b is !(a > b) in the Flash bytecode: true for NaN, the hero removed by a fatality)
+			if (!((sq.y - py) * hdy > 0))
 				a.remove(sq);
 		}
 	}
@@ -996,7 +997,8 @@ class Mon extends Human {
 			}
 		} else {
 			knockOutTimer--;
-			if (knockOutTimer <= 0) {
+			// (!(a > b) like the Flash bytecode of <=: NaN after freedom() gets up too)
+			if (!(knockOutTimer > 0)) {
 				crouch();
 			}
 		}
@@ -1136,9 +1138,11 @@ class Mon extends Human {
 		return false;
 	}
 
+	// fkoTimer <= 0 is !(fkoTimer > 0) in the Flash bytecode (Greater, Not): true for the null that Hero.interrupt
+	// writes (the hero hit while holding it); NaN <= 0 in JS would leave the monster impossible to grab for good
 	public function isGrappable():Bool {
-		return state != Crash && state != Held && state != Wheel && state != Jump && state != Fly && !flSafe && fkoTimer <= 0 && !is(God)
-			&& life > 0 && state != Ladder;
+		return state != Crash && state != Held && state != Wheel && state != Jump && state != Fly && !flSafe && !(fkoTimer > 0)
+			&& !is(God) && life > 0 && state != Ladder;
 	}
 
 	public function isLadderFree(sq:Square):Bool {

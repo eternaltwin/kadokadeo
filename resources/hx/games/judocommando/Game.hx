@@ -717,6 +717,7 @@ class Game implements kado.GameInterface {
 			mc._y = Cs.mch;
 			mc._xscale = mc._yscale = 200;
 			mc.gotoAndStop(i + 1);
+			mc.wrapX = 480;
 			plans.push({mc: mc, coef: coef[i]});
 		}
 	}
@@ -796,6 +797,7 @@ class Game implements kado.GameInterface {
 		var max = hero == null ? 0 : Std.int(hero.life);
 		for (i in 0...max) {
 			var mc = mcInter.dm.attach("mcLifePoint", 3);
+			mc.showAtOnce = true;
 			mc._x = 5 + i * 3;
 			mc._y = -7;
 		}
@@ -821,6 +823,7 @@ class Game implements kado.GameInterface {
 
 		for (i in 0...Cs.DIAMS) {
 			var mc = mcInter.dm.attach("mcGem", 4);
+			mc.showAtOnce = true;
 			var p = getGemPos(i);
 			mc._x = p.x;
 			mc._y = p.y;

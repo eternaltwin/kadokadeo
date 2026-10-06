@@ -24,6 +24,12 @@ class MC {
 	// a move longer than this between two Flash frames is not interpolated (pixels of the parent)
 	static inline var SNAP = 60;
 
+	// _x loops over this period (a scrolling plane, Num.sMod): the move shown takes the short way, not back across
+	public var wrapX:Float = 0;
+	// shown as soon as it is attached (the HUD clips the code attaches again at each update, the gems every frame of
+	// their effect: hidden for a step like a new clip, the old ones already removed, they would blink)
+	public var showAtOnce:Bool = false;
+
 	// the attached symbol (null: an empty clip)
 	public var clip(default, null):Clip;
 	// what is drawn: the clip, or the container of an empty clip
@@ -326,27 +332,61 @@ class MC {
 		var s = spr;
 		// attached during the last Flash frame: the picture shown is still before it (f = 1: the start of the game);
 		// shown from the next step, not interpolated from where it was created
-		var hide = fresh && f < 1;
+		var hide = fresh && f < 1 && !showAtOnce;
 		if (fresh)
 			f = 1;
+		var dx = x - px;
+		if (wrapX > 0) {
+			if (dx > wrapX / 2)
+				dx -= wrapX;
+			else if (dx < -wrapX / 2)
+				dx += wrapX;
+		}
 		// a jump (a teleport, the level shifted by Game.decale, the camera on a new focus): shown at once
-		var jump = Math.abs(x - px) > SNAP || Math.abs(y - py) > SNAP;
+		var jump = Math.abs(dx) > SNAP || Math.abs(y - py) > SNAP;
 		if (jump)
 			f = 1;
-		s._x = px + (x - px) * f;
+		var nx = px + dx * f;
+		if (wrapX > 0)
+			nx = ((nx % wrapX) + wrapX) % wrapX;
+		s._x = nx;
 		s._y = py + (y - py) * f;
-		s._xscale = pxs + (xs - pxs) * f;
-		s._yscale = pys + (ys - pys) * f;
+		// a scale that changes its sign is a flip (setSens: _xscale -100 / 100), instant in Flash: interpolated, the
+		// picture would be squeezed flat for a step (the rotation of a held body turns with it)
+		var flip = pxs * xs < 0 || pys * ys < 0;
+		var fs = flip ? 1 : f;
+		s._xscale = pxs + (xs - pxs) * fs;
+		s._yscale = pys + (ys - pys) * fs;
 		var dr = rot - prot;
 		if (dr > 180)
 			dr -= 360;
 		else if (dr < -180)
 			dr += 360;
-		s._rotation = prot + dr * f;
+		s._rotation = prot + dr * fs;
 		var a = pa + (alpha - pa) * f;
 		s._alpha = a < 0 ? 0 : a > 100 ? 100 : a;
-		if ((snap || jump) && s._prevState != null)
-			s._prevState.copyFrom(s._curState);
+		var ps = s._prevState;
+		if (ps != null) {
+			var cs = s._curState;
+			if (snap || jump)
+				ps.copyFrom(cs);
+			else {
+				// the same between two steps (the flip may be in the first of the two Flash frames of a step)
+				if (ps.xscale * cs.xscale < 0 || ps.yscale * cs.yscale < 0) {
+					ps.xscale = cs.xscale;
+					ps.yscale = cs.yscale;
+					ps.rotation = cs.rotation;
+				}
+				// the position shown looped since the last step: the state PIXI interpolates from loops with it
+				if (wrapX > 0) {
+					var d = cs.x - ps.x;
+					if (d > wrapX / 2)
+						ps.x += wrapX;
+					else if (d < -wrapX / 2)
+						ps.x -= wrapX;
+				}
+			}
+		}
 		snap = hide;
 		s.visible = vis && !hide && (clip == null || !clip.selfRemoved);
 	}
