@@ -160,3 +160,6 @@ judocommando.Game
 --next
 -js ./resources/js/games/klinkersurprise.js
 klinkersurprise.Game
+--next
+-js ./resources/js/games/cyclopean.js
+cyclopean.Game
