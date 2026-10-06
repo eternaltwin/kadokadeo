@@ -157,3 +157,6 @@ redraid.Game
 --next
 -js ./resources/js/games/judocommando.js
 judocommando.Game
+--next
+-js ./resources/js/games/klinkersurprise.js
+klinkersurprise.Game

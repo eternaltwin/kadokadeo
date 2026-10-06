@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/judocommando.js
-judocommando.Game
+-js ./resources/js/games/klinkersurprise.js
+klinkersurprise.Game

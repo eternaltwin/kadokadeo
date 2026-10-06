@@ -104,7 +104,7 @@ class GameSeeder extends Seeder
             ['name' => 'Puzzle-Manda', 'image_path' => '/assets/img/games/Puzzle-Manda.png', 'is_active' => false, 'stars' => [20297, 40594, 50743]],
             ['name' => 'Autrement', 'image_path' => '/assets/img/games/Autrement.png', 'is_active' => true, 'stars' => [6286, 18858, 25144]],
             ['name' => 'Hypercube', 'image_path' => '/assets/img/games/Hypercube.png', 'is_active' => false, 'stars' => [10213, 44256, 61278]],
-            ['name' => 'Klinker Surprise', 'image_path' => '/assets/img/games/Klinker_Surprise.png', 'is_active' => false, 'stars' => [16111, 48333, 64444]],
+            ['name' => 'Klinker Surprise', 'image_path' => '/assets/img/games/Klinker_Surprise.png', 'is_active' => true, 'stars' => [16111, 48333, 64444]],
             ['name' => 'Tubulo', 'image_path' => '/assets/img/games/Tubulo.png', 'is_active' => true, 'stars' => [7000, 12000, 17000]],
             ['name' => 'Rock Faller', 'image_path' => '/assets/img/games/Rock_Faller.png', 'is_active' => false],
             ['name' => 'Animoz', 'image_path' => '/assets/img/games/Animoz.png', 'is_active' => false],

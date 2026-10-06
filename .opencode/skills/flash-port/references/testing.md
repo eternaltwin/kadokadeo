@@ -13,6 +13,7 @@ which is the only way to catch control and replay bugs. Paths below are relative
 - Seeking
 - Touch
 - Frame by frame
+- The original in Ruffle
 - Performance and smoothness
 - Shared code: replays of other games
 - When a replay diverges
@@ -107,6 +108,19 @@ finger sends no `pointerup`: use separate `touchStart` / `touchEnd` gestures.
 (`kk.ff.onTick = () => {}`), steps the physics by hand until the condition, then one screenshot per step (`STEP`
 frames per shot, `KEYS` js before each step, `PRESS=keyCode,key` once). To check an animation, an explosion, a
 clip change. Look at the pictures.
+
+## The original in Ruffle
+
+The released game can run in Ruffle (the Flash emulator, self-hosted from npm) for screenshots next to the port's,
+which checks what a static render of the SWF cannot: runtime bitmaps, filters, blend modes, effects that build up.
+Model: `examples/klinkersurprise/`. `ref_swf.py` adds AVM1 bytecode to a copy of `game.swf`: the KadoKado `KKApi`
+the code expects (obfuscated names read in the decompiled code: `eval(";ndCG")[...]`), a call to `Manager.init()`
+and `onEnterFrame = Manager.main`, and `attachMovie` of the exported clip holding the code; `ref_swf.py <name>
+<field path>...` also hides clips of the game (`ref_nomap.swf`: compare a layer alone). `ruffle/ruffle_site.sh`
+serves it, `ruf.mjs` / `ruf_live.mjs` drive it with the mouse (`ruf_live.mjs` runs commands appended to a file: the
+original's random cannot be seeded, one map per session, explored with screenshots; the same commands on the port's
+page give the matching pictures). Use `GPU=1`: Ruffle is very slow on the software renderer (CDP timeouts) and shows a
+dark warning over the game.
 
 ## Performance and smoothness
 

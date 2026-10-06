@@ -39,6 +39,12 @@ bug looks impossible. The Flash / MTypes semantics are in [original.md](original
 - **A teleport** (first placement, respawn, camera snap) slides across the screen unless the previous state is set
   to the current one (K-Slash: `snapped` hero, `_prevState.copyFrom(_curState)` on the planes).
 - **A flip** (scale changing sign) interpolated shows the sprite squeezed flat ("paper" effect): `Clip.noFlipLerp`.
+- **A wrapping map** (a torus): the map and the clips drawn at the copy nearest to the screen jump by a period;
+  interpolated, they slide across the screen. Interpolate modulo the period, and move the previous state to the same
+  side (Klinker Surprise `MC.wrap`).
+- **A lagged display** (40 frames/s originals, `MC.hx`): a clip removed by the code must stay on screen until the
+  display reaches the Flash frame it was removed in, or the old picture disappears one frame before the new one is
+  shown (a whole map at a level change).
 - **Gameplay must not read interpolated values.** `mc._x = mc.x` style code can copy an interpolated value back
   into the game state.
 

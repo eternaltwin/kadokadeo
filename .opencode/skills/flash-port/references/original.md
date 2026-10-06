@@ -77,6 +77,8 @@ calls are readable.
 | `Key.addListener({onKeyDown: ...})` | keys handled by events | polled `KeyboardManager` in `update` (the replay records polled keys); a typed sequence that is not a recorded key (K-Slash's NIGHT code) becomes a replay event |
 | `mc._width`, `getBounds`, `hitTest` in gameplay | measures the display | exported numbers / masks, never PIXI bounds (`fix-replays-float`) |
 | `Timer.tmod` | speed correction for the real frame rate | kept: KadoKadeo runs 32 steps/s with `tmod = 1` |
+| `if (a <= 0) X else Y` (Haxe 1 / 2) | the compiler may emit `if (a > 0) Y else X`: with `a` undefined (NaN) the branch flips | port the compiled form, read in the decompiled SWF (Klinker Surprise's `freeTimer`, never set, takes the `else` of the compiled test on the first frame) |
+| a library of `WebGamesArchives/libs-haxe2` | not always the version compiled into the game | port the helpers as the SWF compiled them (Klinker Surprise: `Num.sMod` returns the number, not `null`, on a bad modulo; `Col.setPercentColor` has no alpha argument) |
 | `Log.print`, `cheat()` | debug code | dropped |
 
 ## Flash player (AVM1) rules the code relies on
