@@ -266,3 +266,8 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   picture (after the placement's colour and alpha, Flash's order; in the picture's own coordinates, so the glow scales with
   the layer's matrix) and gives an `add` layer (or a FLAT group of `add` entries) `bl: 'add'`, drawn ADD at run time
   (`punchin/Clip.hx`). Nested frozen sprites keep their inner effects composed in their picture.
+- A ColorMatrixFilter on a nested clip whose content moves (Puzzle-Manda: the bonuses 2 and 3 are bonus 1 recoloured,
+  its stars turning at random inside): `Exporter.color_matrix = True` writes the matrix of each frame of the layer
+  (`cms`, 0 = none) instead of dropping it, applied at run time by a PIXI ColorMatrixFilter (`puzzlemanda/Clip.hx`
+  `setCm`; Flash's offsets are 0..255, PIXI's 0..1). With `effects`, a blurred nested clip in "add" (`bl` + `bf`)
+  gets the blend on its blur filter: Flash adds the filtered picture, not each sprite.

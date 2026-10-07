@@ -74,8 +74,10 @@ bug looks impossible. The Flash / MTypes semantics are in [original.md](original
   it; what is only for the eye can be skipped during a seek.
 - After the game over, no point may be added (end animations keep running).
 - Mouse: `MouseManager` releases the buttons on `pointerleave`: `canvas.setPointerCapture` on `pointerdown`.
-- Replay events: `recordEvent` without a frame is applied at the **next** frame; apply it in live through the same
-  `consumeEvents()` path as the replay, never directly (K-Slash NIGHT: `nightTyped` then `setNight` next frame).
+- Replay events: `recordEvent` without a frame is applied at the **next** frame. `consumeEvents()` only returns the
+  events of a replay being played: in the live game set a flag when recording and apply it at the next `update`, the
+  frame the replay gives it back at (K-Slash NIGHT: `nightTyped` then `setNight`; Puzzle-Manda `touchTyped`). Applying
+  it only from `consumeEvents()` leaves the live game without it: its replay diverges.
 - Statics survive from one game to the next in the same page (several games, replays): reset them.
 - Shared behaviour of KadoKadeo: replay speed and pause only apply while watching a replay; hiding the tab does
   not pause a live game (opt-out `ALLOW_PAUSE`); keys typed in a text field of the page are ignored.

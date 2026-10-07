@@ -100,8 +100,9 @@ changes the roundings. Do not use it for a new port.
   `ALIASES_CONTROL_SPACE`. Aliases are applied before recording: nothing to add to `recordedKeys`.
 - Something the original read from key events that is not a recorded key (K-Slash's secret code N-I-G-H-T):
   detect it live with `KeyboardManager.getFrameKeyChanges()` (only when `!isReplay`), record a replay event
-  (`replay.recordEvent({k: EV_NIGHT})`, `recordEvents: true`) and apply it in both modes when
-  `replay.consumeEvents()` returns it, at the start of `update` (`replay-system`).
+  (`replay.recordEvent({k: EV_NIGHT})`, `recordEvents: true`) and apply it at the start of the next `update`: in a
+  replay when `replay.consumeEvents()` returns it, in the live game through a flag set with the recording (a live
+  game does not get its own events back from `consumeEvents()`: K-Slash `nightTyped`) (`replay-system`).
 - Mouse games: call `canvas.setPointerCapture` on `pointerdown` (KadoKadeo releases the buttons on `pointerleave`;
   Flash kept the mouse while the button was held), read `MouseManager.getX()` clamped to `>= 0` like the replay
   recorder, `recordMousePosition: true`.
@@ -118,7 +119,10 @@ changes the roundings. Do not use it for a new port.
       ...
   }
   ```
-  For a mouse game, a finger held on the screen is the mouse (Mini-Race).
+  For a mouse game, a finger held on the screen is the mouse (Mini-Race). Flash buttons played with a finger
+  (Puzzle-Manda): a finger does not hover and its press / release of a drag would click: the first `pointerdown` of
+  type `touch` records a replay event that turns on a touch mode (no rollOver, a release clicks only after a tap),
+  the desktop behaviour stays the original's (`puzzlemanda/Buttons.hx`, `ptouch.mjs`).
 
 ## Randomness and determinism
 

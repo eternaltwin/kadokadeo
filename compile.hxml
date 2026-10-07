@@ -208,3 +208,6 @@ pacifik.Game
 --next
 -js ./resources/js/games/punchin.js
 punchin.Game
+--next
+-js ./resources/js/games/puzzlemanda.js
+puzzlemanda.Game

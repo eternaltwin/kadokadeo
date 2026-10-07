@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/phagocytoz.js
-phagocytoz.Game
+-js ./resources/js/games/puzzlemanda.js
+puzzlemanda.Game

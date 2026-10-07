@@ -128,6 +128,10 @@ class Exporter:
         # gets 'bl': 'add' (applied at run time, onto what is under the clip); off: the filters of CUT pictures are
         # dropped and FLAT groups compose their blend mode over the lower layers of the clip (Punch-In's glove shines)
         self.effect_layers = False
+        # the colour matrix filters of the nested clips are applied at run time ('cms': the 20 values of the Flash
+        # ColorMatrixFilter of each frame, offsets in 0..255, 0 = none), with the glows of `effects`; off: dropped with
+        # a warning
+        self.color_matrix = False
 
     # ------------------------------------------------------------------ helpers
     @staticmethod
@@ -530,8 +534,20 @@ class Exporter:
         self.log('clip %-14s sprite %-4d %-4s frames=%-3d layers=%-2d res=%.2f' % (cname, sid, strategy, n, len(out_layers), res))
         return cname
 
-    def clip_effects(self, cname, li, rows, out):
-        """glow filters and blend mode of a nested clip (the same on every frame of the layer)"""
+    def clip_effects(self, cname, li, rows, out, n=None):
+        """glow filters and blend mode of a nested clip (the same on every frame of the layer); with `color_matrix`,
+        the colour matrix of each frame (n: frames of the clip)"""
+        if self.color_matrix:
+            def cm_of(e):
+                for f in e.get('filters') or []:
+                    if f['type'] == 'colormatrix' and not all(abs(a - b) < 1e-6 for a, b in zip(f['matrix'], IDENTITY_MATRIX)):
+                        return [round(v, 6) for v in f['matrix']]
+                return 0
+            cms = [cm_of(rows[f]) if f in rows else 0 for f in range(1, n + 1)]
+            if any(c != 0 for c in cms):
+                out['cms'] = cms
+            rows = {f: dict(e, filters=[x for x in e.get('filters') or [] if x['type'] != 'colormatrix'])
+                    for f, e in rows.items()}
         fls = {repr(e.get('filters') or []) for e in rows.values()}
         bls = {e.get('blend') for e in rows.values()}
         if len(fls) > 1 or len(bls) > 1:
@@ -726,7 +742,7 @@ class Exporter:
             out['k'] = 2
             out['a'] = self.export(e0['inst'].sid, ctrl=ctrl, cx=bake, res=child_res, white=wh)
             if self.effects:
-                self.clip_effects(cname, li, rows, out)
+                self.clip_effects(cname, li, rows, out, n)
         else:
             if stack and kind == 'cut':
                 for e in rows.values():
