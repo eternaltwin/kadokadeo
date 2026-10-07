@@ -4,7 +4,7 @@ import { mkdir, readdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 
 import { openArchive } from './builds/archive.mjs'
-import { bundleGame } from './builds/bundle.mjs'
+import { BUNDLE_FORMAT, bundleGame } from './builds/bundle.mjs'
 
 const sourceDir = 'resources/js/games'
 const outputDir = 'public/gamesdata'
@@ -41,7 +41,7 @@ for (const game of games) {
   const outputBuffer = code
   if (archive) {
     const previous = existsSync(game.output) ? await readFile(game.output) : null
-    await archive.addBundle(basename(game.output, '.js'), outputBuffer, previous)
+    await archive.addBundle(basename(game.output, '.js'), outputBuffer, previous, { format: BUNDLE_FORMAT })
   }
   await writeFile(game.output, code)
   await writeFile(join(sourceMapDir, `${basename(game.output)}.map`), map)
@@ -52,6 +52,8 @@ for (const game of games) {
   manifest[basename(game.output)] = {
     hash,
     size: outputBuffer.byteLength,
+    // esm: loaded with import() (builds/bundle.mjs)
+    format: BUNDLE_FORMAT,
   }
 }
 

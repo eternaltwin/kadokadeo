@@ -196,3 +196,6 @@ logico.Game
 --next
 -js ./resources/js/games/ktrain.js
 ktrain.Game
+--next
+-js ./resources/js/games/razor.js
+razor.Game

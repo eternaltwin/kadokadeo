@@ -127,7 +127,7 @@ class GameBuildArchive
     {
         $current = $game->gamedata;
         $key = $game->game_key;
-        $hash = $build?->hash ?? $this->legacyHash($key);
+        $hash = config('kado.game_builds.enabled') ? $build?->hash ?? $this->legacyHash($key) : null;
         if ($hash === null || ($current['hash'] ?? null) === $hash) {
             return $current === null ? null : $current + ['asset_base' => null];
         }
@@ -143,6 +143,8 @@ class GameBuildArchive
             'size' => $version['size'] ?? null,
             'hash' => $hash,
             'url' => $url,
+            // the versions built before the ES modules are classic scripts
+            'module' => ($version['format'] ?? 'iife') === 'esm',
             'asset_base' => $version['assetBase'] ?? null,
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AntiCheatBit;
 use App\Models\GamePeriodStar;
 use App\Models\Run;
 use App\Models\UserPoint;
@@ -80,8 +81,8 @@ class RunService
         $timestamp = data_get($decoded, 'timestamp');
         $replay = data_get($decoded, 'replay');
         $data = data_get($decoded, 'data');
-        $antiCheat = data_get($decoded, 'ac', 0);
-        $isCheat = $this->isAntiCheatFlagged($antiCheat) || !$this->hasExpectedRngStir($run, $replay);
+        $antiCheat = (int) data_get($decoded, 'ac', 0);
+        $isCheat = AntiCheatBit::hardBits($antiCheat) !== 0 || !$this->hasExpectedRngStir($run, $replay);
 
         $end = Carbon::createFromTimestamp($timestamp);
         $realEnd = now();
@@ -95,6 +96,8 @@ class RunService
         $run->replay = $replay;
         $run->score_details = $data;
         $run->is_cheat = $isCheat;
+        $run->anticheat_flags = $antiCheat;
+        $run->replay_frames = ReplayHeader::parse($replay)?->frames;
         $run->save();
         if (!$run->is_cheat && $run->contract_score > 0 && $run->score >= $run->contract_score) {
             $user = $run->user;
@@ -186,9 +189,10 @@ class RunService
         $userPeriodStars->save();
     }
 
-    // apart from the daily game, the game stirs its draws with the frames and the inputs (the coming pieces can't be
-    // listed from the seed): a replay without it comes from a modified game. Replays of older versions (no header
-    // flag) are accepted while their game version is still the one sent by the page.
+    // apart from the daily game, the game stirs its draws with the frames and the inputs, and the time of the inputs
+    // (the coming pieces can't be listed from the seed, nor predicted before an input): a replay without it comes from a
+    // modified game. Replays of older versions (no header flag) are accepted while their game version is still the
+    // one sent by the page.
     private function hasExpectedRngStir(Run $run, ?string $replay): bool
     {
         $header = ReplayHeader::parse($replay);
@@ -196,16 +200,8 @@ class RunService
             return true;
         }
 
-        return $header->hasRngStir() || !config('kado.require_rng_stir');
-    }
-
-    private function isAntiCheatFlagged(?int $antiCheat): bool
-    {
-        if (!$antiCheat) {
-            return false;
-        }
-
-        return true;
+        return ($header->hasRngStir() || !config('kado.require_rng_stir'))
+            && ($header->hasInputPhases() || !config('kado.require_input_phases'));
     }
 
     private function getAesKeyFromEncrypted(string $key): string

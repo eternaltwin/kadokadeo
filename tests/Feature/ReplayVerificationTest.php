@@ -135,6 +135,19 @@ class ReplayVerificationTest extends TestCase
         $this->assertTrue($verifier->shouldVerify($run, 80));
     }
 
+    public function test_the_analysis_of_the_moves_is_kept_and_a_suspicious_one_flagged(): void
+    {
+        config(['kado.replay_analysis.flag' => true]);
+        $analysis = ['analyzer' => 'binary', 'version' => 1, 'metrics' => ['decisions' => 40, 'optimalRate' => 0.95], 'suspicious' => true, 'reasons' => ['best move 95 % of the time']];
+        $this->fakeVerifier(['ok' => true, 'score' => 120, 'frames' => 900, 'analysis' => $analysis]);
+        $run = $this->verify($this->rewardedRun(120));
+
+        $this->assertSame(RunVerification::VERIFIED, $run->verification);
+        $this->assertFalse($run->is_cheat);
+        $this->assertSame($analysis, ReplayVerification::first()->analysis);
+        $this->assertSame([\App\Enums\RunFlagRule::GAME_ANALYSIS], $run->flags->pluck('rule')->all());
+    }
+
     public function test_each_verification_is_recorded_with_its_scores(): void
     {
         $this->fakeVerifier(['ok' => true, 'score' => 20, 'frames' => 900]);

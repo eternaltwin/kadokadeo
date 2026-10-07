@@ -15,7 +15,7 @@ class Run extends Model
     use HasUlids;
     use SoftDeletes;
 
-    protected $fillable = ['period_id', 'game_id', 'user_id', 'league_id', 'score', 'play_time_seconds', 'replay', 'completed_at', 'contract_score', 'contract_points', 'seed', 'score_details', 'daily_game_id', 'is_cheat', 'game_build_id', 'verification', 'verified_at'];
+    protected $fillable = ['period_id', 'game_id', 'user_id', 'league_id', 'score', 'play_time_seconds', 'replay', 'completed_at', 'contract_score', 'contract_points', 'seed', 'score_details', 'daily_game_id', 'is_cheat', 'game_build_id', 'verification', 'verified_at', 'anticheat_flags', 'replay_frames'];
 
     protected $casts = [
         'replay' => BinaryCast::class,
@@ -24,6 +24,8 @@ class Run extends Model
         'is_cheat' => 'boolean',
         'verification' => RunVerification::class,
         'verified_at' => 'datetime',
+        'anticheat_flags' => 'integer',
+        'replay_frames' => 'integer',
     ];
 
     public function game()
@@ -50,6 +52,12 @@ class Run extends Model
     public function gameBuild()
     {
         return $this->belongsTo(GameBuild::class);
+    }
+
+    // in the queue of the suspicious runs (App\Services\SuspicionService)
+    public function flags()
+    {
+        return $this->hasMany(RunFlag::class);
     }
 
     public function getHasReplayAttribute()

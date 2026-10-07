@@ -16,8 +16,9 @@
 // The bundle of an old version is rebuilt by Laravel (route /gamesdata/builds/<key>/<v>.js).
 //
 // index.json: { format: 1, games: { <key>: {
-//   current: { hash, atlas, since },              the bundle of today (atlas: hash of its spritesheet)
-//   versions: { <v>: { base, atlas, assetBase, legacy, since, retiredAt, size } },
+//   current: { hash, atlas, since, format },      the bundle of today (atlas: hash of its spritesheet)
+//   versions: { <v>: { base, atlas, assetBase, legacy, since, retiredAt, size, format } },
+//   (format of a bundle: 'esm', an ES module loaded with import(), or 'iife' / missing, a classic script: see bundle.mjs)
 //   atlas: { hash, files: [{ name, blob }] },     the spritesheet of today (git blob ids of its files)
 //   atlases: [<h>, ...] } } }                     replaced spritesheets, oldest first
 import { execFileSync } from 'node:child_process'
@@ -50,11 +51,12 @@ export async function openArchive({ storageDir, publicDir, contentDir, publicUrl
 
   // before the new bundle replaces `previous` on disk: the current version becomes an old one (delta), the old ones
   // are rebased on the new bundle
-  async function addBundle(key, bundle, previous) {
+  async function addBundle(key, bundle, previous, { format = 'iife' } = {}) {
     const g = game(key)
     const hash = bundleHash(bundle)
     const copy = join(storageDir, key, 'current.js.gz')
     if (g.current?.hash === hash) {
+      g.current.format = format
       if (!existsSync(copy)) {
         await mkdir(join(storageDir, key), { recursive: true })
         await writeFile(copy, gzipSync(bundle, { level: 9 }))
@@ -97,12 +99,13 @@ export async function openArchive({ storageDir, publicDir, contentDir, publicUrl
           since: g.current.since,
           retiredAt: now,
           size: cur.length,
+          format: g.current.format ?? 'iife',
         }
         log(`${key}: ${g.current.hash} archived (${Object.keys(versions).length} old versions)`)
       }
     }
     g.versions = versions
-    g.current = { hash, atlas: null, since: now }
+    g.current = { hash, atlas: null, since: now, format }
     await mkdir(join(storageDir, key), { recursive: true })
     await writeFile(copy, gzipSync(bundle, { level: 9 }))
   }

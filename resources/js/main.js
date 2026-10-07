@@ -1,3 +1,6 @@
+// ANTI CHEAT: first, before any other script can change them (see the module)
+import './anticheat/natives'
+
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { createPinia } from 'pinia'

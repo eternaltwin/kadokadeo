@@ -1,28 +1,21 @@
 import { ref, toValue } from 'vue'
 
+import { natives } from '../anticheat/natives'
+
 const scriptRegistry = {}
 
-// ANTI CHEAT: a game bundle doesn't put its classes on window (resources/js/games/build-games.mjs): it gives them
-// to this hook, which it deletes. Kept installed only while a bundle is loading.
-function installRegisterHook() {
-  window.__kadoRegisterGame = (exports, script) => {
-    const entry = Object.values(scriptRegistry).find((e) => e.node === script)
-    if (entry) {
-      entry.exports = exports
-    }
-    // another bundle still loading
-    if (Object.values(scriptRegistry).some((e) => !e.loaded && e !== entry)) {
-      installRegisterHook()
-    }
-  }
+// ANTI CHEAT: a game bundle is an ES module that doesn't put its classes on window (resources/js/games/builds/
+// bundle.mjs): its default export gives them once. It is imported with a random fragment: a module of its own (its
+// classes, statics...), that a script of the page can't import too (another URL is another module).
+async function loadModule(url) {
+  const nonce = Array.from(natives.randomValues(new Uint32Array(4)), (n) => n.toString(36)).join('')
+  const module = await import(/* @vite-ignore */ `${url}#k${nonce}`)
+  const exports = typeof module.default === 'function' ? module.default() : null
+  return exports ?? {}
 }
 
-function removeRegisterHookWhenIdle() {
-  if (Object.values(scriptRegistry).every((e) => e.loaded)) {
-    delete window.__kadoRegisterGame
-  }
-}
-
+// The versions of the games built before the ES modules (played for the replays recorded with them) are classic
+// scripts that put their classes on window.
 function loadScript(url) {
   const existing = scriptRegistry[url]
   if (existing) {
@@ -44,30 +37,26 @@ function loadScript(url) {
   entry.promise = new Promise((resolve, reject) => {
     script.addEventListener('load', () => {
       entry.loaded = true
-      removeRegisterHookWhenIdle()
       resolve()
     })
     script.addEventListener('error', () => {
       entry.loaded = true
-      removeRegisterHookWhenIdle()
       reject(new Error(`Failed to load game script: ${url}`))
     })
   })
   scriptRegistry[url] = entry
 
-  installRegisterHook()
   document.body.appendChild(script)
   return entry.promise
 }
 
-// the classes given by the bundle: KadoKadeo and Game<Name>
+// the classes put on window by a classic script: KadoKadeo and Game<Name>
 function getGameClasses(url, globalName) {
   const entry = scriptRegistry[url]
   if (!entry) {
     return {}
   }
   if (!entry.exports) {
-    // bundles built before the classes were hidden (old versions, played for their replays) put them on window
     entry.exports = { KadoKadeo: window.KadoKadeo, [globalName]: window[globalName] }
     delete window.KadoKadeo
     delete window[globalName]
@@ -132,7 +121,7 @@ export function useGame(game) {
     }
     gameInstance = null
 
-    if (activeScript) {
+    if (activeScript && !activeScript.module) {
       unloadScript(activeScript.src)
     }
     activeScript = null
@@ -151,23 +140,35 @@ export function useGame(game) {
     const config = {
       src: currentGame?.gamedata?.url ?? currentGame?.gamedata?.file,
       global: currentGame?.pascal_name,
+      module: currentGame?.gamedata?.module === true,
     }
 
     if (!canvas || !config.src || !config.global) {
       return
     }
 
-    await loadScript(config.src)
-
-    if (token != loadToken) {
-      unloadScript(config.src)
-      return
+    let KadoKadeo, gameClass
+    if (config.module) {
+      const exports = await loadModule(config.src)
+      if (token != loadToken) {
+        return
+      }
+      KadoKadeo = exports.KadoKadeo
+      gameClass = exports[config.global]
+    } else {
+      await loadScript(config.src)
+      if (token != loadToken) {
+        unloadScript(config.src)
+        return
+      }
+      ;({ KadoKadeo, gameClass } = getGameClasses(config.src, config.global))
     }
 
-    const { KadoKadeo, gameClass } = getGameClasses(config.src, config.global)
     if (typeof KadoKadeo !== 'function' || typeof gameClass !== 'function') {
       console.error('Game classes are missing:', { kadoKadeo: KadoKadeo, gameClass })
-      unloadScript(config.src)
+      if (!config.module) {
+        unloadScript(config.src)
+      }
       throw new Error(`Game classes are missing for ${config.src} - ${config.global}`)
     }
 
@@ -183,6 +184,8 @@ export function useGame(game) {
       gameId: currentGame.id,
       // version of the bundle: sent with the run, its replay is played with the same version
       build: currentGame?.gamedata?.hash ?? null,
+      // ANTI CHEAT: functions of the browser taken when the page loaded (kac.Natives of the game)
+      natives,
     })
   }
 

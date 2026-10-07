@@ -28,7 +28,7 @@ class GameBuild extends Model
     /** the version a run begins with, sent by the game (only the current bundle or a version of the archive) */
     public static function resolve(Game $game, ?string $hash): ?self
     {
-        if ($hash === null || !preg_match('/^[0-9a-f]{12}$/', $hash)) {
+        if (!config('kado.game_builds.enabled') || $hash === null || !preg_match('/^[0-9a-f]{12}$/', $hash)) {
             return null;
         }
         $current = $game->gamedata['hash'] ?? null;

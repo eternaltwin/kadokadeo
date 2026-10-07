@@ -27,6 +27,7 @@ class RunReplayController extends Controller
                     'id' => $run->game->id,
                     'name' => $run->game->name,
                     'pascal_name' => $run->game->pascal_name,
+                    'is_arkadeo' => (bool) $run->game->is_arkadeo,
                     'gamedata' => $gamedata,
                 ],
                 'args' => [

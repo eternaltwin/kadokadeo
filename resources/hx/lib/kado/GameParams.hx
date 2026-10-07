@@ -12,6 +12,8 @@ typedef GameParams = {
 	@:optional var build:String;
 	// folder of the spritesheet of an old version of the game (replays), instead of /assets/img/content/<name>/
 	@:optional var assetBase:String;
+	// ANTI CHEAT: functions of the browser taken when the page loaded (resources/js/anticheat/natives.js), see kac.Natives
+	@:optional var natives:Dynamic;
 	var canvasWidth:Int;
 	var canvasHeight:Int;
 }

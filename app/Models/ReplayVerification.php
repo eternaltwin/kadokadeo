@@ -18,10 +18,11 @@ class ReplayVerification extends Model
 
     public const UPDATED_AT = null;
 
-    protected $fillable = ['run_id', 'game_id', 'status', 'score', 'replay_score', 'frames', 'error', 'duration_ms'];
+    protected $fillable = ['run_id', 'game_id', 'status', 'score', 'replay_score', 'frames', 'error', 'duration_ms', 'analysis'];
 
     protected $casts = [
         'status' => RunVerification::class,
+        'analysis' => 'array',
     ];
 
     public function run(): BelongsTo

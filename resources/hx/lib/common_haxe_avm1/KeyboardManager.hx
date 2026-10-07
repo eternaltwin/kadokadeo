@@ -2,6 +2,7 @@ package common_haxe_avm1;
 
 import haxe.ds.IntMap;
 import js.html.KeyboardEvent;
+import common_haxe_avm1.kac.Natives;
 
 // Extra key for a key read by the game: `code` is the physical key (KeyboardEvent.code, independent of the layout:
 // "KeyW" is Z on AZERTY and W on QWERTY), `keyCode` the legacy key code. `key` is the key the game reads.
@@ -71,10 +72,13 @@ class KeyboardManager {
 
 	static private var keyState:IntMap<Bool>;
 	static private var justPressed:IntMap<Bool>;
-	static private var frameKeyChanges:Array<{keyCode:Int, isDown:Bool}> = [];
+	static private var frameKeyChanges:Array<{keyCode:Int, isDown:Bool, t:Float}> = [];
+	// time of the last key change applied on this frame (-1: none), see kado.ReplayManager (phases)
+	static private var frameInputTime:Float = -1;
 	static private var isInitialized:Bool = false;
 	static private var inputLocked:Bool = false;
-	static private var pendingOps:Array<{keyCode:Int, isDown:Bool}> = [];
+	// t: time of the input (Event.timeStamp, ms), -1 for a replay
+	static private var pendingOps:Array<{keyCode:Int, isDown:Bool, t:Float}> = [];
 	static private var aliases:Array<KeyAlias> = [];
 	// game key -> physical keys holding it down (a key mapped on several keys is released with the last one)
 	static private var heldBy:IntMap<Array<String>> = new IntMap();
@@ -91,9 +95,10 @@ class KeyboardManager {
 		frameKeyChanges = [];
 		isInitialized = true;
 
-		js.Browser.window.addEventListener("keydown", onKeyDown);
-		js.Browser.window.addEventListener("keyup", onKeyUp);
-		js.Browser.window.addEventListener("blur", onBlur);
+		// (with the addEventListener of the page: a script cannot wrap the events given to the game)
+		Natives.listen(js.Browser.window, "keydown", onKeyDown);
+		Natives.listen(js.Browser.window, "keyup", onKeyUp);
+		Natives.listen(js.Browser.window, "blur", onBlur);
 
 		/*window.js.Browser.dEventListener("keydown", function(e) {
 			if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1) {
@@ -111,6 +116,11 @@ class KeyboardManager {
 		if (inputLocked) {
 			return;
 		}
+		// (a key event made for a field of the page, e.g. by a password manager, is not counted)
+		var t = isTyping(e) && !Natives.isTrustedEvent(e) ? Math.NaN : Natives.takeInput(e);
+		if (Math.isNaN(t)) {
+			return;
+		}
 		var source = physicalKey(e);
 		for (key in targets) {
 			var held = heldBy.get(key);
@@ -121,7 +131,7 @@ class KeyboardManager {
 				}
 				heldBy.remove(key);
 			}
-			queueKeyOp(key, false);
+			queueKeyOp(key, false, false, t);
 		}
 	}
 
@@ -137,6 +147,10 @@ class KeyboardManager {
 		if (inputLocked) {
 			return;
 		}
+		var t = Natives.takeInput(e);
+		if (Math.isNaN(t)) {
+			return;
+		}
 		var source = physicalKey(e);
 		for (key in targets) {
 			var held = heldBy.get(key);
@@ -147,7 +161,7 @@ class KeyboardManager {
 			if (!held.contains(source)) {
 				held.push(source);
 			}
-			queueKeyOp(key, true);
+			queueKeyOp(key, true, false, t);
 		}
 	}
 
@@ -202,12 +216,13 @@ class KeyboardManager {
 		}
 	}
 
+	// virtual keys (touch controls): at the time of the last input taken (Natives.lastInputTime)
 	static public function queueVirtualKeyDown(keyCode:Int):Void {
-		queueKeyOp(keyCode, true);
+		queueKeyOp(keyCode, true, false, Natives.lastInputTime);
 	}
 
 	static public function queueVirtualKeyUp(keyCode:Int):Void {
-		queueKeyOp(keyCode, false);
+		queueKeyOp(keyCode, false, false, Natives.lastInputTime);
 	}
 
 	static public function queueReplayKeyDown(keyCode:Int):Void {
@@ -222,6 +237,7 @@ class KeyboardManager {
 		ensureInitialized();
 		justPressed.clear();
 		frameKeyChanges = [];
+		frameInputTime = -1;
 		if (pendingOps.length == 0) {
 			return 0;
 		}
@@ -230,18 +246,21 @@ class KeyboardManager {
 		pendingOps = [];
 		var applied = 0;
 		for (op in ops) {
+			if (op.t > frameInputTime) {
+				frameInputTime = op.t;
+			}
 			if (op.isDown) {
 				var wasDown = keyState.exists(op.keyCode);
 				setKeyDown(op.keyCode);
 				if (!wasDown) {
 					justPressed.set(op.keyCode, true);
-					frameKeyChanges.push({keyCode: op.keyCode, isDown: true});
+					frameKeyChanges.push({keyCode: op.keyCode, isDown: true, t: op.t});
 				}
 			} else {
 				var wasDown = keyState.exists(op.keyCode);
 				setKeyUp(op.keyCode);
 				if (wasDown) {
-					frameKeyChanges.push({keyCode: op.keyCode, isDown: false});
+					frameKeyChanges.push({keyCode: op.keyCode, isDown: false, t: op.t});
 				}
 			}
 			applied++;
@@ -249,9 +268,14 @@ class KeyboardManager {
 		return applied;
 	}
 
-	static public function getFrameKeyChanges():Array<{keyCode:Int, isDown:Bool}> {
+	static public function getFrameKeyChanges():Array<{keyCode:Int, isDown:Bool, t:Float}> {
 		ensureInitialized();
 		return frameKeyChanges.copy();
+	}
+
+	// time (Event.timeStamp, ms) of the last key change applied on this frame, -1 when none (or a replay)
+	static public function getFrameInputTime():Float {
+		return frameInputTime;
 	}
 
 	static public function setKeyDown(keyCode:Int):Void {
@@ -295,11 +319,11 @@ class KeyboardManager {
 		}
 	}
 
-	static private inline function queueKeyOp(keyCode:Int, isDown:Bool, bypassLock:Bool = false):Void {
+	static private inline function queueKeyOp(keyCode:Int, isDown:Bool, bypassLock:Bool = false, t:Float = -1):Void {
 		ensureInitialized();
 		if (inputLocked && !bypassLock) {
 			return;
 		}
-		pendingOps.push({keyCode: keyCode, isDown: isDown});
+		pendingOps.push({keyCode: keyCode, isDown: isDown, t: t});
 	}
 }

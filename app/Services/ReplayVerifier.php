@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Run;
 use App\Support\GameBuilds\GameBuildArchive;
+use App\Support\ReplayHeader;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
@@ -33,11 +34,32 @@ class ReplayVerifier
             || $run->daily_game_id !== null;
     }
 
+    // the game has an analyzer of the moves (resources/js/replay-verifier/analyzers/<key>.mjs), turned on
+    public function hasAnalyzer(string $key): bool
+    {
+        return config('kado.replay_analysis.enabled')
+            && preg_match('/^[a-z0-9]+$/', $key)
+            && file_exists(base_path("resources/js/replay-verifier/analyzers/{$key}.mjs"));
+    }
+
+    // a run not verified otherwise, verified anyway for the analysis of its moves (a share of them)
+    public function shouldSampleForAnalysis(Run $run): bool
+    {
+        $rate = (float) config('kado.replay_analysis.sample_rate');
+
+        return $this->enabled() && !$run->is_cheat && $rate > 0 && $this->hasAnalyzer($run->game->game_key)
+            && mt_rand() / mt_getrandmax() < $rate;
+    }
+
     /**
-     * @return array{ok: bool, score?: int, frames?: int, error?: string}
+     * @return array{ok: bool, score?: int, frames?: int, error?: string, analysis?: array}
      */
     public function verify(Run $run): array
     {
+        // (the game would start a live game instead, and the verifier wait for its replay until its timeout)
+        if (ReplayHeader::parse($run->replay) === null) {
+            return ['ok' => false, 'error' => 'not a replay of the game'];
+        }
         $game = $run->game;
         $gamedata = $this->archive->gamedataFor($game, $run->gameBuild);
         if ($gamedata === null) {
@@ -62,6 +84,10 @@ class ReplayVerifier
                 'seed' => $run->seed,
                 'replay' => $run->replay,
                 'assetBase' => $gamedata['asset_base'] ?? null,
+                // an ES module (resources/js/games/builds/bundle.mjs) or a classic script (older versions)
+                'module' => (bool) ($gamedata['module'] ?? false),
+                // the config of the analyzer of the game (none: no analysis)
+                'analysis' => $this->hasAnalyzer($key) ? (object) config("kado.replay_analysis.games.{$key}", []) : null,
             ]));
 
             $result = $this->node(['verify.mjs', "{$dir}/input.json"], config('kado.replay_verifier.timeout'));

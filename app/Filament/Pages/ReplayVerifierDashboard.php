@@ -83,6 +83,13 @@ class ReplayVerifierDashboard extends Page implements HasTable
                     ->formatStateUsing(fn (?int $state) => $state === null ? null : number_format($state / 1000, 1, ',', ' ').' s')
                     ->placeholder('—')
                     ->sortable(),
+                // the analyzer of the moves of the game (resources/js/replay-verifier/analyzers)
+                TextColumn::make('analysis')
+                    ->label('Analyse des coups')
+                    ->state(fn (ReplayVerification $record) => self::describeAnalysis($record->analysis))
+                    ->color(fn (ReplayVerification $record) => ($record->analysis['suspicious'] ?? false) ? 'danger' : null)
+                    ->tooltip(fn (ReplayVerification $record) => $record->analysis ? json_encode($record->analysis['metrics'] ?? $record->analysis, JSON_UNESCAPED_UNICODE) : null)
+                    ->placeholder('—'),
                 TextColumn::make('error')
                     ->label('Erreur')
                     ->formatStateUsing(fn (?string $state) => Str::limit($state, 120))
@@ -253,5 +260,22 @@ class ReplayVerifierDashboard extends Page implements HasTable
         }
 
         return $checks;
+    }
+
+    // « Meilleur coup 93 % sur 42 coups (suspect) »
+    private static function describeAnalysis(?array $analysis): ?string
+    {
+        if (!$analysis) {
+            return null;
+        }
+        if (isset($analysis['error'])) {
+            return 'Erreur : '.Str::limit($analysis['error'], 60);
+        }
+        $metrics = $analysis['metrics'] ?? [];
+        if (!isset($metrics['optimalRate'])) {
+            return ($analysis['suspicious'] ?? false) ? 'Suspect' : 'RAS';
+        }
+
+        return sprintf('Meilleur coup %d %% sur %d coups%s', round($metrics['optimalRate'] * 100), $metrics['decisions'] ?? 0, ($analysis['suspicious'] ?? false) ? ' (suspect)' : '');
     }
 }

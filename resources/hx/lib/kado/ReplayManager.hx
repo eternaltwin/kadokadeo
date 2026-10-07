@@ -23,13 +23,25 @@ typedef ReplayEvent = Dynamic;
 typedef ReplayInputEvent = {
 	var keyCode:Int;
 	var isDown:Bool;
+	// version 4: time of the change in its frame (see phaseOf)
+	@:optional var phase:Int;
 }
 
 typedef ReplayFrameRecord = {
 	var events:Array<ReplayEvent>;
 	var inputs:Array<ReplayInputEvent>;
 	@:optional var mousePosition:Null<{x:Int, y:Int}>;
-	@:optional var mouseButtons:Array<{button:Int, isDown:Bool}>;
+	@:optional var mouseButtons:Array<{button:Int, isDown:Bool, ?phase:Int}>;
+	// version 4: by event, its phase and its bytes in the replay (written as recorded: the hash of the stir is the same
+	// in the game and in its replay, even if the game changes the event object later)
+	@:optional var eventPhases:Array<Int>;
+	@:optional var eventBytes:Array<Bytes>;
+}
+
+private typedef PendingEvent = {
+	var event:ReplayEvent;
+	var phase:Int;
+	var bytes:Bytes;
 }
 
 // Binary replay: "KADO", version, flags, init params (recorded keys / mouse buttons), then one section per kind of
@@ -39,8 +51,12 @@ typedef ReplayFrameRecord = {
 // mouse position as its move (minus the move of the frame before when the mouse moved on consecutive frames:
 // smooth moves give numbers close to 0). Mouse games give replays about 2 times smaller than with version 2.
 // Versions 1 and 2 (one group per frame: gap, count, values) are still read.
+// Version 4 (2026-10, anti cheat) adds the PHASES section (flag INPUT_PHASES, games with the RNG stir): one byte by input
+// change, event and mouse button change (in the order of their sections): the moment of the frame (quarter of ms) the
+// player did it, read from the DOM event (Event.timeStamp). The gameplay draws are stirred by it (see beginFrame): the
+// coming pieces depend on a time no player controls, so they can't be predicted before the input.
 class ReplayManager {
-	public static inline var REPLAY_VERSION:Int = 3;
+	public static inline var REPLAY_VERSION:Int = 4;
 	private static inline var MAGIC_HEADER:String = "KADO";
 	// optional trailer (ignored by older readers): number of frames of the game
 	private static inline var MAGIC_LENGTH:String = "LEN";
@@ -53,6 +69,12 @@ class ReplayManager {
 	private static inline var FLAG_BUTTON_CODES:Int = 32;
 	// the gameplay draws of the game are stirred by the frames and the inputs (kado.Seed.stir)
 	private static inline var FLAG_RNG_STIR:Int = 64;
+	// version 4: the PHASES section is written (see phaseOf); the frame signature also depends on the events
+	private static inline var FLAG_INPUT_PHASES:Int = 128;
+	// phase of a change without time (replay, state resync, event made by the game outside of an input)
+	public static inline var PHASE_NONE:Int = 125;
+	// phase of an event recorded for a frame already played: not in the frame signature (it would differ in the replay)
+	public static inline var PHASE_EXCLUDED:Int = 127;
 	private static inline var EVENT_ENCODING_PACKED_GRID:Int = 0;
 	private static inline var EVENT_ENCODING_SERIALIZED:Int = 1;
 	private static inline var DEFLATE_LEVEL:Int = 9;
@@ -76,7 +98,7 @@ class ReplayManager {
 	private var playMouseY:Int = 0;
 	private var hasPlayMouse:Bool = false;
 
-	private var pendingEvents:Array<ReplayEvent>;
+	private var pendingEvents:Array<PendingEvent>;
 	private var frameEvents:Array<ReplayEvent>;
 	private var trackedKeys:IntMap<Bool>;
 	private var trackedKeyList:Array<Int>;
@@ -93,6 +115,13 @@ class ReplayManager {
 	private var rngStir:Bool = false;
 	// inputs and mouse buttons changed on the current frame (recorded or replayed): see getFrameSignature
 	private var frameSignature:Int = 0;
+	// version 4 (FLAG_INPUT_PHASES): the frame signature has the phases, the mouse position and the events of the frame
+	// before (an event is recorded by the game during its frame, after the stir of the frame)
+	private var phasesEnabled:Bool = false;
+	// playing: hash of the events of the frame before
+	private var carriedEventSig:Int = 0;
+	// between beginFrame and endFrame
+	private var inFrame:Bool = false;
 
 	public function new(?replayData:String = null) {
 		this.replayData = parseReplayString(replayData);
@@ -144,6 +173,8 @@ class ReplayManager {
 		currentFrame = 0;
 		playCursor = 0;
 		hasPlayMouse = false;
+		carriedEventSig = 0;
+		inFrame = false;
 
 		if (this.replayData != null) {
 			this.isPlaying = true;
@@ -160,6 +191,7 @@ class ReplayManager {
 	}
 
 	public function stop():Void {
+		this.inFrame = false;
 		this.isRecording = false;
 		this.isPlaying = false;
 		common_haxe_avm1.KeyboardManager.setInputLocked(false);
@@ -179,10 +211,16 @@ class ReplayManager {
 	}
 
 	// recording: written in the replay. Playing: read from the replay (false for the replays recorded before it)
+	// The stirred games also record the phases of the inputs (version 4), the daily game neither.
 	public function setRngStir(enabled:Bool):Void {
 		if (this.replayData == null) {
 			rngStir = enabled;
+			phasesEnabled = enabled;
 		}
+	}
+
+	public inline function hasInputPhases():Bool {
+		return phasesEnabled;
 	}
 
 	public inline function hasRngStir():Bool {
@@ -268,9 +306,16 @@ class ReplayManager {
 			frameEvents = [];
 		}
 		frameSignature = 0;
+		inFrame = true;
 
 		if (this.isPlaying) {
-			applyFrame(currentFrame);
+			var record = applyFrame(currentFrame);
+			if (phasesEnabled) {
+				frameSignature = signatureV2(record) ^ carriedEventSig;
+				carriedEventSig = eventsSignature(record);
+			} else {
+				frameSignature = signatureOf(record);
+			}
 			common_haxe_avm1.KeyboardManager.beginFrame();
 			common_haxe_avm1.MouseManager.beginFrame();
 			return;
@@ -291,12 +336,16 @@ class ReplayManager {
 			captureFrameMouseButtons();
 		}
 
-		frameSignature = signatureOf(frameRecords.get(currentFrame));
+		if (phasesEnabled) {
+			frameSignature = signatureV2(frameRecords.get(currentFrame)) ^ eventsSignature(frameRecords.get(currentFrame - 1));
+		} else {
+			frameSignature = signatureOf(frameRecords.get(currentFrame));
+		}
 
 		if (this.shouldRecordEvents && pendingEvents.length > 0) {
 			var record = getOrCreateFrameRecord(currentFrame);
-			for (event in pendingEvents) {
-				record.events.push(event);
+			for (pending in pendingEvents) {
+				addEvent(record, pending.event, pending.phase, pending.bytes);
 			}
 			pendingEvents = [];
 		}
@@ -306,25 +355,63 @@ class ReplayManager {
 		if (!this.isRecording && !this.isPlaying) {
 			return;
 		}
+		inFrame = false;
 		currentFrame++;
 	}
 
-	public function recordEvent(event:ReplayEvent, ?frameIndex:Int):Void {
+	// frameIndex: frame of the event (default: the next frame begun). phase: moment of the input that made it (see
+	// phaseOf; default: the last input of the frame)
+	public function recordEvent(event:ReplayEvent, ?frameIndex:Int, ?phase:Int):Void {
 		if (!this.isRecording || !this.shouldRecordEvents || event == null) {
 			return;
 		}
 
+		var bytes = encodeEvent(event);
+		if (frameIndex != null && Std.int(frameIndex) < currentFrame) {
+			phase = PHASE_EXCLUDED;
+		} else if (phase == null || phase < 0 || phase >= PHASE_NONE) {
+			phase = currentInputPhase();
+		}
+
 		if (frameIndex == null) {
-			pendingEvents.push(event);
+			pendingEvents.push({event: event, phase: phase, bytes: bytes});
 			return;
 		}
 
 		var frame = Std.int(frameIndex);
 		var record = getOrCreateFrameRecord(frame);
-		record.events.push(event);
+		addEvent(record, event, phase, bytes);
 	}
 
-	public function recordInput(keyCode:Int, isDown:Bool, ?frameIndex:Int):Void {
+	static function addEvent(record:ReplayFrameRecord, event:ReplayEvent, phase:Int, bytes:Bytes):Void {
+		record.events.push(event);
+		if (record.eventPhases == null) {
+			record.eventPhases = [];
+			record.eventBytes = [];
+		}
+		record.eventPhases.push(phase);
+		record.eventBytes.push(bytes);
+	}
+
+	// ANTI CHEAT: moment of an input in the frames of the game (Event.timeStamp modulo the 31.25 ms of a frame), in
+	// quarters of ms: 0..124. No player can choose it, it is recorded (the replay never reads a clock).
+	public static function phaseOf(t:Float):Int {
+		if (Math.isNaN(t) || t < 0) {
+			return PHASE_NONE;
+		}
+		var p = Std.int((t % FixedFramerate.STEP) * 4);
+		return p < 0 ? 0 : p >= PHASE_NONE ? PHASE_NONE - 1 : p;
+	}
+
+	// phase of the last input of the frame being played (outside of a frame: of the last input taken)
+	function currentInputPhase():Int {
+		if (!inFrame) {
+			return phaseOf(common_haxe_avm1.kac.Natives.lastInputTime);
+		}
+		return phaseOf(Math.max(common_haxe_avm1.MouseManager.getFrameInputTime(), common_haxe_avm1.KeyboardManager.getFrameInputTime()));
+	}
+
+	public function recordInput(keyCode:Int, isDown:Bool, ?frameIndex:Int, ?phase:Int):Void {
 		if (!this.isRecording || !this.shouldRecordInputs || !shouldTrackKey(keyCode)) {
 			return;
 		}
@@ -342,7 +429,7 @@ class ReplayManager {
 
 		var frame = frameIndex == null ? currentFrame : frameIndex;
 		var record = getOrCreateFrameRecord(frame);
-		record.inputs.push({keyCode: keyCode, isDown: isDown});
+		record.inputs.push({keyCode: keyCode, isDown: isDown, phase: phase == null ? PHASE_NONE : phase});
 	}
 
 	public function consumeEvents():Array<ReplayEvent> {
@@ -353,6 +440,13 @@ class ReplayManager {
 		var output = frameEvents;
 		frameEvents = [];
 		return output;
+	}
+
+	// bytes of an event in the replay (EVENTS section)
+	function encodeEvent(event:ReplayEvent):Bytes {
+		var output = new BytesOutput();
+		writeEvent(output, event);
+		return output.getBytes();
 	}
 
 	public function encodeBinaryData():Bytes {
@@ -397,6 +491,8 @@ class ReplayManager {
 			flags |= FLAG_BUTTON_CODES;
 		if (rngStir)
 			flags |= FLAG_RNG_STIR;
+		if (phasesEnabled)
+			flags |= FLAG_INPUT_PHASES;
 		output.writeByte(flags);
 
 		writeInitParams(output, flags);
@@ -412,6 +508,9 @@ class ReplayManager {
 		if ((flags & FLAG_MOUSE_BUTTONS) != 0) {
 			writeMouseButtonRecords(output, frames, records, buttonIndex);
 		}
+		if ((flags & FLAG_INPUT_PHASES) != 0) {
+			writePhaseRecords(output, records, flags);
+		}
 		output.writeString(MAGIC_LENGTH);
 		writeVarUInt(output, currentFrame);
 		return output.getBytes();
@@ -425,15 +524,15 @@ class ReplayManager {
 		return Base64.encode(uint8ArrayToBytes(compressed));
 	}
 
-	private function applyFrame(frameIndex:Int):Void {
+	// the record of the frame (null: nothing recorded on it)
+	private function applyFrame(frameIndex:Int):Null<ReplayFrameRecord> {
 		while (playCursor < playFrames.length && playFrames[playCursor] < frameIndex) {
 			playCursor++;
 		}
 		if (playCursor >= playFrames.length || playFrames[playCursor] != frameIndex) {
-			return;
+			return null;
 		}
 		var record = playRecords[playCursor++];
-		frameSignature = signatureOf(record);
 
 		if (record.mousePosition != null) {
 			playMouseX = record.mousePosition.x;
@@ -468,6 +567,7 @@ class ReplayManager {
 				frameEvents.push(event);
 			}
 		}
+		return record;
 	}
 
 	static function signatureOf(record:Null<ReplayFrameRecord>):Int {
@@ -494,19 +594,80 @@ class ReplayManager {
 		return x;
 	}
 
+	// version 4: the changes of the frame with their phase, and the mouse position (games that record it)
+	static function signatureV2(record:Null<ReplayFrameRecord>):Int {
+		if (record == null) {
+			return 0;
+		}
+		var signature = 0;
+		for (input in record.inputs) {
+			signature ^= hashPhase(1, (input.keyCode << 1) | (input.isDown ? 1 : 0), phaseOrNone(input.phase));
+		}
+		if (record.mouseButtons != null) {
+			for (change in record.mouseButtons) {
+				signature ^= hashPhase(2, (change.button << 1) | (change.isDown ? 1 : 0), phaseOrNone(change.phase));
+			}
+		}
+		if (record.mousePosition != null) {
+			signature ^= hashPhase(3, record.mousePosition.x, record.mousePosition.y);
+		}
+		return signature;
+	}
+
+	// version 4: the events of a frame (their bytes in the replay) with their phase
+	static function eventsSignature(record:Null<ReplayFrameRecord>):Int {
+		if (record == null || record.eventBytes == null) {
+			return 0;
+		}
+		var signature = 0;
+		for (i in 0...record.eventBytes.length) {
+			var phase = record.eventPhases != null && i < record.eventPhases.length ? record.eventPhases[i] : PHASE_NONE;
+			if (phase == PHASE_EXCLUDED) {
+				continue;
+			}
+			signature ^= hashPhase(4, fnv1a(record.eventBytes[i]), phase);
+		}
+		return signature;
+	}
+
+	static inline function phaseOrNone(phase:Null<Int>):Int {
+		return phase == null ? PHASE_NONE : phase;
+	}
+
+	// 32 bit operations only (Math.imul): the same in every browser
+	static inline function imul(a:Int, b:Int):Int {
+		return js.Syntax.code("Math.imul({0}, {1})", a, b);
+	}
+
+	static function hashPhase(kind:Int, a:Int, b:Int):Int {
+		var x = imul(a, 0x2C1B3C6D) ^ imul(b + 1, 0x297A2D39) ^ imul(kind, 0x7FEB352D);
+		x ^= x << 13;
+		x ^= x >>> 17;
+		x ^= x << 5;
+		return x;
+	}
+
+	static function fnv1a(bytes:Bytes):Int {
+		var h = 0x811C9DC5;
+		for (i in 0...bytes.length) {
+			h = imul(h ^ bytes.get(i), 0x01000193);
+		}
+		return h;
+	}
+
 	private function captureFrameInputs():Void {
 		for (change in common_haxe_avm1.KeyboardManager.getFrameKeyChanges()) {
 			if (!shouldTrackKey(change.keyCode)) {
 				continue;
 			}
 
-			recordInput(change.keyCode, change.isDown, currentFrame);
+			recordInput(change.keyCode, change.isDown, currentFrame, phaseOf(change.t));
 		}
 
 		for (keyCode in trackedKeyList) {
 			var isDown = common_haxe_avm1.KeyboardManager.isDown(keyCode);
 			if (recordedKeyStates.exists(keyCode) != isDown) {
-				recordInput(keyCode, isDown, currentFrame);
+				recordInput(keyCode, isDown, currentFrame, PHASE_NONE);
 			}
 		}
 	}
@@ -544,7 +705,7 @@ class ReplayManager {
 					record.mouseButtons = [];
 				}
 			}
-			record.mouseButtons.push({button: change.button, isDown: change.isDown});
+			record.mouseButtons.push({button: change.button, isDown: change.isDown, phase: phaseOf(change.t)});
 		}
 	}
 
@@ -617,8 +778,12 @@ class ReplayManager {
 			previousFrame = frames[i];
 
 			writeVarUInt(output, record.events.length);
-			for (event in record.events) {
-				writeEvent(output, event);
+			for (i in 0...record.events.length) {
+				if (record.eventBytes != null && i < record.eventBytes.length) {
+					output.write(record.eventBytes[i]);
+				} else {
+					writeEvent(output, record.events[i]);
+				}
 			}
 		}
 	}
@@ -686,6 +851,79 @@ class ReplayManager {
 		writeChanges(output, changeFrames, values);
 	}
 
+	// version 4: the phases of the input changes, then of the events, then of the mouse button changes (each group in the
+	// order of its section: frames in order, then the order of the record)
+	private function writePhaseRecords(output:BytesOutput, records:Array<ReplayFrameRecord>, flags:Int):Void {
+		var phases:Array<Int> = [];
+		if ((flags & FLAG_INPUTS) != 0) {
+			for (record in records) {
+				for (input in record.inputs) {
+					phases.push(phaseOrNone(input.phase));
+				}
+			}
+		}
+		if ((flags & FLAG_EVENTS) != 0) {
+			for (record in records) {
+				for (i in 0...record.events.length) {
+					phases.push(record.eventPhases != null && i < record.eventPhases.length ? record.eventPhases[i] : PHASE_NONE);
+				}
+			}
+		}
+		if ((flags & FLAG_MOUSE_BUTTONS) != 0) {
+			for (record in records) {
+				if (record.mouseButtons != null) {
+					for (change in record.mouseButtons) {
+						phases.push(phaseOrNone(change.phase));
+					}
+				}
+			}
+		}
+		writeVarUInt(output, phases.length);
+		for (phase in phases) {
+			output.writeByte(phase);
+		}
+	}
+
+	private function readPhaseRecords(input:BytesInput, target:IntMap<ReplayFrameRecord>, flags:Int):Void {
+		var count = readVarUInt(input);
+		var frames = [for (frame in target.keys()) frame];
+		frames.sort((a, b) -> a - b);
+		var read = 0;
+		inline function next():Int {
+			if (read >= count) {
+				throw "Replay phases missing";
+			}
+			read++;
+			return input.readByte();
+		}
+		if ((flags & FLAG_INPUTS) != 0) {
+			for (frame in frames) {
+				for (change in target.get(frame).inputs) {
+					change.phase = next();
+				}
+			}
+		}
+		if ((flags & FLAG_EVENTS) != 0) {
+			for (frame in frames) {
+				var record = target.get(frame);
+				record.eventPhases = [for (_ in record.events) next()];
+			}
+		}
+		if ((flags & FLAG_MOUSE_BUTTONS) != 0) {
+			for (frame in frames) {
+				var record = target.get(frame);
+				if (record.mouseButtons != null) {
+					for (change in record.mouseButtons) {
+						change.phase = next();
+					}
+				}
+			}
+		}
+		if (read != count) {
+			throw "Replay phases count mismatch";
+		}
+	}
+
 	private function decodeBinaryData(data:Bytes):Void {
 		var input = new BytesInput(data);
 		var magic = input.readString(MAGIC_HEADER.length);
@@ -699,6 +937,7 @@ class ReplayManager {
 		}
 		var flags = input.readByte();
 		rngStir = (flags & FLAG_RNG_STIR) != 0;
+		phasesEnabled = version >= 4 && (flags & FLAG_INPUT_PHASES) != 0;
 
 		var target = new IntMap<ReplayFrameRecord>();
 		readInitParams(input, flags, version);
@@ -712,7 +951,7 @@ class ReplayManager {
 			}
 		}
 		if ((flags & FLAG_EVENTS) != 0) {
-			readEventRecords(input, target);
+			readEventRecords(input, target, data);
 		}
 		if (version >= 2 && (flags & FLAG_MOUSE_POSITION) != 0) {
 			if (version >= 3) {
@@ -732,6 +971,9 @@ class ReplayManager {
 			} else {
 				readMouseButtonRecords(input, target);
 			}
+		}
+		if (phasesEnabled) {
+			readPhaseRecords(input, target, flags);
 		}
 		totalFrames = -1;
 		if (data.length - input.position >= MAGIC_LENGTH.length + 1 && input.readString(MAGIC_LENGTH.length) == MAGIC_LENGTH) {
@@ -836,7 +1078,7 @@ class ReplayManager {
 		}
 	}
 
-	private function readEventRecords(input:BytesInput, target:IntMap<ReplayFrameRecord>):Void {
+	private function readEventRecords(input:BytesInput, target:IntMap<ReplayFrameRecord>, data:Bytes):Void {
 		var frameCount = readVarUInt(input);
 		var frameIndex = 0;
 
@@ -844,8 +1086,13 @@ class ReplayManager {
 			frameIndex += readVarUInt(input);
 			var eventCount = readVarUInt(input);
 			var record = getOrCreateFrameRecordFromMap(target, frameIndex);
+			if (record.eventBytes == null) {
+				record.eventBytes = [];
+			}
 			for (j in 0...eventCount) {
+				var start = input.position;
 				record.events.push(readEvent(input));
+				record.eventBytes.push(data.sub(start, input.position - start));
 			}
 		}
 	}

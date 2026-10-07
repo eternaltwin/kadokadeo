@@ -5,19 +5,39 @@ import { dirname, resolve } from 'node:path'
 import { build } from 'esbuild'
 
 // ANTI CHEAT: the classes exposed by Haxe (@:expose: KadoKadeo, Game<Name>) are not put on window, where anyone
-// could reach the game: the bundle gives them once to window.__kadoRegisterGame (set by useGame.js just before
-// loading it), which it deletes. The Haxe wrapper gives `exports` or `window` to $hx_exports: replaced by a local
-// object (declared at the end, hoisted, so that the lines of the source map don't move).
+// could reach the game. The bundle is an ES module (format 'esm' of the manifest) loaded with import() by useGame.js:
+// its default export gives the classes once (a second call gets nothing), and the page imports it with a random
+// fragment (a module of its own: an import() of the console gets another one, not the classes of the game).
+// The Haxe wrapper gives `exports` or `window` to $hx_exports: replaced by a local object (declared at the end,
+// hoisted, so that the lines of the source map don't move).
+// (The bundles built before 2026-10 were classic scripts putting the classes on window: still loaded by useGame.js for
+// the replays of their versions.)
 const HAXE_EXPORTS_TARGET =
   '})(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this,'
-const REGISTER_EXPORTS = `
-;(function () {
-  var register = window.__kadoRegisterGame
-  try { delete window.__kadoRegisterGame } catch (e) { window.__kadoRegisterGame = undefined }
-  if (typeof register === 'function') register(__kadoExports, document.currentScript)
-})()
-var __kadoExports
+const ESM_EXPORTS = `
+;var __kadoExports
+export default function claimKadoGame() { var e = __kadoExports; __kadoExports = void 0; return e }
 `
+
+// ANTI CHEAT: the prototypes of the classes of a live game are frozen (kac.Integrity, resources/hx/lib): a method
+// the game assigns to an instance (a Haxe `dynamic function`: haxe.Http.onData, haxe.Timer.run...) can't be shadowed
+// by an assignment then (TypeError in strict mode). The names the game assigns to an object (`x.name = `, `x["name"] =`,
+// Reflect.setField(x, "name"...), not counting the static functions, nor the prototypes) are given to Integrity, which
+// makes these methods accessors that give the instance its own property.
+const STATIC_DEFINITION = /^[\w$]+\.[\w$]+ = /
+export function assignedNames(code) {
+  const names = new Set()
+  for (const line of code.split('\n')) {
+    const member = STATIC_DEFINITION.test(line) ? line.replace(STATIC_DEFINITION, '') : line
+    for (const m of member.matchAll(/(?<!\.prototype)\.([A-Za-z_$][\w$]*)\s*=(?!=)/g)) names.add(m[1])
+    for (const m of member.matchAll(/\["([A-Za-z_$][\w$]*)"\]\s*=(?!=)/g)) names.add(m[1])
+    for (const m of member.matchAll(/setField\([^,]+,\s*"([A-Za-z_$][\w$]*)"/g)) names.add(m[1])
+  }
+  return [...names].sort()
+}
+
+// format of the bundles built now (manifest.json, versions of the archive)
+export const BUNDLE_FORMAT = 'esm'
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
@@ -30,7 +50,10 @@ const hideExports = (entry) => ({
         throw new Error(`${args.path}: the export wrapper of Haxe was not found (see builds/bundle.mjs)`)
       }
       return {
-        contents: code.replace(HAXE_EXPORTS_TARGET, '})(__kadoExports = {},') + REGISTER_EXPORTS,
+        contents:
+          code.replace(HAXE_EXPORTS_TARGET, '})(__kadoExports = {},') +
+          ESM_EXPORTS +
+          `;var __kadoAssignedNames = ${JSON.stringify(assignedNames(code))}\n`,
         loader: 'js',
         resolveDir: dirname(args.path),
       }
@@ -46,7 +69,7 @@ export async function bundleGame(entry) {
     outfile: 'bundle.js',
     bundle: true,
     platform: 'browser',
-    format: 'iife',
+    format: BUNDLE_FORMAT,
     target: 'es2018',
     // property names are kept: the Haxe reflection (Reflect.field, TOUCH_CONTROLS...) reads them as strings
     minify: true,

@@ -3,12 +3,16 @@
 //   usage: node verify.mjs <input.json>
 //   input: { bundle: path of the game bundle (the version the run was played with), gameClass: "Game<Name>",
 //            gameName: game_key, seed, replay, assetBase?: assets of an archived version,
+//            module?: the bundle is an ES module (resources/js/games/builds/bundle.mjs), not a classic script,
+//            analysis?: config of the analyzer of the game (analyzers/<gameName>.mjs, see analyzers/README.md), null: none,
 //            gameOverAtFrame?: tests only, the replays of the test harness (rc.mjs) end with a game over forced there }
-//   output (stdout, one JSON line): { ok: true, score, frames } or { ok: false, error }
+//   output (stdout, one JSON line): { ok: true, score, frames, analysis? } or { ok: false, error }
+//            analysis: { analyzer, version, metrics, suspicious, reasons } or { analyzer, error } (never fails the run)
 //   env: BROWSER (Chrome / Chromium, see browser.mjs), KADO_VERIFIER_CACHE (cache of PIXI and of the downloaded browser,
 //        default storage/app/replay-verifier)
 // The game runs like on the site (same PIXI from the same CDN, pixi-tween, fonts), the physics is stepped by hand.
 // Needs Node 22+ and Chrome / Chromium (downloaded when there is none: package @puppeteer/browsers).
+import { existsSync } from 'node:fs'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { basename, dirname, extname, join, normalize, resolve, sep } from 'node:path'
@@ -20,6 +24,8 @@ import { launch } from './cdp.mjs'
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const PUBLIC = join(ROOT, 'public')
 const PIXI_TWEEN = join(ROOT, 'resources/js/pixi-tween')
+// one analyzer of the moves by game (optional): analyzers/<game_key>.mjs
+const ANALYZERS = join(dirname(fileURLToPath(import.meta.url)), 'analyzers')
 const CACHE = process.env.KADO_VERIFIER_CACHE || join(ROOT, 'storage/app/replay-verifier')
 // the versions of the site (resources/views/layouts/default.blade.php)
 const VENDOR = {
@@ -30,7 +36,7 @@ const STEP_MS = 1000 / 32
 // the game goes on after the last frame of the replay: end animation, then the fade of kado.GameOver (80 frames),
 // during which points can still be won (the score sent is the one at the end of the fade)
 const EXTRA_FRAMES = 32 * 60
-const TYPES = { '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.ttf': 'font/ttf', '.otf': 'font/otf', '.woff': 'font/woff', '.woff2': 'font/woff2', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.fnt': 'text/xml', '.xml': 'text/xml' }
+const TYPES = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.ttf': 'font/ttf', '.otf': 'font/otf', '.woff': 'font/woff', '.woff2': 'font/woff2', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.fnt': 'text/xml', '.xml': 'text/xml' }
 
 async function vendorFile(name) {
   const path = join(CACHE, 'vendor', name)
@@ -58,9 +64,19 @@ async function page(input) {
     isDaily: false,
     contractScore: 0,
     contractPoints: 0,
+    // the size of the canvas of the site (resources/js/components/games/GameScript.vue)
+    canvasWidth: 600,
+    canvasHeight: 640,
     ...(input.assetBase ? { assetBase: input.assetBase } : {}),
   }
   const json = (v) => JSON.stringify(v).replace(/</g, '\\u003c')
+  // the classes of the game: the default export of an ES module (imported after pixi-tween, part of the bundle of the
+  // site), or put on window by a classic script (the versions built before the ES modules)
+  const legacyLoader = `<script src="/__bundle.js"></script>
+<!-- pixi-tween (part of the bundle of the site) as ES modules: they run in order, after the classic scripts -->
+<script type="module" src="/__pixi-tween/index.js"></script>`
+  const moduleLoader = `await import('/__pixi-tween/index.js')
+  window.__classes = (await import('/__bundle.js')).default()`
   return `<!doctype html>
 <html><head><meta charset="utf-8"><style>${fontFaces} body { margin: 0 }</style>
 <script>
@@ -73,12 +89,9 @@ async function page(input) {
 <script src="/__vendor/pixi-filters.min.js"></script>
 </head><body>
 <canvas id="c" width="600" height="640"></canvas>
-<script>window.__kadoRegisterGame = (exports) => { window.__classes = exports }</script>
-<script src="/__bundle.js"></script>
-<!-- pixi-tween (part of the bundle of the site) as ES modules: they run in order, after the classic scripts -->
-<script type="module" src="/__pixi-tween/index.js"></script>
+${input.module ? '' : legacyLoader}
 <script type="module">
-  // bundles built before the classes were hidden put them on window
+  ${input.module ? moduleLoader : ''}
   const classes = window.__classes || window
   const gameOverAtFrame = ${json(input.gameOverAtFrame ?? null)}
   if (gameOverAtFrame) {
@@ -111,9 +124,11 @@ async function serve(input) {
       res.writeHead(200, { 'Content-Type': files[path][1] })
       return res.end(files[path][0])
     }
-    // the assets of the games (public/)
-    const file = normalize(join(PUBLIC, path))
-    if (!file.startsWith(PUBLIC + sep)) {
+    // the analyzers (and their modules), then the assets of the games (public/)
+    const analyzer = path.startsWith('/__analyzers/')
+    const root = analyzer ? ANALYZERS : PUBLIC
+    const file = normalize(join(root, analyzer ? path.slice('/__analyzers/'.length) : path))
+    if (!file.startsWith(root + sep)) {
       res.writeHead(403)
       return res.end()
     }
@@ -130,6 +145,11 @@ async function serve(input) {
   return server
 }
 
+function analyzerOf(input) {
+  if (!input.analysis || !/^[a-z0-9]+$/.test(input.gameName ?? '')) return null
+  return existsSync(join(ANALYZERS, `${input.gameName}.mjs`)) ? input.gameName : null
+}
+
 async function verify(input) {
   // the first verification downloads the browser when there is none (stderr: the output is the last line of stdout)
   const { path } = await findBrowser({ cacheDir: join(CACHE, 'browser'), install: true, log: (m) => console.error(m) })
@@ -138,15 +158,32 @@ async function verify(input) {
   try {
     await b.goto(`http://127.0.0.1:${server.address().port}/`)
     await b.waitFor('!!window.__crash || !!(window.kk && kk.game && kk.replay.isPlayingReplay())', 120000)
-    // the physics is only stepped by hand from now on
-    await b.eval('kk.ff.onTick = function () {}')
+    // the physics is only stepped by hand from now on (an own property: the prototypes of the game may be frozen)
+    await b.eval('Object.defineProperty(kk.ff, "onTick", { value: function () {}, configurable: true, writable: true })')
     const maxFrames = (await b.eval('kk.getReplayLength()')) + EXTRA_FRAMES
+    // the analyzer of the game: reads the game before each frame (read only), its errors only end the analysis
+    const analyzer = analyzerOf(input)
+    if (analyzer) {
+      await b.eval(`(async () => {
+        try {
+          const m = await import('/__analyzers/${analyzer}.mjs')
+          window.__analyzerMeta = m.meta
+          window.__analyzer = m.create({ kk, config: ${JSON.stringify(input.analysis)} })
+        } catch (e) { window.__analyzerError = String((e && e.message) || e) }
+      })()`)
+    }
     let state
     do {
       state = await b.eval(`(() => {
         // the end of the fade shows the end screen (the live game sends its score at that moment)
         for (let i = 0; i < 500; i++) {
           if (window.__crash || kk.endScene != null) break
+          if (window.__analyzer) {
+            try { window.__analyzer.beforeFrame(kk.replay.getCurrentFrame()) } catch (e) {
+              window.__analyzerError = String((e && e.message) || e)
+              window.__analyzer = null
+            }
+          }
           kk.updatePhysics(${STEP_MS})
         }
         return { over: kk.endScene != null, frame: kk.replay.getCurrentFrame(), crash: window.__crash ? JSON.stringify(window.__crash) : null }
@@ -154,7 +191,18 @@ async function verify(input) {
       if (state.crash) throw new Error('the game crashed: ' + state.crash.slice(0, 300))
       if (!state.over && state.frame > maxFrames) throw new Error(`the replay did not end (${state.frame} frames)`)
     } while (!state.over)
-    return { ok: true, score: await b.eval('kk.score.get()'), frames: state.frame }
+    const score = await b.eval('kk.score.get()')
+    const result = { ok: true, score, frames: state.frame }
+    if (analyzer) {
+      result.analysis = await b.eval(`(() => {
+        const head = { analyzer: ${JSON.stringify(analyzer)}, version: window.__analyzerMeta ? window.__analyzerMeta.version : null }
+        if (window.__analyzerError || !window.__analyzer) return { ...head, error: (window.__analyzerError || 'no analyzer').slice(0, 300) }
+        try { return { ...head, ...window.__analyzer.finish({ score: ${score}, frames: ${state.frame} }) } } catch (e) {
+          return { ...head, error: String((e && e.message) || e).slice(0, 300) }
+        }
+      })()`)
+    }
+    return result
   } catch(e) {
     // the errors of the page say why
     const errors = b.consoleLines.filter((l) => /EXCEPTION/.test(l)).slice(0, 2)

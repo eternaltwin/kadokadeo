@@ -49,6 +49,8 @@ class Game extends Model
             'size' => $size,
             'hash' => $hash,
             'url' => $url,
+            // an ES module, loaded with import() (resources/js/games/builds/bundle.mjs), or a classic script
+            'module' => is_array($manifestEntry) && ($manifestEntry['format'] ?? null) === 'esm',
         ];
     }
 

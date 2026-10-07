@@ -3,6 +3,7 @@ package common_haxe_avm1;
 import haxe.ds.IntMap;
 import pixi.core.Application;
 import js.html.MouseEvent;
+import common_haxe_avm1.kac.Natives;
 
 private enum MouseOpType {
 	BUTTON_DOWN;
@@ -15,6 +16,8 @@ private typedef MouseOp = {
 	var button:Int;
 	var x:Null<Int>;
 	var y:Null<Int>;
+	// time of the input (Event.timeStamp, ms), -1 for a replay
+	var t:Float;
 }
 
 typedef MouseCoords = {
@@ -38,7 +41,9 @@ class MouseManager {
 	static private var buttonState:IntMap<Bool>;
 	static private var justPressed:IntMap<Bool>;
 	static private var justReleased:IntMap<Bool>;
-	static private var frameButtonChanges:Array<{button:Int, isDown:Bool}> = [];
+	static private var frameButtonChanges:Array<{button:Int, isDown:Bool, t:Float}> = [];
+	// time of the last input applied on this frame (-1: none), see kado.ReplayManager (phases)
+	static private var frameInputTime:Float = -1;
 	static private var polledX:Int = 0;
 	static private var polledY:Int = 0;
 	static private var hasPolledCoords:Bool = false;
@@ -128,7 +133,8 @@ class MouseManager {
 			type: POSITION,
 			button: -1,
 			x: x,
-			y: y
+			y: y,
+			t: -1
 		}, true);
 	}
 
@@ -137,7 +143,8 @@ class MouseManager {
 			type: BUTTON_DOWN,
 			button: button,
 			x: null,
-			y: null
+			y: null,
+			t: -1
 		}, true);
 	}
 
@@ -146,16 +153,19 @@ class MouseManager {
 			type: BUTTON_UP,
 			button: button,
 			x: null,
-			y: null
+			y: null,
+			t: -1
 		}, true);
 	}
 
+	// virtual inputs (touch controls): at the time of the last input taken (Natives.lastInputTime)
 	static public function queueVirtualPointerMove(x:Int, y:Int):Void {
 		queueMouseOp({
 			type: POSITION,
 			button: -1,
 			x: x,
-			y: y
+			y: y,
+			t: Natives.lastInputTime
 		});
 	}
 
@@ -164,7 +174,8 @@ class MouseManager {
 			type: BUTTON_DOWN,
 			button: button,
 			x: x,
-			y: y
+			y: y,
+			t: Natives.lastInputTime
 		});
 	}
 
@@ -173,11 +184,18 @@ class MouseManager {
 			type: BUTTON_UP,
 			button: button,
 			x: x,
-			y: y
+			y: y,
+			t: Natives.lastInputTime
 		});
 	}
 
 	static public function captureInputEvent(event:Dynamic):Void {
+		// (PIXI interaction event: the DOM event that made it must come from the player)
+		var data:Dynamic = event != null ? Reflect.field(event, "data") : null;
+		var original:Dynamic = data != null ? Reflect.field(data, "originalEvent") : null;
+		if (original != null && !Natives.isTrustedEvent(original)) {
+			return;
+		}
 		var x = extractCoord(event, true);
 		var y = extractCoord(event, false);
 		if (x == null || y == null) {
@@ -212,6 +230,7 @@ class MouseManager {
 		justPressed.clear();
 		justReleased.clear();
 		frameButtonChanges = [];
+		frameInputTime = -1;
 		var applied = 0;
 		_hasMouseMoved = false;
 
@@ -220,6 +239,9 @@ class MouseManager {
 			pendingOps = [];
 			for (op in ops) {
 				applyCoords(op.x, op.y);
+				if (op.t > frameInputTime) {
+					frameInputTime = op.t;
+				}
 				switch (op.type) {
 					case POSITION:
 						_hasMouseMoved = polledX != bufferX || polledY != bufferY;
@@ -230,14 +252,14 @@ class MouseManager {
 						buttonState.set(op.button, true);
 						if (!wasDown) {
 							justPressed.set(op.button, true);
-							frameButtonChanges.push({button: op.button, isDown: true});
+							frameButtonChanges.push({button: op.button, isDown: true, t: op.t});
 						}
 					case BUTTON_UP:
 						var wasDown = buttonState.exists(op.button);
 						buttonState.remove(op.button);
 						if (wasDown) {
 							justReleased.set(op.button, true);
-							frameButtonChanges.push({button: op.button, isDown: false});
+							frameButtonChanges.push({button: op.button, isDown: false, t: op.t});
 						}
 				}
 				applied++;
@@ -257,9 +279,25 @@ class MouseManager {
 		return applied;
 	}
 
-	static public function getFrameButtonChanges():Array<{button:Int, isDown:Bool}> {
+	static public function getFrameButtonChanges():Array<{button:Int, isDown:Bool, t:Float}> {
 		ensureStateInitialized();
 		return frameButtonChanges.copy();
+	}
+
+	// time (Event.timeStamp, ms) of the last input applied on this frame, -1 when none (or a replay)
+	static public function getFrameInputTime():Float {
+		return frameInputTime;
+	}
+
+	// time of the press / release of a button applied on this frame, -1 when none
+	static public function getFrameButtonTime(button:Int):Float {
+		ensureStateInitialized();
+		for (change in frameButtonChanges) {
+			if (change.button == button) {
+				return change.t;
+			}
+		}
+		return -1;
 	}
 
 	static private function registerInteractionTracking():Void {
@@ -283,16 +321,21 @@ class MouseManager {
 			return;
 		}
 
-		app.view.addEventListener("pointermove", onPointerMove);
-		app.view.addEventListener("pointerdown", onPointerDown);
-		app.view.addEventListener("pointerup", onPointerUp);
-		app.view.addEventListener("pointerleave", onPointerLeaveOrCancel);
-		app.view.addEventListener("pointercancel", onPointerLeaveOrCancel);
+		// (with the addEventListener of the page: a script cannot wrap the events given to the game)
+		Natives.listen(app.view, "pointermove", onPointerMove);
+		Natives.listen(app.view, "pointerdown", onPointerDown);
+		Natives.listen(app.view, "pointerup", onPointerUp);
+		Natives.listen(app.view, "pointerleave", onPointerLeaveOrCancel);
+		Natives.listen(app.view, "pointercancel", onPointerLeaveOrCancel);
 		domTrackingRegistered = true;
 	}
 
 	static private function onPointerMove(event:MouseEvent):Void {
 		if (inputLocked) {
+			return;
+		}
+		var t = Natives.takeInput(event);
+		if (Math.isNaN(t)) {
 			return;
 		}
 		var coords = extractCanvasCoords(event);
@@ -309,12 +352,17 @@ class MouseManager {
 			type: POSITION,
 			button: -1,
 			x: x,
-			y: y
+			y: y,
+			t: t
 		});
 	}
 
 	static private function onPointerDown(event:MouseEvent):Void {
 		if (inputLocked) {
+			return;
+		}
+		var t = Natives.takeInput(event);
+		if (Math.isNaN(t)) {
 			return;
 		}
 		var coords = extractCanvasCoords(event);
@@ -329,12 +377,17 @@ class MouseManager {
 			type: BUTTON_DOWN,
 			button: event.button,
 			x: x,
-			y: y
+			y: y,
+			t: t
 		});
 	}
 
 	static private function onPointerUp(event:MouseEvent):Void {
 		if (inputLocked) {
+			return;
+		}
+		var t = Natives.takeInput(event);
+		if (Math.isNaN(t)) {
 			return;
 		}
 		var coords = extractCanvasCoords(event);
@@ -349,12 +402,17 @@ class MouseManager {
 			type: BUTTON_UP,
 			button: event.button,
 			x: x,
-			y: y
+			y: y,
+			t: t
 		});
 	}
 
 	static private function onPointerLeaveOrCancel(event:MouseEvent):Void {
 		if (inputLocked) {
+			return;
+		}
+		var t = Natives.takeInput(event);
+		if (Math.isNaN(t)) {
 			return;
 		}
 		var coords = extractCanvasCoords(event);
@@ -370,7 +428,8 @@ class MouseManager {
 				type: BUTTON_UP,
 				button: button,
 				x: x,
-				y: y
+				y: y,
+				t: t
 			});
 		}
 	}

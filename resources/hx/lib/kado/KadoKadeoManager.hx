@@ -129,6 +129,9 @@ class KadoKadeoManager extends Application {
 				// this.gameOver({});
 			});
 		});
+		// (before the input managers: they listen with these functions)
+		common_haxe_avm1.kac.Natives.init(params.natives);
+		Reflect.deleteField(params, "natives");
 		common_haxe_avm1.KeyboardManager.init();
 		common_haxe_avm1.MouseManager.init(this);
 
@@ -148,6 +151,10 @@ class KadoKadeoManager extends Application {
 		});
 		this.replay = new ReplayManager(params?.replayData);
 		Browser.document.addEventListener("visibilitychange", onVisibilityChange);
+		// ANTI CHEAT: a live game: its classes are locked before anything can reach them (see Integrity)
+		if (params.replayData == null) {
+			common_haxe_avm1.kac.Integrity.lock(this);
+		}
 	}
 
 	function systemTicker(delta:Float) {
@@ -237,6 +244,9 @@ class KadoKadeoManager extends Application {
 				gameRoot.update();
 				game.update(dt);
 				replay.endFrame();
+				if (common_haxe_avm1.kac.Integrity.shouldCheck(replay.getCurrentFrame())) {
+					common_haxe_avm1.kac.Integrity.check();
+				}
 			} else {
 				common_haxe_avm1.KeyboardManager.beginFrame();
 				common_haxe_avm1.MouseManager.beginFrame();
@@ -437,7 +447,13 @@ class KadoKadeoManager extends Application {
 		}
 
 		this.score = 0;
+		common_haxe_avm1.kac.Natives.resetCounters();
 		this.game = Type.createInstance(gameClass, [gameRoot, isReplay]);
+		if (this.replay.isRecordingReplay()) {
+			common_haxe_avm1.kac.Integrity.arm(this, game, replay, runFlow);
+		} else {
+			common_haxe_avm1.kac.Integrity.disarm();
+		}
 		setupTouchOverlay();
 	}
 
@@ -469,6 +485,7 @@ class KadoKadeoManager extends Application {
 		common_haxe_avm1.KeyboardManager.clearState();
 		common_haxe_avm1.MouseManager.clearState();
 		AntiCheat.reset();
+		common_haxe_avm1.kac.Integrity.disarm();
 
 		if (game != null) {
 			game.destroy();
@@ -541,6 +558,12 @@ class KadoKadeoManager extends Application {
 				this.displayEndScene(neutralEndRunDetails());
 			} else {
 				runFlow.transition(SubmittingRun, "submit-end-run");
+				// (the last check: before the mask is sent)
+				common_haxe_avm1.kac.Integrity.check();
+				common_haxe_avm1.kac.Integrity.disarm();
+				#if debug
+				trace('AntiCheat: ' + AntiCheat.getMask());
+				#end
 				submitPopup = new SubmitPopup(this);
 				this.stage.addChild(submitPopup);
 				var request = KadoEndRun.buildRequest(runFlow.getRunDetails(), score, runFlow.currentTimestamp(), replay.encodeReplayString(), params,

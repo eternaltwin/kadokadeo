@@ -30,7 +30,7 @@ class GameBuildsTest extends TestCase
         parent::setUp();
         $this->fixtures = base_path('tests/Fixtures/game-builds');
         $this->app->usePublicPath($this->fixtures.'/public');
-        config(['kado.game_builds.path' => $this->fixtures.'/storage']);
+        config(['kado.game_builds.path' => $this->fixtures.'/storage', 'kado.game_builds.enabled' => true]);
     }
 
     private function game(): Game
@@ -118,15 +118,19 @@ class GameBuildsTest extends TestCase
         $old = $this->getJson('/api/runs/'.$replay($build(self::OLD))->id)->assertOk()->json('data.gamedata');
         $this->assertSame('/gamesdata/builds/testgame/'.self::OLD.'.js', $old['url']);
         $this->assertSame('/gamesdata/builds/testgame/'.self::OLD.'/', $old['asset_base']);
+        $this->assertTrue($old['module']);
 
         $current = $this->getJson('/api/runs/'.$replay($build(self::CURRENT))->id)->assertOk()->json('data.gamedata');
         $this->assertSame('/gamesdata/testgame.js?v='.self::CURRENT, $current['url']);
         $this->assertNull($current['asset_base']);
+        $this->assertTrue($current['module']);
 
         // recorded before the archive: the bundle that was there when the archive began
         $legacy = $this->getJson('/api/runs/'.$replay(null)->id)->assertOk()->json('data.gamedata');
         $this->assertSame('/gamesdata/builds/testgame/'.self::LEGACY.'.js', $legacy['url']);
         $this->assertNull($legacy['asset_base']);
+        // built before the ES modules: a classic script
+        $this->assertFalse($legacy['module']);
     }
 
     public function test_the_versions_used_by_replays_are_listed_for_the_build(): void

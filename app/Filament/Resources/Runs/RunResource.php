@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\Runs;
 
+use App\Enums\AntiCheatBit;
 use App\Filament\Resources\Runs\Pages\EditRun;
 use App\Filament\Resources\Runs\Pages\ListRuns;
 use App\Models\Run;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 
@@ -48,6 +50,13 @@ class RunResource extends Resource
             TextInput::make('replay')->label('Replay'),
             DateTimePicker::make('completed_at')->label('Terminée le'),
             Checkbox::make('is_cheat')->label('Triche'),
+            // what the game detected during the run (the `ac` mask it sent)
+            TextEntry::make('anticheat_flags')
+                ->label('Détections du client')
+                ->state(fn (?Run $record) => $record?->anticheat_flags ? AntiCheatBit::describe($record->anticheat_flags) : 'Aucune'),
+            TextEntry::make('replay_frames')
+                ->label('Frames du replay')
+                ->placeholder('—'),
         ]);
     }
 

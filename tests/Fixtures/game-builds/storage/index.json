@@ -5,7 +5,8 @@
    "current": {
     "hash": "bee4b73f901e",
     "atlas": "aaaaaaaaaaaa",
-    "since": "2026-10-03T10:00:00.000Z"
+    "since": "2026-10-03T10:00:00.000Z",
+    "format": "esm"
    },
    "versions": {
     "f8df6af08735": {
@@ -24,7 +25,8 @@
      "legacy": false,
      "since": "2026-10-01T10:00:00.000Z",
      "retiredAt": "2026-10-03T10:00:00.000Z",
-     "size": 10550
+     "size": 10550,
+     "format": "esm"
     }
    },
    "atlas": {

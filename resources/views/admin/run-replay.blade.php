@@ -24,7 +24,9 @@
 
 <body>
     @if ($player)
-        <canvas id="game" width="900" height="960"></canvas>
+        {{-- the size of resources/js/components/games/GameScript.vue --}}
+        @php($arkadeo = $player['game']['is_arkadeo'])
+        <canvas id="game" width="{{ $arkadeo ? 600 : 900 }}" height="{{ $arkadeo ? 460 : 960 }}" style="height: {{ $arkadeo ? 460 : 640 }}px"></canvas>
         <div id="message" hidden></div>
         <script type="application/json" id="replay-data">@json($player)</script>
     @else

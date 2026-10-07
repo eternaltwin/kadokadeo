@@ -20,7 +20,7 @@ mkdirSync(`${dir}/public/gamesdata`, { recursive: true })
 mkdirSync(`${dir}/storage/testgame/bundles`, { recursive: true })
 mkdirSync(`${dir}/expected`, { recursive: true })
 writeFileSync(`${dir}/public/gamesdata/testgame.js`, current)
-writeFileSync(`${dir}/public/gamesdata/manifest.json`, JSON.stringify({ 'testgame.js': { hash: cur, size: current.length } }, null, 2) + '\n')
+writeFileSync(`${dir}/public/gamesdata/manifest.json`, JSON.stringify({ 'testgame.js': { hash: cur, size: current.length, format: 'esm' } }, null, 2) + '\n')
 writeFileSync(`${dir}/storage/testgame/bundles/${h2}.${cur}.kdd`, makeDelta(current, old))
 writeFileSync(`${dir}/storage/testgame/bundles/${h1}.${cur}.kdd`, makeDelta(current, legacy))
 writeFileSync(`${dir}/storage/testgame/current.js.gz`, gzipSync(current))
@@ -30,10 +30,10 @@ const index = {
   format: 1,
   games: {
     testgame: {
-      current: { hash: cur, atlas: 'aaaaaaaaaaaa', since: '2026-10-03T10:00:00.000Z' },
+      current: { hash: cur, atlas: 'aaaaaaaaaaaa', since: '2026-10-03T10:00:00.000Z', format: 'esm' },
       versions: {
         [h1]: { base: cur, atlas: null, assetBase: null, legacy: true, since: null, retiredAt: '2026-10-01T10:00:00.000Z', size: legacy.length },
-        [h2]: { base: cur, atlas: 'bbbbbbbbbbbb', assetBase: `/gamesdata/builds/testgame/${h2}/`, legacy: false, since: '2026-10-01T10:00:00.000Z', retiredAt: '2026-10-03T10:00:00.000Z', size: old.length },
+        [h2]: { base: cur, atlas: 'bbbbbbbbbbbb', assetBase: `/gamesdata/builds/testgame/${h2}/`, legacy: false, since: '2026-10-01T10:00:00.000Z', retiredAt: '2026-10-03T10:00:00.000Z', size: old.length, format: 'esm' },
       },
       atlas: { hash: 'aaaaaaaaaaaa', files: [] },
       atlases: ['bbbbbbbbbbbb'],

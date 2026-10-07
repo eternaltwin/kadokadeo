@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\AntiCheatNotices;
 use App\Filament\Widgets\LaravelLogTailWidget;
 use App\Http\Controllers\RunReplayController;
 use Filament\Http\Middleware\Authenticate;
@@ -12,6 +13,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -56,6 +58,10 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            // the checks of the anti cheat turned off, at the top of every page
+            ->renderHook(PanelsRenderHook::CONTENT_START, fn () => view('filament.anticheat-notices', [
+                'notices' => AntiCheatNotices::disabledRequirements(),
+            ]))
             // the replay of a run, in a modal (App\Filament\Resources\Runs\RunVerificationTable::replayAction)
             ->authenticatedRoutes(function () {
                 Route::get('runs/{run}/replay', RunReplayController::class)->name('runs.replay');

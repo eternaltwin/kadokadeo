@@ -1,6 +1,7 @@
 {
   "testgame.js": {
     "hash": "bee4b73f901e",
-    "size": 10550
+    "size": 10550,
+    "format": "esm"
   }
 }

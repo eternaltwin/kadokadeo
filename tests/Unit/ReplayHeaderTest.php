@@ -8,9 +8,9 @@ use PHPUnit\Framework\TestCase;
 class ReplayHeaderTest extends TestCase
 {
     // like ReplayManager.encodeReplayString: base64 of the zlib deflated binary replay
-    public static function replay(int $flags): string
+    public static function replay(int $flags, int $version = 3): string
     {
-        return base64_encode(gzcompress("KADO\x03".chr($flags)."\x00\x00", 9));
+        return base64_encode(gzcompress('KADO'.chr($version).chr($flags)."\x00\x00", 9));
     }
 
     public function test_it_reads_the_version_and_the_flags(): void
@@ -20,6 +20,34 @@ class ReplayHeaderTest extends TestCase
         $this->assertSame(3, $header->version);
         $this->assertTrue($header->hasRngStir());
         $this->assertFalse(ReplayHeader::parse(self::replay(1))->hasRngStir());
+    }
+
+    // a game of Binary recorded by the game (2026-10): version 4, stir, events and phases, 421 frames
+    public const BINARY_V4 = 'eNrzdnTxZzmkzMDIIMHOyBBhCaQZGRmEmRkZguWANJDNDGQ7A9lCQHaQJ5BmAtIqEL4kCyNDpCKQBqljgqjjBqr3BtFAvgBQPIAVQksCxSNVIGrBZrBCaA4g9gCyOWBqlFmTa02NaqWTpP1qdWv1cmql3e3Ya9Mcas28amN5a50rak3ZfVz9ljIDALgRFZE=';
+
+    public function test_it_reads_a_version_4_replay_with_the_phases_of_the_inputs(): void
+    {
+        $header = ReplayHeader::parse(self::BINARY_V4);
+
+        $this->assertSame(4, $header->version);
+        $this->assertTrue($header->hasRngStir());
+        $this->assertTrue($header->hasInputPhases());
+        $this->assertSame(421, $header->frames);
+        // the flag means nothing before version 4
+        $this->assertFalse(ReplayHeader::parse(self::replay(ReplayHeader::FLAG_INPUT_PHASES))->hasInputPhases());
+    }
+
+    public function test_it_reads_the_number_of_frames_of_the_trailer(): void
+    {
+        $replay = fn (string $trailer) => base64_encode(gzcompress("KADO\x04\x41\x00\x00".$trailer, 9));
+
+        $this->assertSame(0, ReplayHeader::parse($replay("LEN\x00"))->frames);
+        $this->assertSame(127, ReplayHeader::parse($replay("LEN\x7F"))->frames);
+        $this->assertSame(300, ReplayHeader::parse($replay("LEN\xAC\x02"))->frames);
+        $this->assertSame(2097152, ReplayHeader::parse($replay("LEN\x80\x80\x80\x01"))->frames);
+        // no trailer (older replays), or not a varint
+        $this->assertNull(ReplayHeader::parse(self::replay(1))->frames);
+        $this->assertNull(ReplayHeader::parse($replay("LEN\x80"))->frames);
     }
 
     public function test_it_reads_the_first_replays_which_were_not_deflated(): void

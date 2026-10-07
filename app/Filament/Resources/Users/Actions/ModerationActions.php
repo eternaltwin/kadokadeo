@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Users\Actions;
 use App\Enums\BanReason;
 use App\Models\User;
 use App\Services\ModerationService;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
@@ -42,15 +43,18 @@ class ModerationActions
             });
     }
 
-    public static function ban(): Action
+    // $user: the player of a record of the table (by default the record)
+    public static function ban(?Closure $user = null): Action
     {
+        $user ??= fn (User $record) => $record;
+
         return Action::make('ban')
             ->label('Bannir')
             ->icon(Heroicon::OutlinedNoSymbol)
             ->color('danger')
-            ->visible(fn (User $record) => !$record->isBanned() && !$record->is(auth()->user()))
+            ->visible(fn ($record) => ($player = $user($record)) !== null && !$player->isBanned() && !$player->is(auth()->user()))
             ->requiresConfirmation()
-            ->modalHeading(fn (User $record) => "Bannir {$record->display_name}")
+            ->modalHeading(fn ($record) => "Bannir {$user($record)->display_name}")
             ->modalDescription('Le joueur sera déconnecté et ne pourra plus se connecter. Toutes ses parties seront supprimées et ses étoiles retirées.')
             ->modalSubmitActionLabel('Bannir')
             ->schema([
@@ -59,12 +63,13 @@ class ModerationActions
                     ->options(BanReason::class)
                     ->required(),
             ])
-            ->action(function (User $record, array $data, ModerationService $moderation): void {
+            ->action(function ($record, array $data, ModerationService $moderation) use ($user): void {
+                $player = $user($record);
                 $reason = $data['reason'] instanceof BanReason ? $data['reason'] : BanReason::from($data['reason']);
-                $deleted = $moderation->ban($record, $reason);
+                $deleted = $moderation->ban($player, $reason);
 
                 Notification::make()
-                    ->title("{$record->display_name} a été banni.")
+                    ->title("{$player->display_name} a été banni.")
                     ->body("{$deleted} partie(s) supprimée(s).")
                     ->success()
                     ->send();

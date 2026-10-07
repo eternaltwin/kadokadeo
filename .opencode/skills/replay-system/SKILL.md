@@ -163,6 +163,13 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
   `recordedMouseButtons`, la position de la souris comme son deplacement (moins celui de la frame d'avant) : environ
   2 fois plus petit pour les jeux a la souris. Les versions 1 et 2 restent lues (anciens replays). Rien a faire dans
   les jeux.
+- Version 4 (anti-triche, flag `INPUT_PHASES`, jeux avec le stir) : une section PHASES, un octet par changement de
+  touche, par event et par changement de bouton souris : le moment de l'input dans sa frame (quart de ms, lu sur
+  `Event.timeStamp` par `kac.Natives`, 125 = sans temps, 127 = event exclu). Le stir de la frame en depend (avec la
+  position souris pour `recordMousePosition`, et les events de la frame d'avant) : les prochaines pieces ne se
+  predisent plus avant le clic. Rien a faire dans les jeux : `recordEvent(e, frame)` prend la phase du dernier input de
+  la frame (`recordEvent(e, frame, phase)` pour en donner une, `ReplayManager.phaseOf(t)`); un event enregistre pour
+  une frame deja jouee est exclu (phase 127). Le jeu du jour n'a ni stir ni phases.
 - L'interface du replay (`ReplayHud`, creee par `KadoKadeoManager`) est commune a tous les jeux : rien a faire non plus.
 
 ## Patterns de reference (repo actuel)
@@ -193,6 +200,8 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
 ## Versions des jeux (replays apres une mise a jour)
 
 Un replay ne contient que les inputs: il doit etre rejoue par la version du jeu avec laquelle il a ete enregistre.
+**Desactive pour l'instant** (`KADO_GAME_BUILDS_ENABLED=false`): la prod ecrase `storage/` a chaque deploiement, l'archive
+est perdue; les runs ne retiennent aucune version et les replays sont joues par le bundle courant.
 C'est automatique, rien a faire dans le code d'un jeu:
 
 - `resources/js/games/build-games.mjs` archive a chaque build l'ancienne version de chaque bundle qui change

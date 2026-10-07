@@ -122,6 +122,20 @@ original's random cannot be seeded, one map per session, explored with screensho
 page give the matching pictures). Use `GPU=1`: Ruffle is very slow on the software renderer (CDP timeouts) and shows a
 dark warning over the game.
 
+To compare the same moments frame by frame (Razor, `examples/razor/`):
+- **Same start**: the original's random cannot be seeded, but its first state can be set: `ref_swf.py <name> pat=<p>`
+  writes the colours of the port's test board (`modes/razor.js`) into the original's balls after `Manager.init()`.
+- **Slowed down without changing the game**: `ref.html?fr=4` lowers Ruffle's frame rate, but `mt.Timer` then measures
+  real time and raises `tmod` (8 at 4 frames/s: everything scaled by `tmod` moves 10 times too far per frame). Replace
+  `Timer.update` by `tmod = 0.8` (the 40 frames/s of the loader) in the injected code; `rburst.mjs` then catches every
+  frame (`fr=4`, 2 shots per frame, consecutive duplicates removed).
+- **KKApi before the classes**: a static of the original calling the API (`Cs.SCORE_* = KKApi.const(200)`) runs while
+  the classes are defined: install the stub in a DoAction *before* the code of the clip (else the constants are
+  undefined: Razor's score field showed NaN, drawn "NN" by a font without lowercase letters).
+- Ruffle is not always the reference: at 5x it drew Razor's combo text without its knockout glow (plain pink), which the
+  same clip at its normal size and the archive's Flash screenshot show. Check a difference against a screenshot of the
+  real player when one exists (`sc/` of the archive).
+
 ## Performance and smoothness
 
 With `GPU=1`:

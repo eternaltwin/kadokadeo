@@ -9,6 +9,7 @@ use App\Http\Requests\RunEndRequest;
 use App\Http\Requests\RunStartRequest;
 use App\Http\Resources\RunBeginResource;
 use App\Http\Resources\RunResource;
+use App\Jobs\EvaluateRunSuspicion;
 use App\Jobs\VerifyRunReplay;
 use App\Models\Game;
 use App\Models\GameBuild;
@@ -126,6 +127,14 @@ class RunController extends Controller implements HasMiddleware
         if ($replayVerifier->shouldVerify($run, $previousBestScore)) {
             $run->update(['verification' => RunVerification::PENDING]);
             VerifyRunReplay::dispatch($run->id);
+        } elseif ($replayVerifier->shouldSampleForAnalysis($run)) {
+            // (and some others, for the analysis of their moves)
+            $run->update(['verification' => RunVerification::PENDING]);
+            VerifyRunReplay::dispatch($run->id)->onQueue(config('kado.replay_analysis.queue'));
+        }
+        // a run played with help (a script showing the moves...): in the queue of the suspicious runs of the admin
+        if (!$run->is_cheat) {
+            EvaluateRunSuspicion::dispatch($run->id);
         }
 
         $leaderBoardQuery = $scoreService->getLeaderBoard($run->game, $periodId, $run->league_id);

@@ -1010,6 +1010,9 @@ class TouchKeys extends ASprite {
 		var i = keyAt(e);
 		if (i < 0)
 			return;
+		// ANTI CHEAT: the touches of the player only (their time is the one of the virtual key)
+		if (Math.isNaN(common_haxe_avm1.kac.Natives.takeInput(e)))
+			return;
 		e.preventDefault();
 		var prev = held.get(e.pointerId);
 		if (prev != null)

@@ -7,6 +7,7 @@ use App\Models\ReplayVerification;
 use App\Models\Run;
 use App\Services\ReplayVerifier;
 use App\Services\RunService;
+use App\Services\SuspicionService;
 use App\Support\ReplayHeader;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -35,7 +36,7 @@ class VerifyRunReplay implements ShouldQueue
         $this->timeout = config('kado.replay_verifier.timeout') + 60;
     }
 
-    public function handle(ReplayVerifier $verifier, RunService $runService): void
+    public function handle(ReplayVerifier $verifier, RunService $runService, SuspicionService $suspicion): void
     {
         $run = Run::with('game', 'gameBuild', 'user')->find($this->runId);
         if (!$run || $run->completed_at === null) {
@@ -61,7 +62,13 @@ class VerifyRunReplay implements ShouldQueue
             return;
         }
 
-        $details = ['replay_score' => $result['score'], 'frames' => $result['frames'] ?? null, 'duration_ms' => $durationMs];
+        $details = [
+            'replay_score' => $result['score'],
+            'frames' => $result['frames'] ?? null,
+            'duration_ms' => $durationMs,
+            // the analyzer of the moves of the game (resources/js/replay-verifier/analyzers)
+            'analysis' => $result['analysis'] ?? null,
+        ];
         if ((int) $result['score'] !== (int) $run->score) {
             $this->finish($run, RunVerification::MISMATCH, $details);
             $scores = "score envoyé {$run->score}, score du replay {$result['score']}";
@@ -78,6 +85,8 @@ class VerifyRunReplay implements ShouldQueue
         }
 
         $this->finish($run, RunVerification::VERIFIED, $details);
+        // the right score, but moves of a solver?
+        $suspicion->recordAnalysis($run, $result['analysis'] ?? null);
     }
 
     private function finish(Run $run, RunVerification $verification, array $details = []): void

@@ -15,7 +15,12 @@ async function play() {
     message.textContent = value ? `Le jeu a planté : ${value.message ?? 'erreur inconnue'}` : ''
   })
   try {
-    await mount(document.getElementById('game'), args)
+    // the size of the game (like components/games/GameScript.vue): without it, the canvas stays empty
+    await mount(document.getElementById('game'), {
+      ...args,
+      canvasWidth: 600,
+      canvasHeight: game.is_arkadeo ? 460 : 640,
+    })
   } catch(e) {
     message.hidden = false
     message.textContent = `Le replay n’a pas pu être lancé : ${e.message}`

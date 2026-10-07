@@ -54,3 +54,13 @@ Hors jeu du jour, `KadoKadeoManager.updatePhysics` appelle `Seed.stir(frame, ent
 - un tirage `Seed.rand()` / `Seed.random()` doit se faire **pendant l'étape de physique** (`update` du jeu), jamais au rendu, dans un événement DOM ou un callback asynchrone : sinon il dépend du moment et le replay diverge ;
 - un tirage fait dans le constructeur du jeu (avant la première frame) n'est pas mélangé : générer les niveaux / pièces au moment où ils arrivent plutôt que tout au départ ;
 - vérifier un portage avec `harness/rc.mjs record` (partie live puis son replay : `MATCH`).
+
+Depuis le replay version 4, le stir dépend aussi du moment de chaque input dans sa frame (`Event.timeStamp`, enregistré dans le replay, voir `replay-system`) : rien à faire dans un jeu, mais un input ne doit jamais être simulé par un `dispatchEvent` (ignoré : `isTrusted` faux, et signalé comme triche).
+
+## Prototypes gelés (anti-triche)
+
+Dans une partie live (bundle du site), `kac.Integrity` gèle les prototypes des classes Haxe : une méthode ne peut plus être remplacée. Le bundler (`resources/js/games/builds/bundle.mjs`) repère les noms que le jeu affecte sur ses objets (`x.nom = `, `x["nom"] = `, `Reflect.setField(x, "nom", ...)`) : ces méthodes restent affectables sur une instance (méthodes `dynamic`, callbacks). Conséquences pour un jeu :
+
+- ne pas affecter une méthode avec un nom calculé (`Reflect.setField(o, nom, f)` avec `nom` variable) : `TypeError` en live ;
+- ne jamais modifier un prototype pendant la partie ;
+- un test du harness qui patche `proto.update` le fait avant `new KadoKadeo` (le gel a lieu dans son constructeur). En cas d'urgence : define Haxe `-D kado_no_freeze`.

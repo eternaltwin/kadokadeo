@@ -46,7 +46,7 @@ function writeSheet(root, frames) {
   writeFileSync(join(dir, `${KEY}-0.json`), JSON.stringify(json))
 }
 
-async function deploy(root, b, { keep } = {}) {
+async function deploy(root, b, { keep, format } = {}) {
   const out = join(root, 'public/gamesdata')
   mkdirSync(out, { recursive: true })
   if (keep) writeFileSync(join(root, 'storage/keep.json'), JSON.stringify(keep))
@@ -56,7 +56,7 @@ async function deploy(root, b, { keep } = {}) {
     contentDir: join(root, 'public/assets/img/content'),
   })
   const file = join(out, `${KEY}.js`)
-  await archive.addBundle(KEY, b, existsSync(file) ? readFileSync(file) : null)
+  await archive.addBundle(KEY, b, existsSync(file) ? readFileSync(file) : null, format ? { format } : undefined)
   writeFileSync(file, b)
   await archive.finish()
   return JSON.parse(readFileSync(join(root, 'storage/index.json'), 'utf8')).games[KEY]
@@ -97,6 +97,24 @@ test('png: what is written is read back', () => {
   const img = decodePng(encodePng(7, 5, data))
   assert.equal(img.width, 7)
   assert.deepEqual(img.data, data)
+})
+
+test('format of the bundles: the versions archived keep theirs (classic script before the ES modules)', async () => {
+  const root = mkdtempSync(join(tmpdir(), 'kado-builds-'))
+  try {
+    const [v1, v2, v3] = ['v1', 'v2', 'v3'].map(bundle)
+    writeSheet(root, { a: [4, 4, 0xff0000ff] })
+    let g = await deploy(root, v1)
+    assert.equal(g.current.format, 'iife')
+    g = await deploy(root, v2, { format: 'esm' })
+    assert.equal(g.current.format, 'esm')
+    assert.equal(g.versions[bundleHash(v1)].format, 'iife')
+    g = await deploy(root, v3, { format: 'esm' })
+    assert.equal(g.versions[bundleHash(v1)].format, 'iife')
+    assert.equal(g.versions[bundleHash(v2)].format, 'esm')
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
 })
 
 test('deploys: versions, spritesheets of the old versions, return to an old version, removal', async () => {

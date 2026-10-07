@@ -72,7 +72,7 @@ class RunEndTest extends TestCase
         $this->assertSame(5, $user->fresh()->kado_points);
     }
 
-    private function finishWithReplay(Run $run, string $replay): Run
+    private function finishWithReplay(Run $run, string $replay, int $antiCheat = 0): Run
     {
         Sanctum::actingAs($run->user);
         $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
@@ -81,10 +81,30 @@ class RunEndTest extends TestCase
             'timestamp' => now()->timestamp,
             'replay' => $replay,
             'data' => [],
-            'ac' => 0,
+            'ac' => $antiCheat,
         ]))->assertOk();
 
         return $run->fresh();
+    }
+
+    public function test_the_hard_detections_of_the_game_mark_the_run_as_cheated_the_soft_ones_do_not(): void
+    {
+        $pending = fn () => Run::factory()->create(['score' => 0, 'completed_at' => null]);
+
+        // code of the game replaced
+        $run = $this->finishWithReplay($pending(), ReplayHeaderTest::BINARY_V4, 0x2 | 0x10);
+        $this->assertTrue($run->is_cheat);
+        $this->assertSame(0x12, $run->anticheat_flags);
+
+        // a display object added by a script: for the review only
+        $run = $this->finishWithReplay($pending(), ReplayHeaderTest::BINARY_V4, 0x10);
+        $this->assertFalse($run->is_cheat);
+        $this->assertSame(0x10, $run->anticheat_flags);
+        $this->assertSame(421, $run->replay_frames);
+
+        // no soft bit: any bit marks the run
+        config(['kado.anticheat.soft_bits' => 0]);
+        $this->assertTrue($this->finishWithReplay($pending(), ReplayHeaderTest::BINARY_V4, 0x10)->is_cheat);
     }
 
     public function test_a_replay_without_the_stirred_draws_is_flagged_outside_the_daily_game(): void
@@ -104,6 +124,19 @@ class RunEndTest extends TestCase
         $run = Run::factory()->for($game)->create(['score' => 0, 'completed_at' => null, 'daily_game_id' => $daily->id]);
 
         $this->assertFalse($this->finishWithReplay($run, ReplayHeaderTest::replay(1))->is_cheat);
+    }
+
+    public function test_a_replay_without_the_time_of_the_inputs_is_flagged_once_it_is_required(): void
+    {
+        config(['kado.require_rng_stir' => true, 'kado.require_input_phases' => true]);
+        $pending = fn () => Run::factory()->create(['score' => 0, 'completed_at' => null]);
+
+        $this->assertTrue($this->finishWithReplay($pending(), ReplayHeaderTest::replay(1 | 64))->is_cheat);
+        $this->assertTrue($this->finishWithReplay($pending(), ReplayHeaderTest::replay(1 | 64 | 128, 3))->is_cheat);
+        $this->assertFalse($this->finishWithReplay($pending(), ReplayHeaderTest::replay(1 | 64 | 128, 4))->is_cheat);
+
+        config(['kado.require_input_phases' => false]);
+        $this->assertFalse($this->finishWithReplay($pending(), ReplayHeaderTest::replay(1 | 64))->is_cheat);
     }
 
     public function test_replays_without_the_stir_are_accepted_until_it_is_required(): void

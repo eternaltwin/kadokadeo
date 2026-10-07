@@ -8,6 +8,7 @@ import js.html.DivElement;
 import js.html.Element;
 import js.html.Event;
 import js.html.PointerEvent;
+import common_haxe_avm1.kac.Natives;
 import kado.TouchControlsConfig.TouchButtonConfig;
 import kado.TouchControlsConfig.TouchButtonShape;
 import kado.TouchControlsConfig.TouchControlsConfig;
@@ -172,12 +173,12 @@ class TouchControlsOverlay {
 			case TouchControlsMode.NONE:
 		}
 
-		overlay.addEventListener("pointerdown", onPointerDown);
-		overlay.addEventListener("pointermove", onPointerMove);
-		overlay.addEventListener("pointerup", onPointerUp);
-		overlay.addEventListener("pointercancel", onPointerCancel);
-		overlay.addEventListener("pointerout", onPointerOut);
-		overlay.addEventListener("lostpointercapture", onPointerCancel);
+		Natives.listen(overlay, "pointerdown", onPointerDown);
+		Natives.listen(overlay, "pointermove", onPointerMove);
+		Natives.listen(overlay, "pointerup", onPointerUp);
+		Natives.listen(overlay, "pointercancel", onPointerCancel);
+		Natives.listen(overlay, "pointerout", onPointerOut);
+		Natives.listen(overlay, "lostpointercapture", onPointerCancel);
 		Browser.window.addEventListener("resize", onResize);
 
 		refreshLayout();
@@ -189,12 +190,12 @@ class TouchControlsOverlay {
 		releaseAllKeys();
 		endJoystick();
 		if (overlay != null) {
-			overlay.removeEventListener("pointerdown", onPointerDown);
-			overlay.removeEventListener("pointermove", onPointerMove);
-			overlay.removeEventListener("pointerup", onPointerUp);
-			overlay.removeEventListener("pointercancel", onPointerCancel);
-			overlay.removeEventListener("pointerout", onPointerOut);
-			overlay.removeEventListener("lostpointercapture", onPointerCancel);
+			Natives.unlisten(overlay, "pointerdown", onPointerDown);
+			Natives.unlisten(overlay, "pointermove", onPointerMove);
+			Natives.unlisten(overlay, "pointerup", onPointerUp);
+			Natives.unlisten(overlay, "pointercancel", onPointerCancel);
+			Natives.unlisten(overlay, "pointerout", onPointerOut);
+			Natives.unlisten(overlay, "lostpointercapture", onPointerCancel);
 		}
 		Browser.window.removeEventListener("resize", onResize);
 		if (overlay != null && overlay.parentElement != null) {
@@ -333,7 +334,8 @@ class TouchControlsOverlay {
 	}
 
 	function onPointerDown(evt:PointerEvent):Void {
-		if (overlay == null) {
+		// ANTI CHEAT: the touches of the player only (their time is the one of the virtual inputs, Natives.lastInputTime)
+		if (overlay == null || Math.isNaN(Natives.takeInput(evt))) {
 			return;
 		}
 
@@ -402,7 +404,7 @@ class TouchControlsOverlay {
 	}
 
 	function onPointerMove(evt:PointerEvent):Void {
-		if (overlay == null) {
+		if (overlay == null || Math.isNaN(Natives.takeInput(evt))) {
 			return;
 		}
 		if (passthroughPointer == evt.pointerId) {
@@ -422,7 +424,7 @@ class TouchControlsOverlay {
 	}
 
 	function onPointerUp(evt:PointerEvent):Void {
-		if (overlay == null) {
+		if (overlay == null || Math.isNaN(Natives.takeInput(evt))) {
 			return;
 		}
 		evt.preventDefault();
@@ -430,12 +432,15 @@ class TouchControlsOverlay {
 	}
 
 	function onPointerCancel(evt:Event):Void {
+		if (Math.isNaN(Natives.takeInput(evt))) {
+			return;
+		}
 		var pe:PointerEvent = cast evt;
 		releasePointerState(pe.pointerId, pe, false);
 	}
 
 	function onPointerOut(evt:PointerEvent):Void {
-		if (overlay == null) {
+		if (overlay == null || Math.isNaN(Natives.takeInput(evt))) {
 			return;
 		}
 		if (activeJoystickPointer == evt.pointerId || passthroughPointer == evt.pointerId) {
