@@ -49,7 +49,7 @@ class GameSeeder extends Seeder
             ['name' => 'F1 Champion', 'image_path' => '/assets/img/games/F1_Champion.png', 'is_active' => true, 'stars' => [13695, 20543, 23967]],
             ['name' => 'Tout-Caen', 'image_path' => '/assets/img/games/Tout-Caen.png', 'is_active' => true, 'stars' => [35753, 63256, 77007]],
             ['name' => 'El Tortuga nemesis', 'image_path' => '/assets/img/games/El_Tortuga_nemesis.png', 'is_active' => false, 'stars' => [10938, 65628, 92973]],
-            ['name' => 'K-Train', 'image_path' => '/assets/img/games/K-Train.png', 'is_active' => false, 'stars' => [38671, 87010, 111179]],
+            ['name' => 'K-Train', 'image_path' => '/assets/img/games/K-Train.png', 'is_active' => true, 'stars' => [38671, 87010, 111179]],
             ['name' => 'Cosmo Crash', 'image_path' => '/assets/img/games/Cosmo_Crash.png', 'is_active' => true, 'stars' => [7738, 33532, 46428]],
             ['name' => 'Magmax', 'image_path' => '/assets/img/games/Magmax.png', 'is_active' => false, 'stars' => [6183, 21641, 29370], 'description' => 'De nombreux ennemis vous assaillent de tous les cotés, survivez le maximum de temps en enfer en les refroidissant !'],
             ['name' => 'Red Raid', 'image_path' => '/assets/img/games/Red_Raid.png', 'is_active' => false, 'stars' => [26835, 47478, 57799]],

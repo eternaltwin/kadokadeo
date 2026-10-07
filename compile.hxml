@@ -193,3 +193,6 @@ opalusfactory.Game
 --next
 -js ./resources/js/games/logico.js
 logico.Game
+--next
+-js ./resources/js/games/ktrain.js
+ktrain.Game
