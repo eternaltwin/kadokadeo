@@ -166,3 +166,6 @@ cyclopean.Game
 --next
 -js ./resources/js/games/cosmocrash.js
 cosmocrash.Game
+--next
+-js ./resources/js/games/aquasplash.js
+aquasplash.Game

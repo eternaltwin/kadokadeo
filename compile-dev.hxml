@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/cosmocrash.js
-cosmocrash.Game
+-js ./resources/js/games/aquasplash.js
+aquasplash.Game
