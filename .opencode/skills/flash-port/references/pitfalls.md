@@ -38,6 +38,13 @@ bug looks impossible. The Flash / MTypes semantics are in [original.md](original
   take the texel size of the texture sampled (`chakrebouddha/FlashFilters.hx`).
 - **A PIXI sprite mask uses the red channel of its picture** (`SpriteMaskFilter`: `masky.r * masky.a`), Flash only the
   coverage of the mask: a green mask (Digestomax's `mcMask`) hides everything. Make mask pictures white.
+- **`renderer.render(obj, {renderTexture, transform})` with filters on `obj`** (PixiJS 6.0.2): the filters are
+  computed without the transform, the picture comes out blurred and dim (Pacifik's canon caches). Put `obj` in a
+  container that carries the scale and the offset, and render that container.
+- **Pictures drawn off the stage** (a cache rendered by the game, Pacifik `CanonMC`): KadoKadeo copies the current
+  state to the previous one only for the stage tree; call `updateState()` on the off-stage tree at each step and
+  `updateGraphics(alpha)` before drawing it (from a ticker listener between the NORMAL and LOW priorities), or it
+  interpolates from its first state forever.
 - **Reading the GPU back for gameplay** (pixels of a RenderTexture) gives different results on different graphics
   cards: a replay recorded on one machine diverged on another. Keep a CPU copy of what the gameplay reads.
 

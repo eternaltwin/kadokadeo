@@ -254,3 +254,10 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   grows (Phagocytoz: the rim of the cells, from a few pixels to more than the screen). Draw the picture without that
   path (the SVG minus it, `rsvg-convert`) and the path at run time with a line of 1 stage pixel (2 canvas pixels)
   divided by the scale (`phagocytoz/MovieClip.hx` `Leaf.drawHair`, redrawn when the scale changes by 8 %).
+- Line art of strokes thinner than 1 pixel (Pacifik: 0.25 px): Flash draws a stroke at least 1 stage pixel wide, and
+  FFDec does the same at its export zoom, so a zoom 4 render reduced to 2 px per Flash pixel draws them half a Flash
+  pixel wide (half their alpha). Compose such pictures from FFDec's SVG paths (shape coordinates) with each stroke
+  max(width x scale, 1 Flash pixel) wide and rasterize them with `rsvg-convert` at 2 px per Flash pixel
+  (`pacifik_assets.py`). Clips the code scales a lot (sparks grown 9 times, `_yscale = 0`) are drawn as segments at
+  run time (`pacifik/Part.hx`). The archive's own screenshots (`sc/*.jpg`, real Flash at 300 x 300) are the reference
+  for the look: Ruffle at 600 x 600 draws these strokes 1 screen pixel wide.

@@ -1,0 +1,54 @@
+{"frames": {
+
+"bg/1.png":
+{
+	"frame": {"x":1,"y":1,"w":300,"h":300},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+	"sourceSize": {"w":300,"h":300},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"dock/1.png":
+{
+	"frame": {"x":303,"y":1,"w":12,"h":107},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":107},
+	"sourceSize": {"w":12,"h":107},
+	"anchor": {"x":-0,"y":-0}
+},
+"onde1/1.png":
+{
+	"frame": {"x":317,"y":1,"w":12,"h":84},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":84},
+	"sourceSize": {"w":12,"h":84},
+	"anchor": {"x":0.041667,"y":-0}
+},
+"onde2/1.png":
+{
+	"frame": {"x":331,"y":1,"w":12,"h":80},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":80},
+	"sourceSize": {"w":12,"h":80},
+	"anchor": {"x":-0,"y":-0}
+}
+},
+"animations": {
+	"bg": ["bg/1.png"],
+	"dock": ["dock/1.png"],
+	"onde1": ["onde1/1.png"],
+	"onde2": ["onde2/1.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "pacifikb-0.png",
+	"format": "RGBA8888",
+	"size": {"w":344,"h":302},
+	"scale": "1"
+}
+}

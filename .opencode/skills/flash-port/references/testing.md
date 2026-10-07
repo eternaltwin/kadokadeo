@@ -135,6 +135,10 @@ To compare the same moments frame by frame (Razor, `examples/razor/`):
 - Ruffle is not always the reference: at 5x it drew Razor's combo text without its knockout glow (plain pink), which the
   same clip at its normal size and the archive's Flash screenshot show. Check a difference against a screenshot of the
   real player when one exists (`sc/` of the archive).
+dark warning over the game. When the code's static initialisers call `KKApi.const` (Pacifik's `Const`), install the stub
+in a DoAction placed before the code's (`examples/pacifik/ref_swf.py`): installed after, every constant is undefined
+(canons at y = 0, a ship at once). Ruffle 0.6 does not draw `GradientGlowFilter`: compare glows with the archive's
+screenshots.
 
 ## Performance and smoothness
 
