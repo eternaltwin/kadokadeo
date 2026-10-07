@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/opalusfactory.js
-opalusfactory.Game
+-js ./resources/js/games/logico.js
+logico.Game

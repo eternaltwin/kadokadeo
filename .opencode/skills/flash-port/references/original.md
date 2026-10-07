@@ -104,6 +104,9 @@ draws differently from the SWF usually breaks one of them.
   (`Clip.noFlipLerp`: otherwise the sprite is squeezed flat for a few frames).
 - A clip attached by the code is drawn once at its initial position before its first update: K-Slash monsters
   appeared one frame at (0, 0) of the map; the port hides them for that frame and keeps the position for the code.
+- The button under the mouse (rollOver / rollOut) is looked for when the mouse moves or a mouse button changes, not
+  when the clips move under a still mouse, nor when a clip gets its handlers under it (checked in Ruffle on Logico: the
+  ball that slides under the still pointer glows only once the pointer moves; `logico/Buttons.hx`).
 - Colour transforms are rounded to integers (multipliers in percent, offsets in 0..255): `Cs.setPercentColor` of
   K-Slash does the same rounding.
 

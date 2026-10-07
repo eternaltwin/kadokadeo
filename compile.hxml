@@ -190,3 +190,6 @@ kanjigaiden.Game
 --next
 -js ./resources/js/games/opalusfactory.js
 opalusfactory.Game
+--next
+-js ./resources/js/games/logico.js
+logico.Game

@@ -81,7 +81,7 @@ class GameSeeder extends Seeder
             ['name' => 'Xian-Xiang', 'image_path' => '/assets/img/games/Xian-Xiang.png', 'is_active' => true, 'stars' => [10240, 12288, 13312]],
             ['name' => 'Aqua Splash', 'image_path' => '/assets/img/games/Aqua_Splash.png', 'is_active' => true, 'stars' => [60722, 107431, 130786]],
             ['name' => 'Atlanteine', 'image_path' => '/assets/img/games/Atlanteine.png', 'is_active' => true, 'stars' => [34641, 61288, 74612]],
-            ['name' => "Logic'O", 'image_path' => "/assets/img/games/Logic'O.png", 'is_active' => false, 'stars' => [124705, 198061, 234739]],
+            ['name' => "Logic'O", 'image_path' => "/assets/img/games/Logic'O.png", 'is_active' => true, 'stars' => [124705, 198061, 234739]],
             ['name' => 'Choco-Mouche', 'image_path' => '/assets/img/games/Choco-Mouche.png', 'is_active' => true, 'stars' => [84041, 204101, 264131]],
             ['name' => 'Alchimie', 'image_path' => '/assets/img/games/Alchimie1.png', 'is_active' => true, 'stars' => [8000, 17000, 39000], 'description' => "Devenez Alchimiste ! Assemblez les différents éléments nécessaires à la réalisation d'une véritable pépite d'or. Mais attention à ne pas dépasser la limite !"],
             ['name' => 'Alchimie 2', 'image_path' => '/assets/img/games/Alchimie.png', 'is_active' => true, 'stars' => [25999, 166540, 236810], 'description' => "Devenez Alchimiste ! Assemblez les différents éléments nécessaires à la réalisation d'une véritable pépite d'or. Mais attention à ne pas dépasser la limite !"],
