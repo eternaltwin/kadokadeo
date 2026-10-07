@@ -28,6 +28,9 @@ bug looks impossible. The Flash / MTypes semantics are in [original.md](original
 - **PixiJS 6 `extract.pixels()`** already un-premultiplies; `renderer.render(obj, {transform})` applies the
   object's own transform too; filters assigned for a stamp stay on the sprite; a `Graphics` only removed (not
   destroyed) leaks its GPU geometry (Iron Chouquette's plasma).
+- **A filter with several passes** (`FilterSystem.applyFilter` called more than once in `apply`): its 4th argument is a
+  `CLEAR_MODES` number in PixiJS 6 (`1` clears), `true` leaves the old pixels of the pooled texture in the next pass;
+  a fragment shader reading `inputSize` / `outputFrame` must declare them `highp` (else the program does not link).
 - **Reading the GPU back for gameplay** (pixels of a RenderTexture) gives different results on different graphics
   cards: a replay recorded on one machine diverged on another. Keep a CPU copy of what the gameplay reads.
 

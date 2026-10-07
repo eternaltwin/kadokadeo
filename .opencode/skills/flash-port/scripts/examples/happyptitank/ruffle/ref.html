@@ -1,0 +1,21 @@
+<!doctype html>
+<!-- The original in Ruffle at 600 x 600 (x2, like the port): host.swf (Host.hx) runs game.swf. ref.html[?fixed=1], see
+     ruffle_site.sh. window.__player.hptState(): frame, tmod, score... of the game (Host.hx) -->
+<html><head><meta charset="utf-8"><style>body{margin:8px;background:#2b2b2b} #c{width:600px;height:600px}</style></head>
+<body><div id="c"></div>
+<script>
+window.RufflePlayer = window.RufflePlayer || {};
+window.RufflePlayer.config = { autoplay: 'on', unmuteOverlay: 'hidden', splashScreen: false, contextMenu: 'off', letterbox: 'off', quality: 'high', backgroundColor: '#FFFFFF', publicPath: 'ruffle/', logLevel: 'warn' };
+</script>
+<script src="ruffle/ruffle.js"></script>
+<script>
+window.addEventListener('load', () => {
+  const q = new URLSearchParams(location.search)
+  const player = window.RufflePlayer.newest().createPlayer();
+  player.style.width = '600px'; player.style.height = '600px';
+  document.getElementById('c').appendChild(player);
+  window.__player = player;
+  player.ruffle().load({ url: 'host.swf', parameters: { fixed: q.get('fixed') || '0', game: q.get('game') || 'game.swf' }, scale: 'exactfit', quality: 'high', allowScriptAccess: true })
+    .then(() => { window.__loaded = true }, (e) => { window.__err = String(e) });
+});
+</script></body></html>

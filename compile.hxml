@@ -172,3 +172,6 @@ aquasplash.Game
 --next
 -js ./resources/js/games/hypercube.js
 hypercube.Game
+--next
+-js ./resources/js/games/happyptitank.js
+happyptitank.Game

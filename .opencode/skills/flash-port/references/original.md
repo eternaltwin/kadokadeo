@@ -101,3 +101,23 @@ draws differently from the SWF usually breaks one of them.
   appeared one frame at (0, 0) of the map; the port hides them for that frame and keeps the position for the code.
 - Colour transforms are rounded to integers (multipliers in percent, offsets in 0..255): `Cs.setPercentColor` of
   K-Slash does the same rounding.
+
+## Flash 9 (AS3) games
+
+A few KadoKado games are AS3 (Haxe 2 `-swf9`: `flash.display.Sprite`, `@:bind` classes; Happy Pti Tank). The rules
+differ from AVM1:
+
+- The library links classes to symbols with a `SymbolClass` tag (not `ExportAssets`: `swfdump.py` lists no export).
+  A class bound to a symbol builds the symbol's first frame before its constructor body runs; a subclass that is not
+  bound gets its parent's symbol (FoeShooter shows Foe's burger). A symbol bound to a `Sprite` class shows frame 1
+  only; MovieClips play their timelines on their own, also the ones the code creates.
+- Display properties read back what Flash stored: x / y in twips, rotation normalised to ]-180, 180], alpha in 8.8
+  fixed point (`alpha -= 1 / 300` loses exactly 1 / 256 per frame). An object moved or coloured by the code is no
+  longer moved by its timeline. `removeChild` of an object that is not a child throws (the rest of the frame is
+  skipped by the player).
+- `getBounds` / `width` transform each picture's rectangle by its whole matrix (not nested boxes);
+  `BitmapData.draw(obj)` ignores the object's own transform, alpha, visibility and filters, not its children's.
+- A filter on an object (DropShadowFilter of Config.addGroundShadow) renders it into its own bitmap first: a blend
+  mode inside it applies over that bitmap (an `add` over nothing draws normally).
+- Closures created in a loop capture the loop's variables per iteration (Haxe 2 wraps them in arrays), like Haxe 4.
+

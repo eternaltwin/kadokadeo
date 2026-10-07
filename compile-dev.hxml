@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/hypercube.js
-hypercube.Game
+-js ./resources/js/games/happyptitank.js
+happyptitank.Game
