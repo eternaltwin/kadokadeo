@@ -249,3 +249,8 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   drawn normally / ignored, as the renders made before them). An "overlay" layer over moving clips (the tapi over the
   roll) cannot be baked: the planes under it are drawn together and a filter blends its picture over them
   (`opalusfactory/OverlayFilter.hx`).
+- Outlines thinner than a pixel (FFDec SVG: `ffdec:has-small-stroke`, `original-stroke-width` 0.1): Flash draws them
+  one pixel wide whatever the scale. Baked into a scaled picture they get faint when it shrinks and thick when it
+  grows (Phagocytoz: the rim of the cells, from a few pixels to more than the screen). Draw the picture without that
+  path (the SVG minus it, `rsvg-convert`) and the path at run time with a line of 1 stage pixel (2 canvas pixels)
+  divided by the scale (`phagocytoz/MovieClip.hx` `Leaf.drawHair`, redrawn when the scale changes by 8 %).

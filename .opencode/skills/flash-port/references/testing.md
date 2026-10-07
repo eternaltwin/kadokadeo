@@ -179,5 +179,11 @@ node harness/rc.mjs check $KKP_WORK/rc_base.jsonl 9341      # "state 60% SAME | 
   The browser profile is per port (`kk-cdp-profile-<port>`): two sessions using the same `PORT` share one browser
   (the second script drives the first one's page, `CDP timeout` errors on both sides). Several sessions at the same
   time: give each its own range of ports, and check a port is free (`curl 127.0.0.1:<port>/json`) before using it.
-- Debug build for the tests (`__over`, seed 123), production build only to check it compiles.
+- Debug build for the tests (`__over`, seed 123), production build only to check it compiles (`build.sh <game> prod`
+  overwrites the harness build: build the debug one again before the next test, a production build waits for a site
+  context).
+- Two live games are not the same game, even with seed 123 and no input: the gameplay random is stirred every frame by
+  the inputs, the mouse position and their timing (`Seed.stir`, anti-cheat). Compare a game with its replay, never two
+  live games; to show the same moment in the port and the original, use what does not depend on the random (a title,
+  the zoom of an untouched hero: `phagocytoz/pframes.mjs`).
 - Look at the screenshots before claiming a display is right.

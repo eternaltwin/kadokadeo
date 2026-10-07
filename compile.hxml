@@ -199,3 +199,6 @@ ktrain.Game
 --next
 -js ./resources/js/games/razor.js
 razor.Game
+--next
+-js ./resources/js/games/phagocytoz.js
+phagocytoz.Game
