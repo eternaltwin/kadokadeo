@@ -53,6 +53,15 @@ async function copyTechnicalDetails() {
   }
 }
 
+// iOS Safari : sans ça, des taps répétés sur le canvas déclenchent la loupe, la sélection
+// et le menu « Copier / Partager / Rechercher ». Le jeu lit les Pointer Events, qui sont
+// émis avant les Touch Events et ne sont pas affectés par preventDefault.
+function blockNativeGesture(event) {
+  if (event.cancelable) {
+    event.preventDefault()
+  }
+}
+
 async function mountGame() {
   await mount(canvas.value, {
     ...props.args,
@@ -119,8 +128,18 @@ onBeforeUnmount(() => {
       :style="{
         touchAction: 'none',
         userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
+        WebkitTapHighlightColor: 'transparent',
         ...props.canvasStyle,
       }"
+      @touchstart="blockNativeGesture"
+      @touchend="blockNativeGesture"
+      @dblclick="blockNativeGesture"
+      @contextmenu="blockNativeGesture"
+      @selectstart="blockNativeGesture"
+      @dragstart="blockNativeGesture"
+      @gesturestart="blockNativeGesture"
     >
       <p>
         Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin
