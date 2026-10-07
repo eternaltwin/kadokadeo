@@ -220,3 +220,6 @@ toymaniak.Game
 --next
 -js ./resources/js/games/spiroule.js
 spiroule.Game
+--next
+-js ./resources/js/games/julianus.js
+julianus.Game
