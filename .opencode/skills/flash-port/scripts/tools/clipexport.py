@@ -115,6 +115,10 @@ class Exporter:
         # `nearest` at the zoom K x fixed_res, the textures are the Flash pixels and the matrices are applied at run time
         self.fixed_res = None
         self.frames_for = {}           # sid -> frames used by the game in nested clips (as `frames` of export)
+        # in the FLAT strategy, a mask (clipDepth) whose range holds a dynamic layer (a nested clip: the fruit in
+        # Digestomax's beak) stays a MASK layer of it (False: the mask is drawn into the flat group and the dynamic
+        # layer above it is not masked)
+        self.flat_masks = False
 
     # ------------------------------------------------------------------ helpers
     @staticmethod
@@ -395,7 +399,10 @@ class Exporter:
                 is_dyn = sub is not None and (e['name'] in code or self.alive(sub.sid, ctrl))
                 is_named_leaf = sub is not None and e['name'] in code and not self.alive(sub.sid, ctrl) and \
                     G.sprites[sub.sid].nframes == 1
-                if strategy == 'flat' and not is_dyn and (d not in cut_depths or sub is not None):
+                keep_mask = self.flat_masks and e['clip'] is not None and any(
+                    d < d2 <= e['clip'] and st.display[d2]['inst'] is not None and
+                    (st.display[d2]['name'] in code or self.alive(st.display[d2]['inst'].sid, ctrl)) for d2 in depths)
+                if strategy == 'flat' and not is_dyn and not keep_mask and (d not in cut_depths or sub is not None):
                     group.append((d, e))
                     continue
                 if group:

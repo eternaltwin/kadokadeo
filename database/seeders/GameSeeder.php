@@ -100,7 +100,7 @@ class GameSeeder extends Seeder
             ['name' => 'Electrolink', 'image_path' => '/assets/img/games/Electrolink.png', 'is_active' => true, 'stars' => [26388, 79164, 105552]],
             ['name' => 'Toy Maniak', 'image_path' => '/assets/img/games/Toy_Maniak.png', 'is_active' => false, 'stars' => [11131, 33393, 44524]],
             ['name' => 'Drakhan', 'image_path' => '/assets/img/games/Drakhan.png', 'is_active' => false, 'stars' => [35208, 123228, 167238]],
-            ['name' => 'Digestomax', 'image_path' => '/assets/img/games/Digestomax.png', 'is_active' => false, 'stars' => [27941, 83823, 111764]],
+            ['name' => 'Digestomax', 'image_path' => '/assets/img/games/Digestomax.png', 'is_active' => true, 'stars' => [27941, 83823, 111764]],
             ['name' => 'Puzzle-Manda', 'image_path' => '/assets/img/games/Puzzle-Manda.png', 'is_active' => false, 'stars' => [20297, 40594, 50743]],
             ['name' => 'Autrement', 'image_path' => '/assets/img/games/Autrement.png', 'is_active' => true, 'stars' => [6286, 18858, 25144]],
             ['name' => 'Hypercube', 'image_path' => '/assets/img/games/Hypercube.png', 'is_active' => true, 'stars' => [10213, 44256, 61278]],

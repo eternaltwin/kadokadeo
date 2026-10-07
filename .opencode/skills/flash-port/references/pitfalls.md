@@ -36,6 +36,8 @@ bug looks impossible. The Flash / MTypes semantics are in [original.md](original
   `getFilterTexture()` keeps what a previous filter drew in it (Chakre Bouddha: chained glows filled their whole area).
   A pooled texture can also be bigger than the input: never sample two textures with the same `vTextureCoord`, and
   take the texel size of the texture sampled (`chakrebouddha/FlashFilters.hx`).
+- **A PIXI sprite mask uses the red channel of its picture** (`SpriteMaskFilter`: `masky.r * masky.a`), Flash only the
+  coverage of the mask: a green mask (Digestomax's `mcMask`) hides everything. Make mask pictures white.
 - **Reading the GPU back for gameplay** (pixels of a RenderTexture) gives different results on different graphics
   cards: a replay recorded on one machine diverged on another. Keep a CPU copy of what the gameplay reads.
 

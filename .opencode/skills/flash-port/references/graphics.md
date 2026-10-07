@@ -225,5 +225,8 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   the nearest pixel, even at high quality (Chakre Bouddha: the backgrounds, the lotus grown up to 900 %): pack them in
   their own sheet sampled with `NEAREST` (listed in the `related_multi_packs` of `<game>-0.json`), the vector pictures in
   the smoothed one (`chakrebouddha/rebuild_assets.sh`, `Tex.hx`).
+- A mask (clipDepth) over a nested clip inside a clip exported FLAT (Digestomax: the fruit in Pioupiou's beak, a nested
+  clip the code sets, under a moving disc mask): `Exporter.flat_masks = True` keeps it a MASK layer of that clip (otherwise
+  the mask is drawn into the flat picture and the nested clip shows unmasked); make its pictures white (pitfalls).
 - `swfdump.py` prints the first 99 frames of a sprite: read the labels of a longer timeline in `swfrender`
   (`G.sprites[sid].labels`); Schizo Fuzz's `launch` label (frame 136) only shows there.

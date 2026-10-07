@@ -181,3 +181,6 @@ cerealpunk.Game
 --next
 -js ./resources/js/games/chakrebouddha.js
 chakrebouddha.Game
+--next
+-js ./resources/js/games/digestomax.js
+digestomax.Game

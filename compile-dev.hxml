@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/chakrebouddha.js
-chakrebouddha.Game
+-js ./resources/js/games/digestomax.js
+digestomax.Game
