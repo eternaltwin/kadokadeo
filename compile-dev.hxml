@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/punchin.js
-punchin.Game
+-js ./resources/js/games/phagocytoz.js
+phagocytoz.Game

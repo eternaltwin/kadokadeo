@@ -360,7 +360,7 @@ class ReplayManager {
 	}
 
 	// frameIndex: frame of the event (default: the next frame begun). phase: moment of the input that made it (see
-	// phaseOf; default: the last input of the frame)
+	// phaseOf; PHASE_NONE: an event without a moment, a continuous aim for example; default: the last input of the frame)
 	public function recordEvent(event:ReplayEvent, ?frameIndex:Int, ?phase:Int):Void {
 		if (!this.isRecording || !this.shouldRecordEvents || event == null) {
 			return;
@@ -369,7 +369,7 @@ class ReplayManager {
 		var bytes = encodeEvent(event);
 		if (frameIndex != null && Std.int(frameIndex) < currentFrame) {
 			phase = PHASE_EXCLUDED;
-		} else if (phase == null || phase < 0 || phase >= PHASE_NONE) {
+		} else if (phase == null || phase < 0 || phase > PHASE_NONE) {
 			phase = currentInputPhase();
 		}
 

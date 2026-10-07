@@ -1,6 +1,7 @@
 package phagocytoz;
 
 import haxe.io.UInt16Array;
+import kado.ReplayManager;
 import common_haxe_avm1.display.ASprite;
 import phagocytoz.cell.Hero;
 import phagocytoz.cell.Hunter;
@@ -69,14 +70,13 @@ class Game implements kado.GameInterface {
 
 	public function new(mc:ASprite, ?isReplay:Bool = false) {
 		this.isReplay = isReplay;
-		var buttons = new UInt16Array(1);
-		buttons[0] = MouseManager.BUTTON_LEFT;
+		// the mouse is not recorded (long games): only the push, as events (readControls)
 		KadoKadeoManager.kkm.replay.init({
 			recordedKeys: new UInt16Array(0),
-			recordInputs: true,
-			recordEvents: false,
-			recordMousePosition: true,
-			recordedMouseButtons: buttons,
+			recordInputs: false,
+			recordEvents: true,
+			recordMousePosition: false,
+			recordedMouseButtons: new UInt16Array(0),
 		});
 		// one page plays several games and replays: the statics start again
 		resetStatics();
@@ -414,8 +414,16 @@ class Game implements kado.GameInterface {
 		rt.destroy(true);
 	}
 
-	// a step of KadoKadeo (32 per second): 15 Flash frames every 16 steps, then the picture one Flash frame late
+	// a step of KadoKadeo (32 per second): the push, then 15 Flash frames every 16 steps, then the picture one Flash
+	// frame late
 	public function update(delta:Float) {
+		if (isReplay) {
+			for (e in KadoKadeoManager.kkm.replay.consumeEvents()) {
+				var ev:Dynamic = e;
+				applyControl((ev.k << 6) | (ev.x << 3) | ev.y);
+			}
+		} else
+			readControls();
 		frameAcc += 15;
 		while (frameAcc >= 16) {
 			frameAcc -= 16;
@@ -432,7 +440,6 @@ class Game implements kado.GameInterface {
 		mt.Timer.deltaT = 1 / FLASH_FPS;
 		if (advance)
 			MovieClip.advanceAll(root);
-		pollMouse();
 		try {
 			origUpdate();
 		} catch (e:FlashError) {
@@ -456,17 +463,73 @@ class Game implements kado.GameInterface {
 		#end
 	}
 
-	// the MOUSE_DOWN / MOUSE_UP events of `but` (the 300 x 300 transparent button over the game): the changes of the
-	// polled button (recorded in the replay) over it; a button released out of it gives no MOUSE_UP (Flash: the hero
-	// keeps pushing until the next press)
-	function pollMouse() {
+	// ---------------------------------------------------------------- controls (replay events)
+	// The mouse counts only by the push: `click`, and the direction of the mouse from the hero while it is on (Hero.update).
+	// Recorded as events of one byte (packed {k, x, y}) for the step being played, applied on the same step:
+	// 0 = release, v >= 1 = pushing, the direction (DIRS directions) changed by unzig(v - 1). Live and replay push in the
+	// recorded direction (at most 180 / DIRS degrees off the mouse).
+	public static inline var DIRS = 255;
+
+	// the push direction (0..DIRS - 1) and its angle (radians)
+	var pushDir:Int = 0;
+
+	public var pushAngle(default, null):Float = 0;
+	// the direction the arrow shows (a picture only): live, the mouse; replay, the push
+	public var aimAngle(default, null):Float = 0;
+
+	// live: the MOUSE_DOWN / MOUSE_UP events of `but` (the 300 x 300 transparent button over the game): the changes of
+	// the button over it; a button released out of it gives no MOUSE_UP (Flash: the hero keeps pushing until the next
+	// press). The direction: the mouse in the hero's picture, as it was placed at the end of the last frame
+	// (sprite.mouseX / mouseY).
+	function readControls() {
 		var down = MouseManager.isButtonDown(MouseManager.BUTTON_LEFT);
 		var over = mouseX() < mcw && mouseY() < mch;
+		var want = click;
 		if (down && !mouseWasDown && over)
-			mouseDown(null);
+			want = true;
 		else if (!down && mouseWasDown && over)
-			mouseUp(null);
+			want = false;
 		mouseWasDown = down;
+
+		var dir = pushDir;
+		if (hero != null && !hero.dead) {
+			var m = hero.sprite.globalToLocal(mouseX(), mouseY());
+			aimAngle = Math.atan2(m.y, m.x);
+			dir = Std.int(Math.round(aimAngle / (Math.PI * 2) * DIRS));
+			dir = ((dir % DIRS) + DIRS) % DIRS;
+		}
+
+		if (!want) {
+			if (click)
+				sendControl(0, null);
+			return;
+		}
+		var d = (((dir - pushDir) % DIRS) + DIRS) % DIRS;
+		if (d > DIRS >> 1)
+			d -= DIRS;
+		// (a press: the moment of the input; a turn: a continuous aim, no moment)
+		if (!click || d != 0)
+			sendControl(d >= 0 ? d * 2 + 1 : -d * 2, click ? ReplayManager.PHASE_NONE : null);
+	}
+
+	function sendControl(v:Int, phase:Null<Int>) {
+		var replay = KadoKadeoManager.kkm.replay;
+		replay.recordEvent({k: v >> 6, x: (v >> 3) & 7, y: v & 7}, replay.getCurrentFrame(), phase);
+		applyControl(v);
+	}
+
+	function applyControl(v:Int) {
+		if (v == 0) {
+			mouseUp(null);
+			return;
+		}
+		var n = v - 1;
+		var d = (n & 1) == 0 ? n >> 1 : -((n + 1) >> 1);
+		pushDir = (((pushDir + d) % DIRS) + DIRS) % DIRS;
+		pushAngle = Num.q(pushDir * Math.PI * 2 / DIRS);
+		if (isReplay)
+			aimAngle = pushAngle;
+		mouseDown(null);
 	}
 
 	function display(f:Float) {

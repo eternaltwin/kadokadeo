@@ -22,9 +22,8 @@ class Hero extends Cell {
 
 	override function update() {
 		// CONTROL
-		// (sprite.mouseX / mouseY: the mouse in the hero's picture, as it was placed at the end of the last frame)
-		var m = sprite.globalToLocal(Game.mouseX(), Game.mouseY());
-		var an = Num.q(Math.atan2(m.y, m.x));
+		// (the direction of the mouse: the push recorded by Game.readControls, the replay's events)
+		var an = Game.me.pushAngle;
 		arrow.alpha = 0.2;
 		arrow.filters = [];
 		if (Game.me.click) {
@@ -50,11 +49,12 @@ class Hero extends Cell {
 
 		super.update();
 
-		// ARROW
+		// ARROW (the mouse live, the push in a replay)
+		var aim = Game.me.aimAngle;
 		var ma = 3 / Game.me.lvl.scale;
 		// (the hero across a border of the level: a jump of a level)
-		arrow.moveWrapped(x + Math.cos(an) * (ray + ma), y + Math.sin(an) * (ray + ma), Level.WIDTH, Level.HEIGHT);
-		arrow.rotation = an / 0.0174;
+		arrow.moveWrapped(x + Math.cos(aim) * (ray + ma), y + Math.sin(aim) * (ray + ma), Level.WIDTH, Level.HEIGHT);
+		arrow.rotation = aim / 0.0174;
 		arrow.scaleX = arrow.scaleY = 0.5 / Game.me.lvl.scale;
 	}
 

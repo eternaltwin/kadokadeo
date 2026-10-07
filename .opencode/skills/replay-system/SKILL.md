@@ -191,6 +191,12 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
       enregistre pour la frame en cours (`recordEvent(e, replay.getCurrentFrame())`) et consomme sur la meme frame; les
       touches restent des inputs. En replay, la piece en main va d'un evenement au suivant (lisse) grace a
       `replay.getReplayEvents()` (tous les evenements du replay avec leur frame, pour anticiper).
+    - `resources/hx/games/phagocytoz/Game.hx` (`readControls`) : la souris ne compte que par la poussee (bouton + direction
+      depuis le heros). Un octet par changement, en `{k, x, y}` packe : 0 = relache, v >= 1 = pousse, la direction (255)
+      change de unzig(v - 1) (ecarts : deflate les compresse bien). Enregistre pour la frame en cours et applique sur la
+      meme frame, en live comme en replay (le live pousse aussi dans la direction enregistree). Les changements de
+      direction prennent la phase `ReplayManager.PHASE_NONE` (une visee continue n'a pas de moment, sinon un octet de phase
+      aleatoire par event) ; l'appui garde la phase de l'input.
 
 ## Points d'attention importants
 
