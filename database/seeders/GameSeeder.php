@@ -92,7 +92,7 @@ class GameSeeder extends Seeder
             ['name' => "Kanji's Adventure", 'image_path' => "/assets/img/games/Kanji's_Adventure.png", 'is_active' => true, 'stars' => [18700, 56100, 74800]],
             ['name' => 'Razor', 'image_path' => '/assets/img/games/Razor.png', 'is_active' => false, 'stars' => [33459, 44997, 50766]],
             ['name' => 'Spiroule', 'image_path' => '/assets/img/games/Spiroule.png', 'is_active' => false, 'stars' => [46817, 82830, 100837]],
-            ['name' => 'Cereal Punk', 'image_path' => '/assets/img/games/Cereal_Punk.png', 'is_active' => false, 'stars' => [42189, 57815, 65628]],
+            ['name' => 'Cereal Punk', 'image_path' => '/assets/img/games/Cereal_Punk.png', 'is_active' => true, 'stars' => [42189, 57815, 65628]],
             ['name' => 'Travoltax', 'image_path' => '/assets/img/games/Travoltax.png', 'is_active' => true, 'stars' => [32622, 114177, 154954]],
             ['name' => 'Synapses', 'image_path' => '/assets/img/games/Synapses.png', 'is_active' => true, 'stars' => [39844, 59766, 69727]],
             ['name' => 'Paradice', 'image_path' => '/assets/img/games/Paradice.png', 'is_active' => true, 'stars' => [48291, 68413, 78473]],

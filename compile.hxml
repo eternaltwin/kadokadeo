@@ -175,3 +175,6 @@ hypercube.Game
 --next
 -js ./resources/js/games/happyptitank.js
 happyptitank.Game
+--next
+-js ./resources/js/games/cerealpunk.js
+cerealpunk.Game
