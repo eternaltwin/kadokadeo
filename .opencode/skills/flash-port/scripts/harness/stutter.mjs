@@ -1,6 +1,7 @@
 // Smoothness of what is shown: every rendered picture, the simulated time on screen (frames + alpha - 1) and the hero on
 // screen; hitches = jumps of the shown time, or of the hero against the shown time.
 //   node stutter.mjs <game> <Class> <hero expr> [ms]      (hero expr: JS giving the hero sprite, e.g. kk.game.hero.root)
+//   env SCREEN_ONLY=1: only the renders of the screen are recorded (a game that draws into textures every frame)
 import { launch } from './cdp.mjs'
 const [pkg, cls, heroExpr, ms = '20000'] = process.argv.slice(2)
 const b = await launch(+(process.env.PORT || 9401))
@@ -14,6 +15,8 @@ try {
     const r = kk.renderer.render.bind(kk.renderer)
     kk.renderer.render = function (...a) {
       r(...a)
+      // SCREEN_ONLY: the renders into a texture (bitmaps drawn by the game on the GPU) are not pictures of the screen
+      if (${process.env.SCREEN_ONLY ? 'true' : 'false'} && a[1] && a[1].renderTexture) return
       let hx = null, hy = null
       try { const h = ${heroExpr}; if (h && h.worldTransform) { hx = h.worldTransform.tx; hy = h.worldTransform.ty } } catch (e) {}
       __rec.push([performance.now(), kk.replay.getCurrentFrame(), kk.ff.alpha, hx, hy])

@@ -223,3 +223,6 @@ spiroule.Game
 --next
 -js ./resources/js/games/julianus.js
 julianus.Game
+--next
+-js ./resources/js/games/oursouinvader.js
+oursouinvader.Game

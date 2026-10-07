@@ -40,7 +40,7 @@ class GameSeeder extends Seeder
             ['name' => 'ZipZap', 'image_path' => '/assets/img/games/ZipZap.png', 'is_active' => true, 'stars' => [15258, 24795, 29563]],
             ['name' => 'Kill Bulle', 'image_path' => '/assets/img/games/Kill_Bulle.png', 'is_active' => true, 'stars' => [12609, 37827, 50436], 'description' => 'Retrouvrez Kanji le Ninja dans une nouvelle aventure ! Utilisez le grapin de façon à détruire les bulles bondissantes et gagnez ainsi un max de points.'],
             ['name' => 'Starfang', 'image_path' => '/assets/img/games/Starfang.png', 'is_active' => true, 'stars' => [5228, 15684, 20912]],
-            ['name' => 'Oursouinvader', 'image_path' => '/assets/img/games/Oursouinvader.png', 'is_active' => false, 'stars' => [22932, 45864, 57330]],
+            ['name' => 'Oursouinvader', 'image_path' => '/assets/img/games/Oursouinvader.png', 'is_active' => true, 'stars' => [22932, 45864, 57330]],
             ['name' => 'Cyclopean', 'image_path' => '/assets/img/games/Cyclopean.png', 'is_active' => true, 'stars' => [34145, 91053, 119507]],
             ['name' => 'Punch-In !', 'image_path' => '/assets/img/games/Punch-In_!.png', 'is_active' => true, 'stars' => [22334, 78169, 106086]],
             ['name' => 'Crepuscud', 'image_path' => '/assets/img/games/Crepuscud.png', 'is_active' => true, 'stars' => [62057, 113771, 139628]],
