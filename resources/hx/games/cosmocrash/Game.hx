@@ -610,6 +610,8 @@ class Game implements kado.GameInterface {
 		var p = new Part(dm.attach("fxScore", DP_FX));
 		p.x = x;
 		p.y = y;
+		// placed now: the display interpolates its first frame from the clip's position, not from (0, 0)
+		p.updatePos();
 		p.weight = -0.03;
 		p.frict = 0.95;
 		p.timer = 30;

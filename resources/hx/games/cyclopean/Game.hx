@@ -13,7 +13,9 @@ import pixi.core.textures.Texture;
 // mcLoader: its pieces (Data.LOADER_*: the timeline turns the quarter discs and changes the cover), the chick and
 // the rune ring the code turns. The quarter disc of depth 4 is a mask on the one of depth 6 (the white wedge that
 // shrinks is their intersection); it turns by quarters only: the quadrant of the same radius, a rectangle mask
-// (drawn with the scissor test: no shader, sharp edges)
+// (drawn with the scissor test: no shader, sharp edges).
+// The mask and the cover change when q6 crosses a quarter (the same frames in Data): they follow the rotation q6 is
+// drawn with (one Flash frame late and interpolated, see MC), else the wedge flashes at each quarter
 class LoaderMC extends MC {
 	public var piou:MC;
 	public var wh:MC;
@@ -21,6 +23,8 @@ class LoaderMC extends MC {
 	var q6:MC;
 	var q4:Graphics;
 	var cover:MC;
+	// the quadrant drawn by q4 (0: 0, 1: 90, 2: 180, 3: -90 degrees)
+	var quarter:Int = -1;
 
 	public function new() {
 		super();
@@ -30,6 +34,7 @@ class LoaderMC extends MC {
 		q4 = new Graphics();
 		spr.addChild(q4);
 		q6.spr.mask = q4;
+		spr.addChild(new LoaderSync(this));
 		cover = attach(new MC("loaderCover"));
 		piou = attach(new MC("piou"));
 		piou.playing = true;
@@ -56,9 +61,25 @@ class LoaderMC extends MC {
 	}
 
 	function show():Void {
-		var f = _currentframe - 1;
+		q6._rotation = Data.LOADER_Q6[_currentframe - 1];
+	}
+
+	// q6 drawn at `rot` degrees: in the quadrant ]q - 90, q] (Data.LOADER_Q4), with the cover of that quadrant
+	// (Data.LOADER_COVER)
+	public function showQuarter(rot:Float):Void {
+		var k = Math.ceil(rot / 90 - 1e-6);
+		k = ((k % 4) + 4) % 4;
+		var cf = [0, 3, 2, 1][k];
+		if (cf > 0) {
+			cover.gotoAndStop(cf);
+			cover.showFrame();
+		} else
+			cover.spr.renderable = false;
+		if (k == quarter)
+			return;
+		quarter = k;
 		// the quadrant [0, 110] x [-110, 0] (sprite 86, beyond its radius) turned by q4
-		var a = Data.LOADER_Q4[f] * Math.PI / 180;
+		var a = [0, 90, 180, -90][k] * Math.PI / 180;
 		var c = Math.round(Math.cos(a)), s = Math.round(Math.sin(a));
 		var x0 = 0.0, x1 = 0.0, y0 = 0.0, y1 = 0.0;
 		for (p in [[0, 0], [110, 0], [0, -110], [110, -110]]) {
@@ -73,11 +94,25 @@ class LoaderMC extends MC {
 		q4.beginFill(0xFFFFFF);
 		q4.drawRect(x0, y0, x1 - x0, y1 - y0);
 		q4.endFill();
-		q6._rotation = Data.LOADER_Q6[f];
-		var c = Data.LOADER_COVER[f];
-		cover._visible = c > 0;
-		if (c > 0)
-			cover.gotoAndStop(c);
+	}
+
+	public function drawnQ6():Float {
+		return q6.spr.rotation * 180 / Math.PI;
+	}
+}
+
+// a child of the loader after q6: when the frame is drawn, q6 has its rotation of this frame
+class LoaderSync extends ASprite {
+	var loader:LoaderMC;
+
+	public function new(loader:LoaderMC) {
+		super();
+		this.loader = loader;
+	}
+
+	override public function updateGraphics(a:Float) {
+		super.updateGraphics(a);
+		loader.showQuarter(loader.drawnQ6());
 	}
 }
 
