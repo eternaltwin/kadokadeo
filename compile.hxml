@@ -214,3 +214,6 @@ puzzlemanda.Game
 --next
 -js ./resources/js/games/quadrikolor.js
 quadrikolor.Game
+--next
+-js ./resources/js/games/toymaniak.js
+toymaniak.Game

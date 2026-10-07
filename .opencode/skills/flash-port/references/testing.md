@@ -139,6 +139,12 @@ dark warning over the game. When the code's static initialisers call `KKApi.cons
 in a DoAction placed before the code's (`examples/pacifik/ref_swf.py`): installed after, every constant is undefined
 (canons at y = 0, a ship at once). Ruffle 0.6 does not draw `GradientGlowFilter`: compare glows with the archive's
 screenshots.
+MTypes originals also need what the loader gave them: its `Std` (`_global["3Wt"]`: `random`, `getTimer`, `attachMC`,
+`callback`, `xmouse`...) is not in the game SWF. Without it `Std.random` is undefined and the first `while (r >= p)`
+of the game loops forever (`>=` is `Less` + `Not` in AVM1: true with NaN), the page freezes. `Manager.init(mc)` takes
+the clip to attach the game in. Install the stubs before the game's DoAction (static initialisers call
+`KKApi.const`); `examples/toymaniak/ref_swf.py` has them all, and `LOG` / `CALLS` / `MAXF` to read the original's
+state every frame or find where it hangs.
 
 ## Performance and smoothness
 
