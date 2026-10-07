@@ -87,7 +87,7 @@ class GameSeeder extends Seeder
             ['name' => 'Alchimie 2', 'image_path' => '/assets/img/games/Alchimie.png', 'is_active' => true, 'stars' => [25999, 166540, 236810], 'description' => "Devenez Alchimiste ! Assemblez les différents éléments nécessaires à la réalisation d'une véritable pépite d'or. Mais attention à ne pas dépasser la limite !"],
             ['name' => 'Bactery', 'image_path' => '/assets/img/games/Bactery.png', 'is_active' => true, 'stars' => [10612, 13734, 15294]],
             ['name' => 'Binary', 'image_path' => '/assets/img/games/Binary.png', 'is_active' => true, 'stars' => [19388, 40931, 51702]],
-            ['name' => 'QuadriKolor', 'image_path' => '/assets/img/games/QuadriKolor.png', 'is_active' => false, 'stars' => [17427, 26600, 31186]],
+            ['name' => 'QuadriKolor', 'image_path' => '/assets/img/games/QuadriKolor.png', 'is_active' => true, 'stars' => [17427, 26600, 31186]],
             ['name' => 'Hexile', 'image_path' => '/assets/img/games/Hexile.png', 'is_active' => true, 'stars' => [17413, 19866, 21092]],
             ['name' => "Kanji's Adventure", 'image_path' => "/assets/img/games/Kanji's_Adventure.png", 'is_active' => true, 'stars' => [18700, 56100, 74800]],
             ['name' => 'Razor', 'image_path' => '/assets/img/games/Razor.png', 'is_active' => true, 'stars' => [33459, 44997, 50766]],

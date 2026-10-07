@@ -211,3 +211,6 @@ punchin.Game
 --next
 -js ./resources/js/games/puzzlemanda.js
 puzzlemanda.Game
+--next
+-js ./resources/js/games/quadrikolor.js
+quadrikolor.Game
