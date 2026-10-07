@@ -226,3 +226,6 @@ julianus.Game
 --next
 -js ./resources/js/games/oursouinvader.js
 oursouinvader.Game
+--next
+-js ./resources/js/games/memopsy.js
+memopsy.Game

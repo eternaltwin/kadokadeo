@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/oursouinvader.js
-oursouinvader.Game
+-js ./resources/js/games/memopsy.js
+memopsy.Game
