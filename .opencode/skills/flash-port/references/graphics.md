@@ -244,3 +244,8 @@ Look at the pages (and show them to the user) before saying the graphics are rig
 - Copies of a clip that only differ by scale and colour (one per plane) play the same timeline: store one table and
   derive the others (`base` / `ls`, `Clip.getDef`), from the copy at the highest resolution (a slight skew that a smaller
   copy's decomposition rounds to a rotation).
+- Blend mode "overlay" and BlurFilter on placements inside a timeline (Opalus Factory: the glass of the opals, a hole
+  coming in blurred): `SWF.overlay = True` and `SWF.blur_filter = True` compose them in `swfrender` (off, they are
+  drawn normally / ignored, as the renders made before them). An "overlay" layer over moving clips (the tapi over the
+  roll) cannot be baked: the planes under it are drawn together and a filter blends its picture over them
+  (`opalusfactory/OverlayFilter.hx`).

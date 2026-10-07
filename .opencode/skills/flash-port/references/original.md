@@ -43,6 +43,11 @@ Before writing code, list from the sources and from `$KKP_WORK/<game>/dump_<swf>
   really ran 40 frames/s with `tmod ~0.8`: everything scaled by `tmod` keeps its real-time speed, everything done
   **once per frame without `tmod`** (score per frame, counters, timeline playheads) ran 40 times per second.
   Mini-Race's `addScore(SCORE_ACCEL)` each frame lost 20% of its points until it gave 5 frames per 4 steps.
+  The KadoKado loader (`api/loader.swf`, 40 frames/s) plays the game SWF: a loaded SWF runs at the rate of the root
+  movie, so a game SWF that says another rate still ran at 40 (Opalus Factory's says 44).
+- the filters and blend modes of the placements (PlaceObject3): `swfdump.py` does not print them; list them from
+  `swfrender` (`G.sprites[sid].frames`, keys `filters` / `blend`). Opalus Factory's gradient in "overlay" mode over
+  the whole roll was only found on screen.
 
 ## Is it the released game?
 

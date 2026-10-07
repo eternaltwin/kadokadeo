@@ -436,6 +436,27 @@ def blend_into(canvas, layer, blend):
         canvas += layer
 
 
+def blend_overlay(canvas, layer):
+    """Flash 'overlay' (multiply where the backdrop is darker than 50 % grey, screen where it is lighter), premultiplied
+    (W3C separable blend): Cs (1 - ab) + Cb (1 - as) + as ab B(cb, cs). Opt-in (SWF.overlay = True): without it the layer
+    is drawn normally, as the renders made before it were"""
+    la, ca = layer[..., 3:4], canvas[..., 3:4]
+    cs = np.where(la > 0, layer[..., :3] / np.maximum(la, 1e-6), 0)
+    cb = np.where(ca > 0, canvas[..., :3] / np.maximum(ca, 1e-6), 0)
+    b = np.where(cb <= 0.5, 2 * cs * cb, 1 - 2 * (1 - cs) * (1 - cb))
+    rgb = layer[..., :3] * (1 - ca) + canvas[..., :3] * (1 - la) + la * ca * b
+    canvas[..., 3:4] = ca + la * (1 - ca)
+    canvas[..., :3] = rgb
+
+
+def blur_layer(layer, f, Z):
+    """Flash BlurFilter on a premultiplied layer: box blurs of blurX x blurY stage pixels, `passes` times"""
+    out = np.empty_like(layer)
+    for ch in range(4):
+        out[..., ch] = box_blur(layer[..., ch], f['blurX'] * Z, f['blurY'] * Z, f.get('passes', 1))
+    return out
+
+
 def blend_lighten(canvas, layer):
     """Flash 'lighten' (the brighter colour per channel), premultiplied: Cs (1 - ab) + Cb (1 - as) + max(as Cb, ab Cs).
     Opt-in (SWF.lighten = True): without it the layer is drawn normally, as the renders made before it were"""
@@ -509,6 +530,9 @@ class Renderer:
                                 ex += abs(f['distance'] * math.cos(f['angle']))
                                 ey += abs(f['distance'] * math.sin(f['angle']))
                             gx, gy = max(gx, ex), max(gy, ey)
+                        elif f['type'] == 'blur' and getattr(self.swf, 'blur_filter', False):
+                            n = max(1, f.get('passes', 1))
+                            gx, gy = max(gx, f['blurX'] * n * 0.5 + 1), max(gy, f['blurY'] * n * 0.5 + 1)
                     xs += [bx[0] - gx, bx[2] + gx]
                     ys += [bx[1] - gy, bx[3] + gy]
                 continue
@@ -542,9 +566,15 @@ class Renderer:
                 layer = np.zeros_like(canvas)
                 self.draw(cmd[1], layer, O)
                 for f in cmd[2]:
-                    layer = apply_filter(layer, f, Z, getattr(self.swf, 'inner_filters', False), getattr(self.swf, 'blur_filters', False))
+                    # (blur: opt-in, SWF.blur_filter = True; the renders made before it ignore it)
+                    if f['type'] == 'blur' and getattr(self.swf, 'blur_filter', False):
+                        layer = blur_layer(layer, f, Z)
+                    else:
+                        layer = apply_filter(layer, f, Z)
                 if cmd[3] == 'lighten' and getattr(self.swf, 'lighten', False):
                     blend_lighten(canvas, layer)
+                elif cmd[3] == 'overlay' and getattr(self.swf, 'overlay', False):
+                    blend_overlay(canvas, layer)
                 else:
                     blend_into(canvas, layer, cmd[3])
                 continue

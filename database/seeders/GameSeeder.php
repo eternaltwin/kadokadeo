@@ -73,7 +73,7 @@ class GameSeeder extends Seeder
         ]);
 
         $catPuzzle->games()->createMany([
-            ['name' => 'Opalus Factory', 'image_path' => '/assets/img/games/Opalus_Factory.png', 'is_active' => false, 'stars' => [53167, 106334, 132917]],
+            ['name' => 'Opalus Factory', 'image_path' => '/assets/img/games/Opalus_Factory.png', 'is_active' => true, 'stars' => [53167, 106334, 132917]],
             ['name' => 'Flushee', 'image_path' => '/assets/img/games/Flushee.png', 'is_active' => true, 'stars' => [10007, 17705, 21554], 'description' => 'Ces petits animaux sont très fragiles : à peine on les effleure et ils explosent en grappes ! Gagnez le maximum de points en un nombre limité de coups.'],
             ['name' => 'Opalus 2', 'image_path' => '/assets/img/games/Opalus.png', 'is_active' => true, 'stars' => [77855, 105661, 119563]],
             ['name' => 'Kaskade 2', 'image_path' => '/assets/img/games/Kaskade_2.png', 'is_active' => true, 'stars' => [158229, 230151, 266112]],

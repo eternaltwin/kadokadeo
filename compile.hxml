@@ -187,3 +187,6 @@ digestomax.Game
 --next
 -js ./resources/js/games/kanjigaiden.js
 kanjigaiden.Game
+--next
+-js ./resources/js/games/opalusfactory.js
+opalusfactory.Game
