@@ -123,6 +123,11 @@ class Exporter:
         # the blur filters of the CUT / CLIP layers are applied at run time ('bf': [blurX, blurY, passes] of each frame,
         # 0 = none, in stage pixels), never baked in their images; off: dropped (FLAT images always compose them)
         self.blurs = False
+        # a CUT picture keeps the filters of its placement (baked in its own coordinates: a glow scaled with the layer's
+        # matrix), and a CUT layer, or a FLAT group of entries, placed with blend mode "add" is drawn without it and
+        # gets 'bl': 'add' (applied at run time, onto what is under the clip); off: the filters of CUT pictures are
+        # dropped and FLAT groups compose their blend mode over the lower layers of the clip (Punch-In's glove shines)
+        self.effect_layers = False
 
     # ------------------------------------------------------------------ helpers
     @staticmethod
@@ -285,7 +290,18 @@ class Exporter:
     def entry_cmds(self, e, cx):
         out = []
         R.Renderer(self.G, K)._emit(dict(e, matrix=R.IDENT, cx=R.NOCX), R.IDENT, cx, set(), out)
+        if self.effect_layers and self.entry_filters(e) and out:
+            out = [('layer', out, self.entry_filters(e), None)]
         return out
+
+    def entry_filters(self, e):
+        """the filters of a placement that change its picture (effect_layers)"""
+        return [f for f in e.get('filters') or [] if not (f['type'] == 'blur' and f['blurX'] < 1 and f['blurY'] < 1)
+                and not (f['type'] in ('glow', 'dropshadow') and f['strength'] <= 0)]
+
+    def entry_blend(self, e):
+        b = e.get('blend')
+        return b if self.effect_layers and b not in (None, 'normal', 'layer') else None
 
     def runtime_blur(self, f):
         return self.blurs and f['type'] == 'blur'
@@ -330,7 +346,7 @@ class Exporter:
             ents = [dict(char=c, inst=None, matrix=R.IDENT, cx=R.NOCX, name=None, clip=None, filters=[], blend=None) for c in sorted(fam)]
         uents = []
         for e in ents:
-            k = (e['char'], self.inst_key(e['inst']))
+            k = (e['char'], self.inst_key(e['inst'])) + ((repr(self.entry_filters(e)),) if self.effect_layers else ())
             if k not in keys:
                 keys.append(k)
                 uents.append(e)
@@ -611,6 +627,14 @@ class Exporter:
         kind, rows = L['kind'], L['rows']
         if kind == 'flat':
             frames = sorted(rows)
+            bl = None
+            if self.effect_layers:
+                bls = {self.entry_blend(e) for f in frames for d, e in rows[f]}
+                if len(bls) == 1 and None not in bls:
+                    bl = next(iter(bls))
+                    rows = {f: [(d, dict(e, blend=None)) for d, e in rows[f]] for f in frames}
+                elif bls - {None}:
+                    self.warn('%s layer %d: FLAT group mixing blend modes (composed in the picture)' % (cname, li))
             cmd_lists = [self.group_cmds(rows[f], cx_in) for f in frames]
             uniq, ids, idx = [], {}, {}
             for f, c in zip(frames, cmd_lists):
@@ -623,7 +647,10 @@ class Exporter:
             ufr = sorted(set(idx.values()))
             first = {v: f for f, v in sorted(idx.items(), reverse=True)}
             self.write_anims(aname, uniq, [first[v] for v in ufr], res, white, lambda f: self.group_cmds(rows[f], WHITE))
-            return dict(k=0, a=aname, t=[idx.get(f, 0) for f in range(1, n + 1)])
+            out = dict(k=0, a=aname, t=[idx.get(f, 0) for f in range(1, n + 1)])
+            if bl is not None:
+                out['bl'] = bl
+            return out
 
         f0 = min(rows)
         depth = {f: de[0] for f, de in rows.items()}
@@ -638,7 +665,17 @@ class Exporter:
             col, alpha = split_alpha(R.cx_mul(cx_in, e['cx']))
             alphas[f] = alpha
             cols[f] = col
-        modes = {f: (('tint', (1, 1, 1)) if kind == 'mask' else colour_mode(c)) for f, c in cols.items()}
+        # effect_layers: Flash applies the colour transform of a placement (its alpha too) before its filters (a glow
+        # shows through a translucent object): baked in the picture with the filter
+        fx = kind == 'cut' and self.effect_layers and any(self.entry_filters(e) for e in rows.values())
+        if fx:
+            full = {f: R.cx_mul(cx_in, e['cx']) for f, e in rows.items()}
+            if len({cx_key(c) for c in full.values()}) > 1:
+                self.warn('%s layer %d: colour of a filtered layer changes over frames (first kept)' % (cname, li))
+            cols = {f: full[f0] for f in rows}
+            alphas = {f: 1.0 for f in rows}
+        modes = {f: (('tint', (1, 1, 1)) if kind == 'mask' else ('bake', c) if fx else colour_mode(c))
+                 for f, c in cols.items()}
         constant = len({cx_key(c) for c in cols.values()}) == 1
         need_white = not constant and any(md[0] == 'tintadd' for md in modes.values())
         if self.white_solid and not constant and any(md[0] == 'solid' for md in modes.values()):
@@ -701,9 +738,17 @@ class Exporter:
             ents = [rows[f] for f in sorted(rows)]
             out['a'], tex = self.leaves_anim(ents, bake, child_res, wh and kind == 'cut', G=alt)
             if len(tex) > 1:
-                out['t'] = [tex[(rows[f]['char'], self.inst_key(rows[f]['inst']))] if f in rows else 0 for f in range(1, n + 1)]
+                out['t'] = [tex[(rows[f]['char'], self.inst_key(rows[f]['inst'])) +
+                                ((repr(self.entry_filters(rows[f])),) if self.effect_layers else ())] if f in rows else 0
+                            for f in range(1, n + 1)]
         if name:
             out['nm'] = name
+        if kind == 'cut' and self.effect_layers:
+            bls = {self.entry_blend(e) for e in rows.values()}
+            if len(bls) == 1 and None not in bls:
+                out['bl'] = next(iter(bls))
+            elif bls - {None}:
+                self.warn('%s layer %d: blend mode changes over frames (dropped)' % (cname, li))
         p = [0] * n
         for f, e in rows.items():
             p[f - 1] = pids[f][depth[f]][1] if kind == 'clip' and depth[f] in pids[f] else 1

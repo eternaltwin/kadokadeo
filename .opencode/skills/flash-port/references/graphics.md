@@ -261,3 +261,8 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   (`pacifik_assets.py`). Clips the code scales a lot (sparks grown 9 times, `_yscale = 0`) are drawn as segments at
   run time (`pacifik/Part.hx`). The archive's own screenshots (`sc/*.jpg`, real Flash at 300 x 300) are the reference
   for the look: Ruffle at 600 x 600 draws these strokes 1 screen pixel wide.
+- Filters and `add` on the placements of CUT pictures (Punch-In: the glove shines, white shapes with a GlowFilter of 17 px
+  placed in `add` mode at 77 %): CUT layers drop them by default. `Exporter.effect_layers = True` bakes the filters in the
+  picture (after the placement's colour and alpha, Flash's order; in the picture's own coordinates, so the glow scales with
+  the layer's matrix) and gives an `add` layer (or a FLAT group of `add` entries) `bl: 'add'`, drawn ADD at run time
+  (`punchin/Clip.hx`). Nested frozen sprites keep their inner effects composed in their picture.

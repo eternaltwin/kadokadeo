@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/pacifik.js
-pacifik.Game
+-js ./resources/js/games/punchin.js
+punchin.Game

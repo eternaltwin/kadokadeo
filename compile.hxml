@@ -205,3 +205,6 @@ phagocytoz.Game
 --next
 -js ./resources/js/games/pacifik.js
 pacifik.Game
+--next
+-js ./resources/js/games/punchin.js
+punchin.Game

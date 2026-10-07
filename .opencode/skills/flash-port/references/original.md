@@ -85,6 +85,7 @@ calls are readable.
 | `if (a <= 0) X else Y` (Haxe 1 / 2) | the compiler may emit `if (a > 0) Y else X`: with `a` undefined (NaN) the branch flips | port the compiled form, read in the decompiled SWF (Klinker Surprise's `freeTimer`, never set, takes the `else` of the compiled test on the first frame) |
 | a library of `WebGamesArchives/libs-haxe2` | not always the version compiled into the game | port the helpers as the SWF compiled them (Klinker Surprise: `Num.sMod` returns the number, not `null`, on a bad modulo; `Col.setPercentColor` has no alpha argument) |
 | `Log.print`, `cheat()` | debug code | dropped |
+| `mt.Timer.tmod *= 0.5; // HACK FOR KK2` at the top of `update` (Punch-In, Tubulo) | the game halves its own `tmod` every frame | kept: `tmod` 0.8 then 0.4 for everything the game scales. The KadoKado loader calls its own `mt.Timer.update()` before `Manager.main`, but its classes live in its own timeline (`set("9K", ...)` in each SWF's frame, not `_global`): it never touches the game's `mt.Timer` |
 
 ## Flash player (AVM1) rules the code relies on
 
@@ -109,6 +110,8 @@ draws differently from the SWF usually breaks one of them.
   ball that slides under the still pointer glows only once the pointer moves; `logico/Buttons.hx`).
 - Colour transforms are rounded to integers (multipliers in percent, offsets in 0..255): `Cs.setPercentColor` of
   K-Slash does the same rounding.
+- An object's own colour transform (its alpha too) applies before its filters: a glow shows through a translucent
+  object (Punch-In's glove shines at 77 %). Bake such a filter after the alpha, not under a run-time alpha.
 
 ## Flash 9 (AS3) games
 
