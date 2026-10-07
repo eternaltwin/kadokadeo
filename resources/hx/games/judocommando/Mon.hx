@@ -815,10 +815,11 @@ class Mon extends Human {
 			return;
 		state = Jump;
 		coef = 0;
-		// (the position of the clip in the offsets, meant for oldx / oldy: the monster is drawn far away for one frame,
-		// until updateLongJump places it; kept)
-		ox = root._x;
-		oy = root._y;
+		// the original put this in ox / oy: the monster was drawn far out of the screen for a frame at each jump, and
+		// for the whole drop of a mine (35 frames) when Miner fired in the same frame as Jumper (the script replaced the
+		// jump, nothing put it back), its mine out of the grid too
+		oldx = root._x;
+		oldy = root._y;
 		playAnim(anim);
 		if (sens * (jumpData.end.x - px) < 0)
 			setSens(-sens);
@@ -1097,7 +1098,15 @@ class Mon extends Human {
 		anim = str;
 		var smc = root.sub("smc");
 		if (smc != null)
-			smc.gotoAndStop(str);
+			smc.gotoAndStop(displayedAnim(str));
+	}
+
+	// the "highKick" of the soldiers' animations is empty in the original SWF: breaking free of a grapple (freedom),
+	// they vanished during their kick; they show the kick of "highKick2" instead (display only, `anim` stays "highKick")
+	function displayedAnim(str:String):String {
+		if (str == "highKick" && mtype != Ninja && mtype != Gorilla)
+			return "highKick2";
+		return str;
 	}
 
 	override function nextFrame() {
