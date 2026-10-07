@@ -221,5 +221,9 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   (`roundPixels`). `Exporter.frames_for` gives the frames used by nested clips (the animation sets that the code only
   sends to their labels).
 - A mask inside a clip given an alpha (Hypercube: the time ring `ha`, masked by a rotating quarter, under `horloge` at 20 %): `swfrender` gives the mask shape the colour transform of its parents, so the masked content is multiplied by the alpha twice (a Flash mask is only coverage). Render such a clip without the parent's alpha and apply the alpha at run time (or to the rendered layer, `examples/hypercube/ref.py`).
+- Bitmap fills marked non-smoothed (fill style 0x42 / 0x43, "Allow smoothing" off in the FLA) are drawn by Flash 8 with
+  the nearest pixel, even at high quality (Chakre Bouddha: the backgrounds, the lotus grown up to 900 %): pack them in
+  their own sheet sampled with `NEAREST` (listed in the `related_multi_packs` of `<game>-0.json`), the vector pictures in
+  the smoothed one (`chakrebouddha/rebuild_assets.sh`, `Tex.hx`).
 - `swfdump.py` prints the first 99 frames of a sprite: read the labels of a longer timeline in `swfrender`
   (`G.sprites[sid].labels`); Schizo Fuzz's `launch` label (frame 136) only shows there.

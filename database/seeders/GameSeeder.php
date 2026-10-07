@@ -45,7 +45,7 @@ class GameSeeder extends Seeder
             ['name' => 'Punch-In !', 'image_path' => '/assets/img/games/Punch-In_!.png', 'is_active' => false, 'stars' => [22334, 78169, 106086]],
             ['name' => 'Crepuscud', 'image_path' => '/assets/img/games/Crepuscud.png', 'is_active' => true, 'stars' => [62057, 113771, 139628]],
             ['name' => "Kanji's Nightmare", 'image_path' => "/assets/img/games/Kanji's_Nightmare.png", 'is_active' => true, 'stars' => [10305, 30915, 41220]],
-            ['name' => 'Chakré Bouddha', 'image_path' => '/assets/img/games/Chakré_Bouddha.png', 'is_active' => false, 'stars' => [26941, 53882, 67353]],
+            ['name' => 'Chakré Bouddha', 'image_path' => '/assets/img/games/Chakré_Bouddha.png', 'is_active' => true, 'stars' => [26941, 53882, 67353]],
             ['name' => 'F1 Champion', 'image_path' => '/assets/img/games/F1_Champion.png', 'is_active' => true, 'stars' => [13695, 20543, 23967]],
             ['name' => 'Tout-Caen', 'image_path' => '/assets/img/games/Tout-Caen.png', 'is_active' => true, 'stars' => [35753, 63256, 77007]],
             ['name' => 'El Tortuga nemesis', 'image_path' => '/assets/img/games/El_Tortuga_nemesis.png', 'is_active' => false, 'stars' => [10938, 65628, 92973]],

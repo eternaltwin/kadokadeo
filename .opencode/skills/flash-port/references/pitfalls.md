@@ -31,6 +31,11 @@ bug looks impossible. The Flash / MTypes semantics are in [original.md](original
 - **A filter with several passes** (`FilterSystem.applyFilter` called more than once in `apply`): its 4th argument is a
   `CLEAR_MODES` number in PixiJS 6 (`1` clears), `true` leaves the old pixels of the pooled texture in the next pass;
   a fragment shader reading `inputSize` / `outputFrame` must declare them `highp` (else the program does not link).
+- **A filter of several passes** (`filterManager.applyFilter` in a custom `apply`): the clear mode is compared with
+  `===` to `CLEAR_MODES.CLEAR` (the number 1): passing `true` does not clear, and a pooled texture of
+  `getFilterTexture()` keeps what a previous filter drew in it (Chakre Bouddha: chained glows filled their whole area).
+  A pooled texture can also be bigger than the input: never sample two textures with the same `vTextureCoord`, and
+  take the texel size of the texture sampled (`chakrebouddha/FlashFilters.hx`).
 - **Reading the GPU back for gameplay** (pixels of a RenderTexture) gives different results on different graphics
   cards: a replay recorded on one machine diverged on another. Keep a CPU copy of what the gameplay reads.
 

@@ -93,12 +93,14 @@ class Game extends Model
 
     public function getPascalNameAttribute(): string
     {
-        return Str::of('Game'.$this->name)->pascal()->replaceMatches('/[^a-zA-Z0-9]/', '')->toString();
+        // (accents dropped first: "Chakré Bouddha" -> GameChakreBouddha)
+        return Str::of('Game'.$this->name)->ascii()->pascal()->replaceMatches('/[^a-zA-Z0-9]/', '')->toString();
     }
 
     public function getGameKeyAttribute(): string
     {
-        return Str::of($this->name)->lower()->replaceMatches('/[^a-z0-9]/', '')->toString();
+        // (accents dropped first: "Chakré Bouddha" -> chakrebouddha)
+        return Str::of($this->name)->ascii()->lower()->replaceMatches('/[^a-z0-9]/', '')->toString();
     }
 
     public function category()

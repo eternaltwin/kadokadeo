@@ -174,7 +174,12 @@ export function useGame(game) {
     activeScript = config
     gameInstance = new KadoKadeo(canvas, gameClass, {
       ...args,
-      name: currentGame.name.toLowerCase().replaceAll(/\W/g, ''),
+      // the game key of the server (Game::getGameKeyAttribute): accents dropped first ("Chakré Bouddha" -> chakrebouddha)
+      name: currentGame.name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replaceAll(/\W/g, ''),
       gameId: currentGame.id,
       // version of the bundle: sent with the run, its replay is played with the same version
       build: currentGame?.gamedata?.hash ?? null,
