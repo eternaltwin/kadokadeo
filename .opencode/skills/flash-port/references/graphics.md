@@ -220,5 +220,6 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   is sampled without smoothing (`baseTexture.scaleMode = NEAREST`) and the sprites drawn on whole pixels
   (`roundPixels`). `Exporter.frames_for` gives the frames used by nested clips (the animation sets that the code only
   sends to their labels).
+- A mask inside a clip given an alpha (Hypercube: the time ring `ha`, masked by a rotating quarter, under `horloge` at 20 %): `swfrender` gives the mask shape the colour transform of its parents, so the masked content is multiplied by the alpha twice (a Flash mask is only coverage). Render such a clip without the parent's alpha and apply the alpha at run time (or to the rendered layer, `examples/hypercube/ref.py`).
 - `swfdump.py` prints the first 99 frames of a sprite: read the labels of a longer timeline in `swfrender`
   (`G.sprites[sid].labels`); Schizo Fuzz's `launch` label (frame 136) only shows there.

@@ -169,3 +169,6 @@ cosmocrash.Game
 --next
 -js ./resources/js/games/aquasplash.js
 aquasplash.Game
+--next
+-js ./resources/js/games/hypercube.js
+hypercube.Game

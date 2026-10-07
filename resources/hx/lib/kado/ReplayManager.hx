@@ -242,6 +242,18 @@ class ReplayManager {
 		return buttons;
 	}
 
+	// events of the replay being played with their frame, in order: a game can look ahead (e.g. Hypercube moves the
+	// piece in hand from an event to the next one)
+	public function getReplayEvents():Array<{frame:Int, event:ReplayEvent}> {
+		var list = [];
+		for (i in 0...playRecords.length) {
+			for (event in playRecords[i].events) {
+				list.push({frame: playFrames[i], event: event});
+			}
+		}
+		return list;
+	}
+
 	// mouse position of the player in the replay being played (game pixels), null before the first one
 	public function getReplayMouse():Null<{x:Int, y:Int}> {
 		return hasPlayMouse ? {x: playMouseX, y: playMouseY} : null;

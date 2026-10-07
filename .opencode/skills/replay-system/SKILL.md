@@ -178,6 +178,12 @@ KadoKadeoManager.kkm.replay.recordEvent({k: 2, x: cell.x, y: cell.y});
 - Inputs + evenements metier:
     - `resources/hx/games/opalus2/Game.hx`
     - `resources/hx/games/kslash/Game.hx`
+- Souris en evenements (parties longues, la position de la souris ne compte qu'au clic):
+    - `resources/hx/games/hypercube/Game.hx` : `recordMousePosition: false`, un evenement Int par clic utile
+      (`EV_PRESS` prise d'une piece / bouton de fin, rejoue par un hit test a la position enregistree; `EV_DROP` pose),
+      enregistre pour la frame en cours (`recordEvent(e, replay.getCurrentFrame())`) et consomme sur la meme frame; les
+      touches restent des inputs. En replay, la piece en main va d'un evenement au suivant (lisse) grace a
+      `replay.getReplayEvents()` (tous les evenements du replay avec leur frame, pour anticiper).
 
 ## Points d'attention importants
 

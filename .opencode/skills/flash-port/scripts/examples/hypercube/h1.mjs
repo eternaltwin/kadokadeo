@@ -1,0 +1,53 @@
+// Hypercube replay seeking: the state after a seek (forward / backward) must be the state reached by playing
+// normally (game state + whole display tree), then the end of the replay must give the end state of the game.
+// usage: node h1.mjs <replay file written by h3.mjs ($KKP_WORK/hypercube/replays/h_replay_<n>.txt)> [extra url params of that game, default '&test=hc&time=1500']
+import { launch } from '../../harness/cdp.mjs'
+import { HOST, gameDir } from '../../harness/paths.mjs'
+import { readFileSync } from 'node:fs'
+const [data, liveOver] = readFileSync(process.argv[2], 'utf8').split('\n')
+const URL0 = HOST + '/game.html?game=hypercube&cls=GameHypercube&seed=123' + (process.argv[3] !== undefined ? process.argv[3] : '&test=hc&time=1500')
+const PORT = +(process.env.PORT || 9938)
+const FP = `(() => { const g = kk.game
+  let n = 0, acc = 0
+  const walk = (o) => { n++; const c = o._curState; if (c) acc = (acc * 31 + Math.round(c.x * 100) + 7 * Math.round(c.y * 100) + 13 * Math.round(c.rotation * 1000) + 17 * Math.round(c.alpha * 100) + 19 * Math.round(c.xscale * 1000) + (o.visible ? 1 : 0) + 23 * (o.texture && o.texture.frame ? o.texture.frame.x + 3 * o.texture.frame.y : 0) + 29 * (o.tint || 0)) % 1000000007; for (const ch of o.children) walk(ch) }
+  walk(g.root.spr)
+  return JSON.stringify({ f: kk.replay.getCurrentFrame(), score: kk.score.get(), timer: g.mainTimer, boost: g.pieceBoost, pieces: g.pieceList.length, forms: g.formList.length, parts: g.pList.length, hand: g.hand ? g.hand.list.length : 0, nodes: n, display: acc }) })()`
+const b = await launch(PORT)
+const seekTo = async (f) => {
+  await b.eval(`kk.seekReplay(${f})`)
+  const t0 = Date.now()
+  await b.waitFor('kk.seekTarget == null', 120000)
+  return Date.now() - t0
+}
+try {
+  await b.goto(URL0 + '&replay=' + encodeURIComponent(data))
+  await b.waitFor('!!(window.kk && kk.game && kk.game.grid && kk.replayHud)', 60000)
+  const len = await b.eval('kk.getReplayLength()')
+  console.log('length', len)
+  await b.eval('kk.setReplayPaused(true)')
+  const a = Math.round(len * 0.6), c = Math.round(len * 0.2)
+  let ms = await seekTo(a)
+  const A = await b.eval(FP)
+  console.log('A forward seek', ms + 'ms', A)
+  ms = await seekTo(c)
+  console.log('back to 20%', ms + 'ms', await b.eval(FP))
+  ms = await seekTo(a)
+  const B = await b.eval(FP)
+  console.log('B forward again', ms + 'ms', A === B ? 'SAME' : 'DIFFERENT ' + B)
+  // play normally from 60% to 75%, then reach the same frame by seeking back and forth
+  await b.eval('kk.setReplaySpeed(4)'); await b.eval('kk.setReplayPaused(false)')
+  await b.waitFor(`kk.replay.getCurrentFrame() >= ${Math.round(len * 0.75)}`, 120000); await b.eval('kk.setReplayPaused(true)')
+  const fNormal = await b.eval('kk.replay.getCurrentFrame()')
+  const C = await b.eval(FP)
+  ms = await seekTo(Math.round(len * 0.1)); ms += await seekTo(fNormal)
+  const D = await b.eval(FP)
+  console.log('C played ', C, '\nD seeked ', D, C === D ? 'SAME' : 'DIFFERENT', ms + 'ms')
+  await b.eval('kk.setReplaySpeed(8)'); await b.eval('kk.setReplayPaused(false)')
+  await b.waitFor('!!window.__over', 300000)
+  const end = await b.eval('JSON.stringify(window.__over)')
+  console.log('end', end === liveOver ? 'MATCH' : 'MISMATCH ' + end + ' vs ' + liveOver)
+} finally {
+  const errs = b.consoleLines.filter((l) => /EXCEPTION|rror|CRASH/i.test(l))
+  console.log('errors', errs.length, errs.slice(0, 3).join('\n').slice(0, 2000))
+  await b.close()
+}
