@@ -680,18 +680,18 @@ class Hero extends Phys {
 							// DRAW
 							//*
 							laserFlip = (laserFlip + 1) % 2;
-							var s0 = 12 + (a[0] + laserFlip * 2) * KadoKadeoManager.I(3);
-							var s1 = 1 + (a[0] + laserFlip) * KadoKadeoManager.S(2.5);
+							var s0 = KadoKadeoManager.I(12) + (a[0] + laserFlip * 2) * KadoKadeoManager.I(3);
+							var s1 = KadoKadeoManager.S(1) + (a[0] + laserFlip) * KadoKadeoManager.S(2.5);
 							var mc = Cs.game.dm.empty(Game.DP_PARTS);
 
-							mc.lineStyle(s0, 0xFF0000, 30);
+							mc.lineStyle(s0, 0xFF0000, 30, "round", "round");
 							mc.moveTo(list[0][0], list[0][1]);
 							for (n in 1...list.length) {
 								var p = list[n];
 								mc.lineTo(p[0], p[1]);
 							}
 
-							mc.lineStyle(s1, 0xFFFFFF, 100);
+							mc.lineStyle(s1, 0xFFFFFF, 100, "round", "round");
 							mc.moveTo(list[0][0], list[0][1]);
 							for (n in 1...list.length) {
 								var p = list[n];
@@ -703,7 +703,7 @@ class Hero extends Phys {
 							var ba = 2;
 							var br = 2;
 							var ra = KadoKadeoManager.I(3) + s1;
-							mc.lineStyle(1, 0xFFFFFF, 100);
+							mc.lineStyle(KadoKadeoManager.I(1), 0xFFFFFF, 100, "round", "round");
 							for (n in 0...3) {
 								var k = 0;
 								var st = Seed.randomVfx(list.length - 3);
@@ -987,6 +987,9 @@ class Hero extends Phys {
 			p.vy = sa * sp;
 			p.plasmaId = 1;
 			p.timer = 10 + Seed.randVfx() * 30;
+			// original: fadeType left undefined falls into Part.mt's default branch = alpha fade (the Int
+			// default 0 here would scale-fade instead)
+			p.fadeType = 6;
 			p.frict = 0.96;
 			p.root.blendMode = BlendModes.ADD;
 			p.root._rotation = Seed.randVfx() * 360;

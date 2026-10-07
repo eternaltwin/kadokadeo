@@ -2,6 +2,7 @@ package ironchouquette;
 
 import common_haxe_avm1.display.ASprite;
 import pixi.core.Pixi.BlendModes;
+import pixi.core.Pixi.ScaleModes;
 import pixi.core.display.Container;
 import pixi.core.display.DisplayObject;
 import pixi.core.graphics.Graphics;
@@ -33,10 +34,14 @@ class PlasmaLayer {
 	var pass:Dynamic;
 	var uniforms:Dynamic;
 	var batch = new Container();
+	var target:Container;
 	var sprites:Array<Sprite> = [];
 	var used = 0;
 	var graphics:Array<Graphics> = [];
 	var matrices:Array<Matrix> = [];
+	var offWraps:Array<Container> = [];
+	var offFilters:Array<Dynamic> = [];
+	var offUsed = 0;
 	var additive:Bool;
 	var idle = 0;
 	var idleMax = 0;
@@ -50,8 +55,11 @@ class PlasmaLayer {
 		this.w = w;
 		this.h = h;
 		this.additive = additive;
+		target = batch;
 		k = Std.int(Math.max(0, Math.ceil(maxBlur / 2 - 0.5)));
-		tex = [RenderTexture.create(w, h), RenderTexture.create(w, h)];
+		// NEAREST: the original attached the BitmapData without smoothing, the x4 upscale shows the texels as blocks
+		// (the blur taps of `step` all land on texel centers, so the sampled side is unchanged)
+		tex = [for (i in 0...2) (cast RenderTexture : Dynamic).create({width: w, height: h, scaleMode: ScaleModes.NEAREST})];
 		view = new Sprite(tex[0]);
 		if (additive)
 			view.blendMode = BlendModes.ADD;
@@ -73,20 +81,59 @@ class PlasmaLayer {
 		for (i in 0...k + 1)
 			Reflect.setField(uniforms, "uW" + i, 0.0);
 		pass = js.Syntax.construct(P.Mesh, geometry, js.Syntax.construct(P.Shader, program(k), uniforms));
-		// compiles the shader now (at the start of the game) rather than at the first explosion (tens of ms)
+		// compiles the shaders now (at the start of the game) rather than at the first explosion or the first
+		// fading stamp (tens of ms): the alpha offset filter on a 1 px rectangle, then the blur pass, whose
+		// clear also wipes what the filter warm-up left in tex[1]
+		var warmWrap = offWrap(-0.5, BlendModes.NORMAL);
+		var warmG = new Graphics();
+		warmG.beginFill(0xFFFFFF, 1);
+		warmG.drawRect(0, 0, 1, 1);
+		warmG.endFill();
+		warmWrap.addChild(warmG);
+		render(warmWrap, tex[1], true);
+		warmWrap.removeChildren();
+		warmG.destroy();
+		offUsed = 0;
 		render(pass, tex[1], true);
 	}
 
 	/**
 		Stamps `mc` (its picture and its children, as they are now) with the matrix `m` into the layer at the next `flush()`,
 		like BitmapData.draw(mc, m, ColorTransform(alpha), blend): the own transform, colour and filters of `mc` are ignored,
-		its children keep theirs. Alpha is applied as a multiplier (Flash: alpha offset), a child with no blend mode of its own
+		its children keep theirs. Alpha is applied like Flash's stamp, as an offset (per pixel A' = max(A - 255*(1-alpha), 0):
+		a fading stamp loses its soft edges first and shrinks to its bright core). A child with no blend mode of its own
 		takes `blend`.
 	**/
 	public function draw(mc:DisplayObject, m:Matrix, alpha:Float, blend:BlendModes) {
 		if (mc == null || !mc.visible || alpha <= 0)
 			return;
-		add(mc, m, Math.min(alpha, 1), blend, 0, true);
+		if (alpha < 1) {
+			// one filter pass over this stamp alone: the offset is applied to the composited stamp, then the
+			// filter's own draw composites it with `blend` (Flash cascades the offset to each leaf instead:
+			// identical for the single-picture clips that are ever stamped with alpha here)
+			var wrap = offWrap(Math.max(alpha, 0) - 1, blend);
+			batch.addChild(wrap);
+			target = wrap;
+			add(mc, m, 1, BlendModes.NORMAL, 0, true);
+			target = batch;
+		} else
+			add(mc, m, 1, blend, 0, true);
+	}
+
+	/** A pooled container carrying the alpha offset filter of one stamp (`aoff` in -1..0, `blend` for its final draw). **/
+	function offWrap(aoff:Float, blend:BlendModes):Container {
+		if (offUsed == offWraps.length) {
+			var f:Dynamic = js.Syntax.construct((untyped PIXI).Filter, null, FRAG_OFF, {uAOff: 0.0});
+			f.padding = 0;
+			var c = new Container();
+			c.filters = [f];
+			offWraps.push(c);
+			offFilters.push(f);
+		}
+		var f = offFilters[offUsed];
+		f.uniforms.uAOff = aoff;
+		f.blendMode = blend;
+		return offWraps[offUsed++];
 	}
 
 	function add(o:DisplayObject, m:Matrix, alpha:Float, blend:BlendModes, depth:Int, top:Bool) {
@@ -166,7 +213,7 @@ class PlasmaLayer {
 		o.transform.setFromMatrix(m);
 		o.alpha = alpha;
 		untyped o.blendMode = blend;
-		batch.addChild(o);
+		target.addChild(o);
 	}
 
 	/** Draws every stamp waiting into the layer (one render). **/
@@ -175,6 +222,9 @@ class PlasmaLayer {
 			return;
 		render(batch, tex[cur], false);
 		batch.removeChildren();
+		for (i in 0...offUsed)
+			offWraps[i].removeChildren();
+		offUsed = 0;
 		used = 0;
 		for (g in graphics)
 			g.destroy();
@@ -226,6 +276,9 @@ class PlasmaLayer {
 
 	public function clear() {
 		batch.removeChildren();
+		for (i in 0...offUsed)
+			offWraps[i].removeChildren();
+		offUsed = 0;
 		used = 0;
 		for (g in graphics)
 			g.destroy();
@@ -243,6 +296,10 @@ class PlasmaLayer {
 			g.destroy();
 		for (s in sprites)
 			s.destroy();
+		for (c in offWraps)
+			c.destroy();
+		offWraps = [];
+		offFilters = [];
 		sprites = [];
 		graphics = [];
 		pass.destroy();
@@ -254,6 +311,17 @@ class PlasmaLayer {
 	inline function render(o:DisplayObject, target:RenderTexture, clear:Bool) {
 		KadoKadeoManager.kkm.renderer.render(o, cast {renderTexture: target, clear: clear});
 	}
+
+	/** Fragment of the alpha offset filter: Flash's stamp ColorTransform(1,1,1,1, 0,0,0, -255*(1-alpha)). **/
+	static var FRAG_OFF = "varying vec2 vTextureCoord;
+uniform sampler2D uSampler;
+uniform float uAOff;
+void main(void) {
+	vec4 c = texture2D(uSampler, vTextureCoord);
+	vec3 rgb = c.a > 0.0 ? c.rgb / c.a : vec3(0.0);
+	float a = max(c.a + uAOff, 0.0);
+	gl_FragColor = vec4(rgb * a, a);
+}";
 
 	static var VERT = "precision highp float;
 attribute vec2 aVertexPosition;

@@ -120,6 +120,12 @@ class Shot extends Phys {
 						p.root._yscale = p.root._xscale;
 						p.root.blendMode = BlendModes.ADD;
 						p.fadeType = 0;
+						// original: frame script of partPlasmaBolt frame 7 -> Part.incrust(1): stamped into plasma
+						// layer 1 (ADD) and killed there, leaving the fading trail; frames 8-20 were never shown
+						p.root.onFrame.set(7, function() {
+							Cs.game.plasmaDraw(p.root, 1);
+							p.kill();
+						});
 						p.root.play();
 					}
 				case _:

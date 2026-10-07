@@ -624,6 +624,9 @@ class Bads extends Phys {
 			p.vy = sa * sp + Game.SCROLL_SPEED * (0.6 + Seed.randVfx() * 0.4);
 			p.plasmaId = 1;
 			p.timer = 10 + Seed.randVfx() * 10;
+			// original: fadeType left undefined falls into Part.mt's default branch = alpha fade (the Int
+			// default 0 here would scale-fade instead)
+			p.fadeType = 6;
 			p.root.blendMode = BlendModes.ADD;
 			p.root._rotation = Seed.randVfx() * 360;
 			p.root.play();

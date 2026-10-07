@@ -16,11 +16,16 @@ class Phys extends mt.bumdum.Phys {
 	}
 
 	public override function update() {
-		super.update();
-
+		// Original Phys.mt stamps with root at its pre-move position (logical x/y moved, root synced next frame)
+		// and before the fade of the frame (Part.mt fades after). Here x/y write root directly and
+		// mt.bumdum.Phys.update fades before returning: stamp first, from the end-of-last-frame state.
+		// (Known residual: the original applied this frame's vr rotation before stamping - one frame of lag
+		// on the spinning flame shots, the only plasmaId objects with vr.)
 		if (plasmaId != null) {
 			Cs.game.plasmaDraw(root, plasmaId);
 		}
+
+		super.update();
 	}
 
 	public function updateFlash() {

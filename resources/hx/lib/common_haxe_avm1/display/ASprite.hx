@@ -200,9 +200,14 @@ class ASprite extends Sprite {
 		insideGraphics.moveTo(x, y);
 	}
 
-	public function lineStyle(width:Float, color:Int, alpha:Float) {
+	public function lineStyle(width:Float, color:Int, alpha:Float, ?cap:String, ?join:String) {
 		_initGraphics();
-		insideGraphics.lineStyle(width, color, alpha / 100);
+		// Flash always drew round caps and joins; PIXI defaults to butt/miter. Opt-in ("round") to keep every
+		// existing call pixel-identical.
+		if (cap != null || join != null)
+			(cast insideGraphics : Dynamic).lineStyle({width: width, color: color, alpha: alpha / 100, cap: cap, join: join});
+		else
+			insideGraphics.lineStyle(width, color, alpha / 100);
 	}
 
 	public function lineTo(x:Float, y:Float) {
