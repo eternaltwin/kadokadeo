@@ -304,8 +304,9 @@ class Leaf extends DisplayObject {
 
 	override public function syncLeaf(f:Float, m:Array<Float>, a:Array<Float>, add:Bool) {
 		var name = leaf;
-		// canvas pixels per unit of the leaf
-		var k = L.lods != null || L.hair != null ? screenScale() : 2.0;
+		// canvas pixels per unit of the leaf, as it is shown (the membrane drawn 2 / k wide: from the scale of the last
+		// frame, a cell shrinking a lot in one frame showed a membrane as wide as the cell before)
+		var k = L.lods != null || L.hair != null ? shownScale(f) : 2.0;
 		if (L.lods != null)
 			name = pictureFor(k);
 		show(name);

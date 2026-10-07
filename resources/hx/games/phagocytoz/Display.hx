@@ -230,6 +230,26 @@ class DisplayObject {
 		return Game.K * Math.sqrt(Math.abs(m.a * m.d - m.b * m.c));
 	}
 
+	// canvas pixels per unit of this object as it is shown between the last two Flash frames (f, see applyView): a
+	// cell eaten in big bites is shown much larger than it is at the last frame
+	public function shownScale(f:Float):Float {
+		var k:Float = Game.K;
+		var o = this;
+		while (o != null) {
+			var c = o.cur;
+			if (c == null)
+				k *= Math.sqrt(Math.abs(o.ma * o.md - o.mb * o.mc));
+			else {
+				var p = o.prev != null ? o.prev : c;
+				var sx = p[2] + (c[2] - p[2]) * f;
+				var sy = p[3] + (c[3] - p[3]) * f;
+				k *= Math.sqrt(Math.abs(sx * sy * Math.cos(c[6])));
+			}
+			o = o.parent;
+		}
+		return k;
+	}
+
 	// mouseX / mouseY: the stage position (sx, sy) in this object's space
 	public function globalToLocal(sx:Float, sy:Float):{x:Float, y:Float} {
 		var inv = matrixToTop().invert();

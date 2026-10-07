@@ -462,8 +462,18 @@ class Clip extends ASprite {
 			case "launch":
 				// _parent._launch()
 				var p = Std.downcast(parent, Clip);
-				if (p != null && p.onLaunch != null)
+				if (p != null && p.onLaunch != null) {
+					// AVM1: the first frame scripts of the shuttles _launch attaches run after it (action queue), they see the
+					// _lvl it sets on them (run right away from the timeline tick, they took frame 1: always orange)
+					var d = deferring;
+					var outer = later;
+					later = [];
+					deferring = true;
 					p.onLaunch();
+					runLater();
+					later = outer;
+					deferring = d;
+				}
 			case "rot5":
 				// _rotation = _rotation + 5 (the second kind of shot turns at each loop of its timeline)
 				scripted = true;
