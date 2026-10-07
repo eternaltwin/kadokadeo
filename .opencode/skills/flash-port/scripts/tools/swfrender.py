@@ -74,6 +74,12 @@ class SWF:
         # an export at the zoom of the output, so that nothing is resized)
         self.nearest = False
         self.nested_masks = False   # True: a mask placed under another mask is masked by it (see Renderer.collect)
+        # True: inner glows / inner drop shadows are drawn (Flash: the blurred outside of the shape, drawn atop it); off:
+        # they are skipped, as the renders made before this option
+        self.inner_filters = False
+        # True: blur filters are drawn (Flash: `passes` boxes on the colour and the alpha); off: skipped, as the renders
+        # made before this option
+        self.blur_filters = False
         raw = open(path, 'rb').read()
         data = raw[:8] + (zlib.decompress(raw[8:]) if raw[:3] == b'CWS' else raw[8:])
         b = S.Bits(data, 8)
@@ -357,9 +363,15 @@ def box_blur(a, rx, ry, passes):
     return out
 
 
-def apply_filter(layer, f, Z):
-    """layer: premultiplied float32 HxWx4 at Z pixels per world unit"""
+def apply_filter(layer, f, Z, inner=False, blur=False):
+    """layer: premultiplied float32 HxWx4 at Z pixels per world unit (inner: inner glows / shadows drawn; blur: blur
+    filters drawn)"""
     t = f['type']
+    if t == 'blur':
+        if not blur:
+            return layer
+        return np.stack([box_blur(layer[..., i], f['blurX'] * Z, f['blurY'] * Z, f.get('passes', 1)) for i in range(4)],
+                        axis=-1).astype(np.float32)
     if t == 'colormatrix':
         m = np.array(f['matrix'], dtype=np.float32).reshape(4, 5)
         a = layer[..., 3:4]
@@ -370,8 +382,27 @@ def apply_filter(layer, f, Z):
         na = res[..., 3:4]
         return np.concatenate([res[..., :3] * na, na], axis=-1).astype(np.float32)
     if t in ('glow', 'dropshadow'):
-        if f.get('inner') or f.get('knockout'):
+        if f.get('knockout'):
             return layer
+        if f.get('inner'):
+            if not inner:
+                return layer
+            # the outside of the shape (1 - alpha), offset for a shadow, blurred, drawn atop the shape (inside only); the
+            # outside of the canvas is outside of the shape: 1 - the blurred alpha (zero padded)
+            a = layer[..., 3]
+            s = a
+            if t == 'dropshadow':
+                dx = int(round(f['distance'] * math.cos(f['angle']) * Z))
+                dy = int(round(f['distance'] * math.sin(f['angle']) * Z))
+                s = np.zeros_like(a)
+                H, W = a.shape
+                s[max(0, dy):H + min(0, dy), max(0, dx):W + min(0, dx)] = a[max(0, -dy):H + min(0, -dy), max(0, -dx):W + min(0, -dx)]
+            g = 1 - box_blur(s, f['blurX'] * Z, f['blurY'] * Z, f.get('passes', 1))
+            r, gg, b, ca = f['color']
+            g = (np.clip(g * f['strength'], 0, 1) * (ca / 255.0))[..., None]
+            col = np.array([r / 255.0, gg / 255.0, b / 255.0], dtype=np.float32)
+            rgb = layer[..., :3] * (1 - g) + col * g * a[..., None]
+            return np.concatenate([rgb, a[..., None]], axis=-1).astype(np.float32)
         a = layer[..., 3]
         if t == 'dropshadow':
             dx = int(round(f['distance'] * math.cos(f['angle']) * Z))
@@ -468,6 +499,9 @@ class Renderer:
                 if bx:
                     gx = gy = 0.0
                     for f in cmd[2]:
+                        if f['type'] == 'blur' and getattr(self.swf, 'blur_filters', False):
+                            n = max(1, f.get('passes', 1))
+                            gx, gy = max(gx, f['blurX'] * n * 0.5 + 1), max(gy, f['blurY'] * n * 0.5 + 1)
                         if f['type'] in ('glow', 'dropshadow') and not f.get('inner'):
                             n = max(1, f.get('passes', 1))
                             ex, ey = f['blurX'] * n * 0.5 + 1, f['blurY'] * n * 0.5 + 1
@@ -508,7 +542,7 @@ class Renderer:
                 layer = np.zeros_like(canvas)
                 self.draw(cmd[1], layer, O)
                 for f in cmd[2]:
-                    layer = apply_filter(layer, f, Z)
+                    layer = apply_filter(layer, f, Z, getattr(self.swf, 'inner_filters', False), getattr(self.swf, 'blur_filters', False))
                 if cmd[3] == 'lighten' and getattr(self.swf, 'lighten', False):
                     blend_lighten(canvas, layer)
                 else:

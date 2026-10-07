@@ -230,3 +230,17 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   the mask is drawn into the flat picture and the nested clip shows unmasked); make its pictures white (pitfalls).
 - `swfdump.py` prints the first 99 frames of a sprite: read the labels of a longer timeline in `swfrender`
   (`G.sprites[sid].labels`); Schizo Fuzz's `launch` label (frame 136) only shows there.
+- Blur filters were never drawn by `swfrender` (`apply_filter` had no case for them), nor inner glows / inner drop
+  shadows: `SWF.blur_filters = True` / `SWF.inner_filters = True` draw them (off by default: the renders made before
+  stay the same). Kanji Gaiden: the bonus icon's entrance and vanishing, the yellow highlight of the score digits, the
+  inner glow of the bamboo leaves.
+- A filter baked in a picture is in the pixels of its clip, Flash draws it in stage pixels: divide the blurs and
+  distances of the filters by the scale the game shows the clip at (Kanji Gaiden: the hand at 0.589, the bonus at 0.8, a
+  copy of the banana per plane at 0.5 / 0.25 / 0.125). Into a BitmapData drawn with a scaling matrix, the filters of the
+  drawn clip are in bitmap pixels too (the bamboo leaves).
+- Blurs tweened by a timeline on nested clips or cut layers (a throw, a rising score): `Exporter.blurs = True` writes
+  them as `bf` tables applied at run time (`kanjigaiden/FlashBlur.hx`); a clip whose frames are mostly blurred can export
+  those frames at half resolution as a second FLAT layer drawn x2 (Kanji Gaiden's bonus).
+- Copies of a clip that only differ by scale and colour (one per plane) play the same timeline: store one table and
+  derive the others (`base` / `ls`, `Clip.getDef`), from the copy at the highest resolution (a slight skew that a smaller
+  copy's decomposition rounds to a rotation).

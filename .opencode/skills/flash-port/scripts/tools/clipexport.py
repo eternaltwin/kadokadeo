@@ -26,6 +26,7 @@ import swfrender as R
 K = 2
 RES_STEPS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
 WHITE = dict(mult=[0.0, 0.0, 0.0, 1.0], add=[255, 255, 255, 0])
+IDENTITY_MATRIX = (1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0)
 
 
 def lod(s, steps=RES_STEPS):
@@ -119,6 +120,9 @@ class Exporter:
         # Digestomax's beak) stays a MASK layer of it (False: the mask is drawn into the flat group and the dynamic
         # layer above it is not masked)
         self.flat_masks = False
+        # the blur filters of the CUT / CLIP layers are applied at run time ('bf': [blurX, blurY, passes] of each frame,
+        # 0 = none, in stage pixels), never baked in their images; off: dropped (FLAT images always compose them)
+        self.blurs = False
 
     # ------------------------------------------------------------------ helpers
     @staticmethod
@@ -282,6 +286,18 @@ class Exporter:
         out = []
         R.Renderer(self.G, K)._emit(dict(e, matrix=R.IDENT, cx=R.NOCX), R.IDENT, cx, set(), out)
         return out
+
+    def runtime_blur(self, f):
+        return self.blurs and f['type'] == 'blur'
+
+    def blur_of(self, e):
+        """[blurX, blurY, passes] of the blur filter of an entry applied at run time, or 0"""
+        if not self.blurs:
+            return 0
+        for f in e.get('filters') or []:
+            if f['type'] == 'blur' and (f['blurX'] >= 1 or f['blurY'] >= 1):
+                return [round(f['blurX'], 3), round(f['blurY'], 3), max(1, f.get('passes', 1))]
+        return 0
 
     def inst_key(self, inst):
         if inst is None:
@@ -507,6 +523,10 @@ class Exporter:
         e = rows[min(rows)]
         fl = []
         for f in e.get('filters') or []:
+            if self.runtime_blur(f):
+                continue
+            if f['type'] == 'colormatrix' and all(abs(a - b) < 1e-6 for a, b in zip(f['matrix'], IDENTITY_MATRIX)):
+                continue
             if f['type'] != 'glow' or f.get('inner') or f.get('knockout'):
                 self.warn('%s layer %d: %s filter dropped' % (cname, li, f['type']))
                 continue
@@ -701,6 +721,10 @@ class Exporter:
             out['m0'] = ms[0]
         else:
             out['m'] = mats
+        if self.blurs:
+            bf = [self.blur_of(rows[f]) if f in rows else 0 for f in range(1, n + 1)]
+            if any(bf):
+                out['bf'] = bf
         if any(abs(a - 1) > 1e-4 for a in alphas.values()):
             al = [round(alphas.get(f, 1.0), 4) for f in range(1, n + 1)]
             if len(set(alphas.values())) == 1:

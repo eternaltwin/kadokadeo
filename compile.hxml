@@ -184,3 +184,6 @@ chakrebouddha.Game
 --next
 -js ./resources/js/games/digestomax.js
 digestomax.Game
+--next
+-js ./resources/js/games/kanjigaiden.js
+kanjigaiden.Game

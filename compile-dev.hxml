@@ -5,5 +5,5 @@
 -cp ./resources/hx/games
 -debug
 
--js ./resources/js/games/digestomax.js
-digestomax.Game
+-js ./resources/js/games/kanjigaiden.js
+kanjigaiden.Game
