@@ -10,6 +10,7 @@ const scoreInput = ref('')
 const currentPeriod = ref(null)
 const selectedPeriod = ref(null)
 const selectedPlayerId = ref(null)
+const periodStore = usePeriodStore()
 
 const isCurrentPeriod = computed(() => selectedPeriod.value === null)
 const displayedPeriod = computed(() => selectedPeriod.value ?? currentPeriod.value)
@@ -30,7 +31,7 @@ function loadLeaderboard() {
       leaderboard.value = response.data
 
       if (isCurrentPeriod.value) {
-        currentPeriod.value = Number(response.headers['x-current-period']) || null
+        currentPeriod.value = periodStore?.period?.id || null
       }
     })
     .catch(() => null)
