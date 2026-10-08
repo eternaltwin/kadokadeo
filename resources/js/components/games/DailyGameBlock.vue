@@ -36,7 +36,7 @@ const game = toRef(dailyGameStore, 'game')
         <div v-if="!dailyGameStore.isScoresLoading" class="flex items-center gap-1">
           Nombre de parties restantes :
           <Number :value="dailyGameStore.position === null ? 1 : 0" color="orange" />
-          <img class="size-4" src="/gfx/iconGemOrange.gif" alt="icone gemme orange" />
+          <img class="size-4" src="/gfx/gemOrange.svg" alt="icone gemme orange" />
         </div>
         <div v-if="dailyGameStore.position !== null" class="flex items-center gap-1">
           Votre position actuelle :

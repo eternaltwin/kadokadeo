@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="21" height="18" viewBox="0 0 21 18">
+  <defs>
+    <clipPath id="ring">
+      <path d="M10 4a5 5 0 1 1 0 10a5 5 0 1 1 0-10ZM10 6.8a2.2 2.2 0 1 0 0 4.4a2.2 2.2 0 1 0 0-4.4Z" clip-rule="evenodd"/>
+    </clipPath>
+    <!-- light from above: pale on the top, deeper orange on the sides -->
+    <linearGradient id="body" x1="0" y1="4" x2="0" y2="14" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE2C4"/>
+      <stop offset=".16" stop-color="#FFBB7C"/>
+      <stop offset=".34" stop-color="#FF9C45"/>
+      <stop offset=".52" stop-color="#FF6F09"/>
+      <stop offset=".78" stop-color="#FF8220"/>
+      <stop offset="1" stop-color="#FF9A3C"/>
+    </linearGradient>
+    <!-- roundness of the tube: its inner and outer edges turn away -->
+    <radialGradient id="tube" cx="10" cy="9" r="5" gradientUnits="userSpaceOnUse">
+      <stop offset=".44" stop-color="#E85400" stop-opacity=".35"/>
+      <stop offset=".66" stop-color="#E85400" stop-opacity="0"/>
+      <stop offset=".86" stop-color="#E85400" stop-opacity="0"/>
+      <stop offset="1" stop-color="#E85400" stop-opacity=".3"/>
+    </radialGradient>
+    <!-- the hole: shaded on its upper side, lit on its lower lip -->
+    <radialGradient id="hole" cx="10" cy="9" r="5" gradientUnits="userSpaceOnUse">
+      <stop offset=".44" stop-color="#F25E00"/>
+      <stop offset=".75" stop-color="#F25E00" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lip" cx="10" cy="9" r="5" gradientUnits="userSpaceOnUse">
+      <stop offset=".44" stop-color="#FFF4E9"/>
+      <stop offset=".7" stop-color="#FFBB77" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="upper" x1="0" y1="6" x2="0" y2="9.6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF"/>
+      <stop offset="1" stop-color="#FFF" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="lower" x1="0" y1="9.4" x2="0" y2="11.6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF" stop-opacity="0"/>
+      <stop offset="1" stop-color="#FFF"/>
+    </linearGradient>
+    <mask id="top" maskUnits="userSpaceOnUse" x="4" y="4" width="12" height="10">
+      <rect x="4" y="4" width="12" height="10" fill="url(#upper)"/>
+    </mask>
+    <mask id="bottom" maskUnits="userSpaceOnUse" x="4" y="4" width="12" height="10">
+      <rect x="4" y="4" width="12" height="10" fill="url(#lower)"/>
+    </mask>
+    <radialGradient id="shine" cx="0" cy="0" r="1" gradientTransform="matrix(3.4 0 0 1.5 10 5)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF4E9" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#FFF4E9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- white sticker border, outside and around the hole -->
+  <path d="M10 3a6 6 0 1 1 0 12a6 6 0 1 1 0-12ZM10 7.8a1.2 1.2 0 1 0 0 2.4a1.2 1.2 0 1 0 0-2.4Z" fill="#FFF" fill-rule="evenodd"/>
+  <g clip-path="url(#ring)">
+    <rect x="4" y="4" width="12" height="10" fill="url(#body)"/>
+    <rect x="4" y="4" width="12" height="10" fill="url(#tube)"/>
+    <rect x="4" y="4" width="12" height="10" fill="url(#hole)" mask="url(#top)"/>
+    <rect x="4" y="4" width="12" height="10" fill="url(#lip)" mask="url(#bottom)"/>
+    <rect x="4" y="4" width="12" height="10" fill="url(#shine)"/>
+  </g>
+</svg>

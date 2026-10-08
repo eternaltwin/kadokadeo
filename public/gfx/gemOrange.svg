@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="26" height="24" viewBox="0 0 26 24">
+  <defs>
+    <clipPath id="gem">
+      <path d="M7.2 .55H16.8L23.6 7.4V8.8L12 21.5L.4 8.8V7.4Z"/>
+    </clipPath>
+    <linearGradient id="rim" x1="0" y1=".55" x2="0" y2="21.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFB000"/>
+      <stop offset=".35" stop-color="#FD8A01"/>
+      <stop offset=".55" stop-color="#F95600"/>
+      <stop offset=".75" stop-color="#E8300A"/>
+      <stop offset="1" stop-color="#BA0F06"/>
+    </linearGradient>
+    <linearGradient id="table" x1="6" y1="2" x2="16" y2="6.4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFC0"/>
+      <stop offset=".45" stop-color="#FFF64A"/>
+      <stop offset="1" stop-color="#FFF000"/>
+    </linearGradient>
+    <linearGradient id="crownL" x1="1" y1="6" x2="7.5" y2="10" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFC0"/>
+      <stop offset="1" stop-color="#FFFA80"/>
+    </linearGradient>
+    <linearGradient id="front" x1="15" y1="6.4" x2="9.5" y2="11.6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF9A00"/>
+      <stop offset="1" stop-color="#FFE000"/>
+    </linearGradient>
+    <linearGradient id="pavL" x1="2" y1="9" x2="9" y2="12" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFB800"/>
+      <stop offset="1" stop-color="#FFF060"/>
+    </linearGradient>
+    <linearGradient id="pav" x1="0" y1="11.6" x2="0" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F04A00"/>
+      <stop offset="1" stop-color="#FFB400"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(1 1)">
+    <g clip-path="url(#gem)">
+      <!-- crown: back facets, then the table and the visible crown facets -->
+      <rect width="24" height="12" fill="#FFF000"/>
+      <path d="M8.4 2.3 15.6 2.3 19.6 4.4 15.8 6.4 8.2 6.4 4.4 4.4Z" fill="url(#table)"/>
+      <path d="M0 6.8 4.4 4.4 8.2 6.4 7 11.6 0.4 8.2Z" fill="url(#crownL)"/>
+      <path d="M24 6.8 19.6 4.4 15.8 6.4 17 11.6 23.6 8.2Z" fill="#FFE800"/>
+      <path d="M8.2 6.4 15.8 6.4 17 11.6 7 11.6Z" fill="url(#front)"/>
+      <!-- pavilion -->
+      <path d="M0 7 0.4 8.2 7 11.6 12 21.5 0 22Z" fill="url(#pavL)"/>
+      <path d="M24 7 23.6 8.2 17 11.6 12 21.5 24 22Z" fill="#FFD600"/>
+      <path d="M4.6 10.6 7 11.6 12 21.5Z" fill="#FFF060" opacity=".8"/>
+      <path d="M7 11.6 17 11.6 12 21.5Z" fill="url(#pav)"/>
+      <!-- facet edges catching the light -->
+      <g fill="none" stroke="#FFFFD0" stroke-width=".35" stroke-linejoin="round" stroke-linecap="round" opacity=".75">
+        <path d="M4.4 4.4 8.4 2.3 15.6 2.3 19.6 4.4 15.8 6.4 8.2 6.4Z"/>
+        <path d="M8.4 2.3 7.2 0.55M15.6 2.3 16.8 0.55M4.4 4.4 0.4 7.4M19.6 4.4 23.6 7.4"/>
+        <path d="M8.2 6.4 7 11.6M15.8 6.4 17 11.6"/>
+        <path d="M0.4 8.2 7 11.6 17 11.6 23.6 8.2" opacity=".8"/>
+        <path d="M7 11.6 12 21.5" opacity=".6"/>
+      </g>
+      <!-- rim -->
+      <path d="M7.2 .55H16.8L23.6 7.4V8.8L12 21.5L.4 8.8V7.4Z" fill="none" stroke="url(#rim)" stroke-width="1.8" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

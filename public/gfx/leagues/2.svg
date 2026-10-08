@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="21" height="18" viewBox="0 0 21 18">
+  <defs>
+    <!-- shapes drawn in the pixel space of the HD trophy (gui/base/level_3.gif, trimmed) -->
+    <path id="bowl" d="M5.5 3.5H62.5C64 3.9 64.6 5.4 64.6 7.5V10C64.6 20 59 31 50 34.6H18C9 31 3.4 20 3.4 10V7.5C3.4 5.4 4 3.9 5.5 3.5Z"/>
+    <path id="plate" d="M9.5 34.2H58.5C60.6 34.2 60.8 36.2 59 36.9C56.5 37.7 53 38 50 38H18C15 38 11.5 37.7 9 36.9C7.2 36.2 7.4 34.2 9.5 34.2Z"/>
+    <path id="stem" d="M29 37.5H39V62.5H29Z"/>
+    <path id="collar" d="M27.5 42.4H40.5C41.6 42.4 41.6 46.4 40.5 46.4H27.5C26.4 46.4 26.4 42.4 27.5 42.4Z"/>
+    <path id="foot" d="M29 59C29 62 26 63.2 20 63.8C13 64.5 10 65 9.6 66.4C9.4 67.4 10 68.2 11 68.2H57C58 68.2 58.6 67.4 58.4 66.4C58 65 55 64.5 48 63.8C42 63.2 39 62 39 59Z"/>
+    <path id="star" d="M33.2 5.4L34.9 9.3L39 9.6L35.9 12.4L36.8 16.5L33.2 14.3L29.6 16.5L30.5 12.4L27.4 9.6L31.5 9.3Z"/>
+    <clipPath id="bowlClip">
+      <use href="#bowl"/>
+    </clipPath>
+
+    <linearGradient id="bowlFill" x1="4" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F8D888"/>
+      <stop offset=".35" stop-color="#F6D17B"/>
+      <stop offset=".55" stop-color="#F3BC6A"/>
+      <stop offset=".85" stop-color="#E99352"/>
+      <stop offset="1" stop-color="#E17E45"/>
+    </linearGradient>
+    <linearGradient id="bowlLow" x1="0" y1="16" x2="0" y2="34.6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#EB742C" stop-opacity="0"/>
+      <stop offset=".6" stop-color="#EC8035" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#E4531A"/>
+    </linearGradient>
+    <linearGradient id="groove" x1="4" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E8A163"/>
+      <stop offset="1" stop-color="#DD8653"/>
+    </linearGradient>
+    <linearGradient id="gleam" x1="4" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFBE0" stop-opacity=".5"/>
+      <stop offset=".2" stop-color="#FFFBE0"/>
+      <stop offset=".45" stop-color="#FFFBE0" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#FFFBE0" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="lipBand" x1="4" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FBDC8D"/>
+      <stop offset=".45" stop-color="#FBD788"/>
+      <stop offset="1" stop-color="#E3915B"/>
+    </linearGradient>
+    <radialGradient id="starFill" cx="33.2" cy="11" r="5.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFE6"/>
+      <stop offset="1" stop-color="#FCE08E"/>
+    </radialGradient>
+    <linearGradient id="plateFill" x1="8" y1="0" x2="60" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F28C2E"/>
+      <stop offset=".15" stop-color="#FBDC62"/>
+      <stop offset=".3" stop-color="#FFF76A"/>
+      <stop offset=".55" stop-color="#F8C857"/>
+      <stop offset=".85" stop-color="#F59E32"/>
+      <stop offset="1" stop-color="#E4531A"/>
+    </linearGradient>
+    <linearGradient id="plateShade" x1="0" y1="34.2" x2="0" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset=".45" stop-color="#E4531A" stop-opacity="0"/>
+      <stop offset="1" stop-color="#E4531A" stop-opacity=".8"/>
+    </linearGradient>
+    <linearGradient id="stemFill" x1="29" y1="0" x2="39" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F59E32"/>
+      <stop offset=".3" stop-color="#FBC535"/>
+      <stop offset=".55" stop-color="#F58C22"/>
+      <stop offset=".85" stop-color="#F48420"/>
+      <stop offset="1" stop-color="#E52C05"/>
+    </linearGradient>
+    <linearGradient id="collarFill" x1="27" y1="0" x2="41" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7B249"/>
+      <stop offset=".2" stop-color="#FFF76A"/>
+      <stop offset=".45" stop-color="#F9C846"/>
+      <stop offset=".75" stop-color="#F58C22"/>
+      <stop offset="1" stop-color="#E83506"/>
+    </linearGradient>
+    <linearGradient id="footFill" x1="10" y1="0" x2="58" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F25D09"/>
+      <stop offset=".2" stop-color="#F9B12C"/>
+      <stop offset=".38" stop-color="#FFFD7F"/>
+      <stop offset=".55" stop-color="#FCD239"/>
+      <stop offset=".75" stop-color="#F68B1A"/>
+      <stop offset="1" stop-color="#F25D09"/>
+    </linearGradient>
+    <linearGradient id="footShade" x1="0" y1="63" x2="0" y2="68.2" gradientUnits="userSpaceOnUse">
+      <stop offset=".45" stop-color="#F05407" stop-opacity="0"/>
+      <stop offset="1" stop-color="#E83506"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(11 1.95) scale(.2275) translate(-34 -3.5)">
+    <!-- white sticker border -->
+    <g fill="#FFF" stroke="#FFF" stroke-width="8.6" stroke-linejoin="round">
+      <use href="#bowl"/>
+      <use href="#plate"/>
+      <use href="#stem"/>
+      <use href="#collar"/>
+      <use href="#foot"/>
+    </g>
+
+    <!-- foot and stem -->
+    <use href="#foot" fill="url(#footFill)"/>
+    <use href="#foot" fill="url(#footShade)" stroke="#D7372B" stroke-width="2.1" stroke-linejoin="round"/>
+    <use href="#stem" fill="url(#stemFill)"/>
+    <use href="#collar" fill="url(#collarFill)" stroke="#D84429" stroke-width="1.8" stroke-linejoin="round"/>
+
+    <!-- bowl -->
+    <use href="#bowl" fill="url(#bowlFill)"/>
+    <g clip-path="url(#bowlClip)">
+      <rect x="0" y="4.6" width="68" height="4.2" fill="url(#lipBand)"/>
+      <rect x="0" y="8.6" width="68" height="1.3" fill="url(#groove)"/>
+      <rect x="0" y="9.9" width="68" height="1.8" fill="url(#gleam)"/>
+      <rect x="0" y="16" width="68" height="20" fill="url(#bowlLow)"/>
+    </g>
+    <use href="#bowl" fill="none" stroke="#C4402C" stroke-width="2.2" stroke-linejoin="round"/>
+    <path d="M5 4.1H63" stroke="#C8633E" stroke-width="1.7"/>
+    <use href="#star" fill="url(#starFill)" stroke="#D2693F" stroke-width="1.7" stroke-linejoin="round"/>
+
+    <!-- plate under the bowl -->
+    <use href="#plate" fill="url(#plateFill)"/>
+    <use href="#plate" fill="url(#plateShade)" stroke="#D7411E" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+</svg>

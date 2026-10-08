@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="21" height="18" viewBox="0 0 21 18">
+  <defs>
+    <!-- shapes drawn in the pixel space of the HD trophy (gui/base/level_1.gif, trimmed) -->
+    <path id="cup" d="M23 5H77.5Q78.5 5 78.5 6V9.5C78.5 11 74.5 13 71.7 15.5C73.5 20 75.5 28 75.5 35C75.5 46 66.5 57 55.5 62H45C34 57 25 46 25 35C25 28 27 20 28.8 15.5C26 13 22 11 22 9.5V6Q22 5 23 5Z"/>
+    <path id="handle" d="M31 31C26 28.5 19 23.5 14 21.5C10 20 6.8 20.5 6.2 24.5C5.6 29 8 34 11 38C15 43 22 48.5 34 52.5"/>
+    <path id="stem" d="M47 60H53.5V81H47Z"/>
+    <path id="collar" d="M43.8 68.5H56.7Q57.5 68.5 57.5 69.3V73.7Q57.5 74.5 56.7 74.5H43.8Q43 74.5 43 73.7V69.3Q43 68.5 43.8 68.5Z"/>
+    <path id="base" d="M31 91V86C31 83 38.5 80.5 46 79.8H54.5C62 80.5 69.5 83 69.5 86V91Z"/>
+    <path id="star" d="M50.25 17L53.5 23.4L60.6 24.3L55.6 29.3L57 36.2L50.25 33.2L43.5 36.2L44.9 29.3L39.9 24.3L47 23.4Z"/>
+    <path id="starSmall" d="M50.25 39.6L52.2 43L56 43.6L53.3 46.1L54.1 49.6L50.25 48L46.4 49.6L47.2 46.1L44.5 43.6L48.3 43Z"/>
+    <clipPath id="cupClip">
+      <use href="#cup"/>
+    </clipPath>
+
+    <linearGradient id="cupFill" x1="0" y1="15" x2="0" y2="62" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F6EB66"/>
+      <stop offset=".35" stop-color="#F0DA57"/>
+      <stop offset=".6" stop-color="#EAC54B"/>
+      <stop offset=".8" stop-color="#E3A63D"/>
+      <stop offset="1" stop-color="#DA7A2C"/>
+    </linearGradient>
+    <linearGradient id="cupSide" x1="25" y1="0" x2="75.5" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFF8A" stop-opacity=".55"/>
+      <stop offset=".25" stop-color="#FFFF8A" stop-opacity=".35"/>
+      <stop offset=".45" stop-color="#E6B94E" stop-opacity="0"/>
+      <stop offset=".75" stop-color="#D68538" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#C96A30" stop-opacity=".8"/>
+    </linearGradient>
+    <linearGradient id="lipFill" x1="22" y1="0" x2="78.5" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7EC6C"/>
+      <stop offset=".5" stop-color="#F2E66B"/>
+      <stop offset="1" stop-color="#E6C762"/>
+    </linearGradient>
+    <linearGradient id="underLip" x1="22" y1="0" x2="78.5" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ECD665"/>
+      <stop offset="1" stop-color="#E4C05E"/>
+    </linearGradient>
+    <linearGradient id="gleam" x1="22" y1="0" x2="78.5" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFA0" stop-opacity=".4"/>
+      <stop offset=".2" stop-color="#FFFFA0"/>
+      <stop offset=".45" stop-color="#FFFFA0" stop-opacity=".5"/>
+      <stop offset=".7" stop-color="#FFFFA0" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="cupLine" x1="0" y1="5" x2="0" y2="62" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A65A46"/>
+      <stop offset="1" stop-color="#9C342B"/>
+    </linearGradient>
+    <linearGradient id="handleFill" x1="0" y1="20" x2="0" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FEFE63"/>
+      <stop offset=".5" stop-color="#F2D252"/>
+      <stop offset="1" stop-color="#E19D3C"/>
+    </linearGradient>
+    <radialGradient id="glint" cx="36" cy="20.5" r="4" gradientUnits="userSpaceOnUse">
+      <stop offset=".2" stop-color="#FFF"/>
+      <stop offset=".5" stop-color="#FFFFE0" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#FFFFA0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="starFill" cx="50.25" cy="27" r="9" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFA8"/>
+      <stop offset="1" stop-color="#FDF46A"/>
+    </radialGradient>
+    <linearGradient id="stemFill" x1="47" y1="0" x2="53.5" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C56A1C"/>
+      <stop offset=".25" stop-color="#F8E42B"/>
+      <stop offset=".5" stop-color="#F1C321"/>
+      <stop offset=".8" stop-color="#E68618"/>
+      <stop offset="1" stop-color="#B84218"/>
+    </linearGradient>
+    <linearGradient id="collarFill" x1="0" y1="68.5" x2="0" y2="74.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E9A82D"/>
+      <stop offset=".2" stop-color="#FFFE41"/>
+      <stop offset=".5" stop-color="#F8E42B"/>
+      <stop offset=".75" stop-color="#EEB629"/>
+      <stop offset="1" stop-color="#C33E11"/>
+    </linearGradient>
+    <linearGradient id="baseFill" x1="31" y1="0" x2="69.5" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FAED33"/>
+      <stop offset=".3" stop-color="#F7DB25"/>
+      <stop offset=".55" stop-color="#EDA51E"/>
+      <stop offset=".8" stop-color="#DB6515"/>
+      <stop offset="1" stop-color="#E68618"/>
+    </linearGradient>
+    <linearGradient id="baseShade" x1="0" y1="80" x2="0" y2="91" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E47B16" stop-opacity=".7"/>
+      <stop offset=".45" stop-color="#E47B16" stop-opacity="0"/>
+      <stop offset=".7" stop-color="#E47B16" stop-opacity=".3"/>
+      <stop offset=".8" stop-color="#CD4D0E"/>
+      <stop offset="1" stop-color="#C33E11"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(10.5 1) scale(.1818) translate(-50.25 -4)">
+    <!-- white sticker border -->
+    <g fill="#FFF" stroke="#FFF" stroke-width="11" stroke-linejoin="round">
+      <use href="#cup"/>
+      <use href="#stem"/>
+      <use href="#collar"/>
+      <use href="#base"/>
+    </g>
+    <g fill="none" stroke="#FFF" stroke-width="14.3" stroke-linecap="round">
+      <use href="#handle"/>
+      <use href="#handle" transform="matrix(-1 0 0 1 100.5 0)"/>
+    </g>
+
+    <!-- handles -->
+    <g fill="none" stroke-linecap="round">
+      <use href="#handle" stroke="#A8553C" stroke-width="5.5"/>
+      <use href="#handle" stroke="url(#handleFill)" stroke-width="2.8"/>
+      <g transform="matrix(-1 0 0 1 100.5 0)">
+        <use href="#handle" stroke="#A8553C" stroke-width="5.5"/>
+        <use href="#handle" stroke="url(#handleFill)" stroke-width="2.8"/>
+      </g>
+    </g>
+
+    <!-- base and stem -->
+    <use href="#base" fill="url(#baseFill)"/>
+    <use href="#base" fill="url(#baseShade)" stroke="#A9301A" stroke-width="2.2" stroke-linejoin="round"/>
+    <use href="#stem" fill="url(#stemFill)" stroke="#A9301A" stroke-width="2"/>
+    <rect x="47" y="60" width="6.5" height="8.5" fill="#A12519"/>
+    <use href="#collar" fill="url(#collarFill)" stroke="#A9301A" stroke-width="2" stroke-linejoin="round"/>
+
+    <!-- cup -->
+    <use href="#cup" fill="url(#cupFill)"/>
+    <g clip-path="url(#cupClip)">
+      <rect x="0" y="15.5" width="101" height="50" fill="url(#cupSide)"/>
+      <rect x="0" y="4" width="101" height="6" fill="url(#lipFill)"/>
+      <rect x="0" y="6.8" width="101" height="1.6" fill="url(#gleam)"/>
+      <path d="M0 10H101V16H0Z" fill="url(#underLip)"/>
+    </g>
+    <path d="M22 10C24 11.5 26.5 13.5 28.8 15.5H71.7C74 13.5 76.5 11.5 78.5 10" fill="none" stroke="#D2A458" stroke-width="1"/>
+    <use href="#cup" fill="none" stroke="url(#cupLine)" stroke-width="2.2" stroke-linejoin="round"/>
+    <circle cx="36" cy="20.5" r="4" fill="url(#glint)"/>
+
+    <!-- stars -->
+    <use href="#star" transform="translate(0 1.6)" fill="#FDFBC5"/>
+    <use href="#star" fill="url(#starFill)" stroke="#A55B47" stroke-width="2" stroke-linejoin="round"/>
+    <use href="#starSmall" transform="translate(0 1.4)" fill="#FDFBC5"/>
+    <use href="#starSmall" fill="url(#starFill)" stroke="#A9533F" stroke-width="1.8" stroke-linejoin="round"/>
+  </g>
+</svg>
