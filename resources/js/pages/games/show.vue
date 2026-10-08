@@ -96,7 +96,8 @@ watchEffect((onInvalidate) => {
                 <GamesGameScript :game="game" />
               </div>
               <div class="gameint2 hidden" :class="{ 'lg:block': !isZoomed, 'hidden': game.is_arkadeo }" :style="{ height: surfaceHeight + 'px' }"></div>
-              <div class="gameint3 @container min-w-[345px]" :class="{ 'w-full lg:max-w-sm flex-1 order-1 lg:order-2': isZoomed, 'w-full': game.is_arkadeo }" :style="{ height: surfaceHeight + 'px' }">
+              <!-- Zoomed on mobile, the panel takes its full height: a single scroll goes through it then to the game (no nested scroll that keeps the gesture) -->
+              <div class="gameint3 @container min-w-[345px]" :class="{ 'w-full lg:max-w-sm flex-1 order-1 lg:order-2 max-lg:h-auto!': isZoomed, 'w-full': game.is_arkadeo }" :style="{ height: surfaceHeight + 'px' }">
                 <GamesGameSide class="overflow-y-auto overflow-x-hidden text-xs h-full" :is-zoomed="isZoomed" :game="game" />
               </div>
             </div>
