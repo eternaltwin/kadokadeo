@@ -55,6 +55,9 @@ class Gfx extends ASprite {
 	// moved by the game code: the timeline of its parent no longer moves it (Flash rule)
 	public var scripted:Bool = false;
 
+	// placed by its timeline: the skew of its matrix, interpolated with its position (Clip.place)
+	public var sk:Skew = null;
+
 	var anim:String;
 	var addSpr:PixiSprite;
 	var cur:Int;
@@ -101,9 +104,68 @@ class Gfx extends ASprite {
 		addSpr.tint = c;
 	}
 
+	override public function update() {
+		super.update();
+		if (sk != null)
+			sk.keep();
+	}
+
 	override public function updateGraphics(a:Float) {
 		Clip.noFlipLerp(this);
 		super.updateGraphics(a);
+		if (sk != null)
+			sk.apply(this, a);
+	}
+}
+
+/**
+ * Port: the matrix of a part placed by its timeline, shown between two steps. The exporter writes it either as a
+ * rotation with signed scales or, when it is skewed, as two skew angles: interpolated as they are, a part whose matrix
+ * goes from one form to the other turns twice its angle for a step (the skew is not interpolated, the rotation is).
+ * Every matrix is set in the second form (positive scales, rotation 0) and both angles turn the short way, which is the
+ * rotation of an unskewed part.
+ */
+class Skew {
+	public var x:Float = 0;
+	public var y:Float = 0;
+
+	var px:Float = 0;
+	var py:Float = 0;
+
+	public function new() {}
+
+	// a KadoKadeo step, or a matrix that is not shown as a move (Clip.place): the skew shown before it
+	public inline function keep() {
+		px = x;
+		py = y;
+	}
+
+	public inline function apply(o:ASprite, a:Float) {
+		o.skew.set(lerpAngle(px, x, a), lerpAngle(py, y, a));
+	}
+
+	static inline function lerpAngle(p:Float, c:Float, t:Float):Float {
+		var tau = Math.PI * 2;
+		return p + (((c - p + Math.PI) % tau + tau) % tau - Math.PI) * t;
+	}
+
+	// [x, y, scaleX, scaleY, rotation (deg)] or [x, y, scaleX, scaleY, 0, skewX, skewY] of the exporter (PIXI's
+	// matrix: a = cos(r + skY) sx, b = sin(r + skY) sx, c = -sin(r - skX) sy, d = cos(r - skX) sy) -> [scaleX, scaleY,
+	// skewX, skewY] with positive scales and rotation 0
+	public static function form(m:Array<Float>):Array<Float> {
+		var r = m[4] * Math.PI / 180;
+		var kx = m.length > 5 ? m[5] : 0.0;
+		var ky = m.length > 5 ? m[6] : 0.0;
+		var a = Math.cos(r + ky) * m[2];
+		var b = Math.sin(r + ky) * m[2];
+		var c = -Math.sin(r - kx) * m[3];
+		var d = Math.cos(r - kx) * m[3];
+		return [Math.sqrt(a * a + b * b), Math.sqrt(c * c + d * d), -Math.atan2(-c, d), Math.atan2(b, a)];
+	}
+
+	// the matrix is mirrored (negative determinant: sx sy cos(skX + skY) in that form)
+	public static inline function mirrored(f:Array<Float>):Bool {
+		return Math.cos(f[2] + f[3]) < 0;
 	}
 }
 
@@ -146,6 +208,9 @@ class Clip extends ASprite {
 	public var scripted:Bool;
 
 	public var frozen:Bool;
+
+	// placed by the timeline of its parent: the skew of its matrix (Skew)
+	public var sk:Skew = null;
 
 	// the symbol placed (setDef can give the same timeline other pictures)
 	public var baseName(default, null):String;
@@ -251,6 +316,8 @@ class Clip extends ASprite {
 	override public function updateGraphics(a:Float) {
 		noFlipLerp(this);
 		super.updateGraphics(a);
+		if (sk != null)
+			sk.apply(this, a);
 	}
 
 	// clips that removed themselves (frame script) since the last call: their MC is removed (its _name is null)
@@ -306,6 +373,8 @@ class Clip extends ASprite {
 		if (_prevState == null)
 			_prevState = new TransformState(this);
 		_prevState.copyFrom(_curState);
+		if (sk != null)
+			sk.keep();
 		for (c in children)
 			if (Std.isOfType(c, ASprite))
 				(cast c : ASprite).update();
@@ -471,6 +540,10 @@ class Clip extends ASprite {
 
 	// ---------------------------------------------------------------- display
 	function display(f:Int) {
+		// (port) the frame shown before: a part is interpolated from it only when the timeline plays on to the next or the
+		// previous frame (a goto to another animation, the loop to its first frame are not moves)
+		var from = frame;
+		var next = from > 0 && (f == from + 1 || f == from - 1);
 		frame = f;
 		untyped this._currentframe = f;
 		if (def.simple) {
@@ -521,7 +594,10 @@ class Clip extends ASprite {
 				// (_visible set by the code stays, like on a Flash instance)
 				o.visible = !g.hidden;
 			}
-			place(i, o, f);
+			// (port) not a move either: a part that was not there on that frame (a new instance, a layer that comes back) or
+			// whose picture changes
+			var moved = next && !fresh && (L.k == 2 ? L.p[from - 1] : L.t[from - 1]) == p;
+			place(i, o, f, from, moved);
 			if (fresh && L.k == 2)
 				(cast o : Clip).start();
 			if (fresh)
@@ -586,22 +662,42 @@ class Clip extends ASprite {
 		return L.ad != null ? L.ad : (L.ads != null ? L.ads[f - 1] : 0);
 	}
 
-	function place(i:Int, o:ASprite, f:Int) {
+	// moved: the timeline played from frame `from` to this one and the part was there (interpolated from its matrix on
+	// it); otherwise the part is shown at its new matrix from this step on (Flash shows the frames, not the moves)
+	function place(i:Int, o:ASprite, f:Int, ?from:Int = 0, ?moved:Bool = true) {
 		var L = def.layers[i];
 		var m = L.m0 != null ? L.m0 : (L.m != null ? L.m[f - 1] : null);
 		var c = L.k == 2 ? (cast o : Clip) : null;
 		if (m != null && (c == null || !c.scripted) && !(c == null && (cast o : Gfx).scripted)) {
+			var k = Skew.form(m);
+			// a pose turned over between two frames (the afro's head and arms in his attack): a new drawing, not a move
+			if (moved && from > 0 && L.m0 == null && Skew.mirrored(k) != Skew.mirrored(Skew.form(L.m[from - 1])))
+				moved = false;
+			var sk = c != null ? c.sk : (cast o : Gfx).sk;
+			if (sk == null) {
+				sk = new Skew();
+				if (c != null)
+					c.sk = sk;
+				else
+					(cast o : Gfx).sk = sk;
+			}
 			o._x = m[0];
 			o._y = m[1];
-			o._xscale = m[2] * 100;
-			o._yscale = m[3] * 100;
-			o._rotation = m[4];
-			if (m.length > 5)
-				o.skew.set(m[5], m[6]);
-			else if (o.skew.x != 0 || o.skew.y != 0)
-				o.skew.set(0, 0);
+			o._xscale = k[0] * 100;
+			o._yscale = k[1] * 100;
+			o._rotation = 0;
+			sk.x = k[2];
+			sk.y = k[3];
+			o.skew.set(k[2], k[3]);
 		}
 		o._alpha = (L.al0 != null ? L.al0 : (L.al != null ? L.al[f - 1] : 1)) * 100;
+		if (!moved) {
+			if (o._prevState != null)
+				o._prevState.copyFrom(o._curState);
+			var sk = c != null ? c.sk : (cast o : Gfx).sk;
+			if (sk != null)
+				sk.keep();
+		}
 		var tn = mulColor(tintIn, layerTint(L, f));
 		var ad = addColor(addIn, mulColor(tintIn, layerAdd(L, f)));
 		if (c != null) {
