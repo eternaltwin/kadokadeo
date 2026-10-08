@@ -22,7 +22,8 @@ import pixi.core.Pixi.BlendModes;
  * Display: Phagocytoz ran at 30 Flash frames/s (the KadoKado AS3 loader) and KadoKadeo steps 32 times per second (15
  * Flash frames every 16 steps, Game.update). Every object is shown as it was one Flash frame ago, interpolated towards
  * the last frame by the fraction of a frame the steps are behind: an object created during the last Flash frame is
- * not shown yet, one removed during it is still shown (ghost) until the next Flash frame.
+ * not shown yet, one removed during it is still shown (ghost) until the next Flash frame; the same for the visible
+ * property (the end of a fade: the fader hidden and the black title added during the same frame).
  */
 class DisplayObject {
 	// Flash frames played (the snapshots of the display)
@@ -48,6 +49,10 @@ class DisplayObject {
 	var alpha8:Float = 1;
 
 	public var visible:Bool = true;
+	// visible at the last two Flash frames (snapshotTree): shown one frame late too, an object hidden during the last
+	// frame is still shown and one shown again during it is not shown yet
+	var visCur:Bool = false;
+	var visPrev:Bool = false;
 
 	// moved / coloured by the code: its timeline no longer changes it
 	var scripted:Bool = false;
@@ -574,11 +579,13 @@ class Sprite extends DisplayObject {
 	}
 
 	// end of a Flash frame: the state of every object (the hidden ones are not drawn: their state is taken when they
-	// are shown again, without a slide)
+	// are shown again, without a slide; one hidden during this frame is still shown until the next one)
 	public function snapshotTree() {
 		snapshot();
 		for (c in children) {
-			if (!c.visible)
+			c.visPrev = c.visCur;
+			c.visCur = c.visible;
+			if (!c.visible && !c.visPrev)
 				continue;
 			var s = Std.downcast(c, Sprite);
 			if (s != null)
@@ -607,7 +614,9 @@ class Sprite extends DisplayObject {
 
 	function syncChild(c:DisplayObject, f:Float, pm:Array<Float>, pa:Array<Float>, add:Bool, ghost:Bool, snap:Bool) {
 		var v = c.view;
-		var hide = !c.visible || (c.isFresh() && !ghost) || c.cur == null;
+		// (in a ghost, the state of the frame before is the last one taken)
+		var shown = ghost ? c.visCur : c.visPrev && !c.isFresh();
+		var hide = !shown || c.cur == null;
 		var sn = snap || !v.visible;
 		v.visible = !hide;
 		if (hide)
