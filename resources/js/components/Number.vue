@@ -25,6 +25,7 @@ const charUrls = computed(() => {
     <img
       v-for="(charUrl, index) in charUrls"
       :key="index"
+      class="max-w-none"
       :src="charUrl"
       :style="{ height: `${height}px` }"
     />

@@ -22,19 +22,20 @@ defineProps({
     <tbody>
       <tr v-for="(score, index) in scores" :key="score.id">
         <!-- <td>{{ score.period_id }}</td> -->
-        <td v-if="showPos"><Number :value="score.rank_position ?? index + 1" color="orange" /></td>
-        <td v-if="showPlayer">
-          <RouterLink :to="{ name: 'profile.show', params: { id: score.user.etwin_id } }">
+        <td v-if="showPos" class="w-px whitespace-nowrap"><Number :value="score.rank_position ?? index + 1" color="orange" /></td>
+        <!-- w-full + max-w-0 : la colonne prend la place restante et peut descendre sous la largeur de son contenu -->
+        <td v-if="showPlayer" class="w-full max-w-0">
+          <RouterLink class="block truncate" :to="{ name: 'profile.show', params: { id: score.user.etwin_id } }">
             {{ score.user.display_name }}
           </RouterLink>
         </td>
-        <td v-if="showGame">
+        <td v-if="showGame" class="w-px whitespace-nowrap">
           <RouterLink :to="{ name: 'games.show', params: { id: score.game.id } }">
             {{ score.game.name }}
           </RouterLink>
         </td>
-        <td><Number :value="score.score" color="blue" /></td>
-        <td>
+        <td class="w-px whitespace-nowrap"><Number class="flex shrink-0" :value="score.score" color="blue" /></td>
+        <td class="w-px whitespace-nowrap">
           <RouterLink
             v-if="score.has_replay"
             :to="{ name: 'runs.show', params: { id: score.id } }"
