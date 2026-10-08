@@ -40,7 +40,7 @@ class GameController extends Controller implements HasMiddleware
             });
         }
         $games = $gamesQ->with(['periodStars' => function ($query) use ($periodId) {
-            $query->where('user_id', Auth::id());                                                                                                       
+            $query->where('user_id', Auth::id());
             $query->when($periodId, function ($q) use ($periodId) {
                 $q->where('period_id', $periodId);
             });

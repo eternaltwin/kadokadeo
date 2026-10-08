@@ -289,18 +289,21 @@ const gameAchievements = computed(() => {
             <div v-else class="px-8 sm:px-16">
               <table class="w-full">
                 <thead>
-                    <tr class="text-kado-orange uppercase text-sm *:px-2 *:text-center">
-                      <th>Jeu</th>
-                      <th>Score actuel</th>
-                      <th>Votre record</th>
-                      <th>Progression</th>
+                  <tr class="text-kado-orange uppercase text-sm *:px-2 *:text-center">
+                    <th>Jeu</th>
+                    <th>Score actuel</th>
+                    <th>Votre record</th>
+                    <th>Progression</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="record in personalRecords" :key="record.game.id">
                     <td class="text-left">
                       <div class="flex items-center gap-2">
-                        <img v-if="record.league" :src="`/gfx/leagues/${record.league.id}.png`" :alt="record.league.name" class="size-6 shrink-0 object-contain" />
+                        <img v-if="record.league"
+                             :src="`/gfx/leagues/${record.league.id}.png`"
+                             :alt="record.league.name"
+                             class="size-6 shrink-0 object-contain" />
                         <RouterLink :to="{ name: 'games.records', params: { id: record.game.id } }">
                           {{ record.game.name }}
                         </RouterLink>

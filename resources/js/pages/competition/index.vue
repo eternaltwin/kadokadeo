@@ -127,7 +127,10 @@ const scoreOn1500 = computed(() => {
           <h2 class="col-span-full">Calculateur 1500</h2>
           <label for="score-game" class="flex flex-col gap-1">
             Jeu
-            <select id="score-game" v-model="selectedGameId" :disabled="isGamesLoading || !!gamesError" class="min-h-10 border border-kado-cyan-800 bg-white px-2">
+            <select id="score-game"
+                    v-model="selectedGameId"
+                    :disabled="isGamesLoading || !!gamesError"
+                    class="min-h-10 border border-kado-cyan-800 bg-white px-2">
               <option value="">Sélectionner un jeu</option>
               <option v-for="game in games" :key="game.id" :value="String(game.id)">
                 {{ game.name }}
@@ -136,11 +139,21 @@ const scoreOn1500 = computed(() => {
           </label>
           <label for="score-input" class="flex flex-col gap-1">
             Votre score
-            <input id="score-input" v-model="scoreInput" type="number" min="0" step="1" inputmode="numeric" class="min-h-10 border border-kado-cyan-800 bg-white px-2" />
+            <input id="score-input"
+                   v-model="scoreInput"
+                   type="number"
+                   min="0"
+                   step="1"
+                   inputmode="numeric"
+                   class="min-h-10 border border-kado-cyan-800 bg-white px-2" />
           </label>
           <label for="score-1500" class="flex flex-col gap-1">
             Score en mode 1500
-            <input id="score-1500" :value="scoreOn1500" type="text" readonly class="min-h-10 border border-kado-cyan-800 bg-kado-cyan-100 px-2" />
+            <input id="score-1500"
+                   :value="scoreOn1500"
+                   type="text"
+                   readonly
+                   class="min-h-10 border border-kado-cyan-800 bg-kado-cyan-100 px-2" />
           </label>
           <MessageError v-if="gamesError" class="md:col-span-full">Error: {{ gamesError }}</MessageError>
         </section>
@@ -178,7 +191,10 @@ const scoreOn1500 = computed(() => {
                     <div class="rounded border border-kado-cyan-800 bg-white p-3">
                       <div class="mb-2 flex items-center justify-between gap-3">
                         <strong>{{ selectedPlayer.user.display_name }}</strong>
-                        <button type="button" class="cursor-pointer" aria-label="Fermer le détail" @click="selectedPlayerId = null">×</button>
+                        <button type="button"
+                                class="cursor-pointer"
+                                aria-label="Fermer le détail"
+                                @click="selectedPlayerId = null">×</button>
                       </div>
                       <div class="grid gap-2 sm:grid-cols-2">
                         <div v-for="gameScore in selectedPlayer.games" :key="gameScore.game.id" class="flex justify-between gap-4">

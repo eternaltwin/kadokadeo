@@ -109,10 +109,22 @@ const chartLabels = computed(() => {
             :aria-label="`Meilleur score par période pour ${history.game.name}`"
           >
             <g v-for="tick in chartYTicks" :key="tick.y">
-              <line :x1="chartFrame.left" :x2="chartFrame.right" :y1="tick.y" :y2="tick.y" stroke="#d1d5db" stroke-dasharray="4 4" />
-              <text :x="chartFrame.left - 10" :y="tick.y + 4" text-anchor="end" class="fill-gray-600 text-xs">{{ tick.score }}</text>
+              <line :x1="chartFrame.left"
+                    :x2="chartFrame.right"
+                    :y1="tick.y"
+                    :y2="tick.y"
+                    stroke="#d1d5db"
+                    stroke-dasharray="4 4" />
+              <text :x="chartFrame.left - 10"
+                    :y="tick.y + 4"
+                    text-anchor="end"
+                    class="fill-gray-600 text-xs">{{ tick.score }}</text>
             </g>
-            <line :x1="chartFrame.left" :x2="chartFrame.right" :y1="chartFrame.bottom" :y2="chartFrame.bottom" stroke="#6b7280" />
+            <line :x1="chartFrame.left"
+                  :x2="chartFrame.right"
+                  :y1="chartFrame.bottom"
+                  :y2="chartFrame.bottom"
+                  stroke="#6b7280" />
             <polyline
               v-for="(line, index) in chartLines"
               :key="index"
@@ -123,8 +135,18 @@ const chartLabels = computed(() => {
               stroke-linecap="round"
               stroke-linejoin="round"
             />
-            <circle v-for="point in scoredChartPoints" :key="point.periodId" :cx="point.x" :cy="point.y" r="4" fill="#078b9b" />
-            <text v-for="point in chartLabels" :key="`label-${point.periodId}`" :x="point.x" y="312" text-anchor="middle" class="fill-gray-600 text-xs">
+            <circle v-for="point in scoredChartPoints"
+                    :key="point.periodId"
+                    :cx="point.x"
+                    :cy="point.y"
+                    r="4"
+                    fill="#078b9b" />
+            <text v-for="point in chartLabels"
+                  :key="`label-${point.periodId}`"
+                  :x="point.x"
+                  y="312"
+                  text-anchor="middle"
+                  class="fill-gray-600 text-xs">
               P{{ point.periodId }}
             </text>
           </svg>

@@ -31,7 +31,10 @@ const otherGames = [
           <RouterLink to="/" title="Mon compte">Mon compte</RouterLink>
         </li>
         <li class="forum">
-          <a href="https://discord.gg/cqasFsD" title="Discord" target="_blank" rel="noopener noreferrer">Discord</a>
+          <a href="https://discord.gg/cqasFsD"
+             title="Discord"
+             target="_blank"
+             rel="noopener noreferrer">Discord</a>
         </li>
         <li class="help">
           <RouterLink :to="{ name: 'help' }" title="Aide">Aide</RouterLink>

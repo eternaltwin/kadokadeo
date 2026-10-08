@@ -28,14 +28,14 @@ class GameForm
                 TextInput::make('image_path')->label('Image'),
                 Repeater::make('stars')->label('Étoiles')->simple(
                     TextInput::make('value')
-                    ->label('Valeur')
-                    ->numeric()
-                    ->required(),
+                        ->label('Valeur')
+                        ->numeric()
+                        ->required(),
                 )->minItems(3)->maxItems(3),
-                    Toggle::make('is_active')
+                Toggle::make('is_active')
                     ->label('Actif')
                     ->required(),
-                    Toggle::make('is_arkadeo')
+                Toggle::make('is_arkadeo')
                     ->label('Jeu Arkadéo')
                     ->required(),
                 TextInput::make('score_rankv1')->label('Score 1500'),

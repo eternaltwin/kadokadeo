@@ -29,8 +29,7 @@ class GameFavoritesTest extends TestCase
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
         $game = Game::factory()->create();
-        Gate::before(fn (User $viewer, string $ability, array $arguments) =>
-            $ability === 'view' && ($arguments[0] ?? null) instanceof Game && $arguments[0]->id === $game->id
+        Gate::before(fn (User $viewer, string $ability, array $arguments) => $ability === 'view' && ($arguments[0] ?? null) instanceof Game && $arguments[0]->id === $game->id
                 ? true
                 : null);
 
