@@ -34,7 +34,7 @@ defineProps({
             {{ score.game.name }}
           </RouterLink>
         </td>
-        <td class="w-px whitespace-nowrap"><Number class="flex shrink-0" :value="score.score" color="blue" /></td>
+        <td class="w-px whitespace-nowrap"><Number class="flex shrink-0 justify-center" :value="score.score" color="blue" /></td>
         <td class="w-px whitespace-nowrap">
           <RouterLink
             v-if="score.has_replay"
