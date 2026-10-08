@@ -128,9 +128,7 @@ class GameScoreController extends Controller implements HasMiddleware
             ? Period::findOrFail($request->integer('period'))
             : $currentPeriod;
 
-        return response()
-            ->json($scoreService->get1500Leaderboard($selectedPeriod?->id))
-            ->header('X-Current-Period', (string) ($currentPeriod?->id ?? ''));
+        return response()->json($scoreService->get1500Leaderboard($selectedPeriod?->id));
     }
 
     public function poidsPlumes(PoidsPlumeService $poidsPlumeService)

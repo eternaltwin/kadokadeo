@@ -11,25 +11,11 @@ use App\Models\Run;
 use App\Models\User;
 use App\Services\ScoreService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ScoreServiceTest extends TestCase
 {
     use RefreshDatabase;
-
-    public function test_competition_response_exposes_current_period_id(): void
-    {
-        $period = Period::factory()->create([
-            'start_at' => now()->subDay(),
-            'end_at' => now()->addDay(),
-        ]);
-
-        Sanctum::actingAs(User::factory()->create(), 'sanctum')
-            ->getJson('/api/competition')
-            ->assertOk()
-            ->assertHeader('X-Current-Period', (string) $period->id);
-    }
 
     public function test_competition_can_load_a_previous_period(): void
     {
@@ -53,15 +39,16 @@ class ScoreServiceTest extends TestCase
         Run::factory()->for($previousPeriod)->for($game)->for($previousPlayer)->create(['score' => 2000]);
         Run::factory()->for($previousPeriod)->for($game)->for($zeroScorePlayer)->create(['score' => 0]);
 
-        Sanctum::actingAs(User::factory()->create(), 'sanctum')
+        $user = User::factory()->create();
+        $token = $user->createToken('kadokadeo')->plainTextToken;
+        $this->withToken($token)
             ->getJson('/api/competition?period='.$previousPeriod->id)
             ->assertOk()
             ->assertJsonCount(1)
             ->assertJsonPath('0.user.display_name', 'Previous player')
             ->assertJsonPath('0.score', 1500)
             ->assertJsonPath('0.games.0.game.name', $game->name)
-            ->assertJsonPath('0.games.0.score', 1500)
-            ->assertHeader('X-Current-Period', (string) $currentPeriod->id);
+            ->assertJsonPath('0.games.0.score', 1500);
     }
 
     public function test_ranking_v1_interpolates_between_the_four_score_thresholds(): void
