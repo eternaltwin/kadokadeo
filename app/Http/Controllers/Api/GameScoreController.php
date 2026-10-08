@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RunResource;
+use App\Http\Resources\UserLightResource;
 use App\Models\Game;
 use App\Models\Period;
 use App\Services\GameService;
@@ -51,21 +52,30 @@ class GameScoreController extends Controller implements HasMiddleware
             ->where('is_active', true)
             ->orderBy('name')
             ->get()
-            ->map(fn (Game $game) => [
-                'game' => [
-                    'id' => $game->id,
-                    'name' => $game->name,
-                ],
-                'record' => $scoreService->getUserBestScore($game, null)?->score,
-            ]);
+            ->map(function (Game $game) use ($scoreService) {
+                $bestRun = $scoreService->getBestScore($game, null);
+                $bestRun?->load('user');
+
+                return [
+                    'game' => [
+                        'id' => $game->id,
+                        'name' => $game->name,
+                    ],
+                    'record' => $bestRun?->score,
+                    'run_id' => $bestRun?->id,
+                    'has_replay' => $bestRun?->has_replay ?? false,
+                    'user' => $bestRun?->user ? UserLightResource::make($bestRun->user) : null,
+                ];
+            });
 
         return response()->json($records);
     }
 
-    public function personalRecords(ScoreService $scoreService)
+    public function personalRecords(ScoreService $scoreService, LeagueService $leagueService)
     {
         $userId = Auth::id();
-        $currentPeriodId = Period::current()->first()?->id;
+        $currentPeriod = Period::current()->first();
+        $currentPeriodId = $currentPeriod?->id;
         $records = Game::query()
             ->where('is_active', true)
             ->orderBy('name')
@@ -80,6 +90,9 @@ class GameScoreController extends Controller implements HasMiddleware
                 'current_score' => $currentPeriodId === null
                     ? null
                     : $scoreService->getUserBestScore($game, $userId, $currentPeriodId)?->score,
+                'league' => $currentPeriod === null
+                    ? null
+                    : $leagueService->getCurrentLeagueFor(Auth::user(), $game, $currentPeriod),
             ]);
 
         return response()->json($records);
@@ -105,11 +118,19 @@ class GameScoreController extends Controller implements HasMiddleware
         ]);
     }
 
-    public function competition(ScoreService $scoreService)
+    public function competition(Request $request, ScoreService $scoreService)
     {
-        $currentPeriodId = Period::current()->first()?->id;
+        $request->validate([
+            'period' => 'sometimes|required|integer|exists:periods,id',
+        ]);
+        $currentPeriod = Period::current()->first();
+        $selectedPeriod = $request->has('period')
+            ? Period::findOrFail($request->integer('period'))
+            : $currentPeriod;
 
-        return response()->json($scoreService->get1500Leaderboard($currentPeriodId));
+        return response()
+            ->json($scoreService->get1500Leaderboard($selectedPeriod?->id))
+            ->header('X-Current-Period', (string) ($currentPeriod?->id ?? ''));
     }
 
     public function poidsPlumes(PoidsPlumeService $poidsPlumeService)

@@ -79,6 +79,7 @@ class PoidsPlumeService
         }
 
         return User::query()
+            ->whereIn('id', array_keys($feathersCountByUser))
             ->get(['id', 'etwin_id', 'display_name'])
             ->map(fn (User $user) => [
                 'user' => [

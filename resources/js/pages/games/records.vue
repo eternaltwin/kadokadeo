@@ -2,6 +2,7 @@
 const route = useRoute()
 const { isLoading, error, get } = useApi()
 const history = ref(null)
+const scoredPeriods = computed(() => (history.value?.periods ?? []).filter((period) => period.score != null))
 
 watch(() => route.params.id, (gameId) => {
   history.value = null
@@ -76,9 +77,9 @@ const chartLabels = computed(() => {
     <MessageError v-else-if="error">Error: {{ error }}</MessageError>
     <template v-else-if="history">
       <h1 class="mt-0 text-center">{{ history.game.name }}</h1>
-      <div class="grid gap-6 lg:grid-cols-2">
+      <div class="grid gap-8 px-4 py-4 sm:px-6 lg:grid-cols-2">
         <section>
-          <h2>Meilleur score par période</h2>
+          <h2>Historique</h2>
           <table class="w-full">
             <thead>
               <tr class="text-kado-orange uppercase text-sm *:px-2">
@@ -87,7 +88,7 @@ const chartLabels = computed(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="period in history.periods" :key="period.id">
+              <tr v-for="period in scoredPeriods" :key="period.id">
                 <td class="text-left">Période {{ period.id }}</td>
                 <td class="text-right">
                   <Number v-if="period.score !== null" color="blue" :value="period.score" />
@@ -99,7 +100,7 @@ const chartLabels = computed(() => {
         </section>
 
         <section>
-          <h2>Évolution des scores</h2>
+          <h2>Évolution</h2>
           <svg
             v-if="scoredChartPoints.length"
             viewBox="0 0 720 340"
@@ -130,6 +131,11 @@ const chartLabels = computed(() => {
           <p v-else>Aucun score enregistré pour ce jeu.</p>
         </section>
       </div>
+      <p class="text-center">
+        <RouterLink :to="{ name: 'games.show', params: { id: history.game.id } }">
+          Jouer à {{ history.game.name }}
+        </RouterLink>
+      </p>
     </template>
   </div>
 </template>

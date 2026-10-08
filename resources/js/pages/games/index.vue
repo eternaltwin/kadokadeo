@@ -16,7 +16,7 @@ const gamesFiltered = computed(() => {
         game.category_id === categories.value.find((c) => c.name === route.query.category)?.id,
     )
   }
-  return games.value
+  return games.value.filter((game) => game.is_favorite)
 })
 
 function getStarImage(game) {

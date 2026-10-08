@@ -261,6 +261,8 @@ class LeagueSystemTest extends TestCase
         $playerB = User::factory()->create(['display_name' => 'feather-player-b']);
         $playerWithoutFeathers = User::factory()->create(['display_name' => 'no-feathers']);
 
+        Run::factory()->for($currentPeriod)->for($gameOne)->for($playerWithoutFeathers)
+            ->for($leagueService->getBeginnerLeague(), 'league')->create(['score' => 9999]);
         Run::factory()->for($currentPeriod)->for($gameOne)->for($playerA)->for($paradise, 'league')->create(['score' => 100]);
         Run::factory()->for($currentPeriod)->for($gameOne)->for($playerB)->for($paradise, 'league')->create(['score' => 90]);
         Run::factory()->for($currentPeriod)->for($gameTwo)->for($playerA)->for($paradise, 'league')->create(['score' => 100]);
@@ -270,12 +272,11 @@ class LeagueSystemTest extends TestCase
         $this->actingAs($playerA, 'sanctum')
             ->getJson('/api/competition/poids-plumes')
             ->assertOk()
+            ->assertJsonCount(2)
             ->assertJsonPath('0.rank', 1)
             ->assertJsonPath('0.user.display_name', 'feather-player-a')
             ->assertJsonPath('0.feathers_count', 2)
             ->assertJsonPath('1.user.display_name', 'feather-player-b')
-            ->assertJsonPath('1.feathers_count', 1)
-            ->assertJsonPath('2.user.display_name', 'no-feathers')
-            ->assertJsonPath('2.feathers_count', 0);
+            ->assertJsonPath('1.feathers_count', 1);
     }
 }

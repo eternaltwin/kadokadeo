@@ -23,6 +23,7 @@ Route::get('/site-records', [App\Http\Controllers\Api\GameScoreController::class
 Route::get('/user-records', [App\Http\Controllers\Api\GameScoreController::class, 'personalRecords']);
 
 Route::resource('/games', App\Http\Controllers\Api\GameController::class)->only(['index', 'show'])->whereNumber('game');
+Route::put('/games/{game}/favorite', [App\Http\Controllers\Api\GameController::class, 'setFavorite'])->whereNumber('game');
 Route::get('/games/{game}/scores', [App\Http\Controllers\Api\GameScoreController::class, 'index'])->whereNumber('game');
 Route::get('/games/{game}/period-records', [App\Http\Controllers\Api\GameScoreController::class, 'userPeriodRecords'])->whereNumber('game');
 Route::get('/games/{game}/ranking', [App\Http\Controllers\Api\GameScoreController::class, 'search'])->whereNumber('game');

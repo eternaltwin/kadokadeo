@@ -286,10 +286,10 @@ const gameAchievements = computed(() => {
             <h1 class="mt-0 text-center">Records de {{ authSore.user.display_name }}</h1>
             <Loader v-if="isRecordsLoading">Chargement des records...</Loader>
             <MessageError v-else-if="recordsError">Error: {{ recordsError }}</MessageError>
-            <div v-else class="px-2">
+            <div v-else class="px-8 sm:px-16">
               <table class="w-full">
                 <thead>
-                    <tr class="text-kado-orange uppercase text-sm *:px-2 *:text-left">
+                    <tr class="text-kado-orange uppercase text-sm *:px-2 *:text-center">
                       <th>Jeu</th>
                       <th>Score actuel</th>
                       <th>Votre record</th>
@@ -299,20 +299,23 @@ const gameAchievements = computed(() => {
                 <tbody>
                   <tr v-for="record in personalRecords" :key="record.game.id">
                     <td class="text-left">
-                      <RouterLink :to="{ name: 'games.records', params: { id: record.game.id } }">
-                        {{ record.game.name }}
-                      </RouterLink>
+                      <div class="flex items-center gap-2">
+                        <img v-if="record.league" :src="`/gfx/leagues/${record.league.id}.png`" :alt="record.league.name" class="size-6 shrink-0 object-contain" />
+                        <RouterLink :to="{ name: 'games.records', params: { id: record.game.id } }">
+                          {{ record.game.name }}
+                        </RouterLink>
+                      </div>
                     </td>
                     <td class="text-left">
                       <div v-if="record.current_score !== null" class="inline-flex items-center justify-start gap-1">
-                        <component :is="getStarImage({ game: record.game, score: record.current_score })" class="size-4" />
-                        <Number color="blue" :value="record.current_score" />
+                        <component :is="getStarImage({ game: record.game, score: record.current_score })" class="size-[25px] shrink-0" />
+                        <Number color="green" :value="record.current_score" />
                       </div>
                     </td>
                     <td class="text-left">
                       <div v-if="record.score !== null" class="inline-flex items-center justify-start gap-1">
-                        <component :is="getStarImage({ game: record.game, score: record.score })" class="size-4" />
-                        <Number color="blue" :value="record.score" />
+                        <component :is="getStarImage({ game: record.game, score: record.score })" class="size-[25px] shrink-0" />
+                        <Number color="orange" :value="record.score" />
                       </div>
                     </td>
                     <td class="text-left">
@@ -323,7 +326,7 @@ const gameAchievements = computed(() => {
                           aria-valuemin="0"
                           aria-valuemax="100"
                           :aria-valuenow="getProgressPercent(record)"
-                          class="h-2.5 w-20 overflow-hidden rounded bg-kado-cyan-200"
+                          class="h-2.5 w-20 overflow-hidden rounded border border-kado-cyan-700 bg-kado-cyan-400"
                         >
                           <div class="h-full bg-kado-green-500 transition-[width]" :style="{ width: `${getProgressPercent(record)}%` }"></div>
                         </div>

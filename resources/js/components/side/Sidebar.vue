@@ -24,14 +24,14 @@ const otherGames = [
         <li class="scores">
           <RouterLink :to="{ name: 'profile.index' }" title="Mes scores">Mes scores</RouterLink>
         </li>
-        <li class="scores">
+        <li class="worldrecords">
           <RouterLink :to="{ name: 'site-records' }" title="Records du site">Records du site</RouterLink>
         </li>
         <li class="account grayscale">
           <RouterLink to="/" title="Mon compte">Mon compte</RouterLink>
         </li>
         <li class="forum">
-          <a href="https://discord.gg/ERc3svy" title="Forum" target="_blank" rel="noopener noreferrer">Forum</a>
+          <a href="https://discord.gg/cqasFsD" title="Discord" target="_blank" rel="noopener noreferrer">Discord</a>
         </li>
         <li class="help">
           <RouterLink :to="{ name: 'help' }" title="Aide">Aide</RouterLink>

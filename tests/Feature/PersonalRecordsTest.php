@@ -32,7 +32,7 @@ class PersonalRecordsTest extends TestCase
         $this->actingAs($user, 'sanctum')
             ->getJson('/api/user-records')
             ->assertOk()
-            ->assertExactJson([
+            ->assertJson([
                 [
                     'game' => [
                         'id' => $game->id,
@@ -42,6 +42,7 @@ class PersonalRecordsTest extends TestCase
                     'score' => 1000,
                     'current_score' => 800,
                 ],
-            ]);
+            ])
+            ->assertJsonPath('0.league.level', 1);
     }
 }
