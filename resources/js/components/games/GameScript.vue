@@ -73,10 +73,12 @@ async function mountGame() {
 }
 
 onMounted(async() => {
+  document.documentElement.classList.add('kado-game-mounted')
   await mountGame()
 })
 
 onBeforeUnmount(() => {
+  document.documentElement.classList.remove('kado-game-mounted')
   invalidate()
   destroy()
 })

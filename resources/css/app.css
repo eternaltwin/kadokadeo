@@ -818,3 +818,11 @@ canvas {
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
+
+/* iOS : le menu « Enregistrer l'image » d'un appui long sur le canvas vise l'image de fond
+   d'un ancêtre (#bodySection), dont le -webkit-touch-callout est celui de cet ancêtre.
+   Posé par GameScript.vue tant qu'un jeu est monté. */
+html.kado-game-mounted,
+html.kado-game-mounted body {
+  -webkit-touch-callout: none;
+}
