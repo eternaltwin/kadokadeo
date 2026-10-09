@@ -130,6 +130,10 @@ const stats = computed(() => props.clan.stats)
   text-align: right;
   font-size: 14px;
   line-height: 30px;
+  /* a single line in the button */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-decoration: none;
   background: url('/assets/img/gfx/icons/clanInfo.gif') no-repeat;
   cursor: pointer;
