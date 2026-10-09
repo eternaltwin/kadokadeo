@@ -41,7 +41,7 @@ const palliers = computed(() => {
   }
   const leagueScore = leaguesScores.value[league.value?.level]
   if (leagueScore && leagueScore.required_score > personalBestForPeriod.value?.score) {
-    s.push({ score: leagueScore.required_score + 1, points: null, img: `/gfx/leagues/${league.value.level + 1}s.svg`, alt: 'Ligue supérieure' })
+    s.push({ score: leagueScore.required_score + 1, points: null, img: `/gfx/leagues/${league.value.level + 1}s.svg`, alt: 'Ligue supérieure', className: 'w-[18px] h-auto' })
   }
   s.push({ score: 0, points: 0, img: '/gfx/iconContract.png', alt: 'Contrat' })
   s.sort((a, b) => b.score - a.score)
@@ -169,7 +169,7 @@ const menus = [
                 <img v-if="nextPallierIndex === index" src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
               </td>
               <td class="textLeft">
-                <img :src="pallier.img" :alt="pallier.alt" /> <Number :value="pallier.score" color="orange" />
+                <img :src="pallier.img" :alt="pallier.alt" :class="pallier.className" /> <Number :value="pallier.score" color="orange" />
               </td>
               <td class="textRight">
                 <template v-if="pallier.points !== null">
