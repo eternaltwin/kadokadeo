@@ -62,10 +62,10 @@ const updated = () => {
           <RouterLink :to="{ name: 'clans.attack', params: { id: clan.id } }" :title="viewer.attack_blocked ?? 'Attaquer ce clan'">Attaquer ce clan</RouterLink>
         </li>
         <li v-if="!viewer.has_clan && viewer.application_id">
-          <button type="button" @click="cancelApplication">Annuler ma candidature</button>
+          <button type="button" title="Annuler ma candidature" @click="cancelApplication">Retirer ma demande</button>
         </li>
         <li v-else-if="!viewer.has_clan && clan.is_recruiting">
-          <button type="button" @click="showApplyForm = !showApplyForm">Envoyer ma candidature</button>
+          <button type="button" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</button>
         </li>
         <li v-if="viewer.is_member">
           <button type="button" @click="leave">Quitter le clan</button>
