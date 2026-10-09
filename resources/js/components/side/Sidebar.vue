@@ -25,8 +25,8 @@ const otherGames = [
         <li class="scores grayscale">
           <RouterLink to="/" title="Mes scores">Mes scores</RouterLink>
         </li>
-        <li class="account grayscale">
-          <RouterLink to="/" title="Mon compte">Mon compte</RouterLink>
+        <li class="account">
+          <RouterLink :to="{ name: 'account' }" title="Mon compte">Mon compte</RouterLink>
         </li>
         <li class="help">
           <RouterLink :to="{ name: 'help' }" title="Aide">Aide</RouterLink>

@@ -14,7 +14,8 @@ function tabMenuLinkClasses(item) {
   const bgClasses = item.disabled ? 'grayscale cursor-not-allowed' : 'cursor-pointer hover:text-kado-cyan-800 hover:bg-[url(/gfx/bgTabmenuHover.jpg)]'
   const activeClasses = 'bg-[url(/gfx/bgTabmenuActive.jpg)] leading-[24px] bg-kado-cyan-800 border-2 border-white border-solid border-b-0 text-xl [font-variant:small-caps] tracking-normal p-0.5'
   const inactiveClasses = 'h-7 border border-kado-cyan-200 bg-[url(/gfx/bgTabmenu.jpg)]'
-  return `${defaultClasses} ${bgClasses} ${item.selected ? activeClasses : inactiveClasses}`
+  // kTab / kTabActive: for the themes of the site (resources/css/themes)
+  return `kTab ${item.selected ? 'kTabActive' : ''} ${defaultClasses} ${bgClasses} ${item.selected ? activeClasses : inactiveClasses}`
 }
 </script>
 
@@ -34,7 +35,7 @@ function tabMenuLinkClasses(item) {
           :index="index"
           :selected="selected"
         >
-          <div class="outline-none h-8 bg-kado-cyan-800 border-2 border-white border-solid border-b-0 text-xl [font-variant:small-caps] tracking-normal p-0.5" :class="item.disabled ? 'grayscale' : ''">
+          <div class="kTabFrame outline-none h-8 bg-kado-cyan-800 border-2 border-white border-solid border-b-0 text-xl [font-variant:small-caps] tracking-normal p-0.5" :class="item.disabled ? 'grayscale' : ''">
             <div v-if="!item.route" :class="tabMenuLinkClasses({ ...item, selected })">
               {{ item.label }}
             </div>

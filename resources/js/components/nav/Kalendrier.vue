@@ -20,7 +20,7 @@ const logout = () => {
     </div>
     <aside>
       <p class="kalUser">
-        <RouterLink to="/" title="Préférences du compte">{{ authStore.user.display_name }}</RouterLink>
+        <RouterLink :to="{ name: 'account' }" title="Préférences du compte">{{ authStore.user.display_name }}</RouterLink>
       </p>
       <p class="kalendrierText">Période {{ periodStore.period?.id }} - Jour {{ periodStore.dayCount+1 }}</p>
     </aside>

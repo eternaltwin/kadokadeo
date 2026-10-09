@@ -40,6 +40,7 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'banned_at' => 'datetime',
             'ban_reason' => BanReason::class,
+            'unlocked_themes' => 'array',
         ];
     }
 
@@ -86,6 +87,12 @@ class User extends Authenticatable implements FilamentUser
     public function clanMember()
     {
         return $this->hasOne(ClanMember::class);
+    }
+
+    // the themes of the site he can use (kado.themes): the free ones and the ones he bought
+    public function hasTheme(string $theme): bool
+    {
+        return (int) config("kado.themes.{$theme}.price", -1) === 0 || in_array($theme, $this->unlocked_themes ?? [], true);
     }
 
     //

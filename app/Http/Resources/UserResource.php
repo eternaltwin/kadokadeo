@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'display_name' => $this->display_name,
             'kado_points' => $this->kado_points,
             'kado_games' => $this->kado_games,
+            'theme' => $this->theme ?? 'base',
             'stars' => $this->whenLoaded('stars', fn () => UserStarResource::make($this->stars->first())),
             'achievement_progress' => $this->whenLoaded('achievementProgress', fn () => UserAchievementProgressResource::collection($this->achievementProgress)),
         ];

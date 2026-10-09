@@ -82,6 +82,13 @@ return [
         'jackpot' => env('KADO_POIDS_PLUME_JACKPOT', 0),
     ],
 
+    // the looks of the site (App\Http\Controllers\Api\ThemeController): "base" for everyone, the others bought once with
+    // Kado points. Karbon: the second theme of KadoKado (its images were in dat.kadokado.com/gfx/gui/karbon)
+    'themes' => [
+        'base' => ['name' => 'KadoKado', 'price' => 0],
+        'karbon' => ['name' => 'Karbon', 'price' => (int) env('KADO_THEME_KARBON_PRICE', 10000)],
+    ],
+
     // the tournament of the clans (App\Services\ClanService): attacks, defenses and missions during a whole period, then
     // everything starts again from 0 on the first day of the next one
     'clans' => [
