@@ -110,7 +110,9 @@ class ClanMissionController extends Controller implements HasMiddleware
             'status' => $mission->status,
             'double_points' => $mission->double_points,
             'expires_at' => $mission->expires_at->toIso8601String(),
-            'points' => $mission->steps->where('skipped', false)->sum('points') * ($mission->double_points ? 2 : 1),
+            // the points of the steps completed (lost if the mission is not finished in time), doubled at the end
+            'points' => $mission->points,
+            'max_points' => $mission->steps->where('skipped', false)->sum('points') * 2,
             'steps' => $mission->steps->map(fn (ClanMissionStep $step) => [
                 'id' => $step->id,
                 'game' => ['id' => $step->game->id, 'name' => $step->game->name],

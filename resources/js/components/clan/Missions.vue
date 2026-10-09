@@ -73,9 +73,10 @@ const confirmBonus = () => {
           <span v-if="mission.double_points" class="text-[#ff6b9c]">x2</span>
         </h2>
         <p class="mx-0">
-          Réussissez toutes les étapes avant la fin du temps imparti
-          (<ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" />)
-          pour remporter <Number :value="mission.points" color="orange" /> points de mission.
+          Chaque étape réussie rapporte des points à votre clan. Réussissez toutes les étapes avant la fin du temps
+          imparti (<ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" />) pour doubler vos points
+          (<Number :value="mission.max_points" color="orange" /> points), sinon vous perdrez les points de la mission !
+          Points déjà gagnés : <Number :value="mission.points" color="orange" />.
         </p>
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -182,6 +183,7 @@ const confirmBonus = () => {
           <li v-for="m in data.missions" :key="m.id">
             Mission {{ m.number }} : {{ statusLabels[m.status] ?? m.status }}
             <template v-if="m.status === 'completed'">(+{{ m.points }} points)</template>
+            <template v-else-if="m.status === 'failed' && m.points > 0">({{ m.points }} points perdus)</template>
           </li>
         </ul>
       </template>
