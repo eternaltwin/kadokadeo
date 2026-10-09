@@ -128,7 +128,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                          class="h-5" /></th>
               </template>
               <template v-else>
-                <th><img src="/gfx/clan/cup.gif"
+                <th><img src="/assets/img/gfx/icons/clan_points.gif"
                          alt="score"
                          title="Score de mission"
                          class="h-5" /></th>

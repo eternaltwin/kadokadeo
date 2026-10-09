@@ -17,10 +17,11 @@ const load = () =>
   })
 watchEffect(load)
 
+// only the kinds of attacks there are
 const sections = computed(() => [
   { key: 'launched', type: 'atk', title: `Le clan ${props.clan.name} a lancé les attaques suivantes`, attacks: status.value?.launched ?? [] },
   { key: 'received', type: 'def', title: 'Ce clan est attaqué', attacks: status.value?.received ?? [] },
-])
+].filter((section) => section.attacks.length))
 
 const doDefend = (attack, superDefense) =>
   defend(attack.id, superDefense).then((data) => router.push({ name: 'clans.play', params: { action: data.data.id } }))
@@ -40,7 +41,8 @@ const doCancel = (attack) => {
     <MessageError v-if="error">{{ error }}</MessageError>
     <Loader v-if="isLoading && !status" />
 
-    <div class="overflow-x-auto">
+    <p v-if="status && !sections.length" class="mx-0 italic">Aucune attaque de ce clan ni contre ce clan pour le moment.</p>
+    <div v-else class="overflow-x-auto">
       <table v-if="status" class="w-full text-sm">
         <thead>
           <tr class="uppercase text-[10px]">
@@ -58,9 +60,6 @@ const doCancel = (attack) => {
                 <img :src="section.type === 'atk' ? '/gfx/clan/atksmall.gif' : '/gfx/clan/defsmall.gif'" alt="" />
                 {{ section.title }}
               </td>
-            </tr>
-            <tr v-if="!section.attacks.length">
-              <td colspan="5" class="italic text-kado-cyan-900">Aucune attaque pour le moment.</td>
             </tr>
             <tr v-for="(attack, index) in section.attacks" :key="attack.id" :class="index % 2 ? 'oddfalse' : 'oddtrue'">
               <td class="text-left [font-variant:small-caps]">

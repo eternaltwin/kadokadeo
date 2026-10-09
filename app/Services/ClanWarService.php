@@ -45,6 +45,7 @@ class ClanWarService
         }
 
         // one attack at a time, two with the "Double attaque" option given by the leader
+        $this->clanService->forgetUnplayedActions($user);
         $bonus = null;
         if ($this->runningAttacksCount($user) >= 1) {
             $bonus = $this->availableBonus($user, $clan, $period, ClanBonusType::DOUBLE_ATTACK);
@@ -75,6 +76,7 @@ class ClanWarService
         if ($attack->status !== ClanAttackStatus::ACTIVE) {
             throw new ClanException('Cette attaque est terminée.');
         }
+        $this->clanService->forgetUnplayedActions($user);
         if ($this->runningAttacksCount($user) > 0) {
             throw new ClanException('Vous ne pouvez pas défendre tant que vous avez une attaque en cours.');
         }
@@ -224,21 +226,17 @@ class ClanWarService
         return $count;
     }
 
-    // his attacks waiting for a defense, and the attacks he is about to play
+    // his attacks waiting for a defense, and the attack runs he is playing (begun less than an hour ago)
     public function runningAttacksCount(User $user): int
     {
         return ClanAttack::query()->active()->where('attacker_user_id', $user->id)->count()
-            + $this->pendingActions($user, ClanActionType::ATTACK)->count();
-    }
-
-    public function pendingActions(User $user, ClanActionType $type)
-    {
-        return ClanAction::query()
-            ->where('user_id', $user->id)
-            ->where('type', $type)
-            ->whereNull('run_id')
-            ->whereNull('completed_at')
-            ->where('created_at', '>=', now()->subMinutes(self::ACTION_TTL_MINUTES));
+            + ClanAction::query()
+                ->where('user_id', $user->id)
+                ->where('type', ClanActionType::ATTACK)
+                ->whereNotNull('run_id')
+                ->whereNull('completed_at')
+                ->where('created_at', '>=', now()->subHour())
+                ->count();
     }
 
     // an option given to the player by the leader (or not given yet, for the leader himself), not reserved by a run
