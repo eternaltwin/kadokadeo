@@ -128,7 +128,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                          class="h-5" /></th>
               </template>
               <template v-else>
-                <th><img src="/assets/img/gfx/icons/clan_points.gif"
+                <th><img src="/gfx/clan/clan_mission_points.png"
                          alt="score"
                          title="Score de mission"
                          class="h-5" /></th>
@@ -152,7 +152,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                 <td class="text-right"><Number :value="clan.defenses_won" color="blue" /></td>
               </template>
               <template v-else>
-                <td class="text-right"><Number :value="clan.mission_score" color="orange" /></td>
+                <td class="text-right"><Number :value="clan.mission_score" color="blue" /></td>
                 <td class="text-right">{{ clan.missions_completed }}</td>
               </template>
             </tr>

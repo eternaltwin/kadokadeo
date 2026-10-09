@@ -37,7 +37,6 @@ const doCancel = (attack) => {
 
 <template>
   <div class="relative space-y-4">
-    <ClanPeriodBanner :tournament="tournament" />
     <MessageError v-if="error">{{ error }}</MessageError>
     <Loader v-if="isLoading && !status" />
 
