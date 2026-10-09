@@ -88,6 +88,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(UserFavoriteGame::class);
     }
 
+    public function clanMember()
+    {
+        return $this->hasOne(ClanMember::class);
+    }
+
     //
 
     public function canAccessPanel(Panel $panel): bool

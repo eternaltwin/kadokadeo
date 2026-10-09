@@ -16,6 +16,7 @@ use App\Models\GameBuild;
 use App\Models\Period;
 use App\Models\Run;
 use App\Services\AchievementService;
+use App\Services\ClanRunService;
 use App\Services\GameService;
 use App\Services\LeagueService;
 use App\Services\ReplayVerifier;
@@ -37,7 +38,7 @@ class RunController extends Controller implements HasMiddleware
         ];
     }
 
-    public function begin(RunStartRequest $request, GameService $gameService, LeagueService $leagueService, Game $game)
+    public function begin(RunStartRequest $request, GameService $gameService, LeagueService $leagueService, ClanRunService $clanRunService, Game $game)
     {
         Gate::authorize('create', Run::class);
 
@@ -80,6 +81,9 @@ class RunController extends Controller implements HasMiddleware
             $run->save();
         }
 
+        // an attack, a defense or a mission step asked on the clan pages
+        $clanRunService->bindRun($run);
+
         if ($user->kado_games > 0) {
             $user->kado_games -= 1;
             $user->save();
@@ -88,7 +92,7 @@ class RunController extends Controller implements HasMiddleware
         return new RunBeginResource($run);
     }
 
-    public function end(RunEndRequest $request, Run $run, RunService $runService, ScoreService $scoreService, ReplayVerifier $replayVerifier, AchievementService $achievementService)
+    public function end(RunEndRequest $request, Run $run, RunService $runService, ScoreService $scoreService, ReplayVerifier $replayVerifier, AchievementService $achievementService, ClanRunService $clanRunService)
     {
         // a run sent again (offline retry, lost response) must not be rewarded twice
         if ($run->completed_at !== null) {
@@ -123,6 +127,15 @@ class RunController extends Controller implements HasMiddleware
             throw new BadRequestException($e->getMessage());
         }
 
+        // the score of an attack, a defense or a mission step of the clan of the player
+        // (the run is saved: a problem there must not lose it)
+        try {
+            $clanResult = $clanRunService->handleRunCompleted($run);
+        } catch (\Throwable $e) {
+            report($e);
+            $clanResult = null;
+        }
+
         // the score is sent by the game: the replay of a run that counts is played again on the server
         if ($replayVerifier->shouldVerify($run, $previousBestScore)) {
             $run->update(['verification' => RunVerification::PENDING]);
@@ -148,6 +161,7 @@ class RunController extends Controller implements HasMiddleware
                 'current_star' => $run->is_cheat ? $previousStar : $run->game->getStarFromScore($run->score),
                 'people_to_beat' => $toBeatCount,
                 'achievement_updates' => $achievementUpdates,
+                'clan' => $clanResult,
             ],
         ];
     }

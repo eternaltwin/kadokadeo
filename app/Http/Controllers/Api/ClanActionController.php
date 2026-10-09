@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Enums\ClanActionType;
+use App\Http\Controllers\Controller;
+use App\Models\ClanAction;
+use App\Services\ClanWarService;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+// the page where a clan run is played: what the player has to do
+class ClanActionController extends Controller implements HasMiddleware
+{
+    public static function middleware()
+    {
+        return [
+            new Middleware('auth:sanctum'),
+        ];
+    }
+
+    public function show(Request $request, ClanAction $action)
+    {
+        abort_unless($action->user_id === $request->user()->id, 404);
+        $action->load('game', 'clan', 'defenderClan', 'attack.attackerClan', 'attack.attackerUser', 'missionStep.mission', 'bonus');
+
+        return [
+            'data' => [
+                'id' => $action->id,
+                'type' => $action->type->value,
+                'type_label' => $action->type->label(),
+                'game_id' => $action->game_id,
+                'clan' => ['id' => $action->clan->id, 'name' => $action->clan->name],
+                'bonus' => $action->bonus?->type->getLabel(),
+                // begun or too old: playing again would be a normal run
+                'is_open' => $action->run_id === null && $action->completed_at === null
+                    && $action->created_at->gte(now()->subMinutes(ClanWarService::ACTION_TTL_MINUTES)),
+                'result' => $action->result,
+                'target' => match ($action->type) {
+                    ClanActionType::ATTACK => ['clan' => ['id' => $action->defenderClan->id, 'name' => $action->defenderClan->name]],
+                    ClanActionType::DEFENSE => [
+                        'clan' => ['id' => $action->attack->attackerClan->id, 'name' => $action->attack->attackerClan->name],
+                        'attacker' => $action->attack->attackerUser->display_name,
+                        'score' => $action->attack->score,
+                    ],
+                    ClanActionType::MISSION => [
+                        'mission' => $action->missionStep->mission->number,
+                        'score' => $action->missionStep->target_score,
+                    ],
+                },
+            ],
+        ];
+    }
+}
