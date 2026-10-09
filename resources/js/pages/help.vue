@@ -42,6 +42,14 @@ const current = ref(indexOf(route.hash))
 watch(() => route.hash, (hash) => {
   current.value = indexOf(hash)
 })
+// "Les attaques" -> "Attaques"
+const shortTitle = (section) => {
+  const title = section.title.replace(/^(Les?|La) /, '')
+  return title.charAt(0).toUpperCase() + title.slice(1)
+}
+// the part of a section, and of the section shown
+const partOf = (index) => [...toc].reverse().find((part) => part.index <= index)
+const openPart = computed(() => partOf(current.value) ?? null)
 const go = (index) => {
   router.replace({ hash: `#${sections[index].id}` })
 }
@@ -74,18 +82,19 @@ const clanRewards = [
   <div class="p-2">
     <h1 class="mt-0 text-center">Aide</h1>
 
-    <!-- the table of content, in roman numbers -->
-    <nav id="toc" class="mb-3 border-2 border-kado-cyan-800 bg-white/60 px-2 py-2">
-      <ol class="columns-1 sm:columns-2">
-        <li v-for="part in toc" :key="part.id" class="break-inside-avoid">
-          <a href="#" :class="{ current: current === part.index }" @click.prevent="go(part.index)">{{ part.title }}</a>
-          <ol v-if="part.children.length">
-            <li v-for="child in part.children" :key="child.id">
-              <a href="#" :class="{ current: current === child.index }" @click.prevent="go(child.index)">{{ child.title }}</a>
-            </li>
-          </ol>
+    <!-- the table of content: the parts as the tabs of the site, the sections of the open part below -->
+    <nav id="toc" class="mb-3">
+      <ul class="flex flex-wrap justify-center gap-1">
+        <li v-for="(part, i) in toc" :key="part.id">
+          <button type="button"
+                  class="tocButton"
+                  :class="{ current: openPart?.id === part.id }"
+                  :title="`${romans[i]}. ${part.title}`"
+                  @click="go(part.index)">
+            {{ part.title }}
+          </button>
         </li>
-      </ol>
+      </ul>
     </nav>
 
     <!-- one section at a time: they slide in the box -->
@@ -99,6 +108,14 @@ const clanRewards = [
           <img :src="section.art" alt="" class="helpArt" />
           <div class="helpText">
             <h3>{{ section.title }}</h3>
+            <!-- the sections of the part (the clans), as small links -->
+            <nav v-if="partOf(index).children.length" class="helpSubToc">
+              <template v-for="(s, i) in [partOf(index), ...partOf(index).children]" :key="s.id">
+                <span v-if="i" class="mx-1 text-kado-cyan-800">·</span>
+                <strong v-if="s.index === index">{{ i ? shortTitle(s) : 'Présentation' }}</strong>
+                <a v-else href="#" @click.prevent="go(s.index)">{{ i ? shortTitle(s) : 'Présentation' }}</a>
+              </template>
+            </nav>
 
             <template v-if="section.id === 'bienvenue'">
               <p>Bienvenue sur <strong>KadoKadéo</strong>, le retour de KadoKado par le projet Eternaltwin ! Retrouvez les jeux de Motion-Twin, battez vos records et grimpez dans les niveaux de chaque jeu.</p>
@@ -256,9 +273,13 @@ const clanRewards = [
   font-weight: normal;
 }
 
-#toc a.current {
+.helpSubToc {
+  margin: 0 0 8px;
+  font-size: 12px;
+}
+
+.helpSubToc strong {
   color: var(--color-kado-blue);
-  text-decoration: underline;
 }
 
 /* the box of 400px: the sections slide in it */

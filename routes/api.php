@@ -22,6 +22,23 @@ Route::resource('/games', App\Http\Controllers\Api\GameController::class)->only(
 Route::get('/games/{game}/scores', [App\Http\Controllers\Api\GameScoreController::class, 'index'])->whereNumber('game');
 Route::get('/games/{game}/ranking', [App\Http\Controllers\Api\GameScoreController::class, 'search'])->whereNumber('game');
 
+// tools to try the clans alone (kado.debug_tools, never in production)
+Route::prefix('/debug/clans')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\DebugClanController::class, 'index']);
+    Route::post('/attack', [App\Http\Controllers\Api\DebugClanController::class, 'attack']);
+    Route::post('/attacks/{attack}/defend', [App\Http\Controllers\Api\DebugClanController::class, 'defend'])->whereNumber('attack');
+    Route::post('/mission-steps/{step}', [App\Http\Controllers\Api\DebugClanController::class, 'missionStep'])->whereNumber('step');
+    Route::post('/time', [App\Http\Controllers\Api\DebugClanController::class, 'time']);
+    Route::post('/end-period', [App\Http\Controllers\Api\DebugClanController::class, 'endPeriod']);
+});
+
+// the private messages
+Route::get('/messages', [App\Http\Controllers\Api\MessageController::class, 'index']);
+Route::get('/messages/unread', [App\Http\Controllers\Api\MessageController::class, 'unread']);
+Route::post('/messages', [App\Http\Controllers\Api\MessageController::class, 'store']);
+Route::get('/messages/{message}', [App\Http\Controllers\Api\MessageController::class, 'show'])->whereNumber('message');
+Route::delete('/messages/{message}', [App\Http\Controllers\Api\MessageController::class, 'destroy'])->whereNumber('message');
+
 // the looks of the site, bought with Kado points
 Route::get('/themes', [App\Http\Controllers\Api\ThemeController::class, 'index']);
 Route::post('/themes/{theme}/buy', [App\Http\Controllers\Api\ThemeController::class, 'buy'])->whereAlpha('theme');

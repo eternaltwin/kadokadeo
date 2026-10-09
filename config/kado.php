@@ -89,6 +89,10 @@ return [
         'karbon' => ['name' => 'Karbon', 'price' => (int) env('KADO_THEME_KARBON_PRICE', 10000)],
     ],
 
+    // tools to try the clans without other players (/clans/debug: fake attacks, defenses and mission steps, time going by,
+    // end of the period). Never in production.
+    'debug_tools' => (bool) env('KADO_DEBUG_TOOLS', false) && env('APP_ENV') !== 'production',
+
     // the tournament of the clans (App\Services\ClanService): attacks, defenses and missions during a whole period, then
     // everything starts again from 0 on the first day of the next one
     'clans' => [
