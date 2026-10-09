@@ -17,8 +17,9 @@ class DebugClanTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_the_debug_tools_are_off_by_default(): void
+    public function test_the_debug_tools_are_off_without_kado_debug_tools(): void
     {
+        config(['kado.debug_tools' => false]);
         Sanctum::actingAs(User::factory()->create());
 
         $this->getJson('/api/debug/clans')->assertNotFound();
