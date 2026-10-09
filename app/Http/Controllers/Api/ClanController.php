@@ -82,6 +82,8 @@ class ClanController extends Controller implements HasMiddleware
                     ->get()
                     ->map(fn (ClanApplication $a) => ['id' => $a->id, 'clan' => ['id' => $a->clan->id, 'name' => $a->clan->name]]),
                 'top' => ClanListResource::collection($top),
+                // the tools of /clans/debug (kado.debug_tools)
+                'debug' => (bool) config('kado.debug_tools'),
             ],
         ];
     }
