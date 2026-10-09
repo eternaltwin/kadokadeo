@@ -22,18 +22,30 @@ watch(clanId, load, { immediate: true })
 const viewer = computed(() => clan.value?.viewer ?? {})
 const applicationMessage = ref('')
 const showApplyForm = ref(false)
+// the confirmation of the last action of the player on the page
+const notice = ref(null)
+watch(clanId, () => {
+  notice.value = null
+})
 
 const apply = () =>
   actions.apply(clan.value.id, applicationMessage.value || null).then(() => {
     showApplyForm.value = false
+    applicationMessage.value = ''
+    notice.value = `Votre candidature a bien été envoyée au chef du clan ${clan.value.name}. Vous serez membre du clan dès qu'il l'aura acceptée.`
     clanStore.reload()
     load()
   })
-const cancelApplication = () =>
+const cancelApplication = () => {
+  if (!confirm('Retirer votre candidature à ce clan ?')) {
+    return
+  }
   actions.cancelApplication(viewer.value.application_id).then(() => {
+    notice.value = 'Votre candidature a été retirée.'
     clanStore.reload()
     load()
   })
+}
 const leave = () => {
   if (confirm('Quitter ce clan ?')) {
     actions.leave().then(() => {
@@ -76,6 +88,10 @@ const updated = () => {
       </template>
 
       <MessageError v-if="actions.error.value">{{ actions.error.value }}</MessageError>
+      <MessageSuccess v-else-if="notice">{{ notice }}</MessageSuccess>
+      <p v-else-if="!viewer.has_clan && viewer.application_id" class="mx-0 mb-4 border-l-4 border-kado-cyan-800 bg-kado-cyan-100 px-2 py-1 text-sm">
+        Votre candidature à ce clan est en attente de la réponse du chef de clan.
+      </p>
 
       <form v-if="showApplyForm" class="mb-4" @submit.prevent="apply">
         <div>
