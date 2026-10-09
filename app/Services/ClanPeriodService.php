@@ -22,7 +22,8 @@ class ClanPeriodService
     // can be called again (PrepareNewPeriod closes the previous period on the next Monday too): a clan is paid once
     public function closePeriod(Period $period): void
     {
-        $this->warService->resolveExpired($period);
+        $this->warService->resolveExpired();
+        $this->warService->cancelUnfinished($period);
 
         ClanMission::query()
             ->where('period_id', $period->id)

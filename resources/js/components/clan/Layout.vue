@@ -13,10 +13,8 @@ const tabs = computed(() => {
   if (props.clan.viewer.is_member) {
     items.push({ label: 'Mission', value: 'missions', route: { name: 'clans.missions', params: { id } } })
   }
+  // 4 tabs at most, as on the old site (the management is in the "Actions" menu)
   items.push({ label: 'Membres', value: 'members', route: { name: 'clans.members', params: { id } } })
-  if (props.clan.viewer.is_leader) {
-    items.push({ label: 'Gestion', value: 'manage', route: { name: 'clans.manage', params: { id } } })
-  }
   return items
 })
 const selectedIndex = computed(() => Math.max(0, tabs.value.findIndex((t) => t.value === props.tab)))
@@ -135,10 +133,10 @@ const stats = computed(() => props.clan.stats)
 #clan div.clanMenu ul.action li button {
   display: block;
   width: 155px;
-  height: 34px;
+  height: 36px;
   margin: 0 0 2px 0;
   padding: 2px 10px 2px 2px;
-  box-sizing: content-box;
+  box-sizing: border-box;
   border: 0;
   color: #0687b1;
   text-align: right;
