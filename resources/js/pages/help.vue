@@ -6,6 +6,30 @@ const stars = [
   { name: 'étoile rouge', image: '/gfx/starRedMedium.gif' },
 ]
 
+// the clans: texts of the help of KadoKado (2007), of its FAQ "Le tournoi des clans" and of the news of the missions (2010)
+const clanBonuses = [
+  { name: 'Mission suivante', icon: '/gfx/clan/opt/optSkipMission.gif', description: 'Annule la mission en cours et génère une nouvelle mission. Si la mission est difficile et que le clan n\'arrive pas à la finir, vous pouvez utiliser cette option pour passer à la mission suivante sans perdre de points. Cependant les étapes que vous avez réussies dans cette mission ne vous rapporteront pas de point non plus.' },
+  { name: 'Double points', icon: '/gfx/clan/opt/optDoublePoints.gif', description: 'La prochaine mission rapportera deux fois plus de points à votre clan si vous la terminez.' },
+  { name: 'Jeu caca', icon: '/gfx/clan/opt/optBlacklistGame.gif', description: 'Sélectionne un jeu qui ne sera jamais présent dans les futures missions de la période. L\'option est prise en compte à partir de la mission suivante seulement.' },
+  { name: 'Jeu cool', icon: '/gfx/clan/opt/optSelectGame.gif', description: 'Sélectionne un jeu qui sera obligatoirement présent dans toutes les futures missions de la période.' },
+  { name: 'Plus de temps', icon: '/gfx/clan/opt/optMoreTime.gif', description: 'Augmente la durée de la mission en cours pour pouvoir la finir : 6 heures sont ajoutées.' },
+  { name: 'Passe étape', icon: '/gfx/clan/opt/optSkipStep.gif', description: 'Supprime une étape au choix de votre mission.' },
+  { name: 'Double attaque', icon: '/gfx/clan/opt/optDoubleAttack.gif', description: 'Permet à un joueur de lancer une seconde attaque en parallèle.' },
+  { name: 'Défense 120%', icon: '/gfx/clan/opt/optSuperDefense.gif', description: 'Augmente un score de défense à 120%. Par exemple, un score de 10.000 points sur une défense comptera pour 12.000 points. Le score réalisé avec ce bonus ne compte que pour la défense, pas pour les records ou le classement du joueur.' },
+]
+// kado.clans.rewards (config/kado.php)
+const clanRewards = [
+  { ranks: '1er', points: 150000 },
+  { ranks: '2e', points: 100000 },
+  { ranks: '3e à 5e', points: 75000 },
+  { ranks: '6e à 10e', points: 25000 },
+  { ranks: '11e à 25e', points: 12500 },
+  { ranks: '26e à 50e', points: 7500 },
+  { ranks: '51e à 100e', points: 5000 },
+  { ranks: '101e à 200e', points: 2500 },
+  { ranks: '201e à 500e', points: 1250 },
+]
+
 // const colors = {
 //   'kado-orange': 'bg-kado-orange',
 //   'kado-yellow': 'bg-kado-yellow',
@@ -88,6 +112,121 @@ const stars = [
     <p>Par exemple, pour le niveau Bronze, vous devrez avoir au moins l'étoile orange pour vous qualifier.</p>
 
     <p>Si un joueur est seul dans son niveau, il ne pourra monter que s'il y a des joueurs dans le niveau suivant. Sinon, il faudra au moins 2 joueurs pour prétendre à monter.</p>
+
+    <h3 id="clans">Les clans</h3>
+    <p>
+      Un Clan est un groupe de joueurs (maximum 50) qui se rassemblent pour combattre ensemble contre d'autres clans.
+      Vous pouvez soit rejoindre un Clan existant en envoyant votre candidature depuis sa page, soit créer votre propre
+      Clan à partir de la rubrique <RouterLink :to="{ name: 'clans.index' }">Clans</RouterLink>.
+    </p>
+    <p>
+      Chaque Clan a deux scores et deux positions : une dans le classement des attaques et une dans le classement des
+      missions. Vous pouvez participer à l'un ou l'autre de ces classements, ou aux deux !
+    </p>
+
+    <h3>Les attaques</h3>
+    <p>
+      <img src="/assets/img/gfx/icons/atk.gif" alt="Attaque" />
+      Pour gagner des points, un Clan doit effectuer une attaque sur un autre Clan. Pour cela, une fois que vous faites
+      partie d'un Clan, allez sur la page d'un Clan adverse et cliquez sur « Attaquer ce clan ». Choisissez un jeu et
+      effectuez une partie.
+    </p>
+    <p>
+      Votre score à ce jeu deviendra une attaque contre le Clan adverse. Pour repousser cette attaque, ce Clan devra
+      défendre, et donc effectuer un score supérieur au vôtre. Une attaque repoussée est annulée.
+    </p>
+    <p>
+      Si au bout de 12 heures l'attaque n'a pas été repoussée, votre Clan remporte une victoire qui lui rapporte jusqu'à
+      10 points ! Dans le même temps, le Clan adverse perd le même nombre de points (le score d'un Clan ne descend jamais
+      en dessous de zéro). Attaquez des clans ayant un score proche du vôtre pour gagner le plus de points : les clans
+      trop éloignés sont protégés de vos attaques.
+    </p>
+    <p>
+      Vous ne pouvez avoir qu'une attaque en cours à la fois. Vous pouvez annuler votre attaque depuis la page Statut de
+      votre clan.
+    </p>
+
+    <h3>Les défenses</h3>
+    <p>
+      <img src="/assets/img/gfx/icons/def.gif" alt="Défense" />
+      Les attaques lancées par votre Clan et celles menées contre lui sont indiquées dans l'onglet Statut de votre clan.
+      Pour défendre, cliquez sur « Défendre » à côté d'une attaque et battez son score sur le même jeu.
+    </p>
+    <p>
+      Sachez enfin que tant que vous avez une attaque en cours vous ne pouvez pas défendre ! Il faudra donc savoir
+      coordonner les différents membres du Clan entre attaquants et défenseurs. Pour progresser dans le classement des
+      Clans, il faudra à la fois remporter des attaques mais aussi défendre efficacement contre les attaques des clans
+      ennemis.
+    </p>
+
+    <h3>Les missions</h3>
+    <p>
+      Pendant toute la période, votre Clan reçoit des missions : une mission comporte plusieurs étapes, chacune étant un
+      score à atteindre sur un jeu. Votre Clan dispose de 24 heures pour réussir toutes les étapes. C'est un vrai travail
+      de groupe : chaque membre peut réussir les étapes sur les jeux où il est le meilleur !
+    </p>
+    <p>
+      Chaque étape réussie rapporte un point à votre Clan. Si vous réussissez toutes les étapes de la mission dans le temps
+      imparti, vos points sont doublés. En revanche, si vous ne réussissez pas toutes les étapes à temps, vous perdez les
+      points correspondants.
+    </p>
+    <p>
+      Une fois une mission terminée, une autre vous est proposée. Chaque mission est plus difficile que la précédente,
+      avec des scores plus élevés et un plus grand nombre d'étapes. Combien de missions votre Clan réussira-t-il ?
+    </p>
+
+    <h3>Les options</h3>
+    <p>
+      Les options sont des bonus que votre Clan peut obtenir lorsque vous réussissez certaines missions. Elles sont
+      attribuées aléatoirement : plus vous effectuez de missions, plus vous avez de chances d'en remporter. Vous pouvez
+      avoir plusieurs fois la même option en stock, mais les options sont remises à zéro à la fin de la période.
+    </p>
+    <p>
+      C'est le chef de clan qui décide de l'utilisation des options. Les options Double attaque et Défense 120% peuvent
+      être données à des joueurs du clan pour qu'ils les utilisent eux-mêmes. Vous pouvez voir les options disponibles en
+      bas de la page Mission de votre clan.
+    </p>
+    <table>
+      <tbody>
+        <tr v-for="bonus in clanBonuses" :key="bonus.name">
+          <td><img :src="bonus.icon" :alt="bonus.name" class="max-w-none"></td>
+          <td class="!text-left">
+            <strong>{{ bonus.name }}</strong> : {{ bonus.description }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Le classement des clans</h3>
+    <p>
+      Le tournoi des clans dure une période. A la fin de chaque période, les classements sont remis à zéro et les clans les
+      mieux classés remportent des points Kado, dans chacun des deux classements. Les points sont répartis de manière égale
+      entre tous les membres du clan. Alors n'oubliez pas : « l'union fait la force » !
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Classement</th>
+          <th>Points Kado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="reward in clanRewards" :key="reward.ranks">
+          <td class="!text-left">{{ reward.ranks }}</td>
+          <td>
+            <div class="flex space-x-1 items-center justify-end">
+              <div>{{ formatScore(reward.points) }}</div>
+              <img src="/gfx/skpoint.gif" alt="Kado" class="w-5 h-5">
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Les attaques et les défenses sont des parties comme les autres : elles comptent dans vos parties du jour, vos
+      étoiles et vos classements. Il s'agit donc d'un mode de jeu vous permettant de jouer vos parties tout en vous amusant
+      encore davantage !
+    </p>
 
     <!-- <div class="grid grid-cols-2">
       <div v-for="(colorClass, colorName) in colors" :key="colorName" class="h-10 flex items-center relative">

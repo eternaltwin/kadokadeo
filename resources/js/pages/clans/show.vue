@@ -89,7 +89,7 @@ const updated = () => {
 
       <MessageError v-if="actions.error.value">{{ actions.error.value }}</MessageError>
       <MessageSuccess v-else-if="notice">{{ notice }}</MessageSuccess>
-      <p v-else-if="!viewer.has_clan && viewer.application_id" class="mx-0 mb-4 border-l-4 border-kado-cyan-800 bg-kado-cyan-100 px-2 py-1 text-sm">
+      <p v-else-if="!viewer.has_clan && viewer.application_id" class="mx-0 mb-4 border-2 border-l-[10px] border-kado-orange bg-[#fff4dc] px-3 py-2 font-bold text-[#c25e00]">
         Votre candidature à ce clan est en attente de la réponse du chef de clan.
       </p>
 
