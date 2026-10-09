@@ -55,8 +55,6 @@ const doCancel = (attack) => {
           <!-- no attack: the frame of the table with a single line -->
           <tr v-if="!sections.length" class="oddtrue">
             <td colspan="5" class="py-4 italic text-kado-blue">
-              <img src="/assets/img/gfx/icons/atk.gif" alt="" class="mr-1" />
-              <img src="/assets/img/gfx/icons/def.gif" alt="" class="mr-2" />
               Aucune attaque de ce clan ni contre ce clan pour le moment.
             </td>
           </tr>
