@@ -16,14 +16,12 @@ use App\Models\Run;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-// the collaborative missions of the clans: a series of scores to reach on several games within
-// kado.clans.mission_hours. A completed mission gives mission points to the clan and sometimes a bonus.
+// the collaborative missions of the clans (news "New Clan Mode" of KadoKado, 2010-02-24): scores to reach on several
+// games within kado.clans.mission_hours. Each step completed gives 1 point; all the steps completed in time double the
+// points of the mission, otherwise the clan loses them. Each mission is harder than the previous one, with more steps.
 class ClanMissionService
 {
-    public function __construct(
-        private readonly ClanService $clanService,
-        private readonly GameService $gameService,
-    ) {}
+    public function __construct(private readonly ClanService $clanService) {}
 
     // the mission in progress (a new one when the previous is over)
     public function currentMission(Clan $clan, ?Period $period = null): ?ClanMission
@@ -33,12 +31,15 @@ class ClanMissionService
             return null;
         }
 
-        ClanMission::query()
+        $expired = ClanMission::query()
             ->where('clan_id', $clan->id)
             ->where('period_id', $period->id)
             ->where('status', ClanMission::ACTIVE)
             ->where('expires_at', '<=', now())
-            ->update(['status' => ClanMission::FAILED]);
+            ->get();
+        foreach ($expired as $mission) {
+            $this->loseMission($mission, ClanMission::FAILED);
+        }
 
         $mission = ClanMission::query()
             ->where('clan_id', $clan->id)
@@ -78,12 +79,11 @@ class ClanMissionService
                 $score->update(['next_mission_double' => false]);
             }
 
-            foreach ($this->pickGames($score->banned_game_id, $score->forced_game_id) as $game) {
-                $target = max(1, $this->gameService->generateScore($game->stars));
+            foreach ($this->pickGames($number, $score->banned_game_id, $score->forced_game_id) as $game) {
                 $mission->steps()->create([
                     'game_id' => $game->id,
-                    'target_score' => $target,
-                    'points' => $this->stepPoints($game, $target),
+                    'target_score' => $this->targetScore($game, $number),
+                    'points' => $mission->double_points ? 2 : 1,
                 ]);
             }
 
@@ -111,11 +111,12 @@ class ClanMissionService
         ]);
     }
 
+    // a step completed gives its point right away
     public function completeStep(ClanAction $action, Run $run): string
     {
         return DB::transaction(function () use ($action, $run) {
             $step = ClanMissionStep::query()->lockForUpdate()->findOrFail($action->clan_mission_step_id);
-            $mission = $step->mission;
+            $mission = ClanMission::query()->lockForUpdate()->findOrFail($step->clan_mission_id);
 
             if ($step->isDone() || $mission->status !== ClanMission::ACTIVE || $mission->expires_at->isPast()) {
                 return 'too_late';
@@ -130,10 +131,28 @@ class ClanMissionService
                 'score' => $run->score,
                 'completed_at' => now(),
             ]);
+            $mission->increment('points', $step->points);
+            $this->clanService->periodScore($mission->clan, $mission->period)->increment('mission_score', $step->points);
             $this->clanService->memberStat($mission->clan_id, $action->user_id, $mission->period_id)->increment('mission_steps');
             $this->completeMissionIfDone($mission);
 
             return 'completed';
+        });
+    }
+
+    // a mission not finished in time (or replaced by "Mission suivante", or left at the end of the period): the clan
+    // loses the points of its completed steps
+    public function loseMission(ClanMission $mission, string $status): void
+    {
+        DB::transaction(function () use ($mission, $status) {
+            $mission = ClanMission::query()->lockForUpdate()->find($mission->id);
+            if (!$mission || $mission->status !== ClanMission::ACTIVE) {
+                return;
+            }
+
+            $score = $this->clanService->periodScore($mission->clan, $mission->period);
+            $score->update(['mission_score' => max(0, $score->mission_score - $mission->points)]);
+            $mission->update(['status' => $status]);
         });
     }
 
@@ -161,7 +180,10 @@ class ClanMissionService
 
             switch ($bonus->type) {
                 case ClanBonusType::NEXT_MISSION:
-                    $mission?->update(['status' => ClanMission::SKIPPED]);
+                    // a new mission without losing points: the steps completed in the replaced one give none either
+                    if ($mission) {
+                        $this->loseMission($mission, ClanMission::SKIPPED);
+                    }
                     $this->generateMission($clan, $period);
                     break;
                 case ClanBonusType::DOUBLE_POINTS:
@@ -185,6 +207,7 @@ class ClanMissionService
                     $mission->update(['expires_at' => $mission->expires_at->addHours((int) config('kado.clans.mission_more_time_hours'))]);
                     break;
                 case ClanBonusType::SKIP_STEP:
+                    // the step is removed: it gives no point
                     $step = $mission->steps()->whereKey($params['step_id'] ?? 0)->first();
                     if (!$step || $step->isDone()) {
                         throw new ClanException('Choisissez une étape de la mission en cours qui n\'est pas encore réussie.');
@@ -215,19 +238,18 @@ class ClanMissionService
 
     // ---------------------------------------------------------------- internals
 
+    // all the steps done in time: the points of the mission are doubled, and the clan may win an option
     private function completeMissionIfDone(ClanMission $mission): void
     {
-        $steps = $mission->steps()->get();
-        if ($steps->contains(fn (ClanMissionStep $step) => !$step->isDone())) {
+        $mission->refresh();
+        if ($mission->steps()->get()->contains(fn (ClanMissionStep $step) => !$step->isDone())) {
             return;
         }
 
-        $points = $steps->where('skipped', false)->sum('points') * ($mission->double_points ? 2 : 1);
-        $mission->update(['status' => ClanMission::COMPLETED, 'points' => $points, 'completed_at' => now()]);
-
         $score = $this->clanService->periodScore($mission->clan, $mission->period);
-        $score->increment('mission_score', $points);
+        $score->increment('mission_score', $mission->points);
         $score->increment('missions_completed');
+        $mission->update(['status' => ClanMission::COMPLETED, 'points' => $mission->points * 2, 'completed_at' => now()]);
 
         if (randomNumber() < (float) config('kado.clans.bonus_chance')) {
             $types = ClanBonusType::cases();
@@ -259,12 +281,29 @@ class ClanMissionService
         return $game;
     }
 
+    // more steps with each mission
+    private function stepsCount(int $number): int
+    {
+        $config = config('kado.clans.mission_steps');
+
+        return min($config['max'], $config['min'] + intdiv($number - 1, $config['every']));
+    }
+
+    // harder with each mission: from half the green star to the red star (kado.clans.mission_difficulty_missions)
+    private function targetScore(Game $game, int $number): int
+    {
+        $stars = collect($game->stars)->sort()->values();
+        $difficulty = min(1, ($number - 1) / max(1, (int) config('kado.clans.mission_difficulty_missions')));
+        $target = ($stars[0] / 2 + ($stars[2] - $stars[0] / 2) * $difficulty) * (0.9 + randomNumber() * 0.2);
+
+        return max(1, (int) round($target));
+    }
+
     /**
      * @return \Illuminate\Support\Collection<int, Game>
      */
-    private function pickGames(?int $bannedGameId, ?int $forcedGameId)
+    private function pickGames(int $number, ?int $bannedGameId, ?int $forcedGameId)
     {
-        $count = (int) config('kado.clans.mission_steps');
         $games = Game::query()
             ->where('is_active', true)
             ->where('is_arkadeo', false)
@@ -278,14 +317,6 @@ class ClanMissionService
             $games = $games->reject(fn (Game $game) => $game->id === $forced->id)->prepend($forced);
         }
 
-        return $games->take($count)->values();
-    }
-
-    // 1 to 10 points, the closer to the red star the more points
-    private function stepPoints(Game $game, int $target): int
-    {
-        $max = max(1, (int) max($game->stars));
-
-        return max(1, min(10, (int) ceil($target / $max * 10)));
+        return $games->take($this->stepsCount($number))->values();
     }
 }

@@ -17,6 +17,7 @@ class ClanPeriodService
     public function __construct(
         private readonly ClanService $clanService,
         private readonly ClanWarService $warService,
+        private readonly ClanMissionService $missionService,
     ) {}
 
     // can be called again (PrepareNewPeriod closes the previous period on the next Monday too): a clan is paid once
@@ -25,10 +26,11 @@ class ClanPeriodService
         $this->warService->resolveExpired();
         $this->warService->cancelUnfinished($period);
 
-        ClanMission::query()
-            ->where('period_id', $period->id)
-            ->where('status', ClanMission::ACTIVE)
-            ->update(['status' => ClanMission::FAILED]);
+        // a mission not finished at the end of the period is failed: its points are lost
+        $missions = ClanMission::query()->where('period_id', $period->id)->where('status', ClanMission::ACTIVE)->get();
+        foreach ($missions as $mission) {
+            $this->missionService->loseMission($mission, ClanMission::FAILED);
+        }
 
         $this->rank($period, 'war_score', 'war_rank');
         $this->rank($period, 'mission_score', 'mission_rank');

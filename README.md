@@ -33,7 +33,7 @@ Here are the configuration variables specific to the project (the standard Larav
 
 ### Clans
 
-The tournament of the clans lasts a period (`App\Services\ClanService`): during all of it the clans attack each other and complete missions, then the scores, the missions and the options start again from 0 on the first day of the next period (the clans and their members stay). It is closed with the period by `kado:prepare-new-period`, and `kado:clans:resolve-attacks` (scheduled every 5 minutes) gives their points to the attacks not repelled in time. The other settings (rewards, durations...) are in `kado.clans` in [`config/kado.php`](config/kado.php).
+The tournament of the clans lasts a period (`App\Services\ClanService`), with two rankings at the same time as on KadoKado since 2011: the attacks (the score of a run becomes an attack, the attacked clan has 12 hours to beat it) and the missions (each step completed gives 1 point, all the steps completed within 24 hours double the points of the mission, otherwise they are lost; each mission is harder than the previous one). The scores, the missions and the options start again from 0 on the first day of the next period (the clans and their members stay). It is closed with the period by `kado:prepare-new-period`, and `kado:clans:resolve-attacks` (scheduled every 5 minutes) gives their points to the attacks not repelled in time. The other settings (rewards, durations...) are in `kado.clans` in [`config/kado.php`](config/kado.php).
 
 | Variable                       | Description                                                                         | Default |
 | ------------------------------ | ----------------------------------------------------------------------------------- | ------- |

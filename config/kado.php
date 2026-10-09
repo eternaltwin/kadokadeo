@@ -95,7 +95,10 @@ return [
         'protection_range' => (int) env('KADO_CLANS_PROTECTION_RANGE', 100),
         'mission_hours' => 24,
         'mission_more_time_hours' => 6,
-        'mission_steps' => 4,
+        // the missions get harder: min steps for the first one, one more every `every` missions up to max; the scores go
+        // from half the green star (first mission) to the red star (after mission_difficulty_missions missions)
+        'mission_steps' => ['min' => 2, 'max' => 8, 'every' => 2],
+        'mission_difficulty_missions' => 10,
         // chance to win a bonus (picked at random) when a mission is completed
         'bonus_chance' => (float) env('KADO_CLANS_BONUS_CHANCE', 0.5),
         // Kado points shared between the members at the end of the period, by rank in each ranking: [last rank => points]
