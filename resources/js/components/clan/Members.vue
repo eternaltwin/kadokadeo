@@ -46,7 +46,7 @@ const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
               <img src="/assets/img/gfx/icons/def.gif" alt="défenses" class="h-5" />
             </th>
             <th title="Étapes de mission réussies" @click="sortBy('missions')">
-              <img src="/gfx/clan/cup.gif" alt="missions" class="h-5" />
+              Missions
             </th>
           </tr>
         </thead>

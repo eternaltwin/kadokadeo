@@ -98,14 +98,13 @@ class ClanTest extends TestCase
 
         Sanctum::actingAs($attacker);
         $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertCreated();
-        // one attack at a time
-        $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertStatus(422);
-
         $result = $this->playClanRun($attacker, $game, $period, 500);
         $this->assertSame('launched', $result['result']);
         $attack = ClanAttack::query()->sole();
         $this->assertSame(ClanAttackStatus::ACTIVE, $attack->status);
         $this->assertSame(500, $attack->score);
+        // one attack at a time
+        $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertStatus(422);
 
         $this->travel(13)->hours();
         $this->assertSame(1, app(ClanWarService::class)->resolveExpired());
@@ -134,13 +133,20 @@ class ClanTest extends TestCase
         $this->playClanRun($attacker, $game, $period, 500);
         $attack = ClanAttack::query()->sole();
 
-        // the attacker can't defend his own attack, and a defender with an attack in progress can't defend
-        $warService->startAttack($defender, $clanA, Game::factory()->create());
+        // a defender with an attack in progress can't defend
+        $otherGame = Game::factory()->create();
+        $warService->startAttack($defender, $clanA, $otherGame);
+        $this->playClanRun($defender, $otherGame, $period, 10);
         Sanctum::actingAs($defender);
         $this->postJson("/api/clan-attacks/{$attack->id}/defend")->assertStatus(422)
             ->assertJsonPath('message', 'Vous ne pouvez pas défendre tant que vous avez une attaque en cours.');
 
-        $this->travel(20)->minutes(); // the attack he asked for is forgotten
+        // ... until he cancels it (only its attacker can)
+        $ownAttackId = ClanAttack::query()->latest('id')->value('id');
+        Sanctum::actingAs($attacker);
+        $this->postJson("/api/clan-attacks/{$ownAttackId}/cancel")->assertStatus(422);
+        Sanctum::actingAs($defender);
+        $this->postJson("/api/clan-attacks/{$ownAttackId}/cancel")->assertNoContent();
         $this->postJson("/api/clan-attacks/{$attack->id}/defend")->assertCreated();
         $this->assertSame('failed', $this->playClanRun($defender, $game, $period, 500)['result']);
 
@@ -363,6 +369,26 @@ class ClanTest extends TestCase
         $this->assertSame($expected, $member->fresh()->kado_points);
         $this->assertSame(3, ClanMemberStat::query()->whereNotNull('user_point_id')->count());
         $this->assertDatabaseHas('user_points', ['user_id' => $member->id, 'delta' => $expected, 'reason' => 'clan ranking']);
+    }
+
+    // choosing a game then leaving the page (or choosing another game) does not count as an attack
+    public function test_an_attack_asked_but_not_played_does_not_block_the_next_one(): void
+    {
+        $period = $this->period();
+        $attacker = User::factory()->create();
+        Clan::factory()->withLeader($attacker)->create();
+        $defender = Clan::factory()->withLeader()->create();
+        [$interwheel, $kanji] = Game::factory()->count(2)->create();
+
+        Sanctum::actingAs($attacker);
+        $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $interwheel->id])->assertCreated();
+        $actionId = $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $kanji->id])->assertCreated()->json('data.id');
+        $this->assertDatabaseCount('clan_actions', 1);
+
+        // once the run of the attack is begun, it counts
+        $this->postJson("/api/runs/games/{$kanji->id}")->assertSuccessful();
+        $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $interwheel->id])->assertStatus(422);
+        $this->assertDatabaseHas('clan_actions', ['id' => $actionId]);
     }
 
     public function test_the_next_run_begun_on_the_game_is_bound_to_the_clan_action(): void

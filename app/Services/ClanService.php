@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\ClanException;
 use App\Models\Clan;
+use App\Models\ClanAction;
 use App\Models\ClanApplication;
 use App\Models\ClanMember;
 use App\Models\ClanMemberStat;
@@ -209,6 +210,16 @@ class ClanService
 
         // (the default values of the columns)
         return $score->wasRecentlyCreated ? $score->refresh() : $score;
+    }
+
+    // the clan runs he asked for but did not begin: a new one replaces them (he chose another game, left the page...)
+    public function forgetUnplayedActions(User $user): void
+    {
+        ClanAction::query()
+            ->where('user_id', $user->id)
+            ->whereNull('run_id')
+            ->whereNull('completed_at')
+            ->delete();
     }
 
     public function warScore(Clan $clan, Period $period): int

@@ -102,6 +102,8 @@ class ClanMissionService
             throw new ClanException('Cette étape a déjà été réussie.');
         }
 
+        $this->clanService->forgetUnplayedActions($user);
+
         return ClanAction::query()->create([
             'clan_id' => $mission->clan_id,
             'user_id' => $user->id,
