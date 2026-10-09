@@ -22,6 +22,9 @@ const sections = computed(() => [
   { key: 'launched', type: 'atk', title: `Le clan ${props.clan.name} a lancé les attaques suivantes`, attacks: status.value?.launched ?? [] },
   { key: 'received', type: 'def', title: 'Ce clan est attaqué', attacks: status.value?.received ?? [] },
 ].filter((section) => section.attacks.length))
+// the column of the buttons, only when there is something to do
+const hasActions = computed(() => sections.value.some((s) => s.attacks.some((a) => a.can_defend || a.can_cancel)))
+const columns = computed(() => (hasActions.value ? 6 : 5))
 
 const doDefend = (attack, superDefense) =>
   defend(attack.id, superDefense).then((data) => router.push({ name: 'clans.play', params: { action: data.data.id } }))
