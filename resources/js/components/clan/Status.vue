@@ -22,9 +22,6 @@ const sections = computed(() => [
   { key: 'launched', type: 'atk', title: `Le clan ${props.clan.name} a lancé les attaques suivantes`, attacks: status.value?.launched ?? [] },
   { key: 'received', type: 'def', title: 'Ce clan est attaqué', attacks: status.value?.received ?? [] },
 ].filter((section) => section.attacks.length))
-// the column of the buttons, only when there is something to do
-const hasActions = computed(() => sections.value.some((s) => s.attacks.some((a) => a.can_defend || a.can_cancel)))
-const columns = computed(() => (hasActions.value ? 6 : 5))
 
 const doDefend = (attack, superDefense) =>
   defend(attack.id, superDefense).then((data) => router.push({ name: 'clans.play', params: { action: data.data.id } }))
@@ -52,19 +49,18 @@ const doCancel = (attack) => {
             <th class="text-left!">Jeu</th>
             <th class="text-right!">Score</th>
             <th>Statut</th>
-            <th v-if="hasActions" class="w-32"></th>
           </tr>
         </thead>
         <tbody>
           <!-- no attack: the frame of the table with a single line -->
           <tr v-if="!sections.length" class="oddtrue">
-            <td :colspan="columns" class="py-4 italic text-kado-blue">
+            <td colspan="5" class="py-4 italic text-kado-blue">
               Aucune attaque de ce clan ni contre ce clan pour le moment.
             </td>
           </tr>
           <template v-for="section in sections" :key="section.key">
             <tr>
-              <td :colspan="columns" :class="section.type === 'atk' ? 'clanTypeAtk' : 'clanTypeDef'">
+              <td colspan="5" :class="section.type === 'atk' ? 'clanTypeAtk' : 'clanTypeDef'">
                 <img :src="section.type === 'atk' ? '/gfx/clan/atksmall.gif' : '/gfx/clan/defsmall.gif'" alt="" class="mr-1" />
                 {{ section.title }}
               </td>
@@ -82,7 +78,24 @@ const doCancel = (attack) => {
               </td>
               <td class="text-right font-bold text-kado-blue whitespace-nowrap">{{ formatScore(attack.score) }} pts</td>
               <td class="whitespace-nowrap">
-                <ClanCountdown v-if="attack.status === 'active'" :until="attack.expires_at" @done="load" />
+                <!-- the countdown, then the small buttons of what the player can do -->
+                <div v-if="attack.status === 'active'" class="flex items-center justify-center gap-2">
+                  <ClanCountdown :until="attack.expires_at" @done="load" />
+                  <button v-if="attack.can_defend"
+                          type="button"
+                          class="statusAction"
+                          @click="doDefend(attack, false)">Défendre</button>
+                  <button v-if="attack.can_defend"
+                          type="button"
+                          class="statusAction"
+                          title="Défendre avec l'option Défense 120%"
+                          @click="doDefend(attack, true)">120%</button>
+                  <button v-if="attack.can_cancel"
+                          type="button"
+                          class="statusAction pink"
+                          title="Annuler cette attaque"
+                          @click="doCancel(attack)">Annuler</button>
+                </div>
                 <template v-else-if="attack.status === 'won'">
                   Réussie <span class="font-bold text-[#ff6b9c]">+{{ attack.points }}</span>
                 </template>
@@ -90,21 +103,6 @@ const doCancel = (attack) => {
                   Repoussée<template v-if="attack.defender"> par {{ attack.defender.display_name }}</template>
                 </template>
                 <template v-else>{{ attack.status_label }}</template>
-              </td>
-              <td v-if="hasActions" class="whitespace-nowrap">
-                <div v-if="attack.status === 'active'" class="flex flex-col items-stretch gap-1">
-                  <template v-if="attack.can_defend">
-                    <button type="button" class="clanButton" @click="doDefend(attack, false)">Défendre</button>
-                    <button type="button"
-                            class="clanButton text-xs"
-                            title="Utiliser l'option Défense 120%"
-                            @click="doDefend(attack, true)">Défense 120%</button>
-                  </template>
-                  <button v-if="attack.can_cancel"
-                          type="button"
-                          class="clanButton pink"
-                          @click="doCancel(attack)">Annuler</button>
-                </div>
               </td>
             </tr>
           </template>
@@ -117,5 +115,33 @@ const doCancel = (attack) => {
 <style scoped>
 .statusTable td {
   padding: 4px 8px;
+}
+
+/* small buttons next to the countdown */
+.statusAction {
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--color-kado-green-600);
+  color: var(--color-kado-green-600);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 16px;
+  background: url('/gfx/bgFormButtonFill.jpg') center repeat-x;
+  cursor: pointer;
+}
+
+.statusAction:hover {
+  background-image: url('/gfx/bgFormButtonFillHover.jpg');
+}
+
+.statusAction.pink {
+  border-color: var(--color-kado-pink-600);
+  color: var(--color-kado-pink-600);
+  background-image: url('/gfx/bgFormButtonPinkFill.jpg');
+}
+
+.statusAction.pink:hover {
+  background-image: url('/gfx/bgFormButtonPinkFillHover.jpg');
 }
 </style>
