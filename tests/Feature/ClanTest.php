@@ -55,6 +55,10 @@ class ClanTest extends TestCase
         Sanctum::actingAs($player);
         $applicationId = $this->postJson("/api/clans/{$clanId}/applications", ['message' => 'Salut !'])->assertCreated()->json('data.id');
         $this->postJson("/api/clans/{$clanId}/applications")->assertStatus(422);
+        // a single application at a time
+        $other = Clan::factory()->withLeader()->create();
+        $this->postJson("/api/clans/{$other->id}/applications")->assertStatus(422)
+            ->assertJsonPath('message', "Vous avez déjà une candidature en attente pour le clan Boule de neige. Retirez-la avant d'en envoyer une autre.");
 
         Sanctum::actingAs($leader);
         $this->getJson("/api/clans/{$clanId}/applications")->assertOk()->assertJsonPath('data.0.message', 'Salut !');

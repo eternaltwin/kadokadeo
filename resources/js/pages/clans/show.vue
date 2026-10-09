@@ -20,6 +20,8 @@ const load = () =>
 watch(clanId, load, { immediate: true })
 
 const viewer = computed(() => clan.value?.viewer ?? {})
+// a single application at a time: the one sent to another clan
+const applicationElsewhere = computed(() => clanStore.applications.find((a) => a.clan.id !== clan.value?.id) ?? null)
 const applicationMessage = ref('')
 const showApplyForm = ref(false)
 // the confirmation of the last action of the player on the page
@@ -76,7 +78,7 @@ const updated = () => {
         <li v-if="!viewer.has_clan && viewer.application_id">
           <button type="button" title="Annuler ma candidature" @click="cancelApplication">Retirer ma demande</button>
         </li>
-        <li v-else-if="!viewer.has_clan && clan.is_recruiting">
+        <li v-else-if="!viewer.has_clan && clan.is_recruiting && !applicationElsewhere">
           <button type="button" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</button>
         </li>
         <li v-if="viewer.is_member">
@@ -92,6 +94,11 @@ const updated = () => {
       <p v-else-if="!viewer.has_clan && viewer.application_id" class="mx-0 mb-4 border-2 border-l-[10px] border-kado-orange bg-[#fff4dc] px-3 py-2 font-bold text-[#c25e00]">
         Votre candidature à ce clan est en attente de la réponse du chef de clan.
       </p>
+      <p v-else-if="!viewer.has_clan && applicationElsewhere" class="mx-0 mb-4 border-2 border-l-[10px] border-kado-orange bg-[#fff4dc] px-3 py-2 font-bold text-[#c25e00]">
+        Vous avez déjà une candidature en attente pour le clan
+        <RouterLink :to="{ name: 'clans.show', params: { id: applicationElsewhere.clan.id } }">{{ applicationElsewhere.clan.name }}</RouterLink>.
+        Retirez-la avant de postuler dans un autre clan.
+      </p>
 
       <form v-if="showApplyForm" class="mb-4" @submit.prevent="apply">
         <div>
@@ -100,7 +107,7 @@ const updated = () => {
                     v-model="applicationMessage"
                     rows="3"
                     maxlength="500"
-                    class="w-full border-2 border-white bg-white bg-[url(/gfx/bgInput.jpg)] bg-repeat-x p-2 text-kado-blue"></textarea>
+                    class="kadoTextarea"></textarea>
         </div>
         <input type="submit" value="Envoyer votre candidature" class="w-auto!" />
       </form>

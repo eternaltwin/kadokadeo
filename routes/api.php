@@ -28,6 +28,11 @@ Route::get('/games/{game}/scores', [App\Http\Controllers\Api\GameScoreController
 Route::get('/games/{game}/period-records', [App\Http\Controllers\Api\GameScoreController::class, 'userPeriodRecords'])->whereNumber('game');
 Route::get('/games/{game}/ranking', [App\Http\Controllers\Api\GameScoreController::class, 'search'])->whereNumber('game');
 
+// the looks of the site, bought with Kado points
+Route::get('/themes', [App\Http\Controllers\Api\ThemeController::class, 'index']);
+Route::post('/themes/{theme}/buy', [App\Http\Controllers\Api\ThemeController::class, 'buy'])->whereAlpha('theme');
+Route::put('/user/theme', [App\Http\Controllers\Api\ThemeController::class, 'select']);
+
 // the clans (App\Services\ClanService)
 Route::get('/clans', [App\Http\Controllers\Api\ClanController::class, 'index']);
 Route::post('/clans', [App\Http\Controllers\Api\ClanController::class, 'store']);

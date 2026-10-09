@@ -79,7 +79,7 @@ const doPromote = (member) => {
       <textarea v-model="description"
                 rows="10"
                 maxlength="5000"
-                class="w-full border-2 border-white bg-white bg-[url(/gfx/bgInput.jpg)] bg-repeat-x p-2 text-kado-blue"></textarea>
+                class="kadoTextarea"></textarea>
       <label class="flex items-center gap-2 font-bold">
         <input v-model="isRecruiting" type="checkbox" class="w-auto!" />
         Le clan recrute de nouveaux membres

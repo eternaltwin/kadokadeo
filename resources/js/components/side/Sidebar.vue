@@ -28,8 +28,8 @@ const otherGames = [
         <li class="worldrecords">
           <RouterLink :to="{ name: 'site-records' }" title="Records du site">Records du site</RouterLink>
         </li>
-        <li class="account grayscale">
-          <RouterLink to="/" title="Mon compte">Mon compte</RouterLink>
+        <li class="account">
+          <RouterLink :to="{ name: 'account' }" title="Mon compte">Mon compte</RouterLink>
         </li>
         <li class="forum">
           <a href="https://discord.gg/cqasFsD"

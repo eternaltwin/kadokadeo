@@ -88,7 +88,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                     v-model="description"
                     rows="6"
                     maxlength="5000"
-                    class="w-full border-2 border-white bg-white bg-[url(/gfx/bgInput.jpg)] bg-repeat-x p-2 text-kado-blue"></textarea>
+                    class="kadoTextarea"></textarea>
         </div>
         <MessageError v-if="createError">{{ createError }}</MessageError>
         <input type="submit" value="Créer le clan" class="w-auto!" />

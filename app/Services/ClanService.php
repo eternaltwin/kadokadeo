@@ -102,9 +102,12 @@ class ClanService
         if ($clan->members()->count() >= config('kado.clans.max_members')) {
             throw new ClanException('Ce clan est complet.');
         }
-        $pending = $clan->applications()->where('user_id', $user->id)->where('status', ClanApplication::PENDING)->exists();
+        // a single application at a time
+        $pending = ClanApplication::query()->with('clan')->where('user_id', $user->id)->where('status', ClanApplication::PENDING)->first();
         if ($pending) {
-            throw new ClanException('Vous avez déjà envoyé votre candidature à ce clan.');
+            throw new ClanException($pending->clan_id === $clan->id
+                ? 'Vous avez déjà envoyé votre candidature à ce clan.'
+                : "Vous avez déjà une candidature en attente pour le clan {$pending->clan->name}. Retirez-la avant d'en envoyer une autre.");
         }
 
         return $clan->applications()->create([

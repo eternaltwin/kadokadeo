@@ -31,6 +31,14 @@ Here are the configuration variables specific to the project (the standard Larav
 | `KADO_GAME_BUILDS_ENABLED`  | Replays played by the version of the game they were recorded with (archive of the old bundles). Off for now: the production wipes `storage/` at each deploy, so every replay is played by the current bundle | `false` |
 | `KADO_GAME_BUILDS_PATH`     | Folder of the archive of the old game bundles (written by `build-games.mjs`)        | `storage/app/game-builds` |
 
+### Themes
+
+The players can change the look of the site in « Mon compte »: the KadoKado theme for everyone, the Karbon theme (the second theme of KadoKado, `resources/css/themes/karbon.css`, images in `public/gfx/themes/karbon`) bought once with Kado points (`kado.themes` in [`config/kado.php`](config/kado.php)).
+
+| Variable                   | Description                                  | Default |
+| -------------------------- | -------------------------------------------- | ------- |
+| `KADO_THEME_KARBON_PRICE`  | Price of the Karbon theme in Kado points     | 10000   |
+
 ### Clans
 
 The tournament of the clans lasts a period (`App\Services\ClanService`), with two rankings at the same time as on KadoKado since 2011: the attacks (the score of a run becomes an attack, the attacked clan has 12 hours to beat it) and the missions (each step completed gives 1 point, all the steps completed within 24 hours double the points of the mission, otherwise they are lost; each mission is harder than the previous one). The scores, the missions and the options start again from 0 on the first day of the next period (the clans and their members stay). It is closed with the period by `kado:prepare-new-period`, and `kado:clans:resolve-attacks` (scheduled every 5 minutes) gives their points to the attacks not repelled in time. The other settings (rewards, durations...) are in `kado.clans` in [`config/kado.php`](config/kado.php).
