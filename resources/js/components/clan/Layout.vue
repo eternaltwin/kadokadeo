@@ -41,12 +41,6 @@ const stats = computed(() => props.clan.stats)
         <li class="def" title="Défenses réussies : c'est le nombre d'attaques repoussées par ce clan.">
           <Number :value="stats.defenses_won" color="blue" />
         </li>
-        <li class="missionScore" title="Score de mission : les points rapportés par les étapes de mission réussies.">
-          <Number :value="stats.mission_score" color="blue" />
-        </li>
-        <li class="rank" title="Position du clan dans le classement des missions.">
-          <Number :value="stats.mission_rank ?? 0" color="green" />
-        </li>
       </ul>
       <h3>Actions</h3>
       <ul class="action">
@@ -123,12 +117,6 @@ const stats = computed(() => props.clan.stats)
 #clan ul.statClan li.def {
   background-image: url('/assets/img/gfx/icons/def.gif');
 }
-
-/* the star of the clan points with the blues of the defenses */
-#clan ul.statClan li.missionScore {
-  background-image: url('/gfx/clan/clan_mission_points.png');
-}
-
 #clan div.clanMenu ul.action li a,
 #clan div.clanMenu ul.action li button {
   display: block;
