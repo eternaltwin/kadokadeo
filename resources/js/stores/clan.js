@@ -9,6 +9,8 @@ export const useClanStore = defineStore('clan', () => {
   const clan = ref(null)
   const applications = ref([])
   const top = ref([])
+  // the tools of /clans/debug are available (KADO_DEBUG_TOOLS)
+  const debug = ref(false)
 
   const { get } = useApi()
 
@@ -19,6 +21,7 @@ export const useClanStore = defineStore('clan', () => {
       clan.value = data.clan
       applications.value = data.applications
       top.value = data.top
+      debug.value = data.debug
     }).catch(() => {})
 
   return {
@@ -26,6 +29,7 @@ export const useClanStore = defineStore('clan', () => {
     clan,
     applications,
     top,
+    debug,
     reload,
   }
 })

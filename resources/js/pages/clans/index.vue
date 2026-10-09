@@ -51,6 +51,9 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
   <div class="px-2 space-y-4">
     <h1 class="mt-0 text-center">Les clans</h1>
     <ClanPeriodBanner :tournament="tournament ?? clanStore.tournament" />
+    <p v-if="clanStore.debug" class="mx-0 text-right text-xs">
+      <RouterLink :to="{ name: 'clans.debug' }">🔧 Outils de test des clans</RouterLink>
+    </p>
 
     <p v-if="clanStore.clan" class="mx-0">
       <img src="/assets/img/gfx/icons/clan.gif" alt="" />
