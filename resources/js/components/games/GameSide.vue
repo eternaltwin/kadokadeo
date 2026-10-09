@@ -41,7 +41,7 @@ const palliers = computed(() => {
   }
   const leagueScore = leaguesScores.value[league.value?.level]
   if (leagueScore && leagueScore.required_score > personalBestForPeriod.value?.score) {
-    s.push({ score: leagueScore.required_score + 1, points: null, img: `/gfx/leagues/${league.value.level + 1}.svg`, alt: 'Ligue supérieure' })
+    s.push({ score: leagueScore.required_score + 1, points: null, img: `/gfx/leagues/${league.value.level + 1}s.svg`, alt: 'Ligue supérieure' })
   }
   s.push({ score: 0, points: 0, img: '/gfx/iconContract.png', alt: 'Contrat' })
   s.sort((a, b) => b.score - a.score)
@@ -104,6 +104,10 @@ const menus = [
             :title="menu.label">
           <img v-if="menu.icon" :src="menu.icon" :alt="menu.label" />
           <div class="overflow-hidden" :class="selectedTab === menu.id ? 'w-full' : 'w-0 @md:w-full'">{{ menu.label }}</div>
+          <img  v-if="menu.id === 'gameStars' && league"
+                :src="`/gfx/leagues/${league.level}s.svg`"
+                :alt="league.name"
+                class="w-6 h-auto" />
         </li>
       </ul>
     </nav>
@@ -119,7 +123,12 @@ const menus = [
     </div>
 
     <div>
-      <h3 v-if="isZoomed" class="flex justify-center">Paliers <img  v-if="league" :src="`/gfx/leagues/${league.level}.svg`" :alt="league.name" /></h3>
+      <h3 v-if="isZoomed" class="flex justify-center">Paliers
+        <img  v-if="league"
+              :src="`/gfx/leagues/${league.level}s.svg`"
+              :alt="league.name"
+              class="w-6 h-auto" />
+      </h3>
 
       <article id="gameStars" :class="selectedTab === 'gameStars' ? '' : notZoomedHiddenState">
         <table class="border-0 **:border-0 whiteFirst">

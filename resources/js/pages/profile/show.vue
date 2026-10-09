@@ -115,24 +115,24 @@ const gameAchievements = computed(() => {
               <div class="grid grid-cols-3 justify-items-stretch items-center">
                 <div class="col-span-3 grid grid-cols-2 gap-4 justify-items-center items-center">
                   <div class="text-center">
-                    <img class="w-8 h-auto" src="/gfx/leagues/5.svg" />
+                    <img class="w-8 h-auto" src="/gfx/leagues/5s.svg" />
                     <Number :value="leagueCount[5] || '.'" />
                   </div>
                   <div class="text-center">
-                    <img class="w-8 h-auto" src="/gfx/leagues/4.svg" />
+                    <img class="w-8 h-auto" src="/gfx/leagues/4s.svg" />
                     <Number :value="leagueCount[4] || '.'" />
                   </div>
                 </div>
                 <div class="text-center">
-                  <img class="w-8 h-auto" src="/gfx/leagues/3.svg" />
+                  <img class="w-8 h-auto" src="/gfx/leagues/3s.svg" />
                   <Number :value="leagueCount[3] || '.'" />
                 </div>
                 <div class="text-center">
-                  <img class="w-8 h-auto" src="/gfx/leagues/2.svg" />
+                  <img class="w-8 h-auto" src="/gfx/leagues/2s.svg" />
                   <Number :value="leagueCount[2] || '.'" />
                 </div>
                 <div class="text-center">
-                  <img class="w-8 h-auto" src="/gfx/leagues/1.svg" />
+                  <img class="w-8 h-auto" src="/gfx/leagues/1s.svg" />
                   <Number :value="beginnerLeagueCount || '.'" />
                 </div>
               </div>
@@ -163,7 +163,7 @@ const gameAchievements = computed(() => {
                 <tbody>
                   <tr v-for="run in profile.best_period_runs.sort((a, b) => a.game.name.localeCompare(b.game.name))" :key="run.id">
                     <td>
-                      <img v-if="run.league_id" :src="`/gfx/leagues/${run.league_id}.svg`" />
+                      <img v-if="run.league_id" :src="`/gfx/leagues/${run.league_id}s.svg`" class="w-6 h-auto" />
                     </td>
                     <td class="text-right">
                       <Number color="orange" :value="run.league_rank" />

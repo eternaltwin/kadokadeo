@@ -59,7 +59,7 @@ const stars = [
         <tr v-for="league in leagueStore.leagues" :key="league.level">
           <td class="!text-left">
             <div class="flex items-center space-x-2">
-              <img :src="`/gfx/leagues/${league.level}.png`" :alt="league.name">
+              <img :src="`/gfx/leagues/${league.level}s.svg`" :alt="league.name" class="w-10 h-auto">
               <div>{{ league.name }}</div>
             </div>
           </td>
