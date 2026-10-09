@@ -29,15 +29,20 @@ const stats = computed(() => props.clan.stats)
     <div class="clanMenu shrink-0">
       <h3>Infos</h3>
       <ul class="statClan">
-        <!-- as on the old site since 2011: the score and the rank of the attacks, then of the missions -->
-        <li class="score" :title="`Score d'attaque : il augmente lorsque le clan réussit une attaque (${stats.attacks_won} attaque(s) réussie(s), ${stats.defenses_won} défense(s) réussie(s)).`">
+        <li class="score" title="Score d'attaque : il augmente lorsque le clan réussit une attaque.">
           <Number :value="stats.war_score" color="orange" />
         </li>
         <li class="rank" title="Position du clan dans le classement des attaques.">
           <Number :value="stats.war_rank ?? 0" color="green" />
         </li>
-        <li class="score" title="Score de mission : les points rapportés par les étapes de mission réussies.">
-          <Number :value="stats.mission_score" color="orange" />
+        <li class="atk" title="Attaques réussies : quand une attaque n'est pas repoussée par le clan adverse à temps, elle est réussie.">
+          <Number :value="stats.attacks_won" color="pink" />
+        </li>
+        <li class="def" title="Défenses réussies : c'est le nombre d'attaques repoussées par ce clan.">
+          <Number :value="stats.defenses_won" color="blue" />
+        </li>
+        <li class="missionScore" title="Score de mission : les points rapportés par les étapes de mission réussies.">
+          <Number :value="stats.mission_score" color="blue" />
         </li>
         <li class="rank" title="Position du clan dans le classement des missions.">
           <Number :value="stats.mission_rank ?? 0" color="green" />
@@ -109,6 +114,19 @@ const stats = computed(() => props.clan.stats)
 
 #clan ul.statClan li.score {
   background-image: url('/assets/img/gfx/icons/clan_points.gif');
+}
+
+#clan ul.statClan li.atk {
+  background-image: url('/assets/img/gfx/icons/atk.gif');
+}
+
+#clan ul.statClan li.def {
+  background-image: url('/assets/img/gfx/icons/def.gif');
+}
+
+/* the star of the clan points with the blues of the defenses */
+#clan ul.statClan li.missionScore {
+  background-image: url('/gfx/clan/clan_mission_points.png');
 }
 
 #clan div.clanMenu ul.action li a,

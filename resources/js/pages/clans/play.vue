@@ -45,7 +45,7 @@ const isSuccess = computed(() => ['launched', 'repelled', 'completed'].includes(
       <h1 class="mt-0 text-center">{{ action.type_label }}</h1>
 
       <div class="flex items-center gap-2 border-l-4 px-2 py-1" :class="action.type === 'attack' ? 'border-[#ff6b9c] bg-[#ffe3ec] text-[#ff6b9c]' : 'border-kado-cyan-800 bg-kado-cyan-100'">
-        <img :src="action.type === 'attack' ? '/assets/img/gfx/icons/atk.gif' : action.type === 'defense' ? '/assets/img/gfx/icons/def.gif' : '/assets/img/gfx/icons/clan_points.gif'" alt="" />
+        <img :src="action.type === 'attack' ? '/assets/img/gfx/icons/atk.gif' : action.type === 'defense' ? '/assets/img/gfx/icons/def.gif' : '/gfx/clan/clan_mission_points.png'" alt="" />
         <div>
           <template v-if="action.type === 'attack'">
             Votre score deviendra une attaque du clan <strong>{{ action.clan.name }}</strong> contre le clan

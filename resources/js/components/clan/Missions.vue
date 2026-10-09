@@ -57,13 +57,12 @@ const confirmBonus = () => {
 
 <template>
   <div class="relative space-y-4">
-    <ClanPeriodBanner :tournament="tournament" />
     <MessageError v-if="error">{{ error }}</MessageError>
     <Loader v-if="isLoading && !data" />
 
     <template v-if="data">
       <p class="mx-0">
-        Score de mission du clan : <Number :value="data.mission_score" color="orange" />
+        Score de mission du clan : <Number :value="data.mission_score" color="blue" />
         ({{ data.missions_completed }} mission(s) réussie(s))
       </p>
 

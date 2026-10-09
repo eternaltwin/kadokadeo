@@ -9,7 +9,6 @@ defineProps({
 
 <template>
   <div class="space-y-4">
-    <ClanPeriodBanner :tournament="tournament" />
 
     <div id="clanPresentation" class="whitespace-pre-line break-words">
       <template v-if="clan.description">{{ clan.description }}</template>

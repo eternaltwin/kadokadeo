@@ -29,8 +29,9 @@ const logout = () => {
       <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconMail.gif" alt="mail"></RouterLink></li>
       <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconForum.gif" alt="forum"></RouterLink></li>
       <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconScore.gif" alt="scores"></RouterLink></li>
-      <li>
-        <RouterLink :to="clanStore.clan ? { name: 'clans.show', params: { id: clanStore.clan.id } } : { name: 'clans.index' }" title="Mon clan">
+      <!-- only for the players of a clan -->
+      <li v-if="clanStore.clan">
+        <RouterLink :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }" title="Mon clan">
           <img src="/gfx/kalendarIconClan.gif" alt="clans">
         </RouterLink>
       </li>
