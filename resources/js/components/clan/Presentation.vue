@@ -3,13 +3,13 @@ import KadoPoints from '@svg/k.svg'
 
 defineProps({
   clan: { type: Object, required: true },
-  phase: { type: Object, default: null },
+  tournament: { type: Object, default: null },
 })
 </script>
 
 <template>
   <div class="space-y-4">
-    <ClanPhaseBanner :phase="phase" />
+    <ClanPeriodBanner :tournament="tournament" />
 
     <div id="clanPresentation" class="whitespace-pre-line break-words">
       <template v-if="clan.description">{{ clan.description }}</template>

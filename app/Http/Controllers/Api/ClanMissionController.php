@@ -67,12 +67,11 @@ class ClanMissionController extends Controller implements HasMiddleware
                         'label' => $bonus->type->getLabel(),
                         'description' => $bonus->type->description(),
                         'icon' => $bonus->type->icon(),
-                        'phase' => $bonus->type->phase()->value,
                         'assignable' => $bonus->type->isAssignable(),
                         'assigned_user' => $bonus->assignedUser ? UserLightResource::make($bonus->assignedUser) : null,
                     ]),
             ],
-            'phase' => $this->clanService->phaseInfo(),
+            'tournament' => $this->clanService->tournamentInfo(),
         ];
     }
 

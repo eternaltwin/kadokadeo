@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enums\ClanActionType;
 use App\Enums\ClanBonusType;
-use App\Enums\ClanPhase;
 use App\Exceptions\ClanException;
 use App\Models\Clan;
 use App\Models\ClanAction;
@@ -26,7 +25,7 @@ class ClanMissionService
         private readonly GameService $gameService,
     ) {}
 
-    // the mission in progress (a new one when the previous is over, during the mission phase)
+    // the mission in progress (a new one when the previous is over)
     public function currentMission(Clan $clan, ?Period $period = null): ?ClanMission
     {
         $period ??= $this->clanService->currentPeriod();
@@ -47,7 +46,7 @@ class ClanMissionService
             ->where('status', ClanMission::ACTIVE)
             ->first();
 
-        if (!$mission && $this->clanService->phase($period) === ClanPhase::MISSIONS) {
+        if (!$mission && $period->end_at->isFuture()) {
             $mission = $this->generateMission($clan, $period);
         }
 
@@ -96,7 +95,6 @@ class ClanMissionService
     {
         $mission = $step->mission;
         $this->clanService->assertMember($user, $mission->clan);
-        $this->clanService->assertPhase(ClanPhase::MISSIONS, 'Les missions ne sont possibles que pendant la période des missions.');
         if ($mission->status !== ClanMission::ACTIVE || $mission->expires_at->isPast()) {
             throw new ClanException('Cette mission est terminée.');
         }
@@ -152,7 +150,7 @@ class ClanMissionService
         if ($bonus->type->isAssignable()) {
             throw new ClanException('Cette option s\'utilise au moment d\'attaquer ou de défendre.');
         }
-        $period = $this->clanService->assertPhase(ClanPhase::MISSIONS, 'Cette option n\'est utilisable que pendant la période des missions.');
+        $period = $this->clanService->assertPeriod();
 
         DB::transaction(function () use ($bonus, $clan, $period, $params) {
             $score = $this->clanService->periodScore($clan, $period);

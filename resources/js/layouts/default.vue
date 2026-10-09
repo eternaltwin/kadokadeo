@@ -38,7 +38,7 @@ const authStore = useAuthStore()
       <PendingRuns class="w-fit md:w-full max-w-4xl mb-6 text-sm" />
 
       <section id="bodySection" class="w-full md:mx-4 lg:mx-8 flex max-w-4xl border-2 border-solid border-kado-cyan-800 bg-kado-cyan-200 pb-4 md:mb-10">
-        <div class="flex-1">
+        <div class="flex-1 min-w-0">
           <slot />
         </div>
 

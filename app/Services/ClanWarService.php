@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\ClanActionType;
 use App\Enums\ClanAttackStatus;
 use App\Enums\ClanBonusType;
-use App\Enums\ClanPhase;
 use App\Exceptions\ClanException;
 use App\Models\Clan;
 use App\Models\ClanAction;
@@ -28,7 +27,7 @@ class ClanWarService
 
     public function startAttack(User $user, Clan $defender, Game $game): ClanAction
     {
-        $period = $this->clanService->assertPhase(ClanPhase::WAR, 'Les attaques ne sont possibles que pendant la période offensive.');
+        $period = $this->clanService->assertPeriod();
         $clan = $this->clanService->clanOf($user);
         if (!$clan) {
             throw new ClanException('Vous devez faire partie d\'un clan pour attaquer.');
@@ -39,10 +38,6 @@ class ClanWarService
         if (!$game->is_active) {
             throw new ClanException('Ce jeu n\'est pas disponible.');
         }
-        if (now()->gte($this->clanService->attacksLockedAt($period))) {
-            throw new ClanException('Plus aucune attaque ne peut être lancée avant la fin de la période.');
-        }
-
         $attackerScore = $this->clanService->warScore($clan, $period);
         $defenderScore = $this->clanService->warScore($defender, $period);
         if ($this->clanService->isProtected($attackerScore, $defenderScore)) {
@@ -122,7 +117,8 @@ class ClanWarService
     public function completeAttack(ClanAction $action, Run $run): string
     {
         $period = $run->period ?? $this->clanService->currentPeriod();
-        if (!$period || $this->clanService->phase($period) !== ClanPhase::WAR || now()->gte($this->clanService->attacksLockedAt($period))) {
+        // the period ended during the run: the tournament started again
+        if (!$period || $period->end_at->isPast()) {
             return 'too_late';
         }
 
@@ -185,16 +181,21 @@ class ClanWarService
         });
     }
 
-    // the attacks not repelled in time are won (all the attacks of a closed period too)
-    public function resolveExpired(?Period $closedPeriod = null): int
+    // the attacks of a closed period still waiting for a defense count for nothing: the scores start again from 0
+    public function cancelUnfinished(Period $period): void
     {
-        $query = ClanAttack::query()->active();
-        $closedPeriod
-            ? $query->where('period_id', $closedPeriod->id)
-            : $query->where('expires_at', '<=', now());
+        ClanAttack::query()
+            ->active()
+            ->where('period_id', $period->id)
+            ->update(['status' => ClanAttackStatus::CANCELLED, 'resolved_at' => now()]);
+    }
 
+    // the attacks not repelled in time are won
+    public function resolveExpired(): int
+    {
         $count = 0;
-        foreach ($query->pluck('id') as $attackId) {
+        $attackIds = ClanAttack::query()->active()->where('expires_at', '<=', now())->pluck('id');
+        foreach ($attackIds as $attackId) {
             DB::transaction(function () use ($attackId, &$count) {
                 $attack = ClanAttack::query()->lockForUpdate()->find($attackId);
                 if (!$attack || $attack->status !== ClanAttackStatus::ACTIVE) {

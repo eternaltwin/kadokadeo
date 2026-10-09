@@ -82,16 +82,12 @@ return [
         'jackpot' => env('KADO_POIDS_PLUME_JACKPOT', 0),
     ],
 
-    // the tournament of the clans (App\Services\ClanService): it lasts a period, missions first then attacks
+    // the tournament of the clans (App\Services\ClanService): attacks, defenses and missions during a whole period, then
+    // everything starts again from 0 on the first day of the next one
     'clans' => [
         'max_members' => 50,
-        // the first days of the period are for the missions (joining, leaving and changing clan only then), the
-        // others for the attacks and defenses
-        'mission_days' => (int) env('KADO_CLANS_MISSION_DAYS', 7),
-        // a clan has this time to beat the score of an attack
+        // a clan has this time to beat the score of an attack (an attack not over at the end of the period is cancelled)
         'attack_hours' => 12,
-        // no attack can be launched during the last hours of the period
-        'attack_lock_hours' => 12,
         // an attack not repelled wins from 1 to max_points points, more against a clan with a higher score; the
         // defender loses as much (its score never goes below 0)
         'attack_max_points' => 10,

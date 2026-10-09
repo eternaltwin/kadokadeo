@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\ClanPhase;
 use App\Exceptions\ClanException;
 use App\Models\Clan;
 use App\Models\ClanApplication;
@@ -11,12 +10,12 @@ use App\Models\ClanMemberStat;
 use App\Models\ClanPeriodScore;
 use App\Models\Period;
 use App\Models\User;
-use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-// the clans (help of KadoKado): groups of 1 to 50 players. The tournament lasts a period: during the first days
-// (kado.clans.mission_days) the clans complete missions and players can change clan, then they attack each other.
+// the clans (help of KadoKado): groups of 1 to 50 players. The tournament lasts a period (14 days): during all of it the
+// clans attack each other and complete missions, then the scores, the missions and the options start again from 0 on the
+// first day of the next period (the clans and their members stay).
 class ClanService
 {
     public function currentPeriod(): ?Period
@@ -24,54 +23,23 @@ class ClanService
         return Period::current()->first();
     }
 
-    public function phase(?Period $period = null, ?CarbonInterface $at = null): ?ClanPhase
-    {
-        $period ??= $this->currentPeriod();
-        if (!$period) {
-            return null;
-        }
-
-        return ($at ?? now())->lt($this->warStartsAt($period)) ? ClanPhase::MISSIONS : ClanPhase::WAR;
-    }
-
-    public function warStartsAt(Period $period): CarbonInterface
-    {
-        return $period->start_at->clone()->addDays((int) config('kado.clans.mission_days'));
-    }
-
-    // no attack can be launched during the last hours of the period
-    public function attacksLockedAt(Period $period): CarbonInterface
-    {
-        return $period->end_at->clone()->subHours((int) config('kado.clans.attack_lock_hours'));
-    }
-
-    public function phaseInfo(): ?array
+    public function tournamentInfo(): ?array
     {
         $period = $this->currentPeriod();
         if (!$period) {
             return null;
         }
 
-        $phase = $this->phase($period);
-
         return [
             'period_id' => $period->id,
-            'phase' => $phase->value,
-            'label' => $phase->label(),
-            'war_starts_at' => $this->warStartsAt($period)->toIso8601String(),
-            'attacks_locked_at' => $this->attacksLockedAt($period)->toIso8601String(),
+            'starts_at' => $period->start_at->toIso8601String(),
             'ends_at' => $period->end_at->toIso8601String(),
         ];
     }
 
-    public function assertPhase(ClanPhase $phase, string $message): Period
+    public function assertPeriod(): Period
     {
-        $period = $this->currentPeriod();
-        if (!$period || $this->phase($period) !== $phase) {
-            throw new ClanException($message);
-        }
-
-        return $period;
+        return $this->currentPeriod() ?? throw new ClanException('Aucune période en cours.');
     }
 
     public function clanOf(User $user): ?Clan
@@ -104,9 +72,6 @@ class ClanService
     {
         if ($this->clanOf($user)) {
             throw new ClanException('Vous faites déjà partie d\'un clan.');
-        }
-        if ($this->phase() === ClanPhase::WAR) {
-            throw new ClanException('Les clans ne peuvent être créés que pendant la période des missions.');
         }
 
         return DB::transaction(function () use ($user, $name, $description) {
@@ -161,7 +126,6 @@ class ClanService
     {
         $clan = $application->clan;
         $this->assertLeader($leader, $clan);
-        $this->assertPhase(ClanPhase::MISSIONS, 'Les nouveaux membres ne peuvent rejoindre un clan que pendant la période des missions.');
 
         if ($application->status !== ClanApplication::PENDING) {
             throw new ClanException('Cette candidature a déjà été traitée.');
@@ -204,7 +168,6 @@ class ClanService
         if (!$clan) {
             throw new ClanException('Vous ne faites partie d\'aucun clan.');
         }
-        $this->assertPhase(ClanPhase::MISSIONS, 'Vous ne pouvez quitter votre clan que pendant la période des missions.');
 
         $membersCount = $clan->members()->count();
         if ($clan->leader_id === $user->id && $membersCount > 1) {
@@ -222,7 +185,6 @@ class ClanService
     public function kick(User $leader, Clan $clan, User $member): void
     {
         $this->assertLeader($leader, $clan);
-        $this->assertPhase(ClanPhase::MISSIONS, 'Les membres ne peuvent être exclus que pendant la période des missions.');
         if ($member->id === $leader->id) {
             throw new ClanException('Vous ne pouvez pas vous exclure vous-même.');
         }

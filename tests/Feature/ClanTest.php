@@ -27,14 +27,10 @@ class ClanTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function missionPeriod(): Period
+    // day 2 of the period
+    private function period(): Period
     {
         return Period::factory()->create(['start_at' => now()->subDay()->startOfDay(), 'end_at' => now()->addDays(12)->endOfDay()]);
-    }
-
-    private function warPeriod(): Period
-    {
-        return Period::factory()->create(['start_at' => now()->subDays(8)->startOfDay(), 'end_at' => now()->addDays(5)->endOfDay()]);
     }
 
     // a clan run: the action asked on the clan pages, then a run of the game ended with this score
@@ -49,7 +45,7 @@ class ClanTest extends TestCase
 
     public function test_a_player_creates_a_clan_and_accepts_an_application(): void
     {
-        $this->missionPeriod();
+        $this->period();
         $leader = User::factory()->create();
         $player = User::factory()->create();
 
@@ -70,9 +66,9 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.viewer.is_leader', true);
     }
 
-    public function test_the_leader_must_name_a_new_leader_before_leaving_and_nobody_leaves_during_the_war(): void
+    public function test_the_leader_must_name_a_new_leader_before_leaving(): void
     {
-        $period = $this->missionPeriod();
+        $this->period();
         $leader = User::factory()->create();
         $member = User::factory()->create();
         $clan = Clan::factory()->withLeader($leader)->create();
@@ -84,14 +80,15 @@ class ClanTest extends TestCase
         $this->postJson('/api/clans/leave')->assertNoContent();
         $this->assertSame($member->id, $clan->fresh()->leader_id);
 
-        $this->travelTo($period->start_at->clone()->addDays(8));
+        // the last member leaving disbands the clan
         Sanctum::actingAs($member);
-        $this->postJson('/api/clans/leave')->assertStatus(422);
+        $this->postJson('/api/clans/leave')->assertNoContent();
+        $this->assertModelMissing($clan);
     }
 
     public function test_an_attack_not_repelled_in_time_wins_points_and_the_defender_loses_as_many(): void
     {
-        $period = $this->warPeriod();
+        $period = $this->period();
         $attacker = User::factory()->create();
         $defender = User::factory()->create();
         $clanA = Clan::factory()->withLeader($attacker)->create();
@@ -125,7 +122,7 @@ class ClanTest extends TestCase
 
     public function test_a_better_score_repels_the_attack_but_not_while_the_defender_attacks(): void
     {
-        $period = $this->warPeriod();
+        $period = $this->period();
         $attacker = User::factory()->create();
         $defender = User::factory()->create();
         $clanA = Clan::factory()->withLeader($attacker)->create();
@@ -156,7 +153,7 @@ class ClanTest extends TestCase
 
     public function test_the_super_defense_option_counts_the_score_for_120_percent(): void
     {
-        $period = $this->warPeriod();
+        $period = $this->period();
         $attacker = User::factory()->create();
         $leader = User::factory()->create();
         $member = User::factory()->create();
@@ -181,9 +178,9 @@ class ClanTest extends TestCase
         $this->assertNotNull($bonus->fresh()->used_at);
     }
 
-    public function test_clans_too_far_apart_are_protected_and_no_attack_during_the_missions(): void
+    public function test_clans_too_far_apart_are_protected(): void
     {
-        $period = $this->warPeriod();
+        $period = $this->period();
         $attacker = User::factory()->create();
         Clan::factory()->withLeader($attacker)->create();
         $strong = Clan::factory()->withLeader()->create();
@@ -194,16 +191,55 @@ class ClanTest extends TestCase
         $this->postJson("/api/clans/{$strong->id}/attacks", ['game_id' => $game->id])->assertStatus(422);
         $this->getJson("/api/clans/{$strong->id}")->assertOk()
             ->assertJsonPath('data.viewer.attack_blocked', 'Ce clan est protégé de vos attaques : son score est trop éloigné du vôtre.');
+    }
 
-        $this->travelTo($period->start_at->clone()->addDays(2));
-        $other = Clan::factory()->withLeader()->create();
-        $this->postJson("/api/clans/{$other->id}/attacks", ['game_id' => $game->id])->assertStatus(422);
+    // attacks any time of the period, from its first day; the next period starts again from 0
+    public function test_the_attacks_of_the_first_day_and_the_reset_of_the_next_period(): void
+    {
+        $period = Period::factory()->create(['start_at' => now()->startOfDay(), 'end_at' => now()->addDays(13)->endOfDay()]);
+        $attacker = User::factory()->create();
+        $clanA = Clan::factory()->withLeader($attacker)->create();
+        $clanB = Clan::factory()->withLeader()->create();
+        $game = Game::factory()->create();
+        $warService = app(ClanWarService::class);
+        $bonus = ClanBonus::query()->create(['clan_id' => $clanA->id, 'period_id' => $period->id, 'type' => ClanBonusType::DOUBLE_ATTACK]);
+
+        // an attack the first day, won
+        $warService->startAttack($attacker, $clanB, $game);
+        $this->playClanRun($attacker, $game, $period, 100);
+        $this->travel(13)->hours();
+        $this->assertSame(1, $warService->resolveExpired());
+
+        // two attacks at the same time with the "Double attaque" option, launched a few hours before the end
+        $this->travelTo($period->end_at->clone()->subHours(2));
+        $warService->startAttack($attacker, $clanB, $game);
+        $this->playClanRun($attacker, $game, $period, 100);
+        $warService->startAttack($attacker, $clanB, $game);
+        $this->assertSame('launched', $this->playClanRun($attacker, $game, $period, 100)['result']);
+        $this->assertNotNull($bonus->fresh()->used_at);
+
+        // the period ends: the attacks not over are cancelled
+        $this->travelTo($period->end_at->clone()->addMinute());
+        $nextPeriod = Period::factory()->create(['start_at' => now()->startOfDay(), 'end_at' => now()->addDays(13)->endOfDay()]);
+        app(ClanPeriodService::class)->closePeriod($period);
+        $this->assertSame(
+            [ClanAttackStatus::WON, ClanAttackStatus::CANCELLED, ClanAttackStatus::CANCELLED],
+            ClanAttack::query()->orderBy('id')->pluck('status')->all(),
+        );
+        $this->assertGreaterThan(0, ClanPeriodScore::query()->where('clan_id', $clanA->id)->where('period_id', $period->id)->value('war_score'));
+
+        // day 1 of the next period: the same clans, scores at 0, attacks possible right away
+        Sanctum::actingAs($attacker);
+        $this->getJson("/api/clans/{$clanA->id}")->assertOk()
+            ->assertJsonPath('data.stats.war_score', 0)
+            ->assertJsonPath('tournament.period_id', $nextPeriod->id);
+        $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertCreated();
     }
 
     public function test_a_mission_completed_gives_its_points_and_a_new_mission_follows(): void
     {
         config(['kado.clans.bonus_chance' => 1, 'kado.clans.mission_steps' => 2]);
-        $period = $this->missionPeriod();
+        $period = $this->period();
         $leader = User::factory()->create();
         $member = User::factory()->create();
         $clan = Clan::factory()->withLeader($leader)->create();
@@ -236,7 +272,7 @@ class ClanTest extends TestCase
     public function test_the_mission_bonuses_of_the_leader(): void
     {
         config(['kado.clans.bonus_chance' => 0, 'kado.clans.mission_steps' => 2]);
-        $period = $this->missionPeriod();
+        $period = $this->period();
         $leader = User::factory()->create();
         $clan = Clan::factory()->withLeader($leader)->create();
         $games = Game::factory()->count(3)->create();
@@ -271,7 +307,7 @@ class ClanTest extends TestCase
 
     public function test_the_end_of_the_period_shares_the_rewards_between_the_members_once(): void
     {
-        $period = $this->warPeriod();
+        $period = $this->period();
         $leader = User::factory()->create(['kado_points' => 0]);
         $member = User::factory()->create(['kado_points' => 0]);
         $first = Clan::factory()->withLeader($leader)->create();
@@ -296,7 +332,7 @@ class ClanTest extends TestCase
 
     public function test_the_next_run_begun_on_the_game_is_bound_to_the_clan_action(): void
     {
-        $this->warPeriod();
+        $this->period();
         $attacker = User::factory()->create();
         Clan::factory()->withLeader($attacker)->create();
         $defender = Clan::factory()->withLeader()->create();
@@ -317,7 +353,7 @@ class ClanTest extends TestCase
 
     public function test_the_ranking_and_the_overview(): void
     {
-        $period = $this->warPeriod();
+        $period = $this->period();
         $user = User::factory()->create();
         $mine = Clan::factory()->withLeader($user)->create(['name' => 'Les pirates']);
         $best = Clan::factory()->withLeader()->create(['name' => 'Dino RPG']);
@@ -328,7 +364,7 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.0.name', 'Dino RPG')
             ->assertJsonPath('data.0.rank', 1)
             ->assertJsonPath('data.1.name', 'Les pirates')
-            ->assertJsonPath('phase.phase', 'war');
+            ->assertJsonPath('tournament.period_id', $period->id);
         $this->getJson('/api/clans?q=pira')->assertOk()->assertJsonPath('data.0.rank', 2);
         $this->getJson('/api/clans/overview')->assertOk()
             ->assertJsonPath('data.clan.id', $mine->id)
