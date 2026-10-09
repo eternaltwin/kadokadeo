@@ -40,8 +40,7 @@ const doCancel = (attack) => {
     <MessageError v-if="error">{{ error }}</MessageError>
     <Loader v-if="isLoading && !status" />
 
-    <p v-if="status && !sections.length" class="mx-0 italic">Aucune attaque de ce clan ni contre ce clan pour le moment.</p>
-    <div v-else class="overflow-x-auto">
+    <div class="overflow-x-auto">
       <table v-if="status" class="w-full text-sm">
         <thead>
           <tr class="uppercase text-[10px]">
@@ -53,6 +52,14 @@ const doCancel = (attack) => {
           </tr>
         </thead>
         <tbody>
+          <!-- no attack: the frame of the table with a single line -->
+          <tr v-if="!sections.length" class="oddtrue">
+            <td colspan="5" class="py-4 italic text-kado-blue">
+              <img src="/assets/img/gfx/icons/atk.gif" alt="" class="mr-1" />
+              <img src="/assets/img/gfx/icons/def.gif" alt="" class="mr-2" />
+              Aucune attaque de ce clan ni contre ce clan pour le moment.
+            </td>
+          </tr>
           <template v-for="section in sections" :key="section.key">
             <tr>
               <td colspan="5" :class="section.type === 'atk' ? 'clanTypeAtk' : 'clanTypeDef'">
