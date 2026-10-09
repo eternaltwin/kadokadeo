@@ -4,17 +4,17 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-// the options a clan wins with its missions (App\Services\ClanService::useBonus), names of the original help
+// the options a clan wins with its missions (App\Services\ClanMissionService::useBonus), names of the original help
 enum ClanBonusType: string implements HasLabel
 {
-    // mission phase
+    // for the missions
     case NEXT_MISSION = 'next_mission';
     case DOUBLE_POINTS = 'double_points';
     case BAN_GAME = 'ban_game';
     case FORCE_GAME = 'force_game';
     case MORE_TIME = 'more_time';
     case SKIP_STEP = 'skip_step';
-    // war phase: the leader can give them to a member
+    // for the attacks and defenses: the leader can give them to a member
     case DOUBLE_ATTACK = 'double_attack';
     case SUPER_DEFENSE = 'super_defense';
 
@@ -60,17 +60,9 @@ enum ClanBonusType: string implements HasLabel
         };
     }
 
-    public function phase(): ClanPhase
-    {
-        return match ($this) {
-            self::DOUBLE_ATTACK, self::SUPER_DEFENSE => ClanPhase::WAR,
-            default => ClanPhase::MISSIONS,
-        };
-    }
-
-    // the only two options the leader can give to a member, who uses it himself
+    // the only two options the leader can give to a member, who uses it himself when he attacks or defends
     public function isAssignable(): bool
     {
-        return $this->phase() === ClanPhase::WAR;
+        return in_array($this, [self::DOUBLE_ATTACK, self::SUPER_DEFENSE], true);
     }
 }

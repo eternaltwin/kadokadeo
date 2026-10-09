@@ -8,14 +8,14 @@ const { fetchClan, isLoading, error } = useClans()
 const actions = useClans()
 
 const clan = ref(null)
-const phase = ref(null)
+const tournament = ref(null)
 const tab = computed(() => route.meta.tab ?? 'show')
 const clanId = computed(() => route.params.id)
 
 const load = () =>
   fetchClan(clanId.value).then((data) => {
     clan.value = data.data
-    phase.value = data.phase
+    tournament.value = data.tournament
   })
 watch(clanId, load, { immediate: true })
 
@@ -55,7 +55,10 @@ const updated = () => {
 
     <ClanLayout v-else :clan="clan" :tab="tab">
       <template #actions>
-        <li v-if="!viewer.is_member && viewer.has_clan && phase?.phase === 'war'">
+        <li v-if="viewer.is_leader">
+          <RouterLink :to="{ name: 'clans.manage', params: { id: clan.id } }">Gérer le clan</RouterLink>
+        </li>
+        <li v-if="!viewer.is_member && viewer.has_clan">
           <RouterLink :to="{ name: 'clans.attack', params: { id: clan.id } }" :title="viewer.attack_blocked ?? 'Attaquer ce clan'">Attaquer ce clan</RouterLink>
         </li>
         <li v-if="!viewer.has_clan && viewer.application_id">
@@ -81,12 +84,12 @@ const updated = () => {
                     v-model="applicationMessage"
                     rows="3"
                     maxlength="500"
-                    class="w-full border-2 border-white bg-[url(/gfx/bgInput.jpg)] p-2 text-kado-blue"></textarea>
+                    class="w-full border-2 border-white bg-white bg-[url(/gfx/bgInput.jpg)] bg-repeat-x p-2 text-kado-blue"></textarea>
         </div>
         <input type="submit" value="Envoyer votre candidature" class="w-auto!" />
       </form>
 
-      <ClanPresentation v-if="tab === 'show'" :clan="clan" :phase="phase" />
+      <ClanPresentation v-if="tab === 'show'" :clan="clan" :tournament="tournament" />
       <ClanStatus v-else-if="tab === 'status'" :clan="clan" />
       <ClanMissions v-else-if="tab === 'missions'" :clan="clan" />
       <ClanMembers v-else-if="tab === 'members'" :clan="clan" />

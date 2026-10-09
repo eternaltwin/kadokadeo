@@ -8,7 +8,7 @@ const router = useRouter()
 const { fetchMissions, fetchMembers, playStep, useBonus, assignBonus, isLoading, error } = useClans()
 const { fetchGames } = useGames()
 const data = ref(null)
-const phase = ref(null)
+const tournament = ref(null)
 const members = ref([])
 const games = ref([])
 const selectedBonus = ref(null)
@@ -20,7 +20,7 @@ const isLeader = computed(() => props.clan.viewer.is_leader)
 const load = () =>
   fetchMissions(props.clan.id).then((response) => {
     data.value = response.data
-    phase.value = response.phase
+    tournament.value = response.tournament
   })
 watchEffect(load)
 if (props.clan.viewer.is_leader) {
@@ -57,7 +57,7 @@ const confirmBonus = () => {
 
 <template>
   <div class="relative space-y-4">
-    <ClanPhaseBanner :phase="phase" />
+    <ClanPeriodBanner :tournament="tournament" />
     <MessageError v-if="error">{{ error }}</MessageError>
     <Loader v-if="isLoading && !data" />
 
@@ -103,7 +103,6 @@ const confirmBonus = () => {
                   <button v-else
                           type="button"
                           class="clanButton"
-                          :disabled="phase?.phase !== 'missions'"
                           @click="play(step)">Jouer</button>
                 </td>
               </tr>
@@ -112,7 +111,7 @@ const confirmBonus = () => {
         </div>
       </template>
       <p v-else class="italic mx-0">
-        Aucune mission en cours : les missions ne sont proposées que pendant la période des missions.
+        Aucune mission en cours : une nouvelle mission sera proposée à la prochaine période.
       </p>
 
       <p v-if="data.next_mission_double || data.banned_game || data.forced_game" class="text-sm mx-0">
@@ -148,7 +147,7 @@ const confirmBonus = () => {
             <p class="m-1 text-xs italic">C'est le chef de clan qui décide de l'utilisation des options.</p>
           </template>
           <template v-else-if="selectedBonus.assignable">
-            <p class="m-1 text-xs">Donnez cette option à un joueur : il pourra l'utiliser quand il le voudra pendant la période offensive.</p>
+            <p class="m-1 text-xs">Donnez cette option à un joueur : il pourra l'utiliser quand il le voudra pour attaquer ou défendre, jusqu'à la fin de la période.</p>
             <select v-model="bonusMember" class="m-1 text-kado-blue bg-white">
               <option :value="null" disabled>Choisir un joueur</option>
               <option v-for="m in members" :key="m.user.etwin_id" :value="m.user.etwin_id">{{ m.user.display_name }}</option>

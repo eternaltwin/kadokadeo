@@ -11,7 +11,7 @@ const tab = computed(() => ['war', 'missions', 'create'].includes(route.query.ta
 const search = ref(route.query.q ?? '')
 const clans = ref([])
 const meta = ref(null)
-const phase = ref(null)
+const tournament = ref(null)
 
 const load = (page = 1) => {
   if (tab.value === 'create') {
@@ -20,7 +20,7 @@ const load = (page = 1) => {
   fetchRanking({ ranking: tab.value, q: route.query.q || undefined, page }).then((data) => {
     clans.value = page === 1 ? data.data : [...clans.value, ...data.data]
     meta.value = data.meta
-    phase.value = data.phase
+    tournament.value = data.tournament
   })
 }
 watch(() => [route.query.tab, route.query.q], () => load(), { immediate: true })
@@ -50,7 +50,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
 
   <div class="px-2 space-y-4">
     <h1 class="mt-0 text-center">Les clans</h1>
-    <ClanPhaseBanner :phase="phase ?? clanStore.phase" />
+    <ClanPeriodBanner :tournament="tournament ?? clanStore.tournament" />
 
     <p v-if="clanStore.clan" class="mx-0">
       <img src="/assets/img/gfx/icons/clan.gif" alt="" />
@@ -88,7 +88,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                     v-model="description"
                     rows="6"
                     maxlength="5000"
-                    class="w-full border-2 border-white bg-[url(/gfx/bgInput.jpg)] p-2 text-kado-blue"></textarea>
+                    class="w-full border-2 border-white bg-white bg-[url(/gfx/bgInput.jpg)] bg-repeat-x p-2 text-kado-blue"></textarea>
         </div>
         <MessageError v-if="createError">{{ createError }}</MessageError>
         <input type="submit" value="Créer le clan" class="w-auto!" />
@@ -100,7 +100,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
         <input v-model="search"
                type="search"
                placeholder="Rechercher un clan"
-               class="border-2 border-white bg-[url(/gfx/bgInput.jpg)] p-1 text-kado-blue" />
+               class="border-2 border-white bg-white bg-[url(/gfx/bgInput.jpg)] bg-repeat-x p-1 text-kado-blue" />
         <input type="submit" value="Rechercher" class="w-auto! h-8!" />
       </form>
 

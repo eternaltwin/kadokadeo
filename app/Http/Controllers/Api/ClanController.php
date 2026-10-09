@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\ClanPhase;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClanAttackResource;
 use App\Http\Resources\ClanListResource;
@@ -59,10 +58,10 @@ class ClanController extends Controller implements HasMiddleware
                 : $this->clanService->rankOf($clan, $period, $ranking);
         });
 
-        return ClanListResource::collection($clans)->additional(['phase' => $this->clanService->phaseInfo()]);
+        return ClanListResource::collection($clans)->additional(['tournament' => $this->clanService->tournamentInfo()]);
     }
 
-    // what the menus need: the phase of the tournament, the clan of the player, the top 3
+    // what the menus need: the period of the tournament, the clan of the player, the top 3
     public function overview(Request $request)
     {
         $user = $request->user();
@@ -74,7 +73,7 @@ class ClanController extends Controller implements HasMiddleware
 
         return [
             'data' => [
-                'phase' => $this->clanService->phaseInfo(),
+                'tournament' => $this->clanService->tournamentInfo(),
                 'clan' => $clan ? ['id' => $clan->id, 'name' => $clan->name, 'is_leader' => $clan->leader_id === $user->id] : null,
                 'applications' => ClanApplication::query()
                     ->where('user_id', $user->id)
@@ -150,7 +149,7 @@ class ClanController extends Controller implements HasMiddleware
                     'attack_blocked' => $this->attackBlockedReason($user, $myClan, $clan, $period),
                 ],
             ],
-            'phase' => $this->clanService->phaseInfo(),
+            'tournament' => $this->clanService->tournamentInfo(),
         ];
     }
 
@@ -216,7 +215,7 @@ class ClanController extends Controller implements HasMiddleware
                 'launched' => ClanAttackResource::collection($base()->where('attacker_clan_id', $clan->id)->get()),
                 'received' => ClanAttackResource::collection($base()->where('defender_clan_id', $clan->id)->get()),
             ],
-            'phase' => $this->clanService->phaseInfo(),
+            'tournament' => $this->clanService->tournamentInfo(),
         ];
     }
 
@@ -228,11 +227,8 @@ class ClanController extends Controller implements HasMiddleware
         if ($myClan->id === $clan->id) {
             return 'Vous ne pouvez pas attaquer votre propre clan.';
         }
-        if (!$period || $this->clanService->phase($period) !== ClanPhase::WAR) {
-            return 'Les attaques ne sont possibles que pendant la période offensive.';
-        }
-        if (now()->gte($this->clanService->attacksLockedAt($period))) {
-            return 'Plus aucune attaque ne peut être lancée avant la fin de la période.';
+        if (!$period) {
+            return 'Aucune période en cours.';
         }
         $attackerScore = $this->clanService->warScore($myClan, $period);
         $defenderScore = $this->clanService->warScore($clan, $period);

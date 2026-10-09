@@ -77,6 +77,33 @@ return [
         'max_concurrency' => env('KADO_RUNS_MAX_CONCURRENCY', 50),
     ],
 
+    'poids_plume' => [
+        'jackpot' => env('KADO_POIDS_PLUME_JACKPOT', 0),
+    ],
+
+    // the tournament of the clans (App\Services\ClanService): attacks, defenses and missions during a whole period, then
+    // everything starts again from 0 on the first day of the next one
+    'clans' => [
+        'max_members' => 50,
+        // a clan has this time to beat the score of an attack (an attack not over at the end of the period is cancelled)
+        'attack_hours' => 12,
+        // an attack not repelled wins from 1 to max_points points, more against a clan with a higher score; the
+        // defender loses as much (its score never goes below 0)
+        'attack_max_points' => 10,
+        // the clans too far from your score are protected from your attacks (and you from theirs)
+        'protection_range' => (int) env('KADO_CLANS_PROTECTION_RANGE', 100),
+        'mission_hours' => 24,
+        'mission_more_time_hours' => 6,
+        'mission_steps' => 4,
+        // chance to win a bonus (picked at random) when a mission is completed
+        'bonus_chance' => (float) env('KADO_CLANS_BONUS_CHANCE', 0.5),
+        // Kado points shared between the members at the end of the period, by rank in each ranking: [last rank => points]
+        'rewards' => [
+            'war' => [1 => 150000, 2 => 100000, 5 => 75000, 10 => 25000, 25 => 12500, 50 => 7500, 100 => 5000, 200 => 2500, 500 => 1250],
+            'missions' => [1 => 150000, 2 => 100000, 5 => 75000, 10 => 25000, 25 => 12500, 50 => 7500, 100 => 5000, 200 => 2500, 500 => 1250],
+        ],
+    ],
+
     // off: nothing is evaluated on runs / league changes and nothing is shown to players (the admin stays available)
     'achievements' => [
         'enabled' => (bool) env('KADO_ACHIEVEMENTS_ENABLED', false),

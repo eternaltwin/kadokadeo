@@ -8,12 +8,12 @@ const router = useRouter()
 const clanStore = useClanStore()
 const { fetchStatus, defend, cancelAttack, isLoading, error } = useClans()
 const status = ref(null)
-const phase = ref(null)
+const tournament = ref(null)
 
 const load = () =>
   fetchStatus(props.clan.id).then((data) => {
     status.value = data.data
-    phase.value = data.phase
+    tournament.value = data.tournament
   })
 watchEffect(load)
 
@@ -36,7 +36,7 @@ const doCancel = (attack) => {
 
 <template>
   <div class="relative space-y-4">
-    <ClanPhaseBanner :phase="phase" />
+    <ClanPeriodBanner :tournament="tournament" />
     <MessageError v-if="error">{{ error }}</MessageError>
     <Loader v-if="isLoading && !status" />
 
