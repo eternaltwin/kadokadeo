@@ -6,11 +6,8 @@ defineProps({
 </script>
 
 <template>
-  <div v-if="tournament" class="flex items-center gap-2 border-l-4 border-kado-cyan-800 bg-kado-cyan-100 px-2 py-1 text-sm">
-    <img src="/assets/img/gfx/icons/clan.gif" alt="" />
-    <div>
-      <strong>Tournoi des clans - Période {{ tournament.period_id }}</strong> :
-      les scores des clans seront remis à zéro dans <ClanCountdown :until="tournament.ends_at" class="font-bold" />.
-    </div>
+  <div v-if="tournament" class="border-l-4 border-kado-cyan-800 bg-kado-cyan-100 px-2 py-1 text-sm">
+    <strong>Tournoi des clans - Période {{ tournament.period_id }}</strong> :
+    les scores des clans seront remis à zéro dans <ClanCountdown :until="tournament.ends_at" class="font-bold" />.
   </div>
 </template>
