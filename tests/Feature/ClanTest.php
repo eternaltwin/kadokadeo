@@ -236,9 +236,9 @@ class ClanTest extends TestCase
         $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertCreated();
     }
 
-    public function test_a_mission_completed_gives_its_points_and_a_new_mission_follows(): void
+    public function test_a_mission_completed_doubles_its_points_and_a_new_mission_follows(): void
     {
-        config(['kado.clans.bonus_chance' => 1, 'kado.clans.mission_steps' => 2]);
+        config(['kado.clans.bonus_chance' => 1]);
         $period = $this->period();
         $leader = User::factory()->create();
         $member = User::factory()->create();
@@ -258,20 +258,54 @@ class ClanTest extends TestCase
             $this->assertSame('completed', $this->playClanRun($member, $game, $period, $step['target_score'])['result']);
         }
 
+        // 1 point by step, doubled because all of them were completed in time
         $mission = ClanMission::query()->where('number', 1)->sole();
-        $points = array_sum(array_column($steps, 'points'));
+        $this->assertSame([1, 1], array_column($steps, 'points'));
         $this->assertSame(ClanMission::COMPLETED, $mission->status);
-        $this->assertSame($points, $mission->points);
-        $this->assertSame($points, ClanPeriodScore::query()->where('clan_id', $clan->id)->value('mission_score'));
+        $this->assertSame(4, $mission->points);
+        $this->assertSame(4, ClanPeriodScore::query()->where('clan_id', $clan->id)->value('mission_score'));
         $this->assertSame(1, ClanBonus::query()->where('clan_id', $clan->id)->count());
         $this->assertDatabaseHas('clan_member_stats', ['user_id' => $member->id, 'mission_steps' => 2]);
 
         $this->getJson("/api/clans/{$clan->id}/missions")->assertOk()->assertJsonPath('data.mission.number', 2);
     }
 
+    public function test_a_mission_not_finished_in_time_loses_its_points_and_the_missions_get_harder(): void
+    {
+        config(['kado.clans.bonus_chance' => 0]);
+        $period = $this->period();
+        $leader = User::factory()->create();
+        $clan = Clan::factory()->withLeader($leader)->create();
+        Game::factory()->count(10)->create(['stars' => [1000, 2000, 3000]]);
+        $missionService = app(ClanMissionService::class);
+
+        $mission = $missionService->currentMission($clan);
+        $step = $mission->steps->first();
+        $missionService->startStep($leader, $step);
+        $this->assertSame('completed', $this->playClanRun($leader, $step->game, $period, $step->target_score)['result']);
+        $this->assertSame(1, ClanPeriodScore::query()->where('clan_id', $clan->id)->value('mission_score'));
+
+        // 24 hours later the mission is failed: the point of the step is lost
+        $this->travel(25)->hours();
+        $next = $missionService->currentMission($clan);
+        $this->assertSame(ClanMission::FAILED, $mission->fresh()->status);
+        $this->assertSame(0, ClanPeriodScore::query()->where('clan_id', $clan->id)->value('mission_score'));
+
+        // more steps and higher scores with each mission
+        $this->assertCount(2, $mission->steps);
+        foreach (range(2, 11) as $number) {
+            $this->assertSame($number, $next->number);
+            $last = $next;
+            $missionService->loseMission($next, ClanMission::FAILED);
+            $next = $missionService->currentMission($clan);
+        }
+        $this->assertCount(7, $last->steps);
+        $this->assertGreaterThan($mission->steps->max('target_score'), $last->steps->min('target_score'));
+    }
+
     public function test_the_mission_bonuses_of_the_leader(): void
     {
-        config(['kado.clans.bonus_chance' => 0, 'kado.clans.mission_steps' => 2]);
+        config(['kado.clans.bonus_chance' => 0]);
         $period = $this->period();
         $leader = User::factory()->create();
         $clan = Clan::factory()->withLeader($leader)->create();
@@ -290,6 +324,7 @@ class ClanTest extends TestCase
         $next = $missionService->currentMission($clan);
         $this->assertSame(2, $next->number);
         $this->assertTrue($next->double_points);
+        $this->assertSame([2, 2], $next->steps->pluck('points')->all());
         $this->assertTrue($next->steps->pluck('game_id')->contains($games[0]->id));
 
         // "Passe étape" on every step completes the mission, without the points of the skipped steps
