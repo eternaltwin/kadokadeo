@@ -1,0 +1,173 @@
+<script setup>
+// "Classement" of the clans of the period, and the creation of a clan
+const route = useRoute()
+const router = useRouter()
+const clanStore = useClanStore()
+const { fetchRanking, isLoading, error } = useClans()
+// (its own error)
+const { createClan, error: createError } = useClans()
+
+const tab = computed(() => ['war', 'missions', 'create'].includes(route.query.tab) ? route.query.tab : 'war')
+const search = ref(route.query.q ?? '')
+const clans = ref([])
+const meta = ref(null)
+const phase = ref(null)
+
+const load = (page = 1) => {
+  if (tab.value === 'create') {
+    return
+  }
+  fetchRanking({ ranking: tab.value, q: route.query.q || undefined, page }).then((data) => {
+    clans.value = page === 1 ? data.data : [...clans.value, ...data.data]
+    meta.value = data.meta
+    phase.value = data.phase
+  })
+}
+watch(() => [route.query.tab, route.query.q], () => load(), { immediate: true })
+clanStore.reload()
+
+const hasNextPage = computed(() => meta.value && meta.value.current_page < meta.value.last_page)
+const doSearch = () => router.push({ query: { ...route.query, q: search.value || undefined } })
+
+const name = ref('')
+const description = ref('')
+const submit = () =>
+  createClan({ name: name.value, description: description.value || null }).then((data) => {
+    clanStore.reload()
+    router.push({ name: 'clans.show', params: { id: data.data.id } })
+  })
+
+const tabs = [
+  { label: 'Classement', value: 'war', route: { name: 'clans.index' } },
+  { label: 'Missions', value: 'missions', route: { name: 'clans.index', query: { tab: 'missions' } } },
+  { label: 'Créer un clan', value: 'create', route: { name: 'clans.index', query: { tab: 'create' } } },
+]
+const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value))
+</script>
+
+<template>
+  <NavTabs :items="tabs" :selected-index="selectedIndex" />
+
+  <div class="px-2 space-y-4">
+    <h1 class="mt-0 text-center">Les clans</h1>
+    <ClanPhaseBanner :phase="phase ?? clanStore.phase" />
+
+    <p v-if="clanStore.clan" class="mx-0">
+      <img src="/assets/img/gfx/icons/clan.gif" alt="" />
+      Votre clan :
+      <RouterLink :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }" class="font-bold">{{ clanStore.clan.name }}</RouterLink>
+    </p>
+    <p v-else class="mx-0">
+      Vous ne faites partie d'aucun clan. Un clan est un groupe de 1 à 50 joueurs qui combattent ensemble contre les
+      autres clans : rejoignez un clan existant en envoyant votre candidature depuis sa page, ou
+      <RouterLink :to="{ name: 'clans.index', query: { tab: 'create' } }">créez votre propre clan</RouterLink>.
+    </p>
+    <p v-if="clanStore.applications.length" class="mx-0 text-sm">
+      Candidature(s) en attente :
+      <template v-for="(a, i) in clanStore.applications" :key="a.id">
+        <template v-if="i">, </template>
+        <RouterLink :to="{ name: 'clans.show', params: { id: a.clan.id } }">{{ a.clan.name }}</RouterLink>
+      </template>
+    </p>
+
+    <template v-if="tab === 'create'">
+      <MessageError v-if="clanStore.clan">Vous faites déjà partie d'un clan.</MessageError>
+      <form v-else class="max-w-lg" @submit.prevent="submit">
+        <div>
+          <label for="clanName">Nom du clan</label>
+          <input id="clanName"
+                 v-model="name"
+                 type="text"
+                 minlength="3"
+                 maxlength="32"
+                 required />
+        </div>
+        <div>
+          <label for="clanDescription">Présentation (vous pourrez la modifier plus tard)</label>
+          <textarea id="clanDescription"
+                    v-model="description"
+                    rows="6"
+                    maxlength="5000"
+                    class="w-full border-2 border-white bg-[url(/gfx/bgInput.jpg)] p-2 text-kado-blue"></textarea>
+        </div>
+        <MessageError v-if="createError">{{ createError }}</MessageError>
+        <input type="submit" value="Créer le clan" class="w-auto!" />
+      </form>
+    </template>
+
+    <template v-else>
+      <form class="flex items-center gap-2" @submit.prevent="doSearch">
+        <input v-model="search"
+               type="search"
+               placeholder="Rechercher un clan"
+               class="border-2 border-white bg-[url(/gfx/bgInput.jpg)] p-1 text-kado-blue" />
+        <input type="submit" value="Rechercher" class="w-auto! h-8!" />
+      </form>
+
+      <MessageError v-if="error">{{ error }}</MessageError>
+      <div class="relative min-h-24 overflow-x-auto">
+        <Loader v-if="isLoading && !clans.length" />
+        <table class="w-full">
+          <thead>
+            <tr class="text-[10px] uppercase">
+              <th>Position</th>
+              <th>Clan</th>
+              <th>Membres</th>
+              <template v-if="tab === 'war'">
+                <th><img src="/assets/img/gfx/icons/clan_points.gif"
+                         alt="score"
+                         title="Score d'attaque"
+                         class="h-5" /></th>
+                <th><img src="/assets/img/gfx/icons/atk.gif"
+                         alt="attaques"
+                         title="Attaques réussies"
+                         class="h-5" /></th>
+                <th><img src="/assets/img/gfx/icons/def.gif"
+                         alt="défenses"
+                         title="Défenses réussies"
+                         class="h-5" /></th>
+              </template>
+              <template v-else>
+                <th><img src="/gfx/clan/cup.gif"
+                         alt="score"
+                         title="Score de mission"
+                         class="h-5" /></th>
+                <th>Missions</th>
+              </template>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(clan, index) in clans"
+                :key="clan.id"
+                :class="{ 'font-bold': clan.id === clanStore.clan?.id }"
+                :style="{ backgroundColor: index % 2 ? '#fff' : '#eaf8fa' }">
+              <td><Number :value="clan.rank" color="green" /></td>
+              <td class="text-left">
+                <RouterLink :to="{ name: 'clans.show', params: { id: clan.id } }">{{ clan.name }}</RouterLink>
+              </td>
+              <td>{{ clan.members_count }}</td>
+              <template v-if="tab === 'war'">
+                <td class="text-right"><Number :value="clan.war_score" color="orange" /></td>
+                <td class="text-right"><Number :value="clan.attacks_won" color="pink" /></td>
+                <td class="text-right"><Number :value="clan.defenses_won" color="blue" /></td>
+              </template>
+              <template v-else>
+                <td class="text-right"><Number :value="clan.mission_score" color="orange" /></td>
+                <td class="text-right">{{ clan.missions_completed }}</td>
+              </template>
+            </tr>
+            <tr v-if="!isLoading && !clans.length">
+              <td colspan="6" class="italic">Aucun clan pour le moment.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p v-if="hasNextPage" class="text-center">
+        <input type="button"
+               value="Charger plus de clans"
+               class="w-auto!"
+               @click="load(meta.current_page + 1)" />
+      </p>
+    </template>
+  </div>
+</template>

@@ -1,0 +1,97 @@
+<script setup>
+// the page of a clan: Présentation, Statut, Mission, Membres, Gestion, and the choice of the game of an attack
+const route = useRoute()
+const router = useRouter()
+const clanStore = useClanStore()
+const { fetchClan, isLoading, error } = useClans()
+// (their own errors)
+const actions = useClans()
+
+const clan = ref(null)
+const phase = ref(null)
+const tab = computed(() => route.meta.tab ?? 'show')
+const clanId = computed(() => route.params.id)
+
+const load = () =>
+  fetchClan(clanId.value).then((data) => {
+    clan.value = data.data
+    phase.value = data.phase
+  })
+watch(clanId, load, { immediate: true })
+
+const viewer = computed(() => clan.value?.viewer ?? {})
+const applicationMessage = ref('')
+const showApplyForm = ref(false)
+
+const apply = () =>
+  actions.apply(clan.value.id, applicationMessage.value || null).then(() => {
+    showApplyForm.value = false
+    clanStore.reload()
+    load()
+  })
+const cancelApplication = () =>
+  actions.cancelApplication(viewer.value.application_id).then(() => {
+    clanStore.reload()
+    load()
+  })
+const leave = () => {
+  if (confirm('Quitter ce clan ?')) {
+    actions.leave().then(() => {
+      clanStore.reload()
+      router.push({ name: 'clans.index' })
+    })
+  }
+}
+const updated = () => {
+  load()
+  clanStore.reload()
+}
+</script>
+
+<template>
+  <div class="relative min-h-48">
+    <Loader v-if="isLoading && !clan">Chargement ...</Loader>
+    <MessageError v-else-if="!clan">Clan introuvable. ({{ error }})</MessageError>
+
+    <ClanLayout v-else :clan="clan" :tab="tab">
+      <template #actions>
+        <li v-if="!viewer.is_member && viewer.has_clan && phase?.phase === 'war'">
+          <RouterLink :to="{ name: 'clans.attack', params: { id: clan.id } }" :title="viewer.attack_blocked ?? 'Attaquer ce clan'">Attaquer ce clan</RouterLink>
+        </li>
+        <li v-if="!viewer.has_clan && viewer.application_id">
+          <button type="button" @click="cancelApplication">Annuler ma candidature</button>
+        </li>
+        <li v-else-if="!viewer.has_clan && clan.is_recruiting">
+          <button type="button" @click="showApplyForm = !showApplyForm">Envoyer ma candidature</button>
+        </li>
+        <li v-if="viewer.is_member">
+          <button type="button" @click="leave">Quitter le clan</button>
+        </li>
+        <li v-if="clanStore.clan && clanStore.clan.id !== clan.id">
+          <RouterLink :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }">Mon clan</RouterLink>
+        </li>
+      </template>
+
+      <MessageError v-if="actions.error.value">{{ actions.error.value }}</MessageError>
+
+      <form v-if="showApplyForm" class="mb-4" @submit.prevent="apply">
+        <div>
+          <label for="applicationMessage">Votre message au chef de clan (facultatif)</label>
+          <textarea id="applicationMessage"
+                    v-model="applicationMessage"
+                    rows="3"
+                    maxlength="500"
+                    class="w-full border-2 border-white bg-[url(/gfx/bgInput.jpg)] p-2 text-kado-blue"></textarea>
+        </div>
+        <input type="submit" value="Envoyer votre candidature" class="w-auto!" />
+      </form>
+
+      <ClanPresentation v-if="tab === 'show'" :clan="clan" :phase="phase" />
+      <ClanStatus v-else-if="tab === 'status'" :clan="clan" />
+      <ClanMissions v-else-if="tab === 'missions'" :clan="clan" />
+      <ClanMembers v-else-if="tab === 'members'" :clan="clan" />
+      <ClanManage v-else-if="tab === 'manage'" :clan="clan" @updated="updated" />
+      <ClanAttackPicker v-else-if="tab === 'attack'" :clan="clan" />
+    </ClanLayout>
+  </div>
+</template>

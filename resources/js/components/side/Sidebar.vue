@@ -1,4 +1,5 @@
 <script setup>
+const clanStore = useClanStore()
 const otherGames = [
   { name: 'Eternalfest', url: 'https://eternalfest.net' },
   { name: 'eMush', url: 'https://emush.eternaltwin.org' },
@@ -32,10 +33,17 @@ const otherGames = [
         </li>
       </ul>
     </nav>
-    <aside class="sideBoxBlue grayscale">
+    <aside class="sideBoxBlue">
       <h2>Top 3 clans</h2>
       <ul>
-        <li class="text-center italic">Non disponible...</li>
+        <li v-for="clan in clanStore.top" :key="clan.id" class="flex justify-between gap-1">
+          <RouterLink :to="{ name: 'clans.show', params: { id: clan.id } }" class="truncate">{{ clan.rank }}. {{ clan.name }}</RouterLink>
+          <span class="text-kado-orange font-bold">{{ clan.war_score }}</span>
+        </li>
+        <li v-if="!clanStore.top.length" class="text-center italic">Aucun clan</li>
+        <li class="text-center mt-1">
+          <RouterLink :to="{ name: 'clans.index' }">Classement des clans</RouterLink>
+        </li>
       </ul>
     </aside>
     <aside class="sideBoxPink">

@@ -77,6 +77,8 @@ export default {
     "useApi": true,
     "useAttrs": true,
     "useAuthStore": true,
+    "useClanStore": true,
+    "useClans": true,
     "useCssModule": true,
     "useCssVars": true,
     "useDailyGameStore": true,

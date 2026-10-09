@@ -22,6 +22,33 @@ Route::resource('/games', App\Http\Controllers\Api\GameController::class)->only(
 Route::get('/games/{game}/scores', [App\Http\Controllers\Api\GameScoreController::class, 'index'])->whereNumber('game');
 Route::get('/games/{game}/ranking', [App\Http\Controllers\Api\GameScoreController::class, 'search'])->whereNumber('game');
 
+// the clans (App\Services\ClanService)
+Route::get('/clans', [App\Http\Controllers\Api\ClanController::class, 'index']);
+Route::post('/clans', [App\Http\Controllers\Api\ClanController::class, 'store']);
+Route::get('/clans/overview', [App\Http\Controllers\Api\ClanController::class, 'overview']);
+Route::post('/clans/leave', [App\Http\Controllers\Api\ClanMemberController::class, 'leave']);
+Route::prefix('/clans/{clan}')->whereNumber('clan')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\ClanController::class, 'show']);
+    Route::put('/', [App\Http\Controllers\Api\ClanController::class, 'update']);
+    Route::get('/members', [App\Http\Controllers\Api\ClanController::class, 'members']);
+    Route::get('/status', [App\Http\Controllers\Api\ClanController::class, 'status']);
+    Route::get('/missions', [App\Http\Controllers\Api\ClanMissionController::class, 'index']);
+    Route::get('/applications', [App\Http\Controllers\Api\ClanMemberController::class, 'applications']);
+    Route::post('/applications', [App\Http\Controllers\Api\ClanMemberController::class, 'apply']);
+    Route::post('/members/{user:etwin_id}/kick', [App\Http\Controllers\Api\ClanMemberController::class, 'kick'])->whereUuid('user');
+    Route::post('/members/{user:etwin_id}/leader', [App\Http\Controllers\Api\ClanMemberController::class, 'promote'])->whereUuid('user');
+    Route::post('/attacks', [App\Http\Controllers\Api\ClanWarController::class, 'attack']);
+});
+Route::delete('/clan-applications/{application}', [App\Http\Controllers\Api\ClanMemberController::class, 'cancel'])->whereNumber('application');
+Route::post('/clan-applications/{application}/accept', [App\Http\Controllers\Api\ClanMemberController::class, 'accept'])->whereNumber('application');
+Route::post('/clan-applications/{application}/refuse', [App\Http\Controllers\Api\ClanMemberController::class, 'refuse'])->whereNumber('application');
+Route::post('/clan-attacks/{attack}/defend', [App\Http\Controllers\Api\ClanWarController::class, 'defend'])->whereNumber('attack');
+Route::post('/clan-attacks/{attack}/cancel', [App\Http\Controllers\Api\ClanWarController::class, 'cancel'])->whereNumber('attack');
+Route::post('/clan-mission-steps/{step}/play', [App\Http\Controllers\Api\ClanMissionController::class, 'play'])->whereNumber('step');
+Route::post('/clan-bonuses/{bonus}/use', [App\Http\Controllers\Api\ClanMissionController::class, 'useBonus'])->whereNumber('bonus');
+Route::post('/clan-bonuses/{bonus}/assign', [App\Http\Controllers\Api\ClanMissionController::class, 'assignBonus'])->whereNumber('bonus');
+Route::get('/clan-actions/{action}', [App\Http\Controllers\Api\ClanActionController::class, 'show'])->whereNumber('action');
+
 Route::prefix('/runs')->group(function () {
     Route::get('/public-key', [App\Http\Controllers\Api\RunController::class, 'publicKey']);
     Route::get('/{run}', [App\Http\Controllers\Api\RunController::class, 'show'])->whereUlid('run');

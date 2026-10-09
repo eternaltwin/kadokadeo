@@ -1,7 +1,10 @@
 <script setup>
 const authStore = useAuthStore()
 const periodStore = usePeriodStore()
+const clanStore = useClanStore()
 const router = useRouter()
+
+clanStore.reload()
 
 const logout = () => {
   authStore.logout()
@@ -26,7 +29,11 @@ const logout = () => {
       <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconMail.gif" alt="mail"></RouterLink></li>
       <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconForum.gif" alt="forum"></RouterLink></li>
       <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconScore.gif" alt="scores"></RouterLink></li>
-      <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconClan.gif" alt="clans"></RouterLink></li>
+      <li>
+        <RouterLink :to="clanStore.clan ? { name: 'clans.show', params: { id: clanStore.clan.id } } : { name: 'clans.index' }" title="Mon clan">
+          <img src="/gfx/kalendarIconClan.gif" alt="clans">
+        </RouterLink>
+      </li>
     </ul>
     <ul class="navKalendrierButtonsBottom">
       <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconKado.gif" alt="points kado"></RouterLink></li>

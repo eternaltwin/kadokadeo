@@ -31,6 +31,16 @@ Here are the configuration variables specific to the project (the standard Larav
 | `KADO_GAME_BUILDS_ENABLED`  | Replays played by the version of the game they were recorded with (archive of the old bundles). Off for now: the production wipes `storage/` at each deploy, so every replay is played by the current bundle | `false` |
 | `KADO_GAME_BUILDS_PATH`     | Folder of the archive of the old game bundles (written by `build-games.mjs`)        | `storage/app/game-builds` |
 
+### Clans
+
+The tournament of the clans lasts a period (`App\Services\ClanService`): missions first (players can join, leave or change clan only then), then attacks and defenses. It is closed with the period by `kado:prepare-new-period`, and `kado:clans:resolve-attacks` (scheduled every 5 minutes) gives their points to the attacks not repelled in time. The other settings (rewards, durations...) are in `kado.clans` in [`config/kado.php`](config/kado.php).
+
+| Variable                       | Description                                                                         | Default |
+| ------------------------------ | ----------------------------------------------------------------------------------- | ------- |
+| `KADO_CLANS_MISSION_DAYS`      | Days of the mission phase at the start of the period, the rest is the war phase     | 7       |
+| `KADO_CLANS_PROTECTION_RANGE`  | A clan can only attack the clans whose attack score is within this range of its own | 100     |
+| `KADO_CLANS_BONUS_CHANCE`      | Chance (0 to 1) to win an option when the clan completes a mission                  | 0.5     |
+
 ### Security and anti-cheat
 
 | Variable                    | Description                                                                         | Default                           |

@@ -4,6 +4,9 @@ import { createVueRouterMiddleware } from '@yazida/vue-router-middleware'
 import { nextTick } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
+import ClansIndex from '@/pages/clans/index.vue'
+import ClansPlay from '@/pages/clans/play.vue'
+import ClansShow from '@/pages/clans/show.vue'
 import GamesDaily from '@/pages/games/daily.vue'
 import GamesIndex from '@/pages/games/index.vue'
 import GamesRanking from '@/pages/games/ranking.vue'
@@ -28,6 +31,14 @@ const router = createRouter({
     { path: '/games/:id', name: 'games.show', component: GamesShow, meta: { middleware: ['auth'] } },
     { path: '/games/:id/ranking', name: 'games.ranking', component: GamesRanking, meta: { middleware: ['auth'] } },
     { path: '/runs/:id', name: 'runs.show', component: RunsShow, meta: { middleware: ['auth'] } },
+    { path: '/clans', name: 'clans.index', component: ClansIndex, meta: { middleware: ['auth'], title: 'Clans - KadoKadéo' } },
+    { path: '/clans/play/:action', name: 'clans.play', component: ClansPlay, meta: { middleware: ['auth'] } },
+    { path: '/clans/:id', name: 'clans.show', component: ClansShow, meta: { middleware: ['auth'], tab: 'show' } },
+    { path: '/clans/:id/status', name: 'clans.status', component: ClansShow, meta: { middleware: ['auth'], tab: 'status' } },
+    { path: '/clans/:id/missions', name: 'clans.missions', component: ClansShow, meta: { middleware: ['auth'], tab: 'missions' } },
+    { path: '/clans/:id/members', name: 'clans.members', component: ClansShow, meta: { middleware: ['auth'], tab: 'members' } },
+    { path: '/clans/:id/manage', name: 'clans.manage', component: ClansShow, meta: { middleware: ['auth'], tab: 'manage' } },
+    { path: '/clans/:id/attack', name: 'clans.attack', component: ClansShow, meta: { middleware: ['auth'], tab: 'attack' } },
   ],
 })
 
