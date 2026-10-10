@@ -16,6 +16,7 @@ use App\Models\ClanMember;
 use App\Models\ClanMemberStat;
 use App\Models\ClanMission;
 use App\Models\ClanPeriodScore;
+use App\Rules\ClanName;
 use App\Services\ClanMissionService;
 use App\Services\ClanService;
 use App\Services\ClanWarService;
@@ -116,11 +117,13 @@ class ClanController extends Controller implements HasMiddleware
 
     public function store(Request $request)
     {
+        $request->merge(['name' => ClanName::normalize($request->input('name'))]);
         $validated = $request->validate([
-            'name' => ['required', 'string', 'min:3', 'max:32', 'unique:clans,name'],
+            'name' => ['required', 'string', 'min:3', 'max:32', new ClanName()],
             'description' => ['nullable', 'string', 'max:5000'],
         ], [
-            'name.unique' => 'Ce nom de clan est déjà pris.',
+            'name.min' => 'Le nom du clan doit faire au moins 3 caractères.',
+            'name.max' => 'Le nom du clan doit faire au plus 32 caractères.',
         ]);
 
         $clan = $this->clanService->create($request->user(), $validated['name'], $validated['description'] ?? null);
