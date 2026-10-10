@@ -39,7 +39,7 @@ const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
       <table class="w-full">
         <thead>
           <tr class="text-[10px] uppercase *:cursor-pointer">
-            <th class="text-right" @click="sortBy('names')">Joueur</th>
+            <th class="min-w-28 text-right" @click="sortBy('names')">Joueur</th>
             <th title="Points dans le clan : 1 point par étape de mission réussie + les points de ses attaques et de ses défenses réussies." @click="sortBy('points')">
               Points
             </th>

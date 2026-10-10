@@ -112,7 +112,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
           <thead>
             <tr class="text-[10px] uppercase">
               <th>Position</th>
-              <th>Clan</th>
+              <th class="min-w-28">Clan</th>
               <th>Membres</th>
               <template v-if="tab === 'war'">
                 <th><img src="/assets/img/gfx/icons/clan_points.gif"

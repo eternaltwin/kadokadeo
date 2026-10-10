@@ -70,7 +70,7 @@ const confirmBonus = () => {
           <table class="w-full">
             <thead>
               <tr class="text-[10px] uppercase">
-                <th>Jeu</th>
+                <th class="min-w-24">Jeu</th>
                 <th>Score à atteindre</th>
                 <th>Étape</th>
               </tr>
