@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClanMember extends Model
 {
-    protected $fillable = ['clan_id', 'user_id', 'role', 'combat_role', 'joined_period_id'];
+    protected $fillable = ['clan_id', 'user_id', 'role', 'combat_role', 'combat_role_period_id', 'joined_period_id'];
 
     // the leader is clans.leader_id: his role stays "member" here (App\Services\ClanService::roleOf)
     protected $casts = [

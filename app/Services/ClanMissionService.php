@@ -112,6 +112,24 @@ class ClanMissionService
         ]);
     }
 
+    // "Je m'en occupe": a member says he will complete the step later. Any member can take the place, the one who reserved
+    // can give it up (only an information for the clan).
+    public function reserveStep(User $user, ClanMissionStep $step): void
+    {
+        $mission = $step->mission;
+        $this->clanService->assertMember($user, $mission->clan);
+        if ($mission->status !== ClanMission::ACTIVE || $mission->expires_at->isPast()) {
+            throw new ClanException('Cette mission est terminée.');
+        }
+        if ($step->isDone()) {
+            throw new ClanException('Cette étape a déjà été réussie.');
+        }
+
+        $step->update($step->reserved_by_user_id === $user->id
+            ? ['reserved_by_user_id' => null, 'reserved_at' => null]
+            : ['reserved_by_user_id' => $user->id, 'reserved_at' => now()]);
+    }
+
     // a step completed gives a point to its player in the ranking of the clan
     public function completeStep(ClanAction $action, Run $run): string
     {

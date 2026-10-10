@@ -21,7 +21,7 @@ class ClanMissionController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum'),
-            new Middleware('throttle:30,1', only: ['play']),
+            new Middleware('throttle:30,1', only: ['play', 'reserve']),
         ];
     }
 
@@ -38,10 +38,11 @@ class ClanMissionController extends Controller implements HasMiddleware
 
         $mission = $this->missionService->currentMission($clan, $period);
         $score = $this->clanService->periodScore($clan, $period)->load('bannedGame', 'forcedGame');
+        $viewerId = $request->user()->id;
 
         return [
             'data' => [
-                'mission' => $mission ? $this->missionData($mission->load('steps.game', 'steps.completedBy')) : null,
+                'mission' => $mission ? $this->missionData($mission->load('steps.game', 'steps.completedBy', 'steps.reservedBy'), $viewerId) : null,
                 'missions' => ClanMission::query()
                     ->where('clan_id', $clan->id)
                     ->where('period_id', $period->id)
@@ -77,6 +78,13 @@ class ClanMissionController extends Controller implements HasMiddleware
         return response()->json(['data' => ['id' => $action->id]], 201);
     }
 
+    public function reserve(Request $request, ClanMissionStep $step)
+    {
+        $this->missionService->reserveStep($request->user(), $step);
+
+        return response()->noContent();
+    }
+
     public function useBonus(Request $request, ClanBonus $bonus)
     {
         $validated = $request->validate([
@@ -88,7 +96,7 @@ class ClanMissionController extends Controller implements HasMiddleware
         return response()->noContent();
     }
 
-    private function missionData(ClanMission $mission): array
+    private function missionData(ClanMission $mission, int $viewerId): array
     {
         return [
             'id' => $mission->id,
@@ -106,6 +114,10 @@ class ClanMissionController extends Controller implements HasMiddleware
                 'score' => $step->score,
                 'completed_by' => $step->completedBy ? UserLightResource::make($step->completedBy) : null,
                 'completed_at' => $step->completed_at?->toIso8601String(),
+                // "Je m'en occupe"
+                'reserved_by' => $step->reservedBy ? UserLightResource::make($step->reservedBy) : null,
+                'reserved_at' => $step->reserved_at?->toIso8601String(),
+                'reserved_by_me' => $step->reserved_by_user_id === $viewerId,
             ]),
         ];
     }

@@ -15,6 +15,8 @@ class ClanMissionStep extends Model
         'score',
         'skipped',
         'completed_at',
+        'reserved_by_user_id',
+        'reserved_at',
     ];
 
     protected $casts = [
@@ -22,6 +24,7 @@ class ClanMissionStep extends Model
         'score' => 'integer',
         'skipped' => 'boolean',
         'completed_at' => 'datetime',
+        'reserved_at' => 'datetime',
     ];
 
     public function mission()
@@ -32,6 +35,12 @@ class ClanMissionStep extends Model
     public function game()
     {
         return $this->belongsTo(Game::class);
+    }
+
+    // the member who said he will complete the step
+    public function reservedBy()
+    {
+        return $this->belongsTo(User::class, 'reserved_by_user_id');
     }
 
     public function completedBy()
