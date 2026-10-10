@@ -4,7 +4,12 @@ import { createVueRouterMiddleware } from '@yazida/vue-router-middleware'
 import { nextTick } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
+import Account from '@/pages/account.vue'
 import BestsScores from '@/pages/bestsScores.vue'
+import ClansDebug from '@/pages/clans/debug.vue'
+import ClansIndex from '@/pages/clans/index.vue'
+import ClansPlay from '@/pages/clans/play.vue'
+import ClansShow from '@/pages/clans/show.vue'
 import Competition from '@/pages/competition/index.vue'
 import GamesDaily from '@/pages/games/daily.vue'
 import GamesIndex from '@/pages/games/index.vue'
@@ -49,6 +54,17 @@ const router = createRouter({
       meta: { middleware: ['auth'] },
     },
     { path: '/runs/:id', name: 'runs.show', component: RunsShow, meta: { middleware: ['auth'] } },
+    { path: '/account', name: 'account', component: Account, meta: { middleware: ['auth'], title: 'Mon compte - KadoKadéo' } },
+    { path: '/clans', name: 'clans.index', component: ClansIndex, meta: { middleware: ['auth'], title: 'Clans - KadoKadéo' } },
+    { path: '/clans/debug', name: 'clans.debug', component: ClansDebug, meta: { middleware: ['auth'], title: 'Debug clans - KadoKadéo' } },
+    { path: '/clans/play/:action', name: 'clans.play', component: ClansPlay, meta: { middleware: ['auth'] } },
+    { path: '/clans/:id', name: 'clans.show', component: ClansShow, meta: { middleware: ['auth'], tab: 'show' } },
+    { path: '/clans/:id/status', name: 'clans.status', component: ClansShow, meta: { middleware: ['auth'], tab: 'status' } },
+    { path: '/clans/:id/missions', name: 'clans.missions', component: ClansShow, meta: { middleware: ['auth'], tab: 'missions' } },
+    { path: '/clans/:id/members', name: 'clans.members', component: ClansShow, meta: { middleware: ['auth'], tab: 'members' } },
+    { path: '/clans/:id/manage', name: 'clans.manage', component: ClansShow, meta: { middleware: ['auth'], tab: 'manage' } },
+    { path: '/clans/:id/games', name: 'clans.games', component: ClansShow, meta: { middleware: ['auth'], tab: 'games' } },
+    { path: '/clans/:id/attack', name: 'clans.attack', component: ClansShow, meta: { middleware: ['auth'], tab: 'attack' } },
   ],
 })
 
