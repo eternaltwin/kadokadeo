@@ -73,7 +73,9 @@ Route::post('/clan-applications/{application}/accept', [App\Http\Controllers\Api
 Route::post('/clan-applications/{application}/refuse', [App\Http\Controllers\Api\ClanMemberController::class, 'refuse'])->whereNumber('application');
 Route::post('/clan-attacks/{attack}/improve', [App\Http\Controllers\Api\ClanWarController::class, 'improve'])->whereNumber('attack');
 Route::post('/clan-attacks/{attack}/defend', [App\Http\Controllers\Api\ClanWarController::class, 'defend'])->whereNumber('attack');
+Route::post('/clan-attacks/{attack}/reserve', [App\Http\Controllers\Api\ClanWarController::class, 'reserve'])->whereNumber('attack');
 Route::post('/clan-attacks/{attack}/cancel', [App\Http\Controllers\Api\ClanWarController::class, 'cancel'])->whereNumber('attack');
+Route::post('/clan-mission-steps/{step}/reserve', [App\Http\Controllers\Api\ClanMissionController::class, 'reserve'])->whereNumber('step');
 Route::post('/clan-mission-steps/{step}/play', [App\Http\Controllers\Api\ClanMissionController::class, 'play'])->whereNumber('step');
 Route::post('/clan-bonuses/{bonus}/use', [App\Http\Controllers\Api\ClanMissionController::class, 'useBonus'])->whereNumber('bonus');
 Route::get('/clan-actions/{action}', [App\Http\Controllers\Api\ClanActionController::class, 'show'])->whereNumber('action');

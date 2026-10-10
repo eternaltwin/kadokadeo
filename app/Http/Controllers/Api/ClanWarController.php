@@ -20,7 +20,7 @@ class ClanWarController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum'),
-            new Middleware('throttle:30,1', only: ['attack', 'improve', 'defend']),
+            new Middleware('throttle:30,1', only: ['attack', 'improve', 'defend', 'reserve']),
         ];
     }
 
@@ -42,6 +42,13 @@ class ClanWarController extends Controller implements HasMiddleware
     public function defend(Request $request, ClanAttack $attack)
     {
         return $this->actionResponse($this->warService->startDefense($request->user(), $attack));
+    }
+
+    public function reserve(Request $request, ClanAttack $attack)
+    {
+        $this->warService->reserveDefense($request->user(), $attack);
+
+        return response()->noContent();
     }
 
     public function cancel(Request $request, ClanAttack $attack)

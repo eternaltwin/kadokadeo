@@ -21,6 +21,8 @@ class ClanAttack extends Model
         'defense_run_id',
         'points',
         'resolved_at',
+        'reserved_by_user_id',
+        'reserved_at',
     ];
 
     protected $casts = [
@@ -29,6 +31,7 @@ class ClanAttack extends Model
         'points' => 'integer',
         'expires_at' => 'datetime',
         'resolved_at' => 'datetime',
+        'reserved_at' => 'datetime',
     ];
 
     public function period()
@@ -59,6 +62,12 @@ class ClanAttack extends Model
     public function defenderUser()
     {
         return $this->belongsTo(User::class, 'defender_user_id');
+    }
+
+    // the member of the attacked clan who said he will defend
+    public function reservedBy()
+    {
+        return $this->belongsTo(User::class, 'reserved_by_user_id');
     }
 
     public function run()

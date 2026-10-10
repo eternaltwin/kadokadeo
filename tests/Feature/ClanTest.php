@@ -236,6 +236,77 @@ class ClanTest extends TestCase
         $this->assertSame('repelled', $this->playClanRun($other, $game, $period, 501)['result']);
     }
 
+    // a seat chosen can't change before the next period
+    public function test_the_seats_are_locked_for_the_period(): void
+    {
+        $period = $this->period();
+        $leader = User::factory()->create();
+        $member = User::factory()->create();
+        $clan = Clan::factory()->withLeader($leader)->create();
+        $clan->members()->create(['user_id' => $member->id]);
+
+        Sanctum::actingAs($leader);
+        $url = "/api/clans/{$clan->id}/members/{$member->etwin_id}/combat-role";
+        $this->putJson($url, ['combat_role' => 'attacker'])->assertNoContent();
+        $this->putJson($url, ['combat_role' => 'attacker'])->assertNoContent();
+        $this->putJson($url, ['combat_role' => 'defender'])->assertStatus(422)
+            ->assertJsonPath('message', 'Le siège de ce joueur a déjà été choisi pendant cette période : il pourra changer à la prochaine période.');
+        $this->putJson($url, ['combat_role' => null])->assertStatus(422);
+        $this->getJson("/api/clans/{$clan->id}/members")->assertOk()->assertJsonPath('data.1.combat_role_locked', true);
+
+        // the next period
+        $this->travelTo($period->end_at->clone()->addMinute());
+        Period::factory()->create(['start_at' => now()->startOfDay(), 'end_at' => now()->addDays(13)->endOfDay()]);
+        $this->putJson($url, ['combat_role' => 'defender'])->assertNoContent();
+    }
+
+    // "Je m'en occupe": any member of the attacked clan reserves the defense or takes the place, only for the information
+    public function test_reserving_a_defense_and_a_mission_step(): void
+    {
+        $period = $this->period();
+        $attacker = User::factory()->create();
+        $defender = User::factory()->create();
+        $other = User::factory()->create();
+        Clan::factory()->withLeader($attacker)->create();
+        $clanB = Clan::factory()->withLeader($defender)->create();
+        $clanB->members()->create(['user_id' => $other->id]);
+        Game::factory()->count(6)->create();
+        $game = Game::query()->first();
+
+        app(ClanWarService::class)->startAttack($attacker, $clanB, $game);
+        $this->playClanRun($attacker, $game, $period, 500);
+        $attack = ClanAttack::query()->sole();
+
+        Sanctum::actingAs($attacker);
+        $this->postJson("/api/clan-attacks/{$attack->id}/reserve")->assertStatus(422);
+        Sanctum::actingAs($defender);
+        $this->postJson("/api/clan-attacks/{$attack->id}/reserve")->assertNoContent();
+        Sanctum::actingAs($other);
+        $this->getJson("/api/clans/{$clanB->id}/status")->assertOk()
+            ->assertJsonPath('data.received.0.reserved_by.etwin_id', $defender->etwin_id)
+            ->assertJsonPath('data.received.0.reserved_by_me', false);
+        // another member takes the place
+        $this->postJson("/api/clan-attacks/{$attack->id}/reserve")->assertNoContent();
+        $this->assertSame($other->id, $attack->fresh()->reserved_by_user_id);
+        // ... and gives it up
+        $this->postJson("/api/clan-attacks/{$attack->id}/reserve")->assertNoContent();
+        $this->assertNull($attack->fresh()->reserved_by_user_id);
+        // the attacker clan does not see the reservations
+        $this->postJson("/api/clan-attacks/{$attack->id}/reserve")->assertNoContent();
+        Sanctum::actingAs($attacker);
+        $this->getJson("/api/clans/{$clanB->id}/status")->assertOk()->assertJsonPath('data.received.0.reserved_by', null);
+
+        // a step of the mission
+        $step = app(ClanMissionService::class)->currentMission($clanB)->steps->first();
+        Sanctum::actingAs($other);
+        $this->postJson("/api/clan-mission-steps/{$step->id}/reserve")->assertNoContent();
+        $this->getJson("/api/clans/{$clanB->id}/missions")->assertOk()
+            ->assertJsonPath('data.mission.steps.0.reserved_by.etwin_id', $other->etwin_id)
+            ->assertJsonPath('data.mission.steps.0.reserved_by_me', true);
+        Sanctum::actingAs($attacker);
+        $this->postJson("/api/clan-mission-steps/{$step->id}/reserve")->assertStatus(422);
+    }
+
     // a new run on the game of an attack: its score counts only if it is higher
     public function test_an_attack_is_improved_only_by_a_higher_score(): void
     {
