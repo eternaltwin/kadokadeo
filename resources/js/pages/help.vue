@@ -24,6 +24,7 @@ const sections = [
   { id: 'missions', title: 'Les missions', level: 3, art: art('clan') },
   { id: 'options', title: 'Les options', level: 3, art: art('clan') },
   { id: 'classement', title: 'Le classement des clans', level: 3, art: art('clan') },
+  { id: 'classementv1', title: 'Le classement V1', level: 2, art: art('general') },
   { id: 'compte', title: 'Mon compte', level: 2, art: art('pks') },
   { id: 'questions', title: 'Questions', level: 2, art: art('gem') },
 ]
@@ -191,12 +192,14 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
             <template v-else-if="section.id === 'defenses'">
               <p><img src="/assets/img/gfx/icons/def.gif" alt="Défense" class="inline" /> Les attaques lancées par votre Clan et celles menées contre lui sont indiquées dans l'onglet Statut de votre clan. Cliquez sur « Défendre » et battez le score de l'attaque sur le même jeu.</p>
               <p>Sachez que tant que vous avez une attaque en cours, vous ne pouvez pas défendre ! Il faudra donc coordonner les membres du Clan entre attaquants et défenseurs.</p>
-              <p>Le chef et ses bras droits peuvent donner des sièges, au moins un de chaque : un <strong>Attaquant</strong> ({{ rules.attacker_seats }} % des membres) peut lancer deux attaques en même temps, un <strong>Défenseur</strong> ({{ rules.defender_seats }} % des membres) peut défendre même quand il a une attaque en cours.</p>
+              <p>Le chef et ses bras droits peuvent donner des sièges, au moins un de chaque : un <strong>Attaquant</strong> ({{ rules.attacker_seats }} % des membres) peut lancer deux attaques en même temps, un <strong>Défenseur</strong> ({{ rules.defender_seats }} % des membres) peut défendre même quand il a une attaque en cours. Un siège choisi est gardé jusqu'à la fin de la période.</p>
+              <p>Vous battrez le score d'une attaque plus tard ? Cliquez sur « Réserver » dans l'onglet Statut pour prévenir votre Clan. N'importe quel membre peut prendre la réservation à son tour : c'est seulement une information.</p>
               <p>Pour progresser dans le classement, il faudra à la fois remporter des attaques et défendre efficacement contre les clans ennemis.</p>
             </template>
 
             <template v-else-if="section.id === 'missions'">
               <p>Votre Clan reçoit des missions : plusieurs étapes, chacune étant un score à atteindre sur un jeu. Vous avez <strong>{{ rules.mission_hours }} heures</strong> pour toutes les réussir. Chacun peut faire les étapes sur les jeux où il est le meilleur, et les parties des missions sont <strong>gratuites et illimitées</strong> !</p>
+              <p>Comme pour les défenses, chacun peut « Réserver » une étape pour prévenir le Clan qu'il s'en occupe.</p>
               <p>Plus votre Clan a de membres, plus les missions ont d'étapes : {{ rules.mission_steps_alone }} pour un joueur seul, jusqu'à {{ rules.mission_steps_full }} pour {{ rules.max_members }} joueurs. Le score à atteindre augmente avec les missions.</p>
               <p>Une mission réussie rapporte <strong>{{ rules.mission_points_first }} points</strong> (un point de moins toutes les {{ rules.mission_points_every }} missions, au moins {{ rules.mission_points_min }}) et ouvre la mission suivante. Si le temps est écoulé, votre Clan perd un point par étape non réussie, moins une, et reçoit une nouvelle mission. Combien de missions votre Clan réussira-t-il ?</p>
             </template>
@@ -228,6 +231,38 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
                   </tbody>
                 </table>
               </div>
+            </template>
+
+            <template v-else-if="section.id === 'classementv1'">
+              <p>Chaque période, la compétition du classement V1 a lieu. Il s'agit d'un classement dans lequel les 12 meilleurs scores de chaque joueur sont additionnés pour atteindre un maximum de 18.000 points</p>
+              <p>Les scores de chaque jeu sont convertis dans une échelle allant de 0 à 1500 selon les critères suivants : </p>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Score atteint</th>
+                    <th>Nombre de points V1</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><img src="/gfx/iconGreenStar.gif" alt="Etoile verte" /></td>
+                    <td>1000</td>
+                  </tr>
+                  <tr>
+                    <td><img src="/gfx/iconOrangeStar.gif" alt="Etoile orange" /></td>
+                    <td>1100</td>
+                  </tr>
+                  <tr>
+                    <td><img src="/gfx/iconRedStar.gif" alt="Etoile rouge" /></td>
+                    <td>1150</td>
+                  </tr>
+                  <tr>
+                    <td>Score V1</td>
+                    <td>1500</td>
+                  </tr>
+                </tbody>
+              </table>
             </template>
 
             <template v-else-if="section.id === 'compte'">

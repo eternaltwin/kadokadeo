@@ -121,6 +121,23 @@ class ClanWarService
         ]);
     }
 
+    // "Je m'en occupe": a member of the attacked clan says he will beat the score later. Any member can take the place,
+    // the one who reserved can give it up (only an information for the clan).
+    public function reserveDefense(User $user, ClanAttack $attack): void
+    {
+        $clan = $this->clanService->clanOf($user);
+        if (!$clan || $clan->id !== $attack->defender_clan_id) {
+            throw new ClanException('Seuls les membres du clan attaqué peuvent réserver la défense.');
+        }
+        if ($attack->status !== ClanAttackStatus::ACTIVE || $attack->expires_at->isPast()) {
+            throw new ClanException('Cette attaque est terminée.');
+        }
+
+        $attack->update($attack->reserved_by_user_id === $user->id
+            ? ['reserved_by_user_id' => null, 'reserved_at' => null]
+            : ['reserved_by_user_id' => $user->id, 'reserved_at' => now()]);
+    }
+
     public function cancelAttack(User $user, ClanAttack $attack): void
     {
         if ($attack->attacker_user_id !== $user->id) {

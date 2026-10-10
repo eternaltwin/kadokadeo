@@ -1,6 +1,8 @@
 <script setup>
-// a clan run: an attack, a defense or a mission step. The next run of the game is bound to it on the server.
+// a clan run: an attack, a defense or a mission step, on the page of the game (rules, paliers, ranking) with the score of
+// the clan in the paliers. The next run of the game is bound to it on the server.
 const route = useRoute()
+const authStore = useAuthStore()
 const router = useRouter()
 const clanStore = useClanStore()
 const { fetchAction, playAgain, error } = useClans()
@@ -46,6 +48,19 @@ const backRoute = computed(() => {
     ? { name: 'clans.missions', params: { id } }
     : { name: 'clans.status', params: { id } }
 })
+// the score to beat of a defense or of an improvement, the score to reach of a mission step, in the paliers of the game
+const goals = computed(() => {
+  const target = action.value?.target
+  if (!target?.score) {
+    return []
+  }
+  if (action.value.type === 'mission') {
+    return [{ score: target.score, img: '/gfx/clan/clan_mission_points.png', alt: `Étape de la mission ${target.mission}` }]
+  }
+  return action.value.is_improvement
+    ? [{ score: target.score + 1, img: '/gfx/clan/atksmall.gif', alt: 'Améliorer votre attaque' }]
+    : [{ score: target.score + 1, img: '/gfx/clan/defsmall.gif', alt: `Repousser l'attaque de ${target.attacker}` }]
+})
 const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed'].includes(result.value?.result))
 </script>
 
@@ -57,7 +72,7 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
     <template v-else>
       <h1 class="mt-0 text-center">{{ action.type_label }}</h1>
 
-      <div class="flex items-center gap-2 border-l-4 px-2 py-1" :class="action.type === 'attack' ? 'border-[#ff6b9c] bg-[#ffe3ec] text-[#ff6b9c]' : 'border-kado-cyan-800 bg-kado-cyan-100'">
+      <div class="flex items-center gap-2 border-l-4 px-2 py-1" :class="action.type === 'attack' ? 'border-kado-pink-400 bg-[#ffe3ec] text-kado-pink-400' : 'border-kado-cyan-800 bg-kado-cyan-100'">
         <img :src="action.type === 'attack' ? '/assets/img/gfx/icons/atk.gif' : action.type === 'defense' ? '/assets/img/gfx/icons/def.gif' : '/gfx/clan/clan_mission_points.png'" alt="" />
         <div>
           <template v-if="action.is_improvement">
@@ -90,6 +105,12 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
       <p class="text-center">
         <RouterLink :to="backRoute">Retour à la page du clan</RouterLink>
       </p>
+      <p v-if="action.type !== 'mission' && authStore.user" class="flex items-center justify-center gap-1 text-sm">
+        <img src="/gfx/gemGreen.svg" alt="" class="w-4" />
+        {{ authStore.user.clan_attack_games }} partie(s) d'attaque gratuite(s) aujourd'hui, puis
+        <img src="/gfx/gemOrange.svg" alt="" class="w-4" />
+        {{ authStore.user.clan_games }} partie(s) de clan achetée(s)
+      </p>
 
       <MessageError v-if="!action.is_open && !result">
         Cette action de clan est terminée ou a expiré. Retournez sur la page de votre clan pour en lancer une nouvelle.
@@ -97,10 +118,10 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
       <div v-else-if="!game && !result" class="relative min-h-48">
         <Loader>Chargement du jeu ...</Loader>
       </div>
-      <div v-else-if="game" class="relative mx-auto max-w-[600px]">
-        <h2>{{ game.name }}</h2>
-        <GamesGameScript :game="game" />
-      </div>
+      <template v-else-if="game">
+        <h2 class="text-center">{{ game.name }}</h2>
+        <GamesGamePlayer :game="game" :goals="goals" />
+      </template>
     </template>
   </div>
 </template>

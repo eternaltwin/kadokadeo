@@ -6,7 +6,7 @@ const props = defineProps({
 
 const router = useRouter()
 const clanStore = useClanStore()
-const { fetchStatus, defend, improveAttack, cancelAttack, isLoading, error } = useClans()
+const { fetchStatus, defend, improveAttack, cancelAttack, reserveDefense, isLoading, error } = useClans()
 const status = ref(null)
 const tournament = ref(null)
 
@@ -26,6 +26,9 @@ const sections = computed(() => [
 const goPlay = (data) => router.push({ name: 'clans.play', params: { action: data.data.id } })
 const doDefend = (attack) => defend(attack.id).then(goPlay)
 const doImprove = (attack) => improveAttack(attack.id).then(goPlay)
+// "Je m'en occupe": reserve the defense, take the place of another member, or give it up
+const doReserve = (attack) => reserveDefense(attack.id).then(load)
+const reserveLabel = (item) => (item.reserved_by_me ? 'Libérer' : item.reserved_by ? 'Prendre' : 'Réserver')
 const doCancel = (attack) => {
   if (confirm('Annuler cette attaque ?')) {
     cancelAttack(attack.id).then(() => {
@@ -98,6 +101,12 @@ const doCancel = (attack) => {
                               variant="pink"
                               title="Annuler cette attaque"
                               @click="doCancel(attack)">Annuler</FormButton>
+                  <FormButton v-if="attack.can_reserve"
+                              size="sm"
+                              :variant="attack.reserved_by_me ? 'pink' : 'green'"
+                              title="Je m'en occupe : prévenez votre clan que vous battrez ce score plus tard"
+                              @click="doReserve(attack)">{{ reserveLabel(attack) }}</FormButton>
+                  <span v-if="attack.reserved_by" class="text-xs italic">Réservée par {{ attack.reserved_by.display_name }}</span>
                 </div>
                 <template v-else-if="attack.status === 'won'">
                   Réussie <span class="font-bold text-[#ff6b9c]">+<Number :value="attack.points" color="pink" /></span>

@@ -34,8 +34,8 @@ const done = (message) => {
 }
 const buy = (pack) => {
   const s = pack.count > 1 ? 's' : ''
-  if (confirm(`Acheter ${pack.count} partie${pack.count > 1 ? 's' : ''} de clan pour ${pack.price} points Kado ?`)) {
-    buyClanGames(pack.count).then(() => done(`${pack.count} partie${pack.count > 1 ? 's' : ''} de clan achetée${pack.count > 1 ? 's' : ''} !`))
+  if (confirm(`Acheter ${pack.count} partie${s} de clan pour ${pack.price} points Kado ?`)) {
+    buyClanGames(pack.count).then(() => done(`${pack.count} partie${s} de clan achetée${pack.count > 1 ? 's' : ''} !`))
   }
 }
 const donate = () => donateClanGames(props.clan.id, donateCount.value).then(() => done(`${donateCount.value} partie${donateCount.value > 1 ? 's' : ''} donnée${donateCount.value > 1 ? 's' : ''} au clan.`))

@@ -274,13 +274,21 @@ class ClanService
         $clan->members()->where('user_id', $member->id)->update(['role' => $role]);
     }
 
-    // "Attaquant", "Défenseur" or none, within the seats of the clan
+    // "Attaquant", "Défenseur" or none, within the seats of the clan; then locked until the next period
     public function setCombatRole(User $manager, Clan $clan, User $member, ?ClanCombatRole $role): void
     {
         $this->assertManager($manager, $clan);
         $this->assertMember($member, $clan);
+        $period = $this->assertPeriod();
 
-        DB::transaction(function () use ($clan, $member, $role) {
+        DB::transaction(function () use ($clan, $member, $role, $period) {
+            $current = ClanMember::query()->where('clan_id', $clan->id)->where('user_id', $member->id)->first();
+            if ($current->combat_role === $role) {
+                return;
+            }
+            if ($current->combat_role_period_id === $period->id) {
+                throw new ClanException('Le siège de ce joueur a déjà été choisi pendant cette période : il pourra changer à la prochaine période.');
+            }
             if ($role) {
                 // the clan is locked (PostgreSQL does not lock an aggregate): one seat given at a time
                 Clan::query()->lockForUpdate()->find($clan->id);
@@ -290,7 +298,7 @@ class ClanService
                     throw new ClanException("Tous les sièges de {$role->getLabel()} sont pris ({$seats} pour ce clan).");
                 }
             }
-            $clan->members()->where('user_id', $member->id)->update(['combat_role' => $role]);
+            $clan->members()->where('user_id', $member->id)->update(['combat_role' => $role, 'combat_role_period_id' => $period->id]);
         });
     }
 
