@@ -85,6 +85,7 @@ Route::post('/clan-mission-steps/{step}/reserve', [App\Http\Controllers\Api\Clan
 Route::post('/clan-mission-steps/{step}/play', [App\Http\Controllers\Api\ClanMissionController::class, 'play'])->whereNumber('step');
 Route::post('/clan-bonuses/{bonus}/use', [App\Http\Controllers\Api\ClanMissionController::class, 'useBonus'])->whereNumber('bonus');
 Route::get('/clan-actions/{action}', [App\Http\Controllers\Api\ClanActionController::class, 'show'])->whereNumber('action');
+Route::post('/clan-actions/{action}/cancel', [App\Http\Controllers\Api\ClanActionController::class, 'cancel'])->whereNumber('action');
 Route::post('/clan-actions/{action}/again', [App\Http\Controllers\Api\ClanActionController::class, 'again'])->whereNumber('action');
 
 Route::prefix('/runs')->group(function () {

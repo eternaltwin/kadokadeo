@@ -26,6 +26,7 @@ class ClanPeriodService
     {
         $this->warService->resolveExpired();
         $this->warService->cancelUnfinished($period);
+        app(ClanRunService::class)->cancelUnfinished($period);
 
         // a mission not finished at the end of the period is failed: its points are lost
         $missions = ClanMission::query()->where('period_id', $period->id)->where('status', ClanMission::ACTIVE)->get();

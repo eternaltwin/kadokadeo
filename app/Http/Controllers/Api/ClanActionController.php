@@ -18,8 +18,16 @@ class ClanActionController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum'),
-            new Middleware('throttle:30,1', only: ['again']),
+            new Middleware('throttle:30,1', only: ['again', 'cancel']),
         ];
+    }
+
+    // a clan run begun and never ended (the page closed during the run): "Annuler la partie"
+    public function cancel(Request $request, ClanAction $action, ClanRunService $clanRunService)
+    {
+        $clanRunService->cancel($request->user(), $action);
+
+        return response()->noContent();
     }
 
     // when a clan run ends: the next run on the page ("Rejouer") counts for the clan too while its target is open

@@ -714,6 +714,68 @@ class ClanTest extends TestCase
         $this->postJson('/api/clans/leave')->assertNoContent();
     }
 
+    // a clan run begun and never ended (the page closed): shown on the page of the clan, cancelled by its player
+    public function test_cancelling_a_clan_run_never_ended(): void
+    {
+        $period = $this->period();
+        $attacker = User::factory()->create();
+        $clanA = Clan::factory()->withLeader($attacker)->create();
+        $clanB = Clan::factory()->withLeader()->create();
+        $game = Game::factory()->create();
+
+        // an attack begun, the page closed
+        Sanctum::actingAs($attacker);
+        $actionId = $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertCreated()->json('data.id');
+        $runId = $this->postJson("/api/runs/games/{$game->id}")->assertSuccessful()->json('data.run_id');
+        $this->getJson("/api/clans/{$clanA->id}")->assertOk()
+            ->assertJsonPath('data.viewer.unfinished_actions.0.label', 'Attaque en cours…')
+            ->assertJsonPath('data.viewer.unfinished_actions.0.target', $clanB->name)
+            ->assertJsonPath('data.viewer.unfinished_actions.0.blocks', true);
+        $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertStatus(422);
+
+        // only by its player
+        Sanctum::actingAs(User::factory()->create());
+        $this->postJson("/api/clan-actions/{$actionId}/cancel")->assertStatus(422);
+
+        Sanctum::actingAs($attacker);
+        $this->postJson("/api/clan-actions/{$actionId}/cancel")->assertNoContent();
+        $this->assertDatabaseHas('clan_actions', ['id' => $actionId, 'result' => 'cancelled']);
+        $this->getJson("/api/clans/{$clanA->id}")->assertOk()->assertJsonCount(0, 'data.viewer.unfinished_actions');
+        $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertCreated();
+        $this->postJson("/api/clan-actions/{$actionId}/cancel")->assertStatus(422);
+
+        // the run ends anyway: a normal run, no attack
+        $run = Run::query()->find($runId);
+        $run->update(['score' => 100, 'completed_at' => now()]);
+        $this->assertNull(app(ClanRunService::class)->handleRunCompleted($run->fresh()));
+        $this->assertDatabaseCount('clan_attacks', 0);
+    }
+
+    // an attack run blocks until it ends or is cancelled, whatever its length; the end of the period cancels it
+    public function test_a_long_attack_run_blocks_until_the_end_of_the_period(): void
+    {
+        $period = $this->period();
+        $attacker = User::factory()->create();
+        $clanA = Clan::factory()->withLeader($attacker)->create();
+        $clanB = Clan::factory()->withLeader()->create();
+        $game = Game::factory()->create();
+
+        Sanctum::actingAs($attacker);
+        $actionId = $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertCreated()->json('data.id');
+        $this->postJson("/api/runs/games/{$game->id}")->assertSuccessful();
+
+        // 3 days later: still blocking, still shown
+        $this->travel(3)->days();
+        $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertStatus(422);
+        $this->getJson("/api/clans/{$clanA->id}")->assertOk()->assertJsonPath('data.viewer.unfinished_actions.0.blocks', true);
+
+        $this->travelTo($period->end_at->clone()->addMinute());
+        Period::factory()->create(['start_at' => now()->startOfDay(), 'end_at' => now()->addDays(13)->endOfDay()]);
+        app(ClanPeriodService::class)->closePeriod($period);
+        $this->assertDatabaseHas('clan_actions', ['id' => $actionId, 'result' => 'cancelled']);
+        $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertCreated();
+    }
+
     // "Rejouer" on the page of a clan run: the next run counts for the clan while its target is open
     public function test_playing_again_on_the_page_of_a_clan_run(): void
     {

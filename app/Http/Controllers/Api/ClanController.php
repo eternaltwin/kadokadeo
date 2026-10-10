@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ClanActionType;
 use App\Enums\ClanBonusType;
 use App\Enums\ClanCombatRole;
 use App\Enums\ClanRole;
@@ -10,6 +11,7 @@ use App\Http\Resources\ClanAttackResource;
 use App\Http\Resources\ClanListResource;
 use App\Http\Resources\UserLightResource;
 use App\Models\Clan;
+use App\Models\ClanAction;
 use App\Models\ClanApplication;
 use App\Models\ClanAttack;
 use App\Models\ClanMember;
@@ -18,6 +20,7 @@ use App\Models\ClanMission;
 use App\Models\ClanPeriodScore;
 use App\Rules\ClanName;
 use App\Services\ClanMissionService;
+use App\Services\ClanRunService;
 use App\Services\ClanService;
 use App\Services\ClanWarService;
 use App\Settings\ClanSettings;
@@ -188,6 +191,8 @@ class ClanController extends Controller implements HasMiddleware
                         ->where('status', ClanApplication::PENDING)
                         ->value('id'),
                     'attack_blocked' => $attackBlocked,
+                    // his clan runs begun and never ended, to cancel them
+                    'unfinished_actions' => $isMember ? $this->unfinishedActions($user) : [],
                     // the points his clan would win if the attack is not repelled
                     'attack_points' => $attackBlocked === null
                         ? $this->clanService->attackPoints($this->clanService->warScore($myClan, $period), $this->clanService->warScore($clan, $period))
@@ -279,6 +284,33 @@ class ClanController extends Controller implements HasMiddleware
             ],
             'tournament' => $this->clanService->tournamentInfo(),
         ];
+    }
+
+    private function unfinishedActions($user): array
+    {
+        return app(ClanRunService::class)->unfinishedActions($user)->map(function (ClanAction $action) {
+            $isImprovement = $action->type === ClanActionType::ATTACK && $action->clan_attack_id !== null;
+
+            return [
+                'id' => $action->id,
+                'type' => $action->type->value,
+                'label' => match (true) {
+                    $isImprovement => 'Amélioration en cours…',
+                    $action->type === ClanActionType::ATTACK => 'Attaque en cours…',
+                    $action->type === ClanActionType::DEFENSE => 'Défense en cours…',
+                    default => 'Étape de mission en cours…',
+                },
+                'game' => ['id' => $action->game->id, 'name' => $action->game->name],
+                'target' => match ($action->type) {
+                    ClanActionType::ATTACK => $action->defenderClan?->name,
+                    ClanActionType::DEFENSE => $action->attack?->attackerClan?->name,
+                    ClanActionType::MISSION => 'Mission '.$action->missionStep?->mission?->number,
+                },
+                // a new attack blocks the next attacks and the defenses
+                'blocks' => $action->type === ClanActionType::ATTACK && !$isImprovement,
+                'started_at' => $action->created_at->toIso8601String(),
+            ];
+        })->all();
     }
 
     private function rules(): array

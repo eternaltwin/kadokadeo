@@ -7,6 +7,7 @@ use App\Enums\ClanAttackStatus;
 use App\Exceptions\ClanException;
 use App\Models\ClanAction;
 use App\Models\ClanAttack;
+use App\Models\Period;
 use App\Models\Run;
 use App\Models\User;
 use App\Settings\ClanSettings;
@@ -43,6 +44,43 @@ class ClanRunService
         } catch (ClanException) {
             return null;
         }
+    }
+
+    // the clan runs begun by the player and never ended (the page closed during the run...): the new attacks, which block his
+    // next attacks and his defenses until they end or are cancelled (ClanWarService::runningAttacksCount), and the others
+    // of the last 24 hours
+    public function unfinishedActions(User $user)
+    {
+        return ClanAction::query()
+            ->with('game', 'defenderClan', 'attack.attackerClan', 'missionStep.mission')
+            ->where('user_id', $user->id)
+            ->whereNotNull('run_id')
+            ->whereNull('completed_at')
+            ->where(fn ($query) => $query
+                ->where('created_at', '>=', now()->subDay())
+                ->orWhere(fn ($q) => $q->where('type', ClanActionType::ATTACK)->whereNull('clan_attack_id')))
+            ->latest('id')
+            ->get();
+    }
+
+    // the end of the period: the clan runs asked or begun during it no longer count (an attack ended after the period is
+    // already too late), and the attacks never ended no longer block their players
+    public function cancelUnfinished(Period $period): void
+    {
+        ClanAction::query()
+            ->whereNull('completed_at')
+            ->where('created_at', '<=', $period->end_at)
+            ->update(['result' => 'cancelled', 'completed_at' => now()]);
+    }
+
+    // "Annuler la partie": the clan run no longer counts (if the run ends anyway, it is a normal run)
+    public function cancel(User $user, ClanAction $action): void
+    {
+        if ($action->user_id !== $user->id || $action->run_id === null || $action->completed_at !== null) {
+            throw new ClanException('Cette partie de clan n\'est pas en cours.');
+        }
+
+        $action->update(['result' => 'cancelled', 'completed_at' => now()]);
     }
 
     // the clan run asked by the player on this game, not begun yet
