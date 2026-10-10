@@ -13,7 +13,7 @@ const logout = () => {
 </script>
 
 <template>
-  <nav id="kalendrier">
+  <nav class="kalendrier">
     <div class="kalendrierDays">
       <div v-for="i in periodStore.dayCount" :key="i" class="kalendrierPreviousDay"></div>
       <div class="kalendrierPresentDay"></div>
@@ -39,6 +39,30 @@ const logout = () => {
     <ul class="navKalendrierButtonsBottom">
       <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconKado.gif" alt="points kado"></RouterLink></li>
       <li><RouterLink :to="{ name: 'help' }"><img src="/gfx/kalendarIconHelp.gif" alt="aide"></RouterLink></li>
+      <!-- the admin panel (Filament), outside of the SPA -->
+      <li v-if="authStore.user.is_admin">
+        <a href="/admin" title="Administration" class="text-kado-orange hover:text-kado-pink-600">
+          <svg viewBox="0 0 24 24"
+               width="15"
+               height="15"
+               class="inline-block align-middle"
+               aria-label="admin">
+            <circle cx="12"
+                    cy="12"
+                    r="8.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="4"
+                    stroke-dasharray="3.34 3.34" />
+            <circle cx="12"
+                    cy="12"
+                    r="5.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3" />
+          </svg>
+        </a>
+      </li>
     </ul>
   </nav>
 </template>

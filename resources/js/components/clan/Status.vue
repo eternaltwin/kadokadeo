@@ -44,10 +44,10 @@ const doCancel = (attack) => {
     <div class="overflow-x-auto">
       <table v-if="status" class="w-full text-sm [&_td]:px-2 [&_td]:py-1">
         <thead>
-          <tr class="uppercase text-[10px]">
-            <th class="text-left!">Joueur</th>
-            <th class="text-left!">Clan</th>
-            <th class="text-left!">Jeu</th>
+          <tr class="uppercase text-2xs">
+            <th class="min-w-28 text-left!">Joueur</th>
+            <th class="min-w-28 text-left!">Clan</th>
+            <th class="min-w-24 text-left!">Jeu</th>
             <th class="text-right!">Score</th>
             <th>Statut</th>
           </tr>
@@ -62,7 +62,7 @@ const doCancel = (attack) => {
           <template v-for="section in sections" :key="section.key">
             <tr>
               <td colspan="5"
-                  class="border border-l-[5px] border-solid bg-[position:-34px_-6px] bg-no-repeat pl-[5px]! text-left text-[15px] leading-[17px]"
+                  class="border border-l border-solid bg-[position:-34px_-6px] bg-no-repeat pl-1! text-left text-[15px] leading-[17px]"
                   :class="section.type === 'atk'
                     ? 'border-kado-pink-400 bg-[#ffe3ec] bg-[url(/gfx/clan/pinkh2_bg.jpg)] text-kado-pink-400'
                     : 'border-kado-cyan-800 bg-[url(/gfx/clan/blueh2_bg.jpg)] text-kado-blue'">
@@ -86,7 +86,7 @@ const doCancel = (attack) => {
               </td>
               <td class="whitespace-nowrap">
                 <!-- the countdown, then the small buttons of what the player can do -->
-                <div v-if="attack.status === 'active'" class="flex items-center justify-center gap-2">
+                <div v-if="attack.status === 'active'" class="flex flex-col items-center justify-center gap-2">
                   <ClanCountdown :until="attack.expires_at" @done="load" />
                   <FormButton v-if="attack.can_defend" size="sm" @click="doDefend(attack)">Défendre</FormButton>
                   <FormButton v-if="attack.can_improve"

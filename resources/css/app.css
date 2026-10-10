@@ -350,7 +350,7 @@
 
   /* HEADER, TOP NAV, TOP BANNER */
 
-  header#topPage nav#kalendrier {
+  nav.kalendrier {
     width: 201px;
     height: 141px;
     margin: 2px 0 0 0;
@@ -360,7 +360,7 @@
     position: relative;
   }
 
-  header#topPage nav#kalendrier .kalendrierDays {
+  nav.kalendrier .kalendrierDays {
     width: 140px;
     height: 36px;
     position: absolute;
@@ -370,22 +370,22 @@
     flex-wrap: wrap;
   }
 
-  header#topPage nav#kalendrier .kalendrierPreviousDay,
-  header#topPage nav#kalendrier .kalendrierPresentDay {
+  nav.kalendrier .kalendrierPreviousDay,
+  nav.kalendrier .kalendrierPresentDay {
     width: 15px;
     height: 15px;
     margin: 0 5px 6px 0;
   }
 
-  header#topPage nav#kalendrier .kalendrierPreviousDay {
+  nav.kalendrier .kalendrierPreviousDay {
     background: url('/gfx/kalendarPreviousDay.gif') no-repeat;
   }
 
-  header#topPage nav#kalendrier .kalendrierPresentDay {
+  nav.kalendrier .kalendrierPresentDay {
     background: url('/gfx/kalendarPresentDay.gif') no-repeat;
   }
 
-  header#topPage nav#kalendrier p.kalUser {
+  nav.kalendrier p.kalUser {
     position: absolute;
     top: 8px;
     left: 15px;
@@ -393,7 +393,7 @@
     padding: 0;
   }
 
-  header#topPage nav#kalendrier p.kalendrierText {
+  nav.kalendrier p.kalendrierText {
     width: 103px;
     height: 12px;
     position: absolute;
@@ -406,8 +406,8 @@
     font-size: 0.8em;
   }
 
-  header#topPage nav#kalendrier ul.navKalendrierButtonsRight,
-  header#topPage nav#kalendrier ul.navKalendrierButtonsBottom {
+  nav.kalendrier ul.navKalendrierButtonsRight,
+  nav.kalendrier ul.navKalendrierButtonsBottom {
     list-style: none;
     position: absolute;
     margin: 0;
@@ -415,20 +415,20 @@
     display: flex;
   }
 
-  header#topPage nav#kalendrier ul.navKalendrierButtonsRight {
+  nav.kalendrier ul.navKalendrierButtonsRight {
     top: 6px;
     left: 166px;
     flex-direction: column;
   }
 
-  header#topPage nav#kalendrier ul.navKalendrierButtonsBottom {
+  nav.kalendrier ul.navKalendrierButtonsBottom {
     top: 110px;
     left: 7px;
     flex-direction: row;
   }
 
-  header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a,
-  header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a {
+  nav.kalendrier ul.navKalendrierButtonsRight li a,
+  nav.kalendrier ul.navKalendrierButtonsBottom li a {
     display: block;
     width: 25px;
     height: 21px;
@@ -437,16 +437,16 @@
     line-height: 17px;
   }
 
-  header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a {
+  nav.kalendrier ul.navKalendrierButtonsRight li a {
     margin: 0 0 5px 0;
   }
 
-  header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a {
+  nav.kalendrier ul.navKalendrierButtonsBottom li a {
     margin: 0 5px 0 0;
   }
 
-  header#topPage nav#kalendrier ul.navKalendrierButtonsRight li a:hover,
-  header#topPage nav#kalendrier ul.navKalendrierButtonsBottom li a:hover {
+  nav.kalendrier ul.navKalendrierButtonsRight li a:hover,
+  nav.kalendrier ul.navKalendrierButtonsBottom li a:hover {
     background: url('/gfx/kalendarButtonHover.gif') no-repeat;
   }
 
