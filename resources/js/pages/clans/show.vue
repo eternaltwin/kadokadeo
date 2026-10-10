@@ -92,6 +92,8 @@ const updated = () => {
         Retirez-la avant de postuler dans un autre clan.
       </p>
 
+      <ClanUnfinishedActions v-if="viewer.is_member" :actions="viewer.unfinished_actions ?? []" @updated="load" />
+
       <form v-if="showApplyForm" class="mb-4" @submit.prevent="apply">
         <div>
           <label for="applicationMessage">Votre message au chef de clan (facultatif)</label>

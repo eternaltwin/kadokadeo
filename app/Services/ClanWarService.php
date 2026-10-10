@@ -286,7 +286,8 @@ class ClanWarService
         return $count;
     }
 
-    // his attacks waiting for a defense, and the new attack runs he is playing (begun less than an hour ago)
+    // his attacks waiting for a defense, and the new attack runs he is playing: whatever their length, until they end or he
+    // cancels them (« Annuler la partie », ClanRunService::cancel); the end of the period cancels them too
     public function runningAttacksCount(User $user): int
     {
         return ClanAttack::query()->active()->where('attacker_user_id', $user->id)->count()
@@ -296,7 +297,6 @@ class ClanWarService
                 ->whereNull('clan_attack_id')
                 ->whereNotNull('run_id')
                 ->whereNull('completed_at')
-                ->where('created_at', '>=', now()->subHour())
                 ->count();
     }
 

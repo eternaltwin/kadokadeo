@@ -38,6 +38,7 @@ export function useClans() {
     useBonus: (bonusId, payload = {}) => post(`/clan-bonuses/${bonusId}/use`, payload),
     fetchAction: (actionId) => get(`/clan-actions/${actionId}`).then(data),
     playAgain: (actionId) => post(`/clan-actions/${actionId}/again`).then(data),
+    cancelAction: (actionId) => post(`/clan-actions/${actionId}/cancel`),
     fetchClanGames: () => get('/clan-games').then(data),
     buyClanGames: (count) => post('/clan-games/buy', { count }),
     donateClanGames: (id, count) => post(`/clans/${id}/games/donate`, { count }),
