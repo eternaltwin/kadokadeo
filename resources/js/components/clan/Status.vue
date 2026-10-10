@@ -42,7 +42,7 @@ const doCancel = (attack) => {
     <Loader v-if="isLoading && !status" />
 
     <div class="overflow-x-auto">
-      <table v-if="status" class="statusTable w-full text-sm">
+      <table v-if="status" class="w-full text-sm [&_td]:px-2 [&_td]:py-1">
         <thead>
           <tr class="uppercase text-[10px]">
             <th class="text-left!">Joueur</th>
@@ -54,19 +54,23 @@ const doCancel = (attack) => {
         </thead>
         <tbody>
           <!-- no attack: the frame of the table with a single line -->
-          <tr v-if="!sections.length" class="oddtrue">
+          <tr v-if="!sections.length" class="bg-kado-cyan-200">
             <td colspan="5" class="py-4 italic text-kado-blue">
               Aucune attaque de ce clan ni contre ce clan pour le moment.
             </td>
           </tr>
           <template v-for="section in sections" :key="section.key">
             <tr>
-              <td colspan="5" :class="section.type === 'atk' ? 'clanTypeAtk' : 'clanTypeDef'">
+              <td colspan="5"
+                  class="border border-l-[5px] border-solid bg-[position:-34px_-6px] bg-no-repeat pl-[5px]! text-left text-[15px] leading-[17px]"
+                  :class="section.type === 'atk'
+                    ? 'border-kado-pink-400 bg-[#ffe3ec] bg-[url(/gfx/clan/pinkh2_bg.jpg)] text-kado-pink-400'
+                    : 'border-kado-cyan-800 bg-[url(/gfx/clan/blueh2_bg.jpg)] text-kado-blue'">
                 <img :src="section.type === 'atk' ? '/gfx/clan/atksmall.gif' : '/gfx/clan/defsmall.gif'" alt="" class="mr-1" />
                 {{ section.title }}
               </td>
             </tr>
-            <tr v-for="(attack, index) in section.attacks" :key="attack.id" :class="index % 2 ? 'oddfalse' : 'oddtrue'">
+            <tr v-for="(attack, index) in section.attacks" :key="attack.id" :class="index % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
               <td class="text-left [font-variant:small-caps]">
                 <RouterLink :to="{ name: 'profile.show', params: { id: attack.attacker.etwin_id } }">{{ attack.attacker.display_name }}</RouterLink>
               </td>
@@ -82,20 +86,16 @@ const doCancel = (attack) => {
                 <!-- the countdown, then the small buttons of what the player can do -->
                 <div v-if="attack.status === 'active'" class="flex items-center justify-center gap-2">
                   <ClanCountdown :until="attack.expires_at" @done="load" />
-                  <button v-if="attack.can_defend"
-                          type="button"
-                          class="statusAction"
-                          @click="doDefend(attack)">Défendre</button>
-                  <button v-if="attack.can_improve"
-                          type="button"
-                          class="statusAction"
-                          title="Rejouer pour améliorer cette attaque : le nouveau score ne compte que s'il est meilleur"
-                          @click="doImprove(attack)">Améliorer</button>
-                  <button v-if="attack.can_cancel"
-                          type="button"
-                          class="statusAction pink"
-                          title="Annuler cette attaque"
-                          @click="doCancel(attack)">Annuler</button>
+                  <FormButton v-if="attack.can_defend" size="sm" @click="doDefend(attack)">Défendre</FormButton>
+                  <FormButton v-if="attack.can_improve"
+                              size="sm"
+                              title="Rejouer pour améliorer cette attaque : le nouveau score ne compte que s'il est meilleur"
+                              @click="doImprove(attack)">Améliorer</FormButton>
+                  <FormButton v-if="attack.can_cancel"
+                              size="sm"
+                              variant="pink"
+                              title="Annuler cette attaque"
+                              @click="doCancel(attack)">Annuler</FormButton>
                 </div>
                 <template v-else-if="attack.status === 'won'">
                   Réussie <span class="font-bold text-[#ff6b9c]">+{{ attack.points }}</span>
@@ -112,37 +112,3 @@ const doCancel = (attack) => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.statusTable td {
-  padding: 4px 8px;
-}
-
-/* small buttons next to the countdown */
-.statusAction {
-  height: 18px;
-  padding: 0 6px;
-  border: 1px solid var(--color-kado-green-600);
-  color: var(--color-kado-green-600);
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: bold;
-  line-height: 16px;
-  background: url('/gfx/bgFormButtonFill.jpg') center repeat-x;
-  cursor: pointer;
-}
-
-.statusAction:hover {
-  background-image: url('/gfx/bgFormButtonFillHover.jpg');
-}
-
-.statusAction.pink {
-  border-color: var(--color-kado-pink-600);
-  color: var(--color-kado-pink-600);
-  background-image: url('/gfx/bgFormButtonPinkFill.jpg');
-}
-
-.statusAction.pink:hover {
-  background-image: url('/gfx/bgFormButtonPinkFillHover.jpg');
-}
-</style>

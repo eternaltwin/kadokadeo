@@ -78,13 +78,8 @@ html[data-theme='karbon'] #containerSide .sideBoxPink h2 {
   background: url('/gfx/themes/karbon/pinkh2_bg.jpg') -15px -5px no-repeat;
 }
 
-/* the inputs */
-html[data-theme='karbon'] form div input,
-html[data-theme='karbon'] textarea.kadoTextarea {
+/* the inputs (the components FormInput and FormTextarea use the karbon: variant of app.css) */
+html[data-theme='karbon'] form div input {
   color: #466167;
   background: #fff url('/gfx/themes/karbon/inputBg.jpg') repeat-x;
-}
-
-html[data-theme='karbon'] textarea.kadoTextarea {
-  background-size: 100% 100%;
 }

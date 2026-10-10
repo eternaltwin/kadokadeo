@@ -79,14 +79,14 @@ const doDissolve = () => {
     <p v-if="!applications.length" class="italic mx-0">Aucune candidature en attente.</p>
     <table v-else class="w-full">
       <tbody>
-        <tr v-for="(application, index) in applications" :key="application.id" :class="index % 2 ? 'oddfalse' : 'oddtrue'">
+        <tr v-for="(application, index) in applications" :key="application.id" :class="index % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
           <td class="text-left">
             <RouterLink :to="{ name: 'profile.show', params: { id: application.user.etwin_id } }" class="font-bold">{{ application.user.display_name }}</RouterLink>
             <div v-if="application.message" class="text-sm italic whitespace-pre-line">{{ application.message }}</div>
           </td>
           <td class="whitespace-nowrap">
-            <button type="button" class="clanButton" @click="accept(application)">Accepter</button>
-            <button type="button" class="clanButton pink ml-1" @click="refuse(application)">Refuser</button>
+            <FormButton @click="accept(application)">Accepter</FormButton>
+            <FormButton variant="pink" class="ml-1" @click="refuse(application)">Refuser</FormButton>
           </td>
         </tr>
       </tbody>
@@ -94,16 +94,13 @@ const doDissolve = () => {
 
     <h2 class="normal-case">Présentation du clan</h2>
     <form @submit.prevent="save">
-      <textarea v-model="description"
-                rows="10"
-                maxlength="5000"
-                class="kadoTextarea"></textarea>
+      <FormTextarea v-model="description" rows="10" maxlength="5000" />
       <label class="flex items-center gap-2 font-bold">
-        <input v-model="isRecruiting" type="checkbox" class="w-auto!" />
+        <input v-model="isRecruiting" type="checkbox" />
         Le clan recrute de nouveaux membres
       </label>
       <MessageSuccess v-if="saved">Présentation enregistrée.</MessageSuccess>
-      <input type="submit" value="Enregistrer" class="w-auto!" />
+      <FormButton type="submit" size="lg">Enregistrer</FormButton>
     </form>
 
     <h2 class="normal-case">Membres</h2>
@@ -116,7 +113,7 @@ const doDissolve = () => {
     <div class="overflow-x-auto">
       <table class="w-full">
         <tbody>
-          <tr v-for="(m, index) in members" :key="m.user.etwin_id" :class="index % 2 ? 'oddfalse' : 'oddtrue'">
+          <tr v-for="(m, index) in members" :key="m.user.etwin_id" :class="index % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
             <td class="text-left [font-variant:small-caps]">
               <img v-if="m.is_leader"
                    src="/gfx/clan/clanleader.gif"
@@ -127,37 +124,32 @@ const doDissolve = () => {
             </td>
             <td class="whitespace-nowrap">
               <template v-if="m.is_leader">Chef de clan</template>
-              <select v-else
-                      :value="m.role"
-                      class="text-kado-blue bg-white"
-                      title="Rôle dans le clan"
-                      @change="changeRole(m, $event.target.value)">
+              <FormSelect v-else
+                          :model-value="m.role"
+                          title="Rôle dans le clan"
+                          @update:model-value="changeRole(m, $event)">
                 <option value="member">Membre</option>
                 <option value="right_hand">Bras droit</option>
-              </select>
+              </FormSelect>
             </td>
             <td class="whitespace-nowrap">
-              <select :value="m.combat_role ?? ''"
-                      class="text-kado-blue bg-white"
-                      title="Siège pour les attaques et les défenses"
-                      @change="changeCombatRole(m, $event.target.value)">
+              <FormSelect :model-value="m.combat_role ?? ''"
+                          title="Siège pour les attaques et les défenses"
+                          @update:model-value="changeCombatRole(m, $event)">
                 <option value="">Sans siège</option>
                 <option v-for="(seat, role) in seats"
                         :key="role"
                         :value="role"
                         :disabled="m.combat_role !== role && taken(role) >= seat.count">{{ seat.label }}</option>
-              </select>
+              </FormSelect>
             </td>
             <td class="whitespace-nowrap">
               <template v-if="m.user.etwin_id !== authStore.user?.etwin_id && !m.is_leader">
-                <button v-if="isLeader"
-                        type="button"
-                        class="clanButton"
-                        @click="doPromote(m)">Nommer chef</button>
-                <button v-if="!m.is_new"
-                        type="button"
-                        class="clanButton pink ml-1"
-                        @click="doKick(m)">Exclure</button>
+                <FormButton v-if="isLeader" @click="doPromote(m)">Nommer chef</FormButton>
+                <FormButton v-if="!m.is_new"
+                            variant="pink"
+                            class="ml-1"
+                            @click="doKick(m)">Exclure</FormButton>
                 <span v-else class="ml-1 text-xs italic" title="Un membre accepté pendant la période ne peut être exclu qu'à partir de la prochaine.">Nouveau</span>
               </template>
             </td>
@@ -169,7 +161,7 @@ const doDissolve = () => {
     <template v-if="isLeader">
       <h2 class="normal-case">Dissoudre le clan</h2>
       <p class="mx-0 text-sm">Tous les membres quitteront le clan, et ses scores de la période seront perdus.</p>
-      <button type="button" class="clanButton pink" @click="doDissolve">Dissoudre le clan</button>
+      <FormButton variant="pink" @click="doDissolve">Dissoudre le clan</FormButton>
     </template>
   </div>
 </template>

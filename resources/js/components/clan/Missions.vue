@@ -76,7 +76,7 @@ const confirmBonus = () => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(step, index) in mission.steps" :key="step.id" :class="index % 2 ? 'oddfalse' : 'oddtrue'">
+              <tr v-for="(step, index) in mission.steps" :key="step.id" :class="index % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
                 <td class="text-left font-bold">
                   <RouterLink :to="{ name: 'games.show', params: { id: step.game.id } }">{{ step.game.name }}</RouterLink>
                 </td>
@@ -87,10 +87,7 @@ const confirmBonus = () => {
                     <img src="/gfx/clan/clan_home.gif" alt="" class="h-4" />
                     Réussie par {{ step.completed_by?.display_name }} ({{ step.score }})
                   </template>
-                  <button v-else
-                          type="button"
-                          class="clanButton"
-                          @click="play(step)">Jouer</button>
+                  <FormButton v-else @click="play(step)">Jouer</FormButton>
                 </td>
               </tr>
             </tbody>
@@ -111,7 +108,7 @@ const confirmBonus = () => {
         Votre clan n'a aucune option. Chaque mission réussie peut vous en faire gagner une !
       </p>
       <div class="relative flex flex-wrap gap-2">
-        <div v-for="bonus in data.bonuses" :key="bonus.id" class="optClan text-center w-[81px]">
+        <div v-for="bonus in data.bonuses" :key="bonus.id" class="w-[81px] text-center">
           <button type="button"
                   class="border-0 bg-transparent p-0.5 hover:p-0 hover:border-2 hover:border-solid hover:border-[#ffffaf] hover:bg-[#ff9a00] cursor-pointer"
                   :title="bonus.label"
@@ -121,7 +118,7 @@ const confirmBonus = () => {
           <div class="text-[10px] leading-tight">{{ bonus.label }}</div>
         </div>
 
-        <div v-if="selectedBonus" id="optPopup" class="absolute z-20 left-5 -top-6 w-[470px] max-w-full min-h-[150px] border-2 border-solid border-[#1d2024] bg-[#3d4045] text-[#f0feff]">
+        <div v-if="selectedBonus" class="absolute z-20 left-5 -top-6 w-[470px] max-w-full min-h-[150px] border-2 border-solid border-[#1d2024] bg-[#3d4045] text-[#f0feff]">
           <h3 class="m-0 h-[35px] bg-[#1d2024] px-2 text-[26px] leading-[35px] text-[#f0feff]">{{ selectedBonus.label }}</h3>
           <img :src="selectedBonus.icon" :alt="selectedBonus.label" class="float-left py-0.5 pr-2.5 pl-0.5" />
           <p class="m-1 text-xs">{{ selectedBonus.description }}</p>
@@ -130,22 +127,19 @@ const confirmBonus = () => {
             <p class="m-1 text-xs italic">C'est le chef de clan ou un bras droit qui décide de l'utilisation des options.</p>
           </template>
           <template v-else>
-            <select v-if="['ban_game', 'force_game'].includes(selectedBonus.type)" v-model="bonusGame" class="m-1 text-kado-blue bg-white">
+            <FormSelect v-if="['ban_game', 'force_game'].includes(selectedBonus.type)" v-model="bonusGame" class="m-1">
               <option :value="null" disabled>Choisir un jeu</option>
               <option v-for="g in games" :key="g.id" :value="g.id">{{ g.name }}</option>
-            </select>
-            <select v-if="selectedBonus.type === 'skip_step'" v-model="bonusStep" class="m-1 text-kado-blue bg-white">
+            </FormSelect>
+            <FormSelect v-if="selectedBonus.type === 'skip_step'" v-model="bonusStep" class="m-1">
               <option :value="null" disabled>Choisir une étape</option>
               <option v-for="s in (mission?.steps ?? []).filter((s) => !s.done)" :key="s.id" :value="s.id">{{ s.game.name }} ({{ s.target_score }})</option>
-            </select>
+            </FormSelect>
           </template>
 
           <div class="clear-both flex justify-end gap-2 p-1">
-            <button v-if="canManage"
-                    type="button"
-                    class="clanButton"
-                    @click="confirmBonus">Utiliser</button>
-            <button type="button" class="clanButton pink" @click="selectedBonus = null">Fermer</button>
+            <FormButton v-if="canManage" @click="confirmBonus">Utiliser</FormButton>
+            <FormButton variant="pink" @click="selectedBonus = null">Fermer</FormButton>
           </div>
         </div>
       </div>

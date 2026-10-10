@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import './themes/karbon.css';
 
+/* the Karbon theme (App.vue: <html data-theme="karbon">), for the components: karbon:bg-... */
+@custom-variant karbon (html[data-theme='karbon'] &);
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../** /*.blade.php';
@@ -712,23 +715,6 @@
   form div input:focus {
     color: var(--color-kado-green-500);
     background: url('/gfx/bgInputFocus.jpg') repeat-x;
-  }
-
-  /* as the inputs, the gradient of the input stretched to the height of the text area */
-  textarea.kadoTextarea {
-    width: 100%;
-    padding: 5px;
-    box-sizing: border-box;
-    border: 2px solid #fff;
-    border-left: 7px solid #fff;
-    color: #20a8c3;
-    background: #fff url('/gfx/bgInput.jpg') 0 0 / 100% 100% no-repeat;
-    outline: none;
-  }
-
-  textarea.kadoTextarea:focus {
-    color: var(--color-kado-green-500);
-    background-image: url('/gfx/bgInputFocus.jpg');
   }
 
   input[type='submit'],
