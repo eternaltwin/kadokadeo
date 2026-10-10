@@ -85,6 +85,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                      maxlength="32"
                      required
                      class="w-full" />
+          <p class="m-0 text-xs text-kado-cyan-900">De 3 à 32 caractères : lettres, chiffres, espaces et - ' . ! ? Il ne pourra plus être changé.</p>
         </div>
         <div>
           <label for="clanDescription">Présentation (vous pourrez la modifier plus tard)</label>

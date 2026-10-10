@@ -77,6 +77,29 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.viewer.is_leader', true);
     }
 
+    // only the characters of the letters of the clan pages, at least a letter, unique whatever the case
+    public function test_the_name_of_a_clan(): void
+    {
+        $this->period();
+        Clan::factory()->withLeader()->create(['name' => 'Les Pirates']);
+        Sanctum::actingAs(User::factory()->create());
+
+        foreach (['Les_Pirates', 'Kado & Co', 'Clan 🦊', '<b>Clan</b>'] as $name) {
+            $this->postJson('/api/clans', ['name' => $name])->assertStatus(422)
+                ->assertJsonPath('errors.name.0', 'Le nom du clan ne peut contenir que des lettres, des chiffres, des espaces et les signes - \' . ! ?');
+        }
+        $this->postJson('/api/clans', ['name' => '2010 !'])->assertStatus(422)
+            ->assertJsonPath('errors.name.0', 'Le nom du clan doit contenir au moins une lettre.');
+        $this->postJson('/api/clans', ['name' => 'les PIRATES'])->assertStatus(422)
+            ->assertJsonPath('errors.name.0', 'Ce nom de clan est déjà pris.');
+        $this->postJson('/api/clans', ['name' => '   a   '])->assertStatus(422)
+            ->assertJsonPath('errors.name.0', 'Le nom du clan doit faire au moins 3 caractères.');
+
+        // the accents and the spaces
+        $id = $this->postJson('/api/clans', ['name' => "  L'Équipe   des   Kadoïstes !  "])->assertCreated()->json('data.id');
+        $this->assertSame("L'Équipe des Kadoïstes !", Clan::query()->find($id)->name);
+    }
+
     public function test_the_leader_must_name_a_new_leader_before_leaving(): void
     {
         $this->period();
@@ -674,7 +697,7 @@ class ClanTest extends TestCase
     // the help page shows the rules set in the admin
     public function test_the_rules_of_the_clans_for_the_help(): void
     {
-        ClanSettings::fake(['attack_hours' => 8, 'protection_range' => 50, 'war_rewards' => [['last_rank' => 3, 'points' => 900], ['last_rank' => 1, 'points' => 3000]]]);
+        ClanSettings::fake(['max_members' => 50, 'attack_hours' => 8, 'protection_range' => 50, 'war_rewards' => [['last_rank' => 3, 'points' => 900], ['last_rank' => 1, 'points' => 3000]]]);
         Sanctum::actingAs(User::factory()->create());
 
         $this->getJson('/api/clans/overview')->assertOk()
