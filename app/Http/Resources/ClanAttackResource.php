@@ -18,6 +18,7 @@ class ClanAttackResource extends JsonResource
         $user = $request->user();
         $viewerClanId = $user?->clanMember?->clan_id;
         $isActive = $this->status === ClanAttackStatus::ACTIVE;
+        $isDefenderClan = $viewerClanId !== null && $viewerClanId === $this->defender_clan_id;
 
         return [
             'id' => $this->id,
@@ -32,8 +33,13 @@ class ClanAttackResource extends JsonResource
             'attacker_clan' => ['id' => $this->attackerClan->id, 'name' => $this->attackerClan->name],
             'defender_clan' => ['id' => $this->defenderClan->id, 'name' => $this->defenderClan->name],
             'defender' => $this->defenderUser ? UserLightResource::make($this->defenderUser) : null,
-            'can_defend' => $isActive && $viewerClanId === $this->defender_clan_id,
+            'can_defend' => $isActive && $isDefenderClan,
             'can_improve' => $isActive && $user?->id === $this->attacker_user_id,
+            // "Je m'en occupe": only for the attacked clan
+            'reserved_by' => $isDefenderClan && $this->reservedBy ? UserLightResource::make($this->reservedBy) : null,
+            'reserved_at' => $isDefenderClan ? $this->reserved_at?->toIso8601String() : null,
+            'reserved_by_me' => $isDefenderClan && $this->reserved_by_user_id === $user?->id,
+            'can_reserve' => $isActive && $isDefenderClan,
             'can_cancel' => $isActive && $user?->id === $this->attacker_user_id,
         ];
     }

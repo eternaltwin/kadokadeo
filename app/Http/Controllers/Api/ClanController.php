@@ -233,6 +233,8 @@ class ClanController extends Controller implements HasMiddleware
                     'is_leader' => $isLeader,
                     'role' => $isLeader ? ClanRole::LEADER->value : $member->role->value,
                     'combat_role' => $member->combat_role?->value,
+                    // the seat was chosen during this period: it can't change before the next one
+                    'combat_role_locked' => $period !== null && $member->combat_role_period_id === $period->id,
                     'joined_at' => $member->created_at?->toIso8601String(),
                     // accepted during this period: can't be excluded before the next one
                     'is_new' => $period !== null && $member->joined_period_id === $period->id,
@@ -262,7 +264,7 @@ class ClanController extends Controller implements HasMiddleware
     {
         $period = $this->clanService->currentPeriod();
         $this->warService->resolveExpired();
-        $with = ['game', 'attackerUser', 'attackerClan', 'defenderClan', 'defenderUser'];
+        $with = ['game', 'attackerUser', 'attackerClan', 'defenderClan', 'defenderUser', 'reservedBy'];
         $base = fn () => ClanAttack::query()
             ->with($with)
             ->where('period_id', $period?->id)

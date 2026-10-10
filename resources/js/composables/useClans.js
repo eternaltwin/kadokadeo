@@ -32,6 +32,8 @@ export function useClans() {
     defend: (attackId) => post(`/clan-attacks/${attackId}/defend`).then(data),
     improveAttack: (attackId) => post(`/clan-attacks/${attackId}/improve`).then(data),
     cancelAttack: (attackId) => post(`/clan-attacks/${attackId}/cancel`),
+    reserveDefense: (attackId) => post(`/clan-attacks/${attackId}/reserve`),
+    reserveStep: (stepId) => post(`/clan-mission-steps/${stepId}/reserve`),
     playStep: (stepId) => post(`/clan-mission-steps/${stepId}/play`).then(data),
     useBonus: (bonusId, payload = {}) => post(`/clan-bonuses/${bonusId}/use`, payload),
     fetchAction: (actionId) => get(`/clan-actions/${actionId}`).then(data),

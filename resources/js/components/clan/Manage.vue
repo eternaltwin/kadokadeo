@@ -108,6 +108,7 @@ const doDissolve = () => {
     <h2 class="normal-case">Membres</h2>
     <p class="mx-0 text-sm">
       Un <strong>bras droit</strong> a tous les droits du chef de clan, sauf dissoudre le clan et nommer un nouveau chef.
+      Un siège choisi ne peut plus changer avant la prochaine période.
       <template v-for="(seat, role) in seats" :key="role">
         <br /><strong>{{ seat.label }}</strong> ({{ taken(role) }} / {{ seat.count }}) : {{ seat.description }}
       </template>
@@ -136,7 +137,8 @@ const doDissolve = () => {
             </td>
             <td class="whitespace-nowrap">
               <FormSelect :model-value="m.combat_role ?? ''"
-                          title="Siège pour les attaques et les défenses"
+                          :disabled="m.combat_role_locked"
+                          :title="m.combat_role_locked ? 'Siège choisi pendant cette période : il pourra changer à la prochaine période' : 'Siège pour les attaques et les défenses'"
                           @update:model-value="changeCombatRole(m, $event)">
                 <option value="">Sans siège</option>
                 <option v-for="(seat, role) in seats"

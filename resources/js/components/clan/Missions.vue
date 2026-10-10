@@ -5,7 +5,7 @@ const props = defineProps({
 })
 
 const router = useRouter()
-const { fetchMissions, playStep, useBonus, isLoading, error } = useClans()
+const { fetchMissions, playStep, reserveStep, useBonus, isLoading, error } = useClans()
 const { fetchGames } = useGames()
 const data = ref(null)
 const tournament = ref(null)
@@ -31,6 +31,9 @@ if (props.clan.viewer.can_manage) {
 const mission = computed(() => data.value?.mission)
 const statusLabels = { completed: 'Réussie', failed: 'Échouée', skipped: 'Remplacée' }
 
+// "Je m'en occupe": reserve the step, take the place of another member, or give it up
+const reserve = (step) => reserveStep(step.id).then(load)
+const reserveLabel = (step) => (step.reserved_by_me ? 'Libérer' : step.reserved_by ? 'Prendre' : 'Réserver')
 const play = (step) => playStep(step.id).then((response) => router.push({ name: 'clans.play', params: { action: response.data.id } }))
 
 const openBonus = (bonus) => {
@@ -87,7 +90,13 @@ const confirmBonus = () => {
                     <img src="/gfx/clan/clan_home.gif" alt="" class="h-4" />
                     Réussie par {{ step.completed_by?.display_name }} ({{ step.score }})
                   </template>
-                  <FormButton v-else @click="play(step)">Jouer</FormButton>
+                  <div v-else class="flex flex-wrap items-center justify-center gap-1">
+                    <FormButton @click="play(step)">Jouer</FormButton>
+                    <FormButton :variant="step.reserved_by_me ? 'pink' : 'green'"
+                                title="Je m'en occupe : prévenez votre clan que vous réussirez cette étape plus tard"
+                                @click="reserve(step)">{{ reserveLabel(step) }}</FormButton>
+                    <span v-if="step.reserved_by" class="w-full text-xs italic">Réservée par {{ step.reserved_by.display_name }}</span>
+                  </div>
                 </td>
               </tr>
             </tbody>

@@ -4,6 +4,8 @@ import KadoPoints from '@svg/k.svg'
 const props = defineProps({
   game: { type: Object, required: true },
   isZoomed: { type: Boolean, default: false },
+  // more paliers: [{ score, img, alt }] (a clan defense, a mission step...)
+  goals: { type: Array, default: () => [] },
 })
 const { isLoading, get } = useApi()
 const authStore = useAuthStore()
@@ -43,6 +45,7 @@ const palliers = computed(() => {
   if (leagueScore && leagueScore.required_score > personalBestForPeriod.value?.score) {
     s.push({ score: leagueScore.required_score + 1, points: null, img: `/gfx/leagues/${league.value.level + 1}.svg`, alt: 'Ligue supérieure' })
   }
+  s.push(...props.goals.map((goal) => ({ points: null, ...goal })))
   s.push({ score: 0, points: 0, img: '/gfx/iconContract.png', alt: 'Contrat' })
   s.sort((a, b) => b.score - a.score)
   return s
@@ -160,7 +163,11 @@ const menus = [
                 <img v-if="nextPallierIndex === index" src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
               </td>
               <td class="textLeft">
-                <img :src="pallier.img" :alt="pallier.alt" /> <Number :value="pallier.score" color="orange" />
+                <img :src="pallier.img"
+                     :alt="pallier.alt"
+                     :title="pallier.alt"
+                     class="max-w-5"/>
+                <Number :value="pallier.score" color="orange" />
               </td>
               <td class="textRight">
                 <template v-if="pallier.points !== null">
