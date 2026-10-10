@@ -124,6 +124,8 @@ return [
         // chance to win an option with each completed mission, then the chances of each option (to tune)
         'bonus_chance' => (float) env('KADO_CLANS_BONUS_CHANCE', 0.07),
         'bonus_weights' => ['more_time' => 30, 'skip_step' => 30, 'next_mission' => 20, 'ban_game' => 10, 'force_game' => 10],
+        // the packs of paid clan games (attacks and defenses once the games of the day are used): [games => Kado points]
+        'game_packs' => [1 => 50, 5 => 225, 10 => 400, 50 => 1750],
         // Kado points shared between the members at the end of the period, by rank in each ranking: [last rank => points]
         'rewards' => [
             'war' => [1 => 150000, 2 => 100000, 5 => 75000, 10 => 25000, 25 => 12500, 50 => 7500, 100 => 5000, 200 => 2500, 500 => 1250],

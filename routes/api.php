@@ -48,6 +48,8 @@ Route::put('/user/theme', [App\Http\Controllers\Api\ThemeController::class, 'sel
 Route::get('/clans', [App\Http\Controllers\Api\ClanController::class, 'index']);
 Route::post('/clans', [App\Http\Controllers\Api\ClanController::class, 'store']);
 Route::get('/clans/overview', [App\Http\Controllers\Api\ClanController::class, 'overview']);
+Route::get('/clan-games', [App\Http\Controllers\Api\ClanGameController::class, 'index']);
+Route::post('/clan-games/buy', [App\Http\Controllers\Api\ClanGameController::class, 'buy']);
 Route::post('/clans/leave', [App\Http\Controllers\Api\ClanMemberController::class, 'leave']);
 Route::prefix('/clans/{clan}')->whereNumber('clan')->group(function () {
     Route::get('/', [App\Http\Controllers\Api\ClanController::class, 'show']);
@@ -62,6 +64,8 @@ Route::prefix('/clans/{clan}')->whereNumber('clan')->group(function () {
     Route::put('/members/{user:etwin_id}/role', [App\Http\Controllers\Api\ClanMemberController::class, 'role'])->whereUuid('user');
     Route::put('/members/{user:etwin_id}/combat-role', [App\Http\Controllers\Api\ClanMemberController::class, 'combatRole'])->whereUuid('user');
     Route::delete('/', [App\Http\Controllers\Api\ClanMemberController::class, 'dissolve']);
+    Route::post('/games/donate', [App\Http\Controllers\Api\ClanGameController::class, 'donate']);
+    Route::post('/members/{user:etwin_id}/games', [App\Http\Controllers\Api\ClanGameController::class, 'distribute'])->whereUuid('user');
     Route::post('/attacks', [App\Http\Controllers\Api\ClanWarController::class, 'attack']);
 });
 Route::delete('/clan-applications/{application}', [App\Http\Controllers\Api\ClanMemberController::class, 'cancel'])->whereNumber('application');

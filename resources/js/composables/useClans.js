@@ -35,5 +35,9 @@ export function useClans() {
     playStep: (stepId) => post(`/clan-mission-steps/${stepId}/play`).then(data),
     useBonus: (bonusId, payload = {}) => post(`/clan-bonuses/${bonusId}/use`, payload),
     fetchAction: (actionId) => get(`/clan-actions/${actionId}`).then(data),
+    fetchClanGames: () => get('/clan-games').then(data),
+    buyClanGames: (count) => post('/clan-games/buy', { count }),
+    donateClanGames: (id, count) => post(`/clans/${id}/games/donate`, { count }),
+    distributeClanGames: (id, etwinId, count) => post(`/clans/${id}/members/${etwinId}/games`, { count }),
   }
 }

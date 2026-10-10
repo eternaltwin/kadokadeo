@@ -185,6 +185,7 @@ const clanRewards = [
               <p>Votre score devient une attaque. Pour la repousser, le Clan adverse devra faire un score supérieur au vôtre. Une attaque repoussée est annulée, et votre Clan ne perd rien.</p>
               <p>Si au bout de <strong>12 heures</strong> l'attaque n'a pas été repoussée, votre Clan remporte de 1 à <strong>10 points</strong> et le Clan adverse perd autant (jamais en dessous de zéro). Plus le Clan adverse a de points par rapport au vôtre, plus l'attaque rapporte : le nombre de points est affiché avant d'attaquer. Attaquez des clans au score proche du vôtre : les autres sont protégés de vos attaques.</p>
               <p>Chaque joueur peut avoir une attaque en cours à la fois. Pour l'améliorer, cliquez sur « Améliorer » dans l'onglet Statut et rejouez sur le même jeu : le nouveau score ne remplace celui de l'attaque que s'il est meilleur. Chaque partie d'attaque ou de défense coûte une partie, comme une partie normale.</p>
+              <p>Quand vos parties du jour sont jouées, vous pouvez attaquer et défendre avec des <strong>parties de clan</strong>, achetées avec vos points Kado (1 partie pour 50 points, 5 pour 225, 10 pour 400, 50 pour 1 750). Vous pouvez les garder pour vous ou les donner à votre Clan : le chef et ses bras droits les distribuent ensuite aux membres. Les parties du jour ne peuvent pas être données.</p>
             </template>
 
             <template v-else-if="section.id === 'defenses'">

@@ -5,10 +5,11 @@ namespace App\Services;
 use App\Enums\ClanActionType;
 use App\Models\ClanAction;
 use App\Models\Run;
+use App\Models\User;
 
 // a clan run is a normal run (contract, rankings): the player asks for it on the clan pages (ClanAction), then the next
-// run he begins on the game is bound to it, and its score is used when it ends. An attack or a defense costs a game
-// like any run, a mission step is free (RunController::begin).
+// run he begins on the game is bound to it, and its score is used when it ends. A mission step is free, an attack or a
+// defense costs a game of the day like any run, then a paid clan game (RunController::begin).
 class ClanRunService
 {
     public function __construct(
@@ -29,10 +30,30 @@ class ClanRunService
             ->first();
     }
 
-    // the runs of the missions don't cost a game
-    public function isFree(?ClanAction $action): bool
+    public const COST_FREE = 'free';
+
+    public const COST_GAME = 'game';
+
+    public const COST_PAID = 'paid';
+
+    // what the run costs: nothing for a mission step, a game of the day, or a paid clan game for an attack or a defense
+    // once the games of the day are used
+    public function runCost(User $user, ?ClanAction $action): string
     {
-        return $action?->type === ClanActionType::MISSION;
+        if ($action?->type === ClanActionType::MISSION) {
+            return self::COST_FREE;
+        }
+        if ($action && config('kado.games_per_day') > 0 && $user->kado_games <= 0 && $user->clan_games > 0) {
+            return self::COST_PAID;
+        }
+
+        return self::COST_GAME;
+    }
+
+    // a paid clan game used, false when there was none left (another run in the meantime)
+    public function usePaidGame(User $user): bool
+    {
+        return User::query()->whereKey($user->id)->where('clan_games', '>', 0)->decrement('clan_games') > 0;
     }
 
     public function bindRun(Run $run, ?ClanAction $action = null): ?ClanAction

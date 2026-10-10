@@ -42,6 +42,7 @@ const router = createRouter({
     { path: '/clans/:id/missions', name: 'clans.missions', component: ClansShow, meta: { middleware: ['auth'], tab: 'missions' } },
     { path: '/clans/:id/members', name: 'clans.members', component: ClansShow, meta: { middleware: ['auth'], tab: 'members' } },
     { path: '/clans/:id/manage', name: 'clans.manage', component: ClansShow, meta: { middleware: ['auth'], tab: 'manage' } },
+    { path: '/clans/:id/games', name: 'clans.games', component: ClansShow, meta: { middleware: ['auth'], tab: 'games' } },
     { path: '/clans/:id/attack', name: 'clans.attack', component: ClansShow, meta: { middleware: ['auth'], tab: 'attack' } },
   ],
 })
