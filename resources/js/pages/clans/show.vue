@@ -69,7 +69,7 @@ const updated = () => {
 
     <ClanLayout v-else :clan="clan" :tab="tab">
       <template #actions>
-        <li v-if="viewer.is_leader">
+        <li v-if="viewer.can_manage">
           <RouterLink :to="{ name: 'clans.manage', params: { id: clan.id } }">Gérer le clan</RouterLink>
         </li>
         <li v-if="!viewer.is_member && viewer.has_clan">

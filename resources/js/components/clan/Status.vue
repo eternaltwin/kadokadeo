@@ -6,7 +6,7 @@ const props = defineProps({
 
 const router = useRouter()
 const clanStore = useClanStore()
-const { fetchStatus, defend, cancelAttack, isLoading, error } = useClans()
+const { fetchStatus, defend, improveAttack, cancelAttack, isLoading, error } = useClans()
 const status = ref(null)
 const tournament = ref(null)
 
@@ -23,8 +23,9 @@ const sections = computed(() => [
   { key: 'received', type: 'def', title: 'Ce clan est attaqué', attacks: status.value?.received ?? [] },
 ].filter((section) => section.attacks.length))
 
-const doDefend = (attack, superDefense) =>
-  defend(attack.id, superDefense).then((data) => router.push({ name: 'clans.play', params: { action: data.data.id } }))
+const goPlay = (data) => router.push({ name: 'clans.play', params: { action: data.data.id } })
+const doDefend = (attack) => defend(attack.id).then(goPlay)
+const doImprove = (attack) => improveAttack(attack.id).then(goPlay)
 const doCancel = (attack) => {
   if (confirm('Annuler cette attaque ?')) {
     cancelAttack(attack.id).then(() => {
@@ -84,12 +85,12 @@ const doCancel = (attack) => {
                   <button v-if="attack.can_defend"
                           type="button"
                           class="statusAction"
-                          @click="doDefend(attack, false)">Défendre</button>
-                  <button v-if="attack.can_defend"
+                          @click="doDefend(attack)">Défendre</button>
+                  <button v-if="attack.can_improve"
                           type="button"
                           class="statusAction"
-                          title="Défendre avec l'option Défense 120%"
-                          @click="doDefend(attack, true)">120%</button>
+                          title="Rejouer pour améliorer cette attaque : le nouveau score ne compte que s'il est meilleur"
+                          @click="doImprove(attack)">Améliorer</button>
                   <button v-if="attack.can_cancel"
                           type="button"
                           class="statusAction pink"

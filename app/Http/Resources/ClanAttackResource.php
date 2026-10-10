@@ -33,6 +33,7 @@ class ClanAttackResource extends JsonResource
             'defender_clan' => ['id' => $this->defenderClan->id, 'name' => $this->defenderClan->name],
             'defender' => $this->defenderUser ? UserLightResource::make($this->defenderUser) : null,
             'can_defend' => $isActive && $viewerClanId === $this->defender_clan_id,
+            'can_improve' => $isActive && $user?->id === $this->attacker_user_id,
             'can_cancel' => $isActive && $user?->id === $this->attacker_user_id,
         ];
     }

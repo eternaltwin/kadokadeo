@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ClanCombatRole;
+use App\Enums\ClanRole;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClanAttackResource;
 use App\Http\Resources\ClanListResource;
@@ -74,7 +76,12 @@ class ClanController extends Controller implements HasMiddleware
         return [
             'data' => [
                 'tournament' => $this->clanService->tournamentInfo(),
-                'clan' => $clan ? ['id' => $clan->id, 'name' => $clan->name, 'is_leader' => $clan->leader_id === $user->id] : null,
+                'clan' => $clan ? [
+                    'id' => $clan->id,
+                    'name' => $clan->name,
+                    'is_leader' => $clan->leader_id === $user->id,
+                    'can_manage' => (bool) $this->clanService->roleOf($user, $clan)?->canManage(),
+                ] : null,
                 'applications' => ClanApplication::query()
                     ->where('user_id', $user->id)
                     ->where('status', ClanApplication::PENDING)
@@ -113,6 +120,8 @@ class ClanController extends Controller implements HasMiddleware
         $score = $period ? ClanPeriodScore::query()->where('clan_id', $clan->id)->where('period_id', $period->id)->first() : null;
         $myClan = $this->clanService->clanOf($user);
         $isMember = $myClan?->id === $clan->id;
+        $role = $isMember ? $this->clanService->roleOf($user, $clan) : null;
+        $attackBlocked = $this->attackBlockedReason($user, $myClan, $clan, $period);
 
         return [
             'data' => [
@@ -142,13 +151,21 @@ class ClanController extends Controller implements HasMiddleware
                 'viewer' => [
                     'is_member' => $isMember,
                     'is_leader' => $clan->leader_id === $user->id,
+                    // the leader and the right hands manage the clan
+                    'can_manage' => (bool) $role?->canManage(),
+                    'role' => $role?->value,
+                    'combat_role' => $isMember ? $this->clanService->combatRoleOf($user, $clan)?->value : null,
                     'has_clan' => $myClan !== null,
                     'application_id' => ClanApplication::query()
                         ->where('clan_id', $clan->id)
                         ->where('user_id', $user->id)
                         ->where('status', ClanApplication::PENDING)
                         ->value('id'),
-                    'attack_blocked' => $this->attackBlockedReason($user, $myClan, $clan, $period),
+                    'attack_blocked' => $attackBlocked,
+                    // the points his clan would win if the attack is not repelled
+                    'attack_points' => $attackBlocked === null
+                        ? $this->clanService->attackPoints($this->clanService->warScore($myClan, $period), $this->clanService->warScore($clan, $period))
+                        : null,
                 ],
             ],
             'tournament' => $this->clanService->tournamentInfo(),
@@ -157,7 +174,7 @@ class ClanController extends Controller implements HasMiddleware
 
     public function update(Request $request, Clan $clan)
     {
-        $this->clanService->assertLeader($request->user(), $clan);
+        $this->clanService->assertManager($request->user(), $clan);
         $validated = $request->validate([
             'description' => ['sometimes', 'nullable', 'string', 'max:5000'],
             'is_recruiting' => ['sometimes', 'boolean'],
@@ -167,7 +184,8 @@ class ClanController extends Controller implements HasMiddleware
         return response()->noContent();
     }
 
-    // "Membres": what each member did for the clan during the period
+    // "Membres": the ranking of the members of the clan during the period: 1 point by mission step, the points of their
+    // successful attacks and defenses
     public function members(Request $request, Clan $clan)
     {
         $period = $this->clanService->currentPeriod();
@@ -182,11 +200,15 @@ class ClanController extends Controller implements HasMiddleware
             ->get()
             ->map(function (ClanMember $member) use ($clan, $stats) {
                 $stat = $stats->get($member->user_id);
+                $isLeader = $clan->leader_id === $member->user_id;
 
                 return [
                     'user' => UserLightResource::make($member->user),
-                    'is_leader' => $clan->leader_id === $member->user_id,
+                    'is_leader' => $isLeader,
+                    'role' => $isLeader ? ClanRole::LEADER->value : $member->role->value,
+                    'combat_role' => $member->combat_role?->value,
                     'joined_at' => $member->created_at?->toIso8601String(),
+                    'points' => ($stat?->mission_steps ?? 0) + ($stat?->performance ?? 0),
                     'attacks' => $stat?->attacks ?? 0,
                     'attacks_won' => $stat?->attacks_won ?? 0,
                     'defenses' => $stat?->defenses ?? 0,
@@ -194,9 +216,17 @@ class ClanController extends Controller implements HasMiddleware
                     'mission_steps' => $stat?->mission_steps ?? 0,
                     'performance' => $stat?->performance ?? 0,
                 ];
-            });
+            })
+            ->sortByDesc('points')
+            ->values();
 
-        return ['data' => $members];
+        return [
+            'data' => $members,
+            // the seats of "Attaquant" and "Défenseur" of the clan
+            'seats' => collect(ClanCombatRole::cases())->mapWithKeys(fn (ClanCombatRole $role) => [
+                $role->value => ['label' => $role->getLabel(), 'description' => $role->description(), 'count' => $this->clanService->combatSeats($clan, $role)],
+            ]),
+        ];
     }
 
     // "Statut": the attacks launched by the clan and the attacks against it, during the period
