@@ -57,26 +57,20 @@ const go = (index) => {
   router.replace({ hash: `#${sections[index].id}` })
 }
 
-// App\Enums\ClanBonusType
-const clanBonuses = [
-  { name: 'Plus de temps', icon: '/gfx/clan/opt/optMoreTime.gif', description: 'Repousse la fin de la mission de 6 heures pour avoir plus de temps pour la terminer.' },
-  { name: 'Jeu caca', icon: '/gfx/clan/opt/optBlacklistGame.gif', description: 'Un jeu qui ne sera jamais présent dans les futures missions de la période.' },
-  { name: 'Jeu cool', icon: '/gfx/clan/opt/optSelectGame.gif', description: 'Un jeu qui sera obligatoirement présent dans toutes les futures missions de la période.' },
-  { name: 'Mission suivante', icon: '/gfx/clan/opt/optSkipMission.gif', description: 'Annule la mission en cours, sans perdre de points, et en génère une nouvelle.' },
-  { name: 'Passe étape', icon: '/gfx/clan/opt/optSkipStep.gif', description: 'Supprime une étape au choix de la mission.' },
-]
-// kado.clans.rewards (config/kado.php)
-const clanRewards = [
-  { ranks: '1er', points: 150000 },
-  { ranks: '2e', points: 100000 },
-  { ranks: '3e à 5e', points: 75000 },
-  { ranks: '6e à 10e', points: 25000 },
-  { ranks: '11e à 25e', points: 12500 },
-  { ranks: '26e à 50e', points: 7500 },
-  { ranks: '51e à 100e', points: 5000 },
-  { ranks: '101e à 200e', points: 2500 },
-  { ranks: '201e à 500e', points: 1250 },
-]
+// the rules of the clans set in the admin (App\Settings\ClanSettings)
+const clanStore = useClanStore()
+if (!clanStore.rules) {
+  clanStore.reload()
+}
+const rules = computed(() => clanStore.rules ?? {})
+// "1er", "2e à 5e"
+const rank = (n) => (n === 1 ? '1er' : `${n}e`)
+const ranks = (reward) => (reward.from === reward.to ? rank(reward.from) : `${rank(reward.from)} à ${rank(reward.to)}`)
+const clanRewards = computed(() => [
+  { title: 'Classement des attaques', rewards: rules.value.rewards?.war ?? [] },
+  { title: 'Classement des missions', rewards: rules.value.rewards?.missions ?? [] },
+])
+const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `${pack.count} pour ${formatScore(pack.price)} points`).join(', '))
 </script>
 
 <template>
@@ -178,7 +172,7 @@ const clanRewards = [
             </template>
 
             <template v-else-if="section.id === 'clans'">
-              <p>Un Clan est un groupe de joueurs (maximum 50) qui se rassemblent pour combattre ensemble contre d'autres clans.</p>
+              <p>Un Clan est un groupe de joueurs (maximum {{ rules.max_members }}) qui se rassemblent pour combattre ensemble contre d'autres clans.</p>
               <p>Vous pouvez soit rejoindre un Clan existant en envoyant votre candidature depuis sa page, soit créer votre propre Clan à partir de la rubrique <RouterLink :to="{ name: 'clans.index' }">Clans</RouterLink>.</p>
               <p>Un joueur accepté dans un Clan ne peut pas le quitter ni en être exclu pendant la période où il l'a rejoint.</p>
               <p>Le Clan est dirigé par son <strong>chef</strong>, qui peut nommer des <strong>bras droits</strong> : ils ont tous les droits du chef (candidatures, exclusions, options, rôles), sauf dissoudre le Clan et nommer un nouveau chef.</p>
@@ -189,31 +183,31 @@ const clanRewards = [
             <template v-else-if="section.id === 'attaques'">
               <p><img src="/assets/img/gfx/icons/atk.gif" alt="Attaque" class="inline" /> Pour gagner des points, un Clan doit attaquer un autre Clan : allez sur la page d'un Clan adverse, cliquez sur « Attaquer ce clan », choisissez un jeu et effectuez une partie.</p>
               <p>Votre score devient une attaque. Pour la repousser, le Clan adverse devra faire un score supérieur au vôtre. Une attaque repoussée est annulée, et votre Clan ne perd rien.</p>
-              <p>Si au bout de <strong>12 heures</strong> l'attaque n'a pas été repoussée, votre Clan remporte de 1 à <strong>10 points</strong> et le Clan adverse perd autant (jamais en dessous de zéro). Contre un Clan qui a autant de points que le vôtre ou plus, l'attaque rapporte 10 points ; c'est un point de moins par tranche de 10 points qu'il a de moins que vous (9 points contre un Clan qui a 1 à 10 points de moins, 8 de 11 à 20...). Le nombre de points est affiché avant d'attaquer. Attaquez des clans au score proche du vôtre : les autres sont protégés de vos attaques.</p>
-              <p>Chaque joueur peut avoir une attaque en cours à la fois. Pour l'améliorer, cliquez sur « Améliorer » dans l'onglet Statut et rejouez sur le même jeu : le nouveau score ne remplace celui de l'attaque que s'il est meilleur, et le Clan adverse a de nouveau 12 heures pour le battre.</p>
-              <p>Chaque jour, vous avez un nombre de parties gratuites pour attaquer et défendre (indiqué par la gemme verte dans le menu du Clan), à part de vos parties normales. Quand elles sont jouées, vous pouvez attaquer et défendre avec des <strong>parties de clan</strong>, achetées avec vos points Kado (1 partie pour 50 points, 5 pour 225, 10 pour 400, 50 pour 1 750). Vous pouvez les garder pour vous ou les donner à votre Clan : le chef et ses bras droits les distribuent ensuite aux membres. Les parties gratuites du jour ne peuvent pas être données.</p>
+              <p>Si au bout de <strong>{{ rules.attack_hours }} heures</strong> l'attaque n'a pas été repoussée, votre Clan remporte de 1 à <strong>{{ rules.attack_max_points }} points</strong> et le Clan adverse perd autant (jamais en dessous de zéro). Contre un Clan qui a autant de points que le vôtre ou plus, l'attaque rapporte {{ rules.attack_max_points }} points ; c'est un point de moins par tranche de {{ rules.attack_points_palier }} points qu'il a de moins que vous. Le nombre de points est affiché avant d'attaquer. Attaquez des clans au score proche du vôtre : ceux qui ont plus de {{ rules.protection_range }} points d'écart avec vous sont protégés de vos attaques.</p>
+              <p>Chaque joueur peut avoir une attaque en cours à la fois. Pour l'améliorer, cliquez sur « Améliorer » dans l'onglet Statut et rejouez sur le même jeu : le nouveau score ne remplace celui de l'attaque que s'il est meilleur, et le Clan adverse a de nouveau {{ rules.attack_hours }} heures pour le battre.</p>
+              <p>Chaque jour, vous avez <strong>{{ rules.attack_games_per_day }} parties gratuites</strong> pour attaquer et défendre (la gemme verte dans le menu du Clan), à part de vos parties normales. Quand elles sont jouées, vous pouvez attaquer et défendre avec des <strong>parties de clan</strong>, achetées avec vos points Kado ({{ gamePacks }}). Vous pouvez les garder pour vous ou les donner à votre Clan : le chef et ses bras droits les distribuent ensuite aux membres. Les parties gratuites du jour ne peuvent pas être données.</p>
             </template>
 
             <template v-else-if="section.id === 'defenses'">
               <p><img src="/assets/img/gfx/icons/def.gif" alt="Défense" class="inline" /> Les attaques lancées par votre Clan et celles menées contre lui sont indiquées dans l'onglet Statut de votre clan. Cliquez sur « Défendre » et battez le score de l'attaque sur le même jeu.</p>
               <p>Sachez que tant que vous avez une attaque en cours, vous ne pouvez pas défendre ! Il faudra donc coordonner les membres du Clan entre attaquants et défenseurs.</p>
-              <p>Le chef et ses bras droits peuvent donner des sièges, plus nombreux dans un grand Clan : un <strong>Attaquant</strong> peut lancer deux attaques en même temps, un <strong>Défenseur</strong> peut défendre même quand il a une attaque en cours.</p>
+              <p>Le chef et ses bras droits peuvent donner des sièges, au moins un de chaque : un <strong>Attaquant</strong> ({{ rules.attacker_seats }} % des membres) peut lancer deux attaques en même temps, un <strong>Défenseur</strong> ({{ rules.defender_seats }} % des membres) peut défendre même quand il a une attaque en cours.</p>
               <p>Pour progresser dans le classement, il faudra à la fois remporter des attaques et défendre efficacement contre les clans ennemis.</p>
             </template>
 
             <template v-else-if="section.id === 'missions'">
-              <p>Votre Clan reçoit des missions : plusieurs étapes, chacune étant un score à atteindre sur un jeu. Vous avez <strong>24 heures</strong> pour toutes les réussir. Chacun peut faire les étapes sur les jeux où il est le meilleur, et les parties des missions sont <strong>gratuites</strong> !</p>
-              <p>Plus votre Clan a de membres, plus les missions ont d'étapes : 5 pour un joueur seul, jusqu'à 24 pour 50 joueurs.</p>
-              <p>Une mission réussie rapporte jusqu'à <strong>10 points</strong> et ouvre la mission suivante, plus difficile. Si le temps est écoulé, votre Clan perd un point par étape non réussie, moins une, et reçoit une nouvelle mission. Combien de missions votre Clan réussira-t-il ?</p>
+              <p>Votre Clan reçoit des missions : plusieurs étapes, chacune étant un score à atteindre sur un jeu. Vous avez <strong>{{ rules.mission_hours }} heures</strong> pour toutes les réussir. Chacun peut faire les étapes sur les jeux où il est le meilleur, et les parties des missions sont <strong>gratuites et illimitées</strong> !</p>
+              <p>Plus votre Clan a de membres, plus les missions ont d'étapes : {{ rules.mission_steps_alone }} pour un joueur seul, jusqu'à {{ rules.mission_steps_full }} pour {{ rules.max_members }} joueurs. Le score à atteindre augmente avec les missions.</p>
+              <p>Une mission réussie rapporte <strong>{{ rules.mission_points_first }} points</strong> (un point de moins toutes les {{ rules.mission_points_every }} missions, au moins {{ rules.mission_points_min }}) et ouvre la mission suivante. Si le temps est écoulé, votre Clan perd un point par étape non réussie, moins une, et reçoit une nouvelle mission. Combien de missions votre Clan réussira-t-il ?</p>
             </template>
 
             <template v-else-if="section.id === 'options'">
-              <p>Au début de chaque période, votre Clan reçoit les options Jeu cool et Jeu caca. En réussissant des missions, il peut en gagner d'autres. C'est le chef de clan ou un bras droit qui les utilise. Elles sont remises à zéro à la fin de la période.</p>
+              <p>Au début de chaque période, votre Clan reçoit les options Jeu cool et Jeu caca. Chaque mission réussie a {{ rules.bonus_chance }} % de chances de lui en faire gagner une autre. C'est le chef de clan ou un bras droit qui les utilise. Elles sont remises à zéro à la fin de la période.</p>
               <table class="w-full">
                 <tbody>
-                  <tr v-for="bonus in clanBonuses" :key="bonus.name">
-                    <td class="w-10"><img :src="bonus.icon" :alt="bonus.name" class="size-9 max-w-none"></td>
-                    <td class="!text-left text-xs"><strong>{{ bonus.name }}</strong> : {{ bonus.description }}</td>
+                  <tr v-for="bonus in rules.bonuses ?? []" :key="bonus.type">
+                    <td class="w-10"><img :src="bonus.icon" :alt="bonus.label" class="size-9 max-w-none"></td>
+                    <td class="!text-left text-xs"><strong>{{ bonus.label }}</strong> : {{ bonus.description }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -221,14 +215,19 @@ const clanRewards = [
 
             <template v-else-if="section.id === 'classement'">
               <p>Le tournoi des clans dure une période. A la fin, les clans les mieux classés de chaque classement remportent des points Kado, répartis à parts égales entre leurs membres. « L'union fait la force » !</p>
-              <table class="w-full">
-                <tbody>
-                  <tr v-for="reward in clanRewards" :key="reward.ranks">
-                    <td class="!text-left">{{ reward.ranks }}</td>
-                    <td class="!text-right">{{ formatScore(reward.points) }} <img src="/gfx/skpoint.gif" alt="Kado" class="inline size-4"></td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="flex flex-wrap gap-4">
+                <table v-for="ranking in clanRewards" :key="ranking.title" class="min-w-48 flex-1">
+                  <thead>
+                    <tr><th colspan="2" class="text-xs">{{ ranking.title }}</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="reward in ranking.rewards" :key="reward.from">
+                      <td class="!text-left">{{ ranks(reward) }}</td>
+                      <td class="!text-right">{{ formatScore(reward.points) }} <img src="/gfx/skpoint.gif" alt="Kado" class="inline size-4"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </template>
 
             <template v-else-if="section.id === 'compte'">

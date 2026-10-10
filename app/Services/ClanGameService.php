@@ -6,9 +6,10 @@ use App\Exceptions\ClanException;
 use App\Models\Clan;
 use App\Models\ClanGameTransfer;
 use App\Models\User;
+use App\Settings\ClanSettings;
 use Illuminate\Support\Facades\DB;
 
-// the paid clan games: bought with Kado points by packs (kado.clans.game_packs), used for the attacks and the defenses once
+// the paid clan games: bought with Kado points by packs (ClanSettings::$game_packs), used for the attacks and the defenses once
 // the free attack games of the day are used (ClanRunService::useClanGame). Their owner uses them or gives them to his
 // clan, whose leader and right hands distribute them to the members. The free games of the day can't be given.
 class ClanGameService
@@ -20,7 +21,7 @@ class ClanGameService
      */
     public function packs(): array
     {
-        return array_map('intval', config('kado.clans.game_packs'));
+        return app(ClanSettings::class)->gamePacks();
     }
 
     public function buy(User $user, int $count): void

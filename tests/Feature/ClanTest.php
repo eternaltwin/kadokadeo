@@ -331,7 +331,7 @@ class ClanTest extends TestCase
 
     public function test_a_mission_completed_gives_its_points_and_opens_the_next_one(): void
     {
-        config(['kado.clans.bonus_chance' => 1]);
+        ClanSettings::fake(['bonus_chance' => 1]);
         $period = $this->period();
         $leader = User::factory()->create();
         $member = User::factory()->create();
@@ -383,8 +383,8 @@ class ClanTest extends TestCase
         $this->assertSame(5, $missionService->stepsCount(1, 1));
         $this->assertSame(24, $missionService->stepsCount(50, 1));
         $this->assertSame(9, $missionService->stepsCount(11, 1));
-        // fewer steps with each mission when kado.clans.mission_steps.ratio is below 1
-        config(['kado.clans.mission_steps.ratio' => 0.9]);
+        // fewer steps with each mission when the ratio is below 1
+        ClanSettings::fake(['mission_steps_ratio' => 0.9]);
         $this->assertLessThan($missionService->stepsCount(50, 1), $missionService->stepsCount(50, 5));
 
         // one point less every 10 missions
@@ -398,7 +398,7 @@ class ClanTest extends TestCase
 
     public function test_a_mission_not_finished_in_time_loses_a_point_by_step_missed_minus_one(): void
     {
-        config(['kado.clans.bonus_chance' => 0]);
+        ClanSettings::fake(['bonus_chance' => 0]);
         $period = $this->period();
         $leader = User::factory()->create();
         $clan = Clan::factory()->withLeader($leader)->create();
@@ -431,7 +431,7 @@ class ClanTest extends TestCase
 
     public function test_the_paliers_get_higher_with_the_missions_completed(): void
     {
-        config(['kado.clans.bonus_chance' => 0]);
+        ClanSettings::fake(['bonus_chance' => 0]);
         $period = $this->period();
         $leader = User::factory()->create();
         $clan = Clan::factory()->withLeader($leader)->create();
@@ -478,7 +478,7 @@ class ClanTest extends TestCase
 
     public function test_the_mission_bonuses_of_the_leader_and_his_right_hands(): void
     {
-        config(['kado.clans.bonus_chance' => 0]);
+        ClanSettings::fake(['bonus_chance' => 0]);
         $period = $this->period();
         $leader = User::factory()->create();
         $rightHand = User::factory()->create();
@@ -623,7 +623,7 @@ class ClanTest extends TestCase
     // "Rejouer" on the page of a clan run: the next run counts for the clan while its target is open
     public function test_playing_again_on_the_page_of_a_clan_run(): void
     {
-        config(['kado.clans.bonus_chance' => 0]);
+        ClanSettings::fake(['bonus_chance' => 0]);
         $period = $this->period();
         $player = User::factory()->create();
         $clan = Clan::factory()->withLeader($player)->create();
@@ -657,11 +657,34 @@ class ClanTest extends TestCase
 
         Livewire::test(ManageClanSettings::class)
             ->assertSet('data.attack_games_per_day', 10)
+            ->assertSet('data.bonus_weights.more_time', 30)
             ->set('data.attack_games_per_day', 6)
+            ->set('data.bonus_chance', '0.5')
             ->call('save')
             ->assertHasNoErrors();
 
-        $this->assertSame(6, app(ClanSettings::class)->refresh()->attack_games_per_day);
+        $settings = app(ClanSettings::class)->refresh();
+        $this->assertSame(6, $settings->attack_games_per_day);
+        $this->assertSame(0.5, $settings->bonus_chance);
+        // the lists are kept
+        $this->assertSame([1 => 50, 5 => 225, 10 => 400, 50 => 1750], $settings->gamePacks());
+        $this->assertSame(150000, $settings->rewards('war')[1]);
+    }
+
+    // the help page shows the rules set in the admin
+    public function test_the_rules_of_the_clans_for_the_help(): void
+    {
+        ClanSettings::fake(['attack_hours' => 8, 'protection_range' => 50, 'war_rewards' => [['last_rank' => 3, 'points' => 900], ['last_rank' => 1, 'points' => 3000]]]);
+        Sanctum::actingAs(User::factory()->create());
+
+        $this->getJson('/api/clans/overview')->assertOk()
+            ->assertJsonPath('data.rules.attack_hours', 8)
+            ->assertJsonPath('data.rules.attack_points_palier', 5)
+            ->assertJsonPath('data.rules.mission_steps_alone', 5)
+            ->assertJsonPath('data.rules.mission_steps_full', 24)
+            ->assertJsonPath('data.rules.bonus_chance', 7)
+            ->assertJsonPath('data.rules.rewards.war', [['from' => 1, 'to' => 1, 'points' => 3000], ['from' => 2, 'to' => 3, 'points' => 900]])
+            ->assertJsonPath('data.rules.game_packs.0', ['count' => 1, 'price' => 50]);
     }
 
     // the leader can do everything, a right hand everything but disband the clan and name a new leader
