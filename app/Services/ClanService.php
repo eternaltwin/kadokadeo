@@ -15,6 +15,7 @@ use App\Models\ClanMemberStat;
 use App\Models\ClanPeriodScore;
 use App\Models\Period;
 use App\Models\User;
+use App\Settings\ClanSettings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -94,10 +95,11 @@ class ClanService
         return ClanMember::query()->where('clan_id', $clan->id)->where('user_id', $user->id)->first()?->combat_role;
     }
 
-    // the seats of a combat role: a share of the members (kado.clans.combat_seats), at least 1
+    // the seats of a combat role: a share of the members (App\Settings\ClanSettings), at least 1
     public function combatSeats(Clan $clan, ClanCombatRole $role): int
     {
-        $share = (float) config("kado.clans.combat_seats.{$role->value}");
+        $settings = app(ClanSettings::class);
+        $share = $role === ClanCombatRole::ATTACKER ? $settings->attacker_seats_share : $settings->defender_seats_share;
 
         return max(1, (int) floor($clan->members()->count() * $share));
     }
@@ -134,7 +136,7 @@ class ClanService
         if (!$clan->is_recruiting) {
             throw new ClanException('Ce clan ne recrute pas pour le moment.');
         }
-        if ($clan->members()->count() >= config('kado.clans.max_members')) {
+        if ($clan->members()->count() >= app(ClanSettings::class)->max_members) {
             throw new ClanException('Ce clan est complet.');
         }
         // a single application at a time
@@ -171,7 +173,9 @@ class ClanService
         }
 
         DB::transaction(function () use ($clan, $application) {
-            if ($clan->members()->lockForUpdate()->count() >= config('kado.clans.max_members')) {
+            // the clan is locked (PostgreSQL does not lock an aggregate): one acceptation at a time
+            Clan::query()->lockForUpdate()->find($clan->id);
+            if ($clan->members()->count() >= app(ClanSettings::class)->max_members) {
                 throw new ClanException('Ce clan est complet.');
             }
             if (ClanMember::query()->where('user_id', $application->user_id)->exists()) {
@@ -278,7 +282,9 @@ class ClanService
 
         DB::transaction(function () use ($clan, $member, $role) {
             if ($role) {
-                $taken = $clan->members()->lockForUpdate()->where('combat_role', $role)->where('user_id', '!=', $member->id)->count();
+                // the clan is locked (PostgreSQL does not lock an aggregate): one seat given at a time
+                Clan::query()->lockForUpdate()->find($clan->id);
+                $taken = $clan->members()->where('combat_role', $role)->where('user_id', '!=', $member->id)->count();
                 $seats = $this->combatSeats($clan, $role);
                 if ($taken >= $seats) {
                     throw new ClanException("Tous les sièges de {$role->getLabel()} sont pris ({$seats} pour ce clan).");
@@ -354,8 +360,9 @@ class ClanService
     // defender has below the attacker, at least 1
     public function attackPoints(int $attackerScore, int $defenderScore): int
     {
-        $max = (int) config('kado.clans.attack_max_points');
-        $palier = max(1, (int) config('kado.clans.protection_range') / max(1, $max));
+        $settings = app(ClanSettings::class);
+        $max = $settings->attack_max_points;
+        $palier = max(1, $settings->protection_range / max(1, $max));
         $below = max(0, $attackerScore - $defenderScore);
 
         return max(1, $max - (int) ceil($below / $palier));
@@ -363,7 +370,7 @@ class ClanService
 
     public function isProtected(int $attackerScore, int $defenderScore): bool
     {
-        return abs($attackerScore - $defenderScore) > (int) config('kado.clans.protection_range');
+        return abs($attackerScore - $defenderScore) > app(ClanSettings::class)->protection_range;
     }
 
     /**

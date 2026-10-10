@@ -13,10 +13,11 @@ use App\Models\Game;
 use App\Models\Period;
 use App\Models\Run;
 use App\Models\User;
+use App\Settings\ClanSettings;
 use Illuminate\Support\Facades\DB;
 
 // the attacks and defenses of the clans: the score of an attack must be beaten by the attacked clan within
-// kado.clans.attack_hours, otherwise the attacker wins points and the defender loses as many. A repelled attack costs
+// ClanSettings::$attack_hours, otherwise the attacker wins points and the defender loses as many. A repelled attack costs
 // nothing to the attacker. One attack at a time by player (two for an "Attaquant"), as many received as can be.
 class ClanWarService
 {
@@ -159,7 +160,7 @@ class ClanWarService
                 'run_id' => $run->id,
                 'score' => $run->score,
                 'status' => ClanAttackStatus::ACTIVE,
-                'expires_at' => now()->addHours((int) config('kado.clans.attack_hours')),
+                'expires_at' => now()->addHours(app(ClanSettings::class)->attack_hours),
             ]);
             $this->clanService->memberStat($action->clan_id, $action->user_id, $period->id)->increment('attacks');
         });
@@ -182,7 +183,7 @@ class ClanWarService
             $attack->update([
                 'score' => $run->score,
                 'run_id' => $run->id,
-                'expires_at' => now()->addHours((int) config('kado.clans.attack_hours')),
+                'expires_at' => now()->addHours(app(ClanSettings::class)->attack_hours),
             ]);
 
             return 'improved';

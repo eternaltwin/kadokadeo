@@ -9,6 +9,7 @@ use App\Models\ClanAction;
 use App\Models\ClanAttack;
 use App\Models\Run;
 use App\Models\User;
+use App\Settings\ClanSettings;
 
 // a clan run is a normal run (contract, rankings): the player asks for it on the clan pages (ClanAction), then the next
 // run he begins on the game is bound to it, and its score is used when it ends. A mission step is free and unlimited, an
@@ -126,7 +127,7 @@ class ClanRunService
     private function message(ClanActionType $type, string $result): string
     {
         return match ([$type, $result]) {
-            [ClanActionType::ATTACK, 'launched'] => 'Votre attaque est lancée ! Le clan adverse a '.config('kado.clans.attack_hours').' heures pour la repousser.',
+            [ClanActionType::ATTACK, 'launched'] => 'Votre attaque est lancée ! Le clan adverse a '.app(ClanSettings::class)->attack_hours.' heures pour la repousser.',
             [ClanActionType::ATTACK, 'improved'] => 'Votre attaque est améliorée : le clan adverse devra battre ce nouveau score.',
             [ClanActionType::ATTACK, 'not_improved'] => 'Ce score n\'est pas meilleur que celui de votre attaque : elle garde son score.',
             [ClanActionType::DEFENSE, 'repelled'] => 'Bravo, vous avez repoussé l\'attaque !',

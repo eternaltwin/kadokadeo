@@ -11,6 +11,8 @@ export const useClanStore = defineStore('clan', () => {
   const top = ref([])
   // the tools of /clans/debug are available (KADO_DEBUG_TOOLS)
   const debug = ref(false)
+  // the rules of the clans set in the admin (App\Settings\ClanSettings), shown on the help and the clan pages
+  const rules = ref(null)
 
   const { get } = useApi()
 
@@ -22,6 +24,7 @@ export const useClanStore = defineStore('clan', () => {
       applications.value = data.applications
       top.value = data.top
       debug.value = data.debug
+      rules.value = data.rules
     }).catch(() => {})
 
   return {
@@ -30,6 +33,7 @@ export const useClanStore = defineStore('clan', () => {
     applications,
     top,
     debug,
+    rules,
     reload,
   }
 })

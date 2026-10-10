@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-// the seats of the attacks and defenses, given by the leader or a right hand (kado.clans.combat_seats by size of the
+// the seats of the attacks and defenses, given by the leader or a right hand (App\Settings\ClanSettings: seats by size of the
 // clan). The members without a seat have one attack at a time and can't defend while they attack.
 enum ClanCombatRole: string implements HasLabel
 {

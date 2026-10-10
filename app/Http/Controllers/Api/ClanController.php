@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ClanBonusType;
 use App\Enums\ClanCombatRole;
 use App\Enums\ClanRole;
 use App\Http\Controllers\Controller;
@@ -15,8 +16,10 @@ use App\Models\ClanMember;
 use App\Models\ClanMemberStat;
 use App\Models\ClanMission;
 use App\Models\ClanPeriodScore;
+use App\Services\ClanMissionService;
 use App\Services\ClanService;
 use App\Services\ClanWarService;
+use App\Settings\ClanSettings;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -105,6 +108,8 @@ class ClanController extends Controller implements HasMiddleware
                 'top' => ClanListResource::collection($top),
                 // the tools of /clans/debug (kado.debug_tools)
                 'debug' => (bool) config('kado.debug_tools'),
+                // the rules of the clans (App\Settings\ClanSettings), for the help page and the clan pages
+                'rules' => $this->rules(),
             ],
         ];
     }
@@ -146,7 +151,7 @@ class ClanController extends Controller implements HasMiddleware
                 'created_at' => $clan->created_at?->toIso8601String(),
                 'leader' => $clan->leader ? UserLightResource::make($clan->leader) : null,
                 'members_count' => $clan->members_count,
-                'max_members' => (int) config('kado.clans.max_members'),
+                'max_members' => app(ClanSettings::class)->max_members,
                 // the paid clan games given by the members, to distribute ("coffre" of the clan)
                 'clan_games' => $isMember ? $clan->clan_games : null,
                 'stats' => [
@@ -268,6 +273,57 @@ class ClanController extends Controller implements HasMiddleware
                 'received' => ClanAttackResource::collection($base()->where('defender_clan_id', $clan->id)->get()),
             ],
             'tournament' => $this->clanService->tournamentInfo(),
+        ];
+    }
+
+    private function rules(): array
+    {
+        $settings = app(ClanSettings::class);
+        $missionService = app(ClanMissionService::class);
+        // [last rank => points] as {from, to, points}
+        $ranges = function (array $rewards) {
+            $from = 1;
+            $ranges = [];
+            foreach ($rewards as $lastRank => $points) {
+                $ranges[] = ['from' => $from, 'to' => $lastRank, 'points' => $points];
+                $from = $lastRank + 1;
+            }
+
+            return $ranges;
+        };
+
+        return [
+            'max_members' => $settings->max_members,
+            'attack_games_per_day' => $settings->attack_games_per_day,
+            'attack_hours' => $settings->attack_hours,
+            'attack_max_points' => $settings->attack_max_points,
+            // one point less by this many points the attacked clan has below the attacker
+            'attack_points_palier' => (int) max(1, $settings->protection_range / max(1, $settings->attack_max_points)),
+            'protection_range' => $settings->protection_range,
+            // the share of the members (%)
+            'attacker_seats' => (int) round($settings->attacker_seats_share * 100),
+            'defender_seats' => (int) round($settings->defender_seats_share * 100),
+            'mission_hours' => $settings->mission_hours,
+            'mission_more_time_hours' => $settings->mission_more_time_hours,
+            // the steps of the first mission of a lone player, of a full clan
+            'mission_steps_alone' => $missionService->stepsCount(1, 1),
+            'mission_steps_full' => $missionService->stepsCount($settings->max_members, 1),
+            'mission_points_first' => $settings->mission_points_first,
+            'mission_points_every' => $settings->mission_points_every,
+            'mission_points_min' => $settings->mission_points_min,
+            // %
+            'bonus_chance' => round($settings->bonus_chance * 100, 1),
+            'bonuses' => collect(ClanBonusType::cases())->map(fn (ClanBonusType $type) => [
+                'type' => $type->value,
+                'label' => $type->getLabel(),
+                'description' => $type->description(),
+                'icon' => $type->icon(),
+            ]),
+            'game_packs' => collect($settings->gamePacks())->map(fn (int $price, int $count) => ['count' => $count, 'price' => $price])->values(),
+            'rewards' => [
+                'war' => $ranges($settings->rewards('war')),
+                'missions' => $ranges($settings->rewards('missions')),
+            ],
         ];
     }
 

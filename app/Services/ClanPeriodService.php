@@ -8,6 +8,7 @@ use App\Models\ClanMemberStat;
 use App\Models\ClanMission;
 use App\Models\ClanPeriodScore;
 use App\Models\Period;
+use App\Settings\ClanSettings;
 use Illuminate\Support\Facades\DB;
 
 // the end of the tournament of the clans (App\Console\Commands\PrepareNewPeriod): the clans are ranked by their attack
@@ -47,7 +48,7 @@ class ClanPeriodService
             return 0;
         }
 
-        foreach (config("kado.clans.rewards.{$ranking}") as $lastRank => $points) {
+        foreach (app(ClanSettings::class)->rewards($ranking) as $lastRank => $points) {
             if ($rank <= $lastRank) {
                 return (int) $points;
             }
