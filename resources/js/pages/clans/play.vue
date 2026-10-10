@@ -33,7 +33,7 @@ const backRoute = computed(() => {
     ? { name: 'clans.missions', params: { id } }
     : { name: 'clans.status', params: { id } }
 })
-const isSuccess = computed(() => ['launched', 'repelled', 'completed'].includes(result.value?.result))
+const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed'].includes(result.value?.result))
 </script>
 
 <template>
@@ -47,17 +47,21 @@ const isSuccess = computed(() => ['launched', 'repelled', 'completed'].includes(
       <div class="flex items-center gap-2 border-l-4 px-2 py-1" :class="action.type === 'attack' ? 'border-[#ff6b9c] bg-[#ffe3ec] text-[#ff6b9c]' : 'border-kado-cyan-800 bg-kado-cyan-100'">
         <img :src="action.type === 'attack' ? '/assets/img/gfx/icons/atk.gif' : action.type === 'defense' ? '/assets/img/gfx/icons/def.gif' : '/gfx/clan/clan_mission_points.png'" alt="" />
         <div>
-          <template v-if="action.type === 'attack'">
+          <template v-if="action.is_improvement">
+            Améliorez votre attaque contre le clan <strong>{{ action.target.clan.name }}</strong> : votre score ne
+            remplacera celui de l'attaque (<strong>{{ action.target.score }} pts</strong>) que s'il est meilleur.
+          </template>
+          <template v-else-if="action.type === 'attack'">
             Votre score deviendra une attaque du clan <strong>{{ action.clan.name }}</strong> contre le clan
             <strong>{{ action.target.clan.name }}</strong>. Faites le meilleur score possible !
           </template>
           <template v-else-if="action.type === 'defense'">
             Battez le score de <strong>{{ action.target.score }} pts</strong> de {{ action.target.attacker }}
             (clan {{ action.target.clan.name }}) pour repousser son attaque.
-            <template v-if="action.bonus"> Option <strong>{{ action.bonus }}</strong> : votre score comptera pour 120%.</template>
           </template>
           <template v-else>
             Mission {{ action.target.mission }} : atteignez <strong>{{ action.target.score }} pts</strong> pour réussir cette étape.
+            Les parties des missions sont gratuites.
           </template>
         </div>
       </div>

@@ -21,13 +21,11 @@ class ClanPeriodScore extends Model
         'closed_at',
         'banned_game_id',
         'forced_game_id',
-        'next_mission_double',
     ];
 
     protected $casts = [
         'war_score' => 'integer',
         'mission_score' => 'integer',
-        'next_mission_double' => 'boolean',
         'closed_at' => 'datetime',
     ];
 

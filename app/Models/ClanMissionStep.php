@@ -10,7 +10,6 @@ class ClanMissionStep extends Model
         'clan_mission_id',
         'game_id',
         'target_score',
-        'points',
         'completed_by_user_id',
         'run_id',
         'score',
@@ -20,7 +19,6 @@ class ClanMissionStep extends Model
 
     protected $casts = [
         'target_score' => 'integer',
-        'points' => 'integer',
         'score' => 'integer',
         'skipped' => 'boolean',
         'completed_at' => 'datetime',

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClanBonus extends Model
 {
-    protected $fillable = ['clan_id', 'period_id', 'type', 'assigned_user_id', 'used_at'];
+    protected $fillable = ['clan_id', 'period_id', 'type', 'used_at'];
 
     protected $casts = [
         'type' => ClanBonusType::class,
@@ -22,17 +22,6 @@ class ClanBonus extends Model
     public function period()
     {
         return $this->belongsTo(Period::class);
-    }
-
-    public function assignedUser()
-    {
-        return $this->belongsTo(User::class, 'assigned_user_id');
-    }
-
-    // the runs it was reserved for
-    public function actions()
-    {
-        return $this->hasMany(ClanAction::class);
     }
 
     public function scopeAvailable($query)

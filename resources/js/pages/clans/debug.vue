@@ -120,7 +120,7 @@ const endPeriod = () => {
       <h2 class="normal-case">Mission de mon clan</h2>
       <p v-if="!data.mission" class="mx-0 italic text-sm">Vous ne faites partie d'aucun clan.</p>
       <template v-else>
-        <p class="mx-0 text-sm">Mission {{ data.mission.number }}, {{ data.mission.points }} point(s) gagné(s), fin dans <ClanCountdown :until="data.mission.expires_at" /></p>
+        <p class="mx-0 text-sm">Mission {{ data.mission.number }} ({{ data.mission.steps.length }} étapes, {{ data.mission.reward }} points si elle est réussie), fin dans <ClanCountdown :until="data.mission.expires_at" /></p>
         <ul class="space-y-1 text-sm">
           <li v-for="step in data.mission.steps" :key="step.id" class="flex items-center gap-2">
             <span>{{ step.game }} : {{ step.target_score }} pts</span>

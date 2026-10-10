@@ -4,65 +4,46 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-// the options a clan wins with its missions (App\Services\ClanMissionService::useBonus), names of the original help
+// the options of the missions (App\Services\ClanMissionService::useBonus): "Jeu cool" and "Jeu caca" given to every clan
+// at the start of the period, all of them won by chance with the missions (kado.clans.bonus_chance / bonus_weights)
 enum ClanBonusType: string implements HasLabel
 {
-    // for the missions
-    case NEXT_MISSION = 'next_mission';
-    case DOUBLE_POINTS = 'double_points';
+    case MORE_TIME = 'more_time';
     case BAN_GAME = 'ban_game';
     case FORCE_GAME = 'force_game';
-    case MORE_TIME = 'more_time';
+    case NEXT_MISSION = 'next_mission';
     case SKIP_STEP = 'skip_step';
-    // for the attacks and defenses: the leader can give them to a member
-    case DOUBLE_ATTACK = 'double_attack';
-    case SUPER_DEFENSE = 'super_defense';
 
     public function getLabel(): string
     {
         return match ($this) {
-            self::NEXT_MISSION => 'Mission suivante',
-            self::DOUBLE_POINTS => 'Double points',
+            self::MORE_TIME => 'Plus de temps',
             self::BAN_GAME => 'Jeu caca',
             self::FORCE_GAME => 'Jeu cool',
-            self::MORE_TIME => 'Plus de temps',
+            self::NEXT_MISSION => 'Mission suivante',
             self::SKIP_STEP => 'Passe étape',
-            self::DOUBLE_ATTACK => 'Double attaque',
-            self::SUPER_DEFENSE => 'Défense 120%',
         };
     }
 
     public function description(): string
     {
         return match ($this) {
-            self::NEXT_MISSION => 'Annule la mission en cours et génère une nouvelle mission. Les étapes réussies de la mission annulée ne rapportent pas de point.',
-            self::DOUBLE_POINTS => 'La prochaine mission rapportera deux fois plus de points à votre clan si vous la terminez.',
+            self::MORE_TIME => 'Repousse la fin de la mission de '.config('kado.clans.mission_more_time_hours').' heures pour avoir plus de temps pour la terminer.',
             self::BAN_GAME => 'Sélectionne un jeu qui ne sera jamais présent dans les futures missions de la période.',
             self::FORCE_GAME => 'Sélectionne un jeu qui sera obligatoirement présent dans toutes les futures missions de la période.',
-            self::MORE_TIME => 'Ajoute 6 heures à la mission en cours pour pouvoir la finir.',
+            self::NEXT_MISSION => 'Annule la mission en cours, sans perdre de points, et génère une nouvelle mission.',
             self::SKIP_STEP => 'Supprime une étape au choix de votre mission.',
-            self::DOUBLE_ATTACK => 'Permet à un joueur de lancer une seconde attaque en parallèle.',
-            self::SUPER_DEFENSE => 'Le score d\'une défense compte pour 120% (seulement pour la défense, pas pour les records).',
         };
     }
 
     public function icon(): string
     {
         return match ($this) {
-            self::NEXT_MISSION => '/gfx/clan/opt/optSkipMission.gif',
-            self::DOUBLE_POINTS => '/gfx/clan/opt/optDoublePoints.gif',
+            self::MORE_TIME => '/gfx/clan/opt/optMoreTime.gif',
             self::BAN_GAME => '/gfx/clan/opt/optBlacklistGame.gif',
             self::FORCE_GAME => '/gfx/clan/opt/optSelectGame.gif',
-            self::MORE_TIME => '/gfx/clan/opt/optMoreTime.gif',
+            self::NEXT_MISSION => '/gfx/clan/opt/optSkipMission.gif',
             self::SKIP_STEP => '/gfx/clan/opt/optSkipStep.gif',
-            self::DOUBLE_ATTACK => '/gfx/clan/opt/optDoubleAttack.gif',
-            self::SUPER_DEFENSE => '/gfx/clan/opt/optSuperDefense.gif',
         };
-    }
-
-    // the only two options the leader can give to a member, who uses it himself when he attacks or defends
-    public function isAssignable(): bool
-    {
-        return in_array($this, [self::DOUBLE_ATTACK, self::SUPER_DEFENSE], true);
     }
 }

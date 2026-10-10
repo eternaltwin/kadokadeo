@@ -25,12 +25,15 @@ export function useClans() {
     leave: () => post('/clans/leave'),
     kick: (id, etwinId) => post(`/clans/${id}/members/${etwinId}/kick`),
     promote: (id, etwinId) => post(`/clans/${id}/members/${etwinId}/leader`),
+    setRole: (id, etwinId, role) => put(`/clans/${id}/members/${etwinId}/role`, { role }),
+    setCombatRole: (id, etwinId, combatRole) => put(`/clans/${id}/members/${etwinId}/combat-role`, { combat_role: combatRole }),
+    dissolve: (id) => del(`/clans/${id}`),
     attack: (id, gameId) => post(`/clans/${id}/attacks`, { game_id: gameId }).then(data),
-    defend: (attackId, superDefense = false) => post(`/clan-attacks/${attackId}/defend`, { super_defense: superDefense }).then(data),
+    defend: (attackId) => post(`/clan-attacks/${attackId}/defend`).then(data),
+    improveAttack: (attackId) => post(`/clan-attacks/${attackId}/improve`).then(data),
     cancelAttack: (attackId) => post(`/clan-attacks/${attackId}/cancel`),
     playStep: (stepId) => post(`/clan-mission-steps/${stepId}/play`).then(data),
     useBonus: (bonusId, payload = {}) => post(`/clan-bonuses/${bonusId}/use`, payload),
-    assignBonus: (bonusId, etwinId) => post(`/clan-bonuses/${bonusId}/assign`, { user: etwinId }),
     fetchAction: (actionId) => get(`/clan-actions/${actionId}`).then(data),
   }
 }

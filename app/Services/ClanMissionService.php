@@ -16,9 +16,10 @@ use App\Models\Run;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-// the collaborative missions of the clans (news "New Clan Mode" of KadoKado, 2010-02-24): scores to reach on several
-// games within kado.clans.mission_hours. Each step completed gives 1 point; all the steps completed in time double the
-// points of the mission, otherwise the clan loses them. Each mission is harder than the previous one, with more steps.
+// the collaborative missions of the clans: a score (a palier of the stars) to reach on several games within
+// kado.clans.mission_hours, more games in a bigger clan, higher paliers with each mission. A completed mission gives up
+// to 10 points (fewer with each mission) and opens the next one; a mission not finished in time loses 1 point by game
+// not completed, minus one, and the clan gets a new mission of the same number. The runs of the missions are free.
 class ClanMissionService
 {
     public function __construct(private readonly ClanService $clanService) {}
@@ -54,6 +55,7 @@ class ClanMissionService
         return $mission;
     }
 
+    // the number of the mission: one more than the missions completed in the period
     public function generateMission(Clan $clan, Period $period): ClanMission
     {
         return DB::transaction(function () use ($clan, $period) {
@@ -66,24 +68,20 @@ class ClanMissionService
                 return $active;
             }
 
-            $number = (int) ClanMission::query()->where('clan_id', $clan->id)->where('period_id', $period->id)->max('number') + 1;
+            $number = $score->missions_completed + 1;
             $mission = ClanMission::query()->create([
                 'clan_id' => $clan->id,
                 'period_id' => $period->id,
                 'number' => $number,
                 'status' => ClanMission::ACTIVE,
-                'double_points' => $score->next_mission_double,
                 'expires_at' => now()->addHours((int) config('kado.clans.mission_hours')),
             ]);
-            if ($score->next_mission_double) {
-                $score->update(['next_mission_double' => false]);
-            }
 
-            foreach ($this->pickGames($number, $score->banned_game_id, $score->forced_game_id) as $game) {
+            $steps = $this->stepsCount($clan->members()->count(), $number);
+            foreach ($this->pickGames($steps, $score->banned_game_id, $score->forced_game_id) as $game) {
                 $mission->steps()->create([
                     'game_id' => $game->id,
                     'target_score' => $this->targetScore($game, $number),
-                    'points' => $mission->double_points ? 2 : 1,
                 ]);
             }
 
@@ -113,7 +111,7 @@ class ClanMissionService
         ]);
     }
 
-    // a step completed gives its point right away
+    // a step completed gives a point to its player in the ranking of the clan
     public function completeStep(ClanAction $action, Run $run): string
     {
         return DB::transaction(function () use ($action, $run) {
@@ -133,8 +131,6 @@ class ClanMissionService
                 'score' => $run->score,
                 'completed_at' => now(),
             ]);
-            $mission->increment('points', $step->points);
-            $this->clanService->periodScore($mission->clan, $mission->period)->increment('mission_score', $step->points);
             $this->clanService->memberStat($mission->clan_id, $action->user_id, $mission->period_id)->increment('mission_steps');
             $this->completeMissionIfDone($mission);
 
@@ -142,8 +138,8 @@ class ClanMissionService
         });
     }
 
-    // a mission not finished in time (or replaced by "Mission suivante", or left at the end of the period): the clan
-    // loses the points of its completed steps
+    // not finished in time (or left at the end of the period): 1 point lost by step not completed, minus one. Replaced by
+    // "Mission suivante": nothing lost.
     public function loseMission(ClanMission $mission, string $status): void
     {
         DB::transaction(function () use ($mission, $status) {
@@ -152,10 +148,32 @@ class ClanMissionService
                 return;
             }
 
-            $score = $this->clanService->periodScore($mission->clan, $mission->period);
-            $score->update(['mission_score' => max(0, $score->mission_score - $mission->points)]);
-            $mission->update(['status' => $status]);
+            $lost = 0;
+            if ($status === ClanMission::FAILED) {
+                $score = $this->clanService->periodScore($mission->clan, $mission->period);
+                $missed = $mission->steps()->get()->reject(fn (ClanMissionStep $step) => $step->isDone())->count();
+                $lost = min($score->mission_score, max(0, $missed - 1));
+                $score->decrement('mission_score', $lost);
+            }
+            $mission->update(['status' => $status, 'points' => -$lost]);
         });
+    }
+
+    // the points of a completed mission: fewer with each mission
+    public function missionPoints(int $number): int
+    {
+        $config = config('kado.clans.mission_points');
+
+        return max((int) $config['min'], (int) round($config['first'] * $config['ratio'] ** ($number - 1)));
+    }
+
+    // the steps of a mission: more in a bigger clan, (maybe) fewer with each mission
+    public function stepsCount(int $membersCount, int $number): int
+    {
+        $config = config('kado.clans.mission_steps');
+        $base = min($config['max'], $config['base'] + max(0, $membersCount - 1) * $config['per_member']);
+
+        return max((int) $config['min'], (int) round($base * $config['ratio'] ** ($number - 1)));
     }
 
     // ---------------------------------------------------------------- bonuses
@@ -166,11 +184,8 @@ class ClanMissionService
     public function useBonus(User $user, ClanBonus $bonus, array $params = []): void
     {
         $clan = $bonus->clan;
-        $this->clanService->assertLeader($user, $clan);
+        $this->clanService->assertManager($user, $clan);
         $this->assertUsable($bonus);
-        if ($bonus->type->isAssignable()) {
-            throw new ClanException('Cette option s\'utilise au moment d\'attaquer ou de défendre.');
-        }
         $period = $this->clanService->assertPeriod();
 
         DB::transaction(function () use ($bonus, $clan, $period, $params) {
@@ -182,14 +197,11 @@ class ClanMissionService
 
             switch ($bonus->type) {
                 case ClanBonusType::NEXT_MISSION:
-                    // a new mission without losing points: the steps completed in the replaced one give none either
+                    // a new mission of the same number, without losing points
                     if ($mission) {
                         $this->loseMission($mission, ClanMission::SKIPPED);
                     }
                     $this->generateMission($clan, $period);
-                    break;
-                case ClanBonusType::DOUBLE_POINTS:
-                    $score->update(['next_mission_double' => true]);
                     break;
                 case ClanBonusType::BAN_GAME:
                     $game = $this->activeGame($params['game_id'] ?? null);
@@ -209,7 +221,6 @@ class ClanMissionService
                     $mission->update(['expires_at' => $mission->expires_at->addHours((int) config('kado.clans.mission_more_time_hours'))]);
                     break;
                 case ClanBonusType::SKIP_STEP:
-                    // the step is removed: it gives no point
                     $step = $mission->steps()->whereKey($params['step_id'] ?? 0)->first();
                     if (!$step || $step->isDone()) {
                         throw new ClanException('Choisissez une étape de la mission en cours qui n\'est pas encore réussie.');
@@ -217,30 +228,15 @@ class ClanMissionService
                     $step->update(['skipped' => true]);
                     $this->completeMissionIfDone($mission);
                     break;
-                default:
-                    break;
             }
 
             $bonus->update(['used_at' => now()]);
         });
     }
 
-    // "Double attaque" and "Défense 120%" are given by the leader to a member, who uses it himself
-    public function assignBonus(User $leader, ClanBonus $bonus, User $member): void
-    {
-        $this->clanService->assertLeader($leader, $bonus->clan);
-        $this->assertUsable($bonus);
-        if (!$bonus->type->isAssignable()) {
-            throw new ClanException('Seules les options Double attaque et Défense 120% peuvent être données à un joueur.');
-        }
-        $this->clanService->assertMember($member, $bonus->clan);
-
-        $bonus->update(['assigned_user_id' => $member->id]);
-    }
-
     // ---------------------------------------------------------------- internals
 
-    // all the steps done in time: the points of the mission are doubled, and the clan may win an option
+    // all the steps done in time: the points of the mission, maybe an option, and the next mission
     private function completeMissionIfDone(ClanMission $mission): void
     {
         $mission->refresh();
@@ -248,19 +244,35 @@ class ClanMissionService
             return;
         }
 
+        $points = $this->missionPoints($mission->number);
         $score = $this->clanService->periodScore($mission->clan, $mission->period);
-        $score->increment('mission_score', $mission->points);
+        $score->increment('mission_score', $points);
         $score->increment('missions_completed');
-        $mission->update(['status' => ClanMission::COMPLETED, 'points' => $mission->points * 2, 'completed_at' => now()]);
+        $mission->update(['status' => ClanMission::COMPLETED, 'points' => $points, 'completed_at' => now()]);
 
         if (randomNumber() < (float) config('kado.clans.bonus_chance')) {
-            $types = ClanBonusType::cases();
             ClanBonus::query()->create([
                 'clan_id' => $mission->clan_id,
                 'period_id' => $mission->period_id,
-                'type' => $types[array_rand($types)],
+                'type' => $this->randomBonusType(),
             ]);
         }
+    }
+
+    // by the chances of kado.clans.bonus_weights
+    private function randomBonusType(): ClanBonusType
+    {
+        $weights = collect(ClanBonusType::cases())
+            ->mapWithKeys(fn (ClanBonusType $type) => [$type->value => max(0, (float) config("kado.clans.bonus_weights.{$type->value}", 0))]);
+        $draw = randomNumber() * $weights->sum();
+        foreach ($weights as $type => $weight) {
+            $draw -= $weight;
+            if ($draw < 0) {
+                return ClanBonusType::from($type);
+            }
+        }
+
+        return ClanBonusType::from($weights->keys()->last());
     }
 
     private function assertUsable(ClanBonus $bonus): void
@@ -283,28 +295,25 @@ class ClanMissionService
         return $game;
     }
 
-    // more steps with each mission
-    private function stepsCount(int $number): int
-    {
-        $config = config('kado.clans.mission_steps');
-
-        return min($config['max'], $config['min'] + intdiv($number - 1, $config['every']));
-    }
-
-    // harder with each mission: from half the green star to the red star (kado.clans.mission_difficulty_missions)
+    // a palier of the stars of the game, one higher every kado.clans.mission_paliers_every missions: half the first star,
+    // the first star, between the first and the second, the second... up to the last star
     private function targetScore(Game $game, int $number): int
     {
         $stars = collect($game->stars)->sort()->values();
-        $difficulty = min(1, ($number - 1) / max(1, (int) config('kado.clans.mission_difficulty_missions')));
-        $target = ($stars[0] / 2 + ($stars[2] - $stars[0] / 2) * $difficulty) * (0.9 + randomNumber() * 0.2);
+        $paliers = [];
+        foreach ($stars as $index => $star) {
+            $paliers[] = $index === 0 ? $star / 2 : ($stars[$index - 1] + $star) / 2;
+            $paliers[] = $star;
+        }
+        $palier = min(count($paliers) - 1, intdiv($number - 1, max(1, (int) config('kado.clans.mission_paliers_every'))));
 
-        return max(1, (int) round($target));
+        return max(1, (int) round($paliers[$palier]));
     }
 
     /**
      * @return \Illuminate\Support\Collection<int, Game>
      */
-    private function pickGames(int $number, ?int $bannedGameId, ?int $forcedGameId)
+    private function pickGames(int $count, ?int $bannedGameId, ?int $forcedGameId)
     {
         $games = Game::query()
             ->where('is_active', true)
@@ -319,6 +328,6 @@ class ClanMissionService
             $games = $games->reject(fn (Game $game) => $game->id === $forced->id)->prepend($forced);
         }
 
-        return $games->take($this->stepsCount($number))->values();
+        return $games->take($count)->values();
     }
 }

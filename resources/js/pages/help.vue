@@ -54,15 +54,13 @@ const go = (index) => {
   router.replace({ hash: `#${sections[index].id}` })
 }
 
+// App\Enums\ClanBonusType
 const clanBonuses = [
-  { name: 'Mission suivante', icon: '/gfx/clan/opt/optSkipMission.gif', description: 'Annule la mission en cours et en génère une nouvelle, sans perdre de points. Les étapes réussies de la mission annulée ne rapportent pas de point non plus.' },
-  { name: 'Double points', icon: '/gfx/clan/opt/optDoublePoints.gif', description: 'La prochaine mission rapportera deux fois plus de points si vous la terminez.' },
+  { name: 'Plus de temps', icon: '/gfx/clan/opt/optMoreTime.gif', description: 'Repousse la fin de la mission de 6 heures pour avoir plus de temps pour la terminer.' },
   { name: 'Jeu caca', icon: '/gfx/clan/opt/optBlacklistGame.gif', description: 'Un jeu qui ne sera jamais présent dans les futures missions de la période.' },
   { name: 'Jeu cool', icon: '/gfx/clan/opt/optSelectGame.gif', description: 'Un jeu qui sera obligatoirement présent dans toutes les futures missions de la période.' },
-  { name: 'Plus de temps', icon: '/gfx/clan/opt/optMoreTime.gif', description: 'Ajoute 6 heures à la mission en cours.' },
+  { name: 'Mission suivante', icon: '/gfx/clan/opt/optSkipMission.gif', description: 'Annule la mission en cours, sans perdre de points, et en génère une nouvelle.' },
   { name: 'Passe étape', icon: '/gfx/clan/opt/optSkipStep.gif', description: 'Supprime une étape au choix de la mission.' },
-  { name: 'Double attaque', icon: '/gfx/clan/opt/optDoubleAttack.gif', description: 'Permet à un joueur de lancer une seconde attaque en parallèle.' },
-  { name: 'Défense 120%', icon: '/gfx/clan/opt/optSuperDefense.gif', description: 'Un score de défense compte pour 120% (seulement pour la défense, pas pour les records).' },
 ]
 // kado.clans.rewards (config/kado.php)
 const clanRewards = [
@@ -177,29 +175,33 @@ const clanRewards = [
             <template v-else-if="section.id === 'clans'">
               <p>Un Clan est un groupe de joueurs (maximum 50) qui se rassemblent pour combattre ensemble contre d'autres clans.</p>
               <p>Vous pouvez soit rejoindre un Clan existant en envoyant votre candidature depuis sa page, soit créer votre propre Clan à partir de la rubrique <RouterLink :to="{ name: 'clans.index' }">Clans</RouterLink>.</p>
+              <p>Le Clan est dirigé par son <strong>chef</strong>, qui peut nommer des <strong>bras droits</strong> : ils ont tous les droits du chef (candidatures, exclusions, options, rôles), sauf dissoudre le Clan et nommer un nouveau chef.</p>
               <p>Chaque Clan a deux scores et deux positions : une dans le classement des attaques et une dans le classement des missions. Vous pouvez participer à l'un ou l'autre de ces classements, ou aux deux !</p>
+              <p>Dans le Clan, les joueurs ont aussi leur classement : 1 point par étape de mission réussie, et les points de chaque attaque et de chaque défense réussies.</p>
             </template>
 
             <template v-else-if="section.id === 'attaques'">
               <p><img src="/assets/img/gfx/icons/atk.gif" alt="Attaque" class="inline" /> Pour gagner des points, un Clan doit attaquer un autre Clan : allez sur la page d'un Clan adverse, cliquez sur « Attaquer ce clan », choisissez un jeu et effectuez une partie.</p>
-              <p>Votre score devient une attaque. Pour la repousser, le Clan adverse devra faire un score supérieur au vôtre. Une attaque repoussée est annulée.</p>
-              <p>Si au bout de <strong>12 heures</strong> l'attaque n'a pas été repoussée, votre Clan remporte jusqu'à <strong>10 points</strong> et le Clan adverse perd autant (jamais en dessous de zéro). Attaquez des clans au score proche du vôtre : les autres sont protégés de vos attaques.</p>
+              <p>Votre score devient une attaque. Pour la repousser, le Clan adverse devra faire un score supérieur au vôtre. Une attaque repoussée est annulée, et votre Clan ne perd rien.</p>
+              <p>Si au bout de <strong>12 heures</strong> l'attaque n'a pas été repoussée, votre Clan remporte de 1 à <strong>10 points</strong> et le Clan adverse perd autant (jamais en dessous de zéro). Plus le Clan adverse a de points par rapport au vôtre, plus l'attaque rapporte : le nombre de points est affiché avant d'attaquer. Attaquez des clans au score proche du vôtre : les autres sont protégés de vos attaques.</p>
+              <p>Chaque joueur peut avoir une attaque en cours à la fois. Pour l'améliorer, cliquez sur « Améliorer » dans l'onglet Statut et rejouez sur le même jeu : le nouveau score ne remplace celui de l'attaque que s'il est meilleur. Chaque partie d'attaque ou de défense coûte une partie, comme une partie normale.</p>
             </template>
 
             <template v-else-if="section.id === 'defenses'">
               <p><img src="/assets/img/gfx/icons/def.gif" alt="Défense" class="inline" /> Les attaques lancées par votre Clan et celles menées contre lui sont indiquées dans l'onglet Statut de votre clan. Cliquez sur « Défendre » et battez le score de l'attaque sur le même jeu.</p>
               <p>Sachez que tant que vous avez une attaque en cours, vous ne pouvez pas défendre ! Il faudra donc coordonner les membres du Clan entre attaquants et défenseurs.</p>
+              <p>Le chef et ses bras droits peuvent donner des sièges, plus nombreux dans un grand Clan : un <strong>Attaquant</strong> peut lancer deux attaques en même temps, un <strong>Défenseur</strong> peut défendre même quand il a une attaque en cours.</p>
               <p>Pour progresser dans le classement, il faudra à la fois remporter des attaques et défendre efficacement contre les clans ennemis.</p>
             </template>
 
             <template v-else-if="section.id === 'missions'">
-              <p>Votre Clan reçoit des missions : plusieurs étapes, chacune étant un score à atteindre sur un jeu. Vous avez <strong>24 heures</strong> pour toutes les réussir. Chacun peut faire les étapes sur les jeux où il est le meilleur !</p>
-              <p>Chaque étape réussie rapporte un point. Si toutes les étapes sont réussies à temps, vos points sont <strong>doublés</strong>. Sinon, vous perdez les points de la mission.</p>
-              <p>Chaque mission est plus difficile que la précédente, avec plus d'étapes. Combien de missions votre Clan réussira-t-il ?</p>
+              <p>Votre Clan reçoit des missions : plusieurs étapes, chacune étant un score à atteindre sur un jeu. Vous avez <strong>24 heures</strong> pour toutes les réussir. Chacun peut faire les étapes sur les jeux où il est le meilleur, et les parties des missions sont <strong>gratuites</strong> !</p>
+              <p>Plus votre Clan a de membres, plus les missions ont d'étapes : 5 pour un joueur seul, jusqu'à 24 pour 50 joueurs.</p>
+              <p>Une mission réussie rapporte jusqu'à <strong>10 points</strong> et ouvre la mission suivante, plus difficile. Si le temps est écoulé, votre Clan perd un point par étape non réussie, moins une, et reçoit une nouvelle mission. Combien de missions votre Clan réussira-t-il ?</p>
             </template>
 
             <template v-else-if="section.id === 'options'">
-              <p>En réussissant des missions, votre Clan peut gagner des options. C'est le chef de clan qui les utilise, il peut aussi donner Double attaque et Défense 120% à un joueur. Elles sont remises à zéro à la fin de la période.</p>
+              <p>Au début de chaque période, votre Clan reçoit les options Jeu cool et Jeu caca. En réussissant des missions, il peut en gagner d'autres. C'est le chef de clan ou un bras droit qui les utilise. Elles sont remises à zéro à la fin de la période.</p>
               <table class="w-full">
                 <tbody>
                   <tr v-for="bonus in clanBonuses" :key="bonus.name">

@@ -40,9 +40,14 @@ class RunController extends Controller implements HasMiddleware
 
     public function begin(RunStartRequest $request, GameService $gameService, LeagueService $leagueService, ClanRunService $clanRunService, Game $game)
     {
-        Gate::authorize('create', Run::class);
-
         $isDaily = $request->validated('daily', false);
+        // an attack, a defense or a mission step asked on the clan pages: the runs of the missions are free
+        $clanAction = $isDaily ? null : $clanRunService->pendingAction($request->user()->id, $game->id);
+        $isFree = $clanRunService->isFree($clanAction);
+        if (!$isFree) {
+            Gate::authorize('create', Run::class);
+        }
+
         $realContract = false;
         $dailyGame = null;
 
@@ -81,10 +86,9 @@ class RunController extends Controller implements HasMiddleware
             $run->save();
         }
 
-        // an attack, a defense or a mission step asked on the clan pages
-        $clanRunService->bindRun($run);
+        $clanRunService->bindRun($run, $clanAction);
 
-        if ($user->kado_games > 0) {
+        if (!$isFree && $user->kado_games > 0) {
             $user->kado_games -= 1;
             $user->save();
         }

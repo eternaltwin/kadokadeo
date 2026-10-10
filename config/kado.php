@@ -94,24 +94,36 @@ return [
     'debug_tools' => (bool) env('KADO_DEBUG_TOOLS', false) && env('APP_ENV') !== 'production',
 
     // the tournament of the clans (App\Services\ClanService): attacks, defenses and missions during a whole period, then
-    // everything starts again from 0 on the first day of the next one
+    // everything starts again from 0 on the first day of the next one. The values marked "to tune" are still to be decided
+    // with the community.
     'clans' => [
         'max_members' => 50,
         // a clan has this time to beat the score of an attack (an attack not over at the end of the period is cancelled)
         'attack_hours' => 12,
-        // an attack not repelled wins from 1 to max_points points, more against a clan with a higher score; the
-        // defender loses as much (its score never goes below 0)
+        // a successful attack wins from 1 to max_points points, taken from the defender (its score never goes below 0):
+        // a kind of Elo, about half against a clan of the same score, up to max_points against a clan with more points.
+        // elo_scale: the difference of scores that makes a clan 10 times "stronger"
         'attack_max_points' => 10,
+        'elo_scale' => (int) env('KADO_CLANS_ELO_SCALE', 50),
         // the clans too far from your score are protected from your attacks (and you from theirs)
         'protection_range' => (int) env('KADO_CLANS_PROTECTION_RANGE', 100),
+        // the seats of "Attaquant" (two attacks at a time) and "Défenseur" (defends while attacking): this share of the
+        // members, at least 1 each (to tune)
+        'combat_seats' => ['attacker' => 0.2, 'defender' => 0.2],
         'mission_hours' => 24,
         'mission_more_time_hours' => 6,
-        // the missions get harder: min steps for the first one, one more every `every` missions up to max; the scores go
-        // from half the green star (first mission) to the red star (after mission_difficulty_missions missions)
-        'mission_steps' => ['min' => 2, 'max' => 8, 'every' => 2],
-        'mission_difficulty_missions' => 10,
-        // chance to win a bonus (picked at random) when a mission is completed
-        'bonus_chance' => (float) env('KADO_CLANS_BONUS_CHANCE', 0.5),
+        // the steps (games) of a mission: base for a lone player + per_member for each other member (5 -> 24 for 50
+        // players), times ratio^(number - 1) for the next missions, at least min (ratio to tune)
+        'mission_steps' => ['base' => 5, 'per_member' => 0.38, 'max' => 24, 'min' => 1, 'ratio' => 1.0],
+        // the score to reach on each game: a palier of its stars, one palier higher every `every` missions: half the
+        // first star, the first star, between the first and the second... up to the last star
+        'mission_paliers_every' => 2,
+        // the points of a completed mission: first for the first one, times ratio^(number - 1), at least min (ratio to
+        // tune). A mission not finished in time loses 1 point by step not completed, minus one.
+        'mission_points' => ['first' => 10, 'ratio' => 0.9, 'min' => 1],
+        // chance to win an option with each completed mission, then the chances of each option (to tune)
+        'bonus_chance' => (float) env('KADO_CLANS_BONUS_CHANCE', 0.07),
+        'bonus_weights' => ['more_time' => 30, 'skip_step' => 30, 'next_mission' => 20, 'ban_game' => 10, 'force_game' => 10],
         // Kado points shared between the members at the end of the period, by rank in each ranking: [last rank => points]
         'rewards' => [
             'war' => [1 => 150000, 2 => 100000, 5 => 75000, 10 => 25000, 25 => 12500, 50 => 7500, 100 => 5000, 200 => 2500, 500 => 1250],

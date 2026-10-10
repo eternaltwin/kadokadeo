@@ -5,17 +5,16 @@ const props = defineProps({
 })
 
 const router = useRouter()
-const { fetchMissions, fetchMembers, playStep, useBonus, assignBonus, isLoading, error } = useClans()
+const { fetchMissions, playStep, useBonus, isLoading, error } = useClans()
 const { fetchGames } = useGames()
 const data = ref(null)
 const tournament = ref(null)
-const members = ref([])
 const games = ref([])
 const selectedBonus = ref(null)
 const bonusGame = ref(null)
 const bonusStep = ref(null)
-const bonusMember = ref(null)
-const isLeader = computed(() => props.clan.viewer.is_leader)
+// the leader and the right hands use the options
+const canManage = computed(() => props.clan.viewer.can_manage)
 
 const load = () =>
   fetchMissions(props.clan.id).then((response) => {
@@ -23,17 +22,14 @@ const load = () =>
     tournament.value = response.tournament
   })
 watchEffect(load)
-if (props.clan.viewer.is_leader) {
-  fetchMembers(props.clan.id).then((response) => {
-    members.value = response.data
-  })
+if (props.clan.viewer.can_manage) {
   fetchGames().then((response) => {
     games.value = response.data.filter((game) => !game.is_arkadeo)
   })
 }
 
 const mission = computed(() => data.value?.mission)
-const statusLabels = { completed: 'Réussie', failed: 'Échouée', skipped: 'Passée' }
+const statusLabels = { completed: 'Réussie', failed: 'Échouée', skipped: 'Remplacée' }
 
 const play = (step) => playStep(step.id).then((response) => router.push({ name: 'clans.play', params: { action: response.data.id } }))
 
@@ -41,14 +37,10 @@ const openBonus = (bonus) => {
   selectedBonus.value = bonus
   bonusGame.value = null
   bonusStep.value = null
-  bonusMember.value = bonus.assigned_user?.etwin_id ?? null
 }
 const confirmBonus = () => {
   const bonus = selectedBonus.value
-  const request = bonus.assignable
-    ? assignBonus(bonus.id, bonusMember.value)
-    : useBonus(bonus.id, { game_id: bonusGame.value ?? undefined, step_id: bonusStep.value ?? undefined })
-  request.then(() => {
+  useBonus(bonus.id, { game_id: bonusGame.value ?? undefined, step_id: bonusStep.value ?? undefined }).then(() => {
     selectedBonus.value = null
     load()
   })
@@ -67,15 +59,12 @@ const confirmBonus = () => {
       </p>
 
       <template v-if="mission">
-        <h2 class="normal-case">
-          Mission {{ mission.number }}
-          <span v-if="mission.double_points" class="text-[#ff6b9c]">x2</span>
-        </h2>
+        <h2 class="normal-case">Mission {{ mission.number }}</h2>
         <p class="mx-0">
-          Chaque étape réussie rapporte des points à votre clan. Réussissez toutes les étapes avant la fin du temps
-          imparti (<ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" />) pour doubler vos points
-          (<Number :value="mission.max_points" color="orange" /> points), sinon vous perdrez les points de la mission !
-          Points déjà gagnés : <Number :value="mission.points" color="orange" />.
+          Réussissez toutes les étapes avant la fin du temps imparti
+          (<ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" />) : votre clan remportera
+          <Number :value="mission.reward" color="orange" /> points et passera à la mission suivante. Sinon, il perdra un
+          point par étape non réussie, moins une. Les parties des missions sont gratuites !
         </p>
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -83,7 +72,6 @@ const confirmBonus = () => {
               <tr class="text-[10px] uppercase">
                 <th>Jeu</th>
                 <th>Score à atteindre</th>
-                <th>Points</th>
                 <th>Étape</th>
               </tr>
             </thead>
@@ -93,7 +81,6 @@ const confirmBonus = () => {
                   <RouterLink :to="{ name: 'games.show', params: { id: step.game.id } }">{{ step.game.name }}</RouterLink>
                 </td>
                 <td class="font-bold">{{ step.target_score }} pts</td>
-                <td><Number :value="step.points" color="green" /></td>
                 <td>
                   <template v-if="step.skipped">Étape passée</template>
                   <template v-else-if="step.done">
@@ -114,15 +101,14 @@ const confirmBonus = () => {
         Aucune mission en cours : une nouvelle mission sera proposée à la prochaine période.
       </p>
 
-      <p v-if="data.next_mission_double || data.banned_game || data.forced_game" class="text-sm mx-0">
-        <span v-if="data.next_mission_double">La prochaine mission rapportera deux fois plus de points. </span>
+      <p v-if="data.banned_game || data.forced_game" class="text-sm mx-0">
         <span v-if="data.banned_game">Jeu caca : <strong>{{ data.banned_game.name }}</strong>. </span>
         <span v-if="data.forced_game">Jeu cool : <strong>{{ data.forced_game.name }}</strong>.</span>
       </p>
 
       <h2 class="normal-case">Options du clan</h2>
       <p v-if="!data.bonuses.length" class="italic mx-0">
-        Votre clan n'a aucune option. Plus vous réussissez de missions, plus vous avez de chances d'en remporter !
+        Votre clan n'a aucune option. Chaque mission réussie peut vous en faire gagner une !
       </p>
       <div class="relative flex flex-wrap gap-2">
         <div v-for="bonus in data.bonuses" :key="bonus.id" class="optClan text-center w-[81px]">
@@ -132,10 +118,7 @@ const confirmBonus = () => {
                   @click="openBonus(bonus)">
             <img :src="bonus.icon" :alt="bonus.label" class="w-[77px] h-[68px]" />
           </button>
-          <div class="text-[10px] leading-tight">
-            {{ bonus.label }}
-            <template v-if="bonus.assigned_user"><br />({{ bonus.assigned_user.display_name }})</template>
-          </div>
+          <div class="text-[10px] leading-tight">{{ bonus.label }}</div>
         </div>
 
         <div v-if="selectedBonus" id="optPopup" class="absolute z-20 left-5 -top-6 w-[470px] max-w-full min-h-[150px] border-2 border-solid border-[#1d2024] bg-[#3d4045] text-[#f0feff]">
@@ -143,15 +126,8 @@ const confirmBonus = () => {
           <img :src="selectedBonus.icon" :alt="selectedBonus.label" class="float-left py-0.5 pr-2.5 pl-0.5" />
           <p class="m-1 text-xs">{{ selectedBonus.description }}</p>
 
-          <template v-if="!isLeader">
-            <p class="m-1 text-xs italic">C'est le chef de clan qui décide de l'utilisation des options.</p>
-          </template>
-          <template v-else-if="selectedBonus.assignable">
-            <p class="m-1 text-xs">Donnez cette option à un joueur : il pourra l'utiliser quand il le voudra pour attaquer ou défendre, jusqu'à la fin de la période.</p>
-            <select v-model="bonusMember" class="m-1 text-kado-blue bg-white">
-              <option :value="null" disabled>Choisir un joueur</option>
-              <option v-for="m in members" :key="m.user.etwin_id" :value="m.user.etwin_id">{{ m.user.display_name }}</option>
-            </select>
+          <template v-if="!canManage">
+            <p class="m-1 text-xs italic">C'est le chef de clan ou un bras droit qui décide de l'utilisation des options.</p>
           </template>
           <template v-else>
             <select v-if="['ban_game', 'force_game'].includes(selectedBonus.type)" v-model="bonusGame" class="m-1 text-kado-blue bg-white">
@@ -165,12 +141,10 @@ const confirmBonus = () => {
           </template>
 
           <div class="clear-both flex justify-end gap-2 p-1">
-            <button v-if="isLeader"
+            <button v-if="canManage"
                     type="button"
                     class="clanButton"
-                    @click="confirmBonus">
-              {{ selectedBonus.assignable ? 'Donner' : 'Utiliser' }}
-            </button>
+                    @click="confirmBonus">Utiliser</button>
             <button type="button" class="clanButton pink" @click="selectedBonus = null">Fermer</button>
           </div>
         </div>
@@ -182,7 +156,7 @@ const confirmBonus = () => {
           <li v-for="m in data.missions" :key="m.id">
             Mission {{ m.number }} : {{ statusLabels[m.status] ?? m.status }}
             <template v-if="m.status === 'completed'">(+{{ m.points }} points)</template>
-            <template v-else-if="m.status === 'failed' && m.points > 0">({{ m.points }} points perdus)</template>
+            <template v-else-if="m.status === 'failed' && m.points < 0">({{ -m.points }} points perdus)</template>
           </li>
         </ul>
       </template>

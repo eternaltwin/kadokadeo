@@ -1,5 +1,6 @@
 <script setup>
-// "Membres": what each member did for the clan during the period
+// "Membres": the ranking of the members during the period: 1 point by mission step, the points of their successful
+// attacks and defenses
 const props = defineProps({
   clan: { type: Object, required: true },
 })
@@ -15,12 +16,15 @@ watchEffect(() => fetchMembers(props.clan.id).then((data) => {
 
 const sorts = {
   names: (a, b) => a.user.display_name.localeCompare(b.user.display_name),
+  points: (a, b) => b.points - a.points,
   performances: (a, b) => b.performance - a.performance,
   attacks: (a, b) => b.attacks_won - a.attacks_won,
   defenses: (a, b) => b.defenses_won - a.defenses_won,
   missions: (a, b) => b.mission_steps - a.mission_steps,
 }
-const sort = computed(() => (sorts[route.query.sort] ? route.query.sort : 'performances'))
+const sort = computed(() => (sorts[route.query.sort] ? route.query.sort : 'points'))
+const roleLabels = { right_hand: 'Bras droit' }
+const combatRoleLabels = { attacker: 'Attaquant', defender: 'Défenseur' }
 const sorted = computed(() => [...members.value].sort(sorts[sort.value]))
 const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
 </script>
@@ -36,7 +40,10 @@ const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
         <thead>
           <tr class="text-[10px] uppercase *:cursor-pointer">
             <th class="text-right" @click="sortBy('names')">Joueur</th>
-            <th title="Performance dans le clan : nombre de points rapportés par ses attaques + nombre de points sauvés par ses défenses." @click="sortBy('performances')">
+            <th title="Points dans le clan : 1 point par étape de mission réussie + les points de ses attaques et de ses défenses réussies." @click="sortBy('points')">
+              Points
+            </th>
+            <th title="Performance en attaque et défense : nombre de points rapportés par ses attaques + nombre de points sauvés par ses défenses." @click="sortBy('performances')">
               <img src="/assets/img/gfx/icons/clan_points.gif" alt="performance" class="h-5" />
             </th>
             <th title="Attaques réussies / lancées" @click="sortBy('attacks')">
@@ -59,7 +66,11 @@ const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
                    title="Chef de Clan"
                    class="mr-1" />
               <RouterLink :to="{ name: 'profile.show', params: { id: m.user.etwin_id } }">{{ m.user.display_name }}</RouterLink>
+              <span v-if="roleLabels[m.role] || combatRoleLabels[m.combat_role]" class="ml-1 text-[10px] [font-variant:normal]">
+                ({{ [roleLabels[m.role], combatRoleLabels[m.combat_role]].filter(Boolean).join(', ') }})
+              </span>
             </td>
+            <td class="text-right font-bold"><Number :value="m.points" color="blue" /></td>
             <td class="text-right"><Number :value="m.performance" color="orange" /></td>
             <td class="text-right" :title="`${m.attacks_won} réussie(s) sur ${m.attacks}`"><Number :value="m.attacks_won" color="pink" /></td>
             <td class="text-right" :title="`${m.defenses_won} réussie(s) sur ${m.defenses}`"><Number :value="m.defenses_won" color="blue" /></td>

@@ -26,6 +26,10 @@ return new class() extends Migration
             $table->id();
             $table->foreignId('clan_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
+            // App\Enums\ClanRole: "Bras droit" or member (the leader is clans.leader_id)
+            $table->string('role', 16)->default('member');
+            // App\Enums\ClanCombatRole: "Attaquant", "Défenseur" or none, seats by size of the clan
+            $table->string('combat_role', 16)->nullable();
             $table->timestamps();
         });
 
@@ -59,8 +63,6 @@ return new class() extends Migration
             // "Jeu caca" / "Jeu cool" bonuses: a game never / always in the next missions of the period
             $table->foreignId('banned_game_id')->nullable()->constrained('games')->nullOnDelete();
             $table->foreignId('forced_game_id')->nullable()->constrained('games')->nullOnDelete();
-            // "Double points" bonus: the next mission is worth twice its points
-            $table->boolean('next_mission_double')->default(false);
             $table->timestamps();
 
             $table->unique(['clan_id', 'period_id']);
@@ -79,7 +81,7 @@ return new class() extends Migration
             $table->unsignedInteger('defenses')->default(0);
             $table->unsignedInteger('defenses_won')->default(0);
             $table->unsignedInteger('mission_steps')->default(0);
-            // points won by his attacks + points saved by his defenses
+            // points won by his attacks + points saved by his defenses (+ mission_steps: his points in the clan)
             $table->integer('performance')->default(0);
             $table->unsignedInteger('reward')->default(0);
             $table->foreignId('user_point_id')->nullable()->constrained('user_points')->nullOnDelete();
@@ -118,7 +120,7 @@ return new class() extends Migration
             $table->foreignId('period_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('number');
             $table->string('status', 16);
-            $table->boolean('double_points')->default(false);
+            // won when completed, lost (negative) when not finished in time
             $table->integer('points')->default(0);
             $table->timestamp('expires_at');
             $table->timestamp('completed_at')->nullable();
@@ -132,7 +134,6 @@ return new class() extends Migration
             $table->foreignId('clan_mission_id')->constrained()->cascadeOnDelete();
             $table->foreignId('game_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('target_score');
-            $table->unsignedInteger('points');
             $table->foreignId('completed_by_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignUlid('run_id')->nullable()->constrained()->nullOnDelete();
             $table->unsignedBigInteger('score')->nullable();
@@ -141,20 +142,21 @@ return new class() extends Migration
             $table->timestamps();
         });
 
-        // the options won by the missions, used by the leader (or the member he gave them to) until the end of the period
+        // the options of the missions (given at the start of the period, won by the missions), used by the leader or a
+        // right hand until the end of the period
         Schema::create('clan_bonuses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('clan_id')->constrained()->cascadeOnDelete();
             $table->foreignId('period_id')->constrained()->cascadeOnDelete();
             $table->string('type', 24);
-            $table->foreignId('assigned_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('used_at')->nullable();
             $table->timestamps();
 
             $table->index(['clan_id', 'period_id', 'used_at']);
         });
 
-        // a clan run asked by a player (attack, defense, mission step): the next run he begins on this game is bound to it
+        // a clan run asked by a player (attack, improvement of his attack: clan_attack_id, defense, mission step): the next
+        // run he begins on this game is bound to it
         Schema::create('clan_actions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('clan_id')->constrained()->cascadeOnDelete();
@@ -164,7 +166,6 @@ return new class() extends Migration
             $table->foreignId('defender_clan_id')->nullable()->constrained('clans')->cascadeOnDelete();
             $table->foreignId('clan_attack_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('clan_mission_step_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('clan_bonus_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignUlid('run_id')->nullable()->unique()->constrained()->nullOnDelete();
             $table->string('result', 16)->nullable();
             $table->timestamp('completed_at')->nullable();
