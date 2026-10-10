@@ -7,6 +7,7 @@ use App\Enums\ClanBonusType;
 use App\Enums\ClanCombatRole;
 use App\Enums\ClanRole;
 use App\Models\Clan;
+use App\Models\ClanAction;
 use App\Models\ClanAttack;
 use App\Models\ClanBonus;
 use App\Models\ClanMemberStat;
@@ -501,6 +502,77 @@ class ClanTest extends TestCase
         $clan->members()->create(['user_id' => $member->id]);
         $this->expectExceptionMessage('Seuls le chef de clan et ses bras droits peuvent faire ça.');
         $missionService->useBonus($member, $bonus(ClanBonusType::MORE_TIME));
+    }
+
+    // bought by packs with Kado points, given to the clan, distributed by the leader and the right hands
+    public function test_the_paid_clan_games(): void
+    {
+        $this->period();
+        $leader = User::factory()->create(['kado_points' => 1000, 'kado_games' => 5]);
+        $member = User::factory()->create(['kado_points' => 0]);
+        $clan = Clan::factory()->withLeader($leader)->create();
+        $clan->members()->create(['user_id' => $member->id]);
+
+        Sanctum::actingAs($leader);
+        $this->getJson('/api/clan-games')->assertOk()
+            ->assertJsonPath('data.packs.3', ['count' => 50, 'price' => 1750, 'unit_price' => 35])
+            ->assertJsonPath('data.clan.can_distribute', true);
+        $this->postJson('/api/clan-games/buy', ['count' => 10])->assertNoContent();
+        $this->postJson('/api/clan-games/buy', ['count' => 3])->assertStatus(422);
+        $this->postJson('/api/clan-games/buy', ['count' => 50])->assertStatus(422)
+            ->assertJsonPath('message', 'Vous n\'avez pas assez de points Kado pour acheter ces parties.');
+        $leader->refresh();
+        $this->assertSame(600, $leader->kado_points);
+        $this->assertSame(10, $leader->clan_games);
+        $this->assertDatabaseHas('user_points', ['user_id' => $leader->id, 'delta' => -400, 'reason' => 'clan games purchase']);
+
+        // only the paid games can be given, not the games of the day
+        $this->postJson("/api/clans/{$clan->id}/games/donate", ['count' => 11])->assertStatus(422);
+        $this->postJson("/api/clans/{$clan->id}/games/donate", ['count' => 4])->assertNoContent();
+        $this->assertSame(6, $leader->fresh()->clan_games);
+        $this->assertSame(4, $clan->fresh()->clan_games);
+
+        // distributed by the leader and the right hands only
+        Sanctum::actingAs($member);
+        $this->postJson("/api/clans/{$clan->id}/members/{$member->etwin_id}/games", ['count' => 1])->assertStatus(422);
+        Sanctum::actingAs($leader);
+        $this->postJson("/api/clans/{$clan->id}/members/{$member->etwin_id}/games", ['count' => 5])->assertStatus(422);
+        $this->postJson("/api/clans/{$clan->id}/members/{$member->etwin_id}/games", ['count' => 3])->assertNoContent();
+        $this->assertSame(3, $member->fresh()->clan_games);
+        $this->assertSame(1, $clan->fresh()->clan_games);
+        $this->getJson('/api/clan-games')->assertOk()
+            ->assertJsonPath('data.clan.transfers.0.type', 'distribution')
+            ->assertJsonPath('data.clan.transfers.1.type', 'donation');
+    }
+
+    // attacks and defenses: the games of the day first, then the paid clan games
+    public function test_the_paid_clan_games_are_used_after_the_games_of_the_day(): void
+    {
+        config(['kado.games_per_day' => 10]);
+        $this->period();
+        $player = User::factory()->create(['kado_games' => 1, 'clan_games' => 1]);
+        Clan::factory()->withLeader($player)->create();
+        $defender = Clan::factory()->withLeader()->create();
+        $game = Game::factory()->create();
+        $attackRun = function () use ($defender, $game) {
+            ClanAction::query()->delete();
+            $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $game->id])->assertCreated();
+
+            return $this->postJson("/api/runs/games/{$game->id}");
+        };
+
+        Sanctum::actingAs($player);
+        $attackRun()->assertSuccessful();
+        $this->assertSame([0, 1], [$player->fresh()->kado_games, $player->fresh()->clan_games]);
+        $attackRun()->assertSuccessful();
+        $this->assertSame([0, 0], [$player->fresh()->kado_games, $player->fresh()->clan_games]);
+        $attackRun()->assertForbidden();
+
+        // not for a normal run (no attack asked)
+        ClanAction::query()->delete();
+        $player->refresh()->update(['clan_games' => 1]);
+        $this->postJson("/api/runs/games/{$game->id}")->assertForbidden();
+        $this->assertSame(1, $player->fresh()->clan_games);
     }
 
     // the leader can do everything, a right hand everything but disband the clan and name a new leader

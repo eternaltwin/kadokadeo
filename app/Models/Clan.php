@@ -9,10 +9,12 @@ class Clan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'leader_id', 'is_recruiting'];
+    protected $fillable = ['name', 'description', 'leader_id', 'is_recruiting', 'clan_games'];
 
     protected $casts = [
         'is_recruiting' => 'boolean',
+        // the paid clan games given by the members, to distribute (App\Services\ClanGameService)
+        'clan_games' => 'integer',
     ];
 
     public function leader()
@@ -53,6 +55,11 @@ class Clan extends Model
     public function bonuses()
     {
         return $this->hasMany(ClanBonus::class);
+    }
+
+    public function gameTransfers()
+    {
+        return $this->hasMany(ClanGameTransfer::class);
     }
 
     public function attacksLaunched()

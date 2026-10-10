@@ -1,5 +1,6 @@
 <script setup>
-// the page of a clan: Présentation, Statut, Mission, Membres, Gestion, and the choice of the game of an attack
+// the page of a clan: Présentation, Statut, Mission, Membres, Gestion, Parties de clan, and the choice of the game of an
+// attack
 const route = useRoute()
 const router = useRouter()
 const clanStore = useClanStore()
@@ -72,6 +73,9 @@ const updated = () => {
         <li v-if="viewer.can_manage">
           <RouterLink :to="{ name: 'clans.manage', params: { id: clan.id } }">Gérer le clan</RouterLink>
         </li>
+        <li v-if="viewer.is_member">
+          <RouterLink :to="{ name: 'clans.games', params: { id: clan.id } }">Parties de clan</RouterLink>
+        </li>
         <li v-if="!viewer.is_member && viewer.has_clan">
           <RouterLink :to="{ name: 'clans.attack', params: { id: clan.id } }" :title="viewer.attack_blocked ?? 'Attaquer ce clan'">Attaquer ce clan</RouterLink>
         </li>
@@ -118,6 +122,7 @@ const updated = () => {
       <ClanMembers v-else-if="tab === 'members'" :clan="clan" />
       <ClanManage v-else-if="tab === 'manage'" :clan="clan" @updated="updated" />
       <ClanAttackPicker v-else-if="tab === 'attack'" :clan="clan" />
+      <ClanGames v-else-if="tab === 'games' && viewer.is_member" :clan="clan" />
     </ClanLayout>
   </div>
 </template>
