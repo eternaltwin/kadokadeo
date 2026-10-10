@@ -2,10 +2,11 @@
 
 namespace App\Enums;
 
+use App\Settings\ClanSettings;
 use Filament\Support\Contracts\HasLabel;
 
 // the options of the missions (App\Services\ClanMissionService::useBonus): "Jeu cool" and "Jeu caca" given to every clan
-// at the start of the period, all of them won by chance with the missions (kado.clans.bonus_chance / bonus_weights)
+// at the start of the period, all of them won by chance with the missions (App\Settings\ClanSettings: bonus_chance / bonus_weights)
 enum ClanBonusType: string implements HasLabel
 {
     case MORE_TIME = 'more_time';
@@ -28,7 +29,7 @@ enum ClanBonusType: string implements HasLabel
     public function description(): string
     {
         return match ($this) {
-            self::MORE_TIME => 'Repousse la fin de la mission de '.config('kado.clans.mission_more_time_hours').' heures pour avoir plus de temps pour la terminer.',
+            self::MORE_TIME => 'Repousse la fin de la mission de '.app(ClanSettings::class)->mission_more_time_hours.' heures pour avoir plus de temps pour la terminer.',
             self::BAN_GAME => 'Sélectionne un jeu qui ne sera jamais présent dans les futures missions de la période.',
             self::FORCE_GAME => 'Sélectionne un jeu qui sera obligatoirement présent dans toutes les futures missions de la période.',
             self::NEXT_MISSION => 'Annule la mission en cours, sans perdre de points, et génère une nouvelle mission.',

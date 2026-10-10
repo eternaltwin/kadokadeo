@@ -14,10 +14,11 @@ use App\Models\Game;
 use App\Models\Period;
 use App\Models\Run;
 use App\Models\User;
+use App\Settings\ClanSettings;
 use Illuminate\Support\Facades\DB;
 
 // the collaborative missions of the clans: a score (a palier of the stars) to reach on several games within
-// kado.clans.mission_hours, more games in a bigger clan, higher paliers with each mission. A completed mission gives up
+// ClanSettings::$mission_hours, more games in a bigger clan, higher paliers with each mission. A completed mission gives up
 // to 10 points (one less every 10 missions) and opens the next one; a mission not finished in time loses 1 point by game
 // not completed, minus one, and the clan gets a new mission of the same number. The runs of the missions are free.
 class ClanMissionService
@@ -74,7 +75,7 @@ class ClanMissionService
                 'period_id' => $period->id,
                 'number' => $number,
                 'status' => ClanMission::ACTIVE,
-                'expires_at' => now()->addHours((int) config('kado.clans.mission_hours')),
+                'expires_at' => now()->addHours(app(ClanSettings::class)->mission_hours),
             ]);
 
             $steps = $this->stepsCount($clan->members()->count(), $number);
@@ -159,21 +160,22 @@ class ClanMissionService
         });
     }
 
-    // the points of a completed mission: one less every kado.clans.mission_points.every missions (1 to 9: 10, 10 to 19: 9...)
+    // the points of a completed mission: one less every ClanSettings::$mission_points_every missions (1 to 9: 10, 10 to
+    // 19: 9...)
     public function missionPoints(int $number): int
     {
-        $config = config('kado.clans.mission_points');
+        $settings = app(ClanSettings::class);
 
-        return max((int) $config['min'], (int) $config['first'] - intdiv($number, max(1, (int) $config['every'])));
+        return max($settings->mission_points_min, $settings->mission_points_first - intdiv($number, max(1, $settings->mission_points_every)));
     }
 
     // the steps of a mission: more in a bigger clan, (maybe) fewer with each mission
     public function stepsCount(int $membersCount, int $number): int
     {
-        $config = config('kado.clans.mission_steps');
-        $base = min($config['max'], $config['base'] + max(0, $membersCount - 1) * $config['per_member']);
+        $settings = app(ClanSettings::class);
+        $base = min($settings->mission_steps_max, $settings->mission_steps_base + max(0, $membersCount - 1) * $settings->mission_steps_per_member);
 
-        return max((int) $config['min'], (int) round($base * $config['ratio'] ** ($number - 1)));
+        return max($settings->mission_steps_min, (int) round($base * $settings->mission_steps_ratio ** ($number - 1)));
     }
 
     // ---------------------------------------------------------------- bonuses
@@ -218,7 +220,7 @@ class ClanMissionService
                     ]);
                     break;
                 case ClanBonusType::MORE_TIME:
-                    $mission->update(['expires_at' => $mission->expires_at->addHours((int) config('kado.clans.mission_more_time_hours'))]);
+                    $mission->update(['expires_at' => $mission->expires_at->addHours(app(ClanSettings::class)->mission_more_time_hours)]);
                     break;
                 case ClanBonusType::SKIP_STEP:
                     $step = $mission->steps()->whereKey($params['step_id'] ?? 0)->first();
@@ -250,7 +252,7 @@ class ClanMissionService
         $score->increment('missions_completed');
         $mission->update(['status' => ClanMission::COMPLETED, 'points' => $points, 'completed_at' => now()]);
 
-        if (randomNumber() < (float) config('kado.clans.bonus_chance')) {
+        if (randomNumber() < app(ClanSettings::class)->bonus_chance) {
             ClanBonus::query()->create([
                 'clan_id' => $mission->clan_id,
                 'period_id' => $mission->period_id,
@@ -259,11 +261,11 @@ class ClanMissionService
         }
     }
 
-    // by the chances of kado.clans.bonus_weights
+    // by the chances of ClanSettings::$bonus_weights
     private function randomBonusType(): ClanBonusType
     {
-        $weights = collect(ClanBonusType::cases())
-            ->mapWithKeys(fn (ClanBonusType $type) => [$type->value => max(0, (float) config("kado.clans.bonus_weights.{$type->value}", 0))]);
+        $settings = app(ClanSettings::class);
+        $weights = collect(ClanBonusType::cases())->mapWithKeys(fn (ClanBonusType $type) => [$type->value => $settings->bonusWeight($type)]);
         $draw = randomNumber() * $weights->sum();
         foreach ($weights as $type => $weight) {
             $draw -= $weight;
@@ -295,7 +297,7 @@ class ClanMissionService
         return $game;
     }
 
-    // a palier of the stars of the game, one higher every kado.clans.mission_paliers_every missions: half the first star,
+    // a palier of the stars of the game, one higher every ClanSettings::$mission_paliers_every missions: half the first star,
     // the first star, between the first and the second, the second... up to the last star
     private function targetScore(Game $game, int $number): int
     {
@@ -305,7 +307,7 @@ class ClanMissionService
             $paliers[] = $index === 0 ? $star / 2 : ($stars[$index - 1] + $star) / 2;
             $paliers[] = $star;
         }
-        $palier = min(count($paliers) - 1, intdiv($number - 1, max(1, (int) config('kado.clans.mission_paliers_every'))));
+        $palier = min(count($paliers) - 1, intdiv($number - 1, max(1, app(ClanSettings::class)->mission_paliers_every)));
 
         return max(1, (int) round($paliers[$palier]));
     }
