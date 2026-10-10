@@ -26,6 +26,8 @@ class ClanListResource extends JsonResource
             'attacks_won' => (int) ($this->attacks_won ?? 0),
             'defenses_won' => (int) ($this->defenses_won ?? 0),
             'missions_completed' => (int) ($this->missions_completed ?? 0),
+            // the missions ranking: the mission in progress, {number, steps, steps_done}
+            'mission' => $this->mission ?? null,
         ];
     }
 }

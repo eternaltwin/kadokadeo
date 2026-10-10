@@ -25,6 +25,15 @@ class ClanWarService
 
     public function __construct(private readonly ClanService $clanService) {}
 
+    // an attack game of the day or a paid clan game (used when the run begins, ClanRunService::useClanGame)
+    private function assertClanGame(User $user): void
+    {
+        $user = $user->fresh();
+        if ($user->clan_attack_games <= 0 && $user->clan_games <= 0) {
+            throw new ClanException('Vous n\'avez plus de parties d\'attaque aujourd\'hui. Vous pouvez acheter des parties de clan avec vos points Kado.');
+        }
+    }
+
     public function startAttack(User $user, Clan $defender, Game $game): ClanAction
     {
         $period = $this->clanService->assertPeriod();
@@ -45,6 +54,7 @@ class ClanWarService
         }
 
         $this->clanService->forgetUnplayedActions($user);
+        $this->assertClanGame($user);
         if ($this->runningAttacksCount($user) >= $this->maxAttacks($user, $clan)) {
             throw new ClanException('Vous avez déjà le maximum d\'attaques en cours. Vous pouvez améliorer ou annuler une attaque depuis la page statut de votre clan.');
         }
@@ -70,6 +80,7 @@ class ClanWarService
             throw new ClanException('Cette attaque est terminée.');
         }
         $this->clanService->forgetUnplayedActions($user);
+        $this->assertClanGame($user);
 
         return ClanAction::query()->create([
             'clan_id' => $attack->attacker_clan_id,
@@ -94,6 +105,7 @@ class ClanWarService
             throw new ClanException('Cette attaque est terminée.');
         }
         $this->clanService->forgetUnplayedActions($user);
+        $this->assertClanGame($user);
         // a "Défenseur" defends while he attacks
         if ($this->runningAttacksCount($user) > 0 && $this->clanService->combatRoleOf($user, $clan) !== ClanCombatRole::DEFENDER) {
             throw new ClanException('Vous ne pouvez pas défendre tant que vous avez une attaque en cours.');
@@ -155,7 +167,7 @@ class ClanWarService
         return 'launched';
     }
 
-    // a lower score leaves the attack as it was (the time to beat it does not change)
+    // a higher score replaces the score of the attack, and the defenders have the whole time again to beat it
     private function completeImprovement(ClanAction $action, Run $run): string
     {
         return DB::transaction(function () use ($action, $run) {
@@ -167,7 +179,11 @@ class ClanWarService
                 return 'not_improved';
             }
 
-            $attack->update(['score' => $run->score, 'run_id' => $run->id]);
+            $attack->update([
+                'score' => $run->score,
+                'run_id' => $run->id,
+                'expires_at' => now()->addHours((int) config('kado.clans.attack_hours')),
+            ]);
 
             return 'improved';
         });

@@ -20,6 +20,9 @@ const tabs = computed(() => {
 const selectedIndex = computed(() => Math.max(0, tabs.value.findIndex((t) => t.value === props.tab)))
 
 const stats = computed(() => props.clan.stats)
+const authStore = useAuthStore()
+// the free attack and defense games of the player left today
+const freeGames = computed(() => authStore.user?.clan_attack_games ?? 0)
 </script>
 
 <template>
@@ -41,6 +44,14 @@ const stats = computed(() => props.clan.stats)
         <li class="def" title="Défenses réussies : c'est le nombre d'attaques repoussées par ce clan.">
           <Number :value="stats.defenses_won" color="blue" />
         </li>
+        <template v-if="clan.viewer.is_member">
+          <li class="gemGreen" title="Vos parties gratuites du jour pour attaquer et défendre (les missions sont illimitées).">
+            <Number :value="freeGames" color="green" />
+          </li>
+          <li class="gemOrange" title="Parties dans le coffre du clan : données par les membres, distribuées par le chef et ses bras droits.">
+            <Number :value="clan.clan_games ?? 0" color="orange" />
+          </li>
+        </template>
       </ul>
       <h3>Actions</h3>
       <ul class="action">
@@ -116,6 +127,20 @@ const stats = computed(() => props.clan.stats)
 
 #clan ul.statClan li.def {
   background-image: url('/assets/img/gfx/icons/def.gif');
+}
+
+#clan ul.statClan li.gemGreen,
+#clan ul.statClan li.gemOrange {
+  background-size: 20px auto;
+  background-position: 95% 50%;
+}
+
+#clan ul.statClan li.gemGreen {
+  background-image: url('/gfx/gemGreen.svg');
+}
+
+#clan ul.statClan li.gemOrange {
+  background-image: url('/gfx/gemOrange.svg');
 }
 #clan div.clanMenu ul.action li a,
 #clan div.clanMenu ul.action li button {
