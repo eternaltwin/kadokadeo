@@ -70,27 +70,15 @@ const updated = () => {
 
     <ClanLayout v-else :clan="clan" :tab="tab">
       <template #actions>
-        <li v-if="viewer.can_manage">
-          <RouterLink :to="{ name: 'clans.manage', params: { id: clan.id } }">Gérer le clan</RouterLink>
-        </li>
-        <li v-if="viewer.is_member">
-          <RouterLink :to="{ name: 'clans.games', params: { id: clan.id } }">Parties de clan</RouterLink>
-        </li>
-        <li v-if="!viewer.is_member && viewer.has_clan">
-          <RouterLink :to="{ name: 'clans.attack', params: { id: clan.id } }" :title="viewer.attack_blocked ?? 'Attaquer ce clan'">Attaquer ce clan</RouterLink>
-        </li>
-        <li v-if="!viewer.has_clan && viewer.application_id">
-          <button type="button" title="Annuler ma candidature" @click="cancelApplication">Retirer ma demande</button>
-        </li>
-        <li v-else-if="!viewer.has_clan && clan.is_recruiting && !applicationElsewhere">
-          <button type="button" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</button>
-        </li>
-        <li v-if="viewer.is_member && !viewer.is_new_member">
-          <button type="button" @click="leave">Quitter le clan</button>
-        </li>
-        <li v-if="clanStore.clan && clanStore.clan.id !== clan.id">
-          <RouterLink :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }">Mon clan</RouterLink>
-        </li>
+        <ClanMenuAction v-if="viewer.can_manage" :to="{ name: 'clans.manage', params: { id: clan.id } }">Gérer le clan</ClanMenuAction>
+        <ClanMenuAction v-if="viewer.is_member" :to="{ name: 'clans.games', params: { id: clan.id } }">Parties de clan</ClanMenuAction>
+        <ClanMenuAction v-if="!viewer.is_member && viewer.has_clan"
+                        :to="{ name: 'clans.attack', params: { id: clan.id } }"
+                        :title="viewer.attack_blocked ?? 'Attaquer ce clan'">Attaquer ce clan</ClanMenuAction>
+        <ClanMenuAction v-if="!viewer.has_clan && viewer.application_id" title="Annuler ma candidature" @click="cancelApplication">Retirer ma demande</ClanMenuAction>
+        <ClanMenuAction v-else-if="!viewer.has_clan && clan.is_recruiting && !applicationElsewhere" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</ClanMenuAction>
+        <ClanMenuAction v-if="viewer.is_member && !viewer.is_new_member" @click="leave">Quitter le clan</ClanMenuAction>
+        <ClanMenuAction v-if="clanStore.clan && clanStore.clan.id !== clan.id" :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }">Mon clan</ClanMenuAction>
       </template>
 
       <MessageError v-if="actions.error.value">{{ actions.error.value }}</MessageError>
@@ -107,13 +95,12 @@ const updated = () => {
       <form v-if="showApplyForm" class="mb-4" @submit.prevent="apply">
         <div>
           <label for="applicationMessage">Votre message au chef de clan (facultatif)</label>
-          <textarea id="applicationMessage"
-                    v-model="applicationMessage"
-                    rows="3"
-                    maxlength="500"
-                    class="kadoTextarea"></textarea>
+          <FormTextarea id="applicationMessage"
+                        v-model="applicationMessage"
+                        rows="3"
+                        maxlength="500" />
         </div>
-        <input type="submit" value="Envoyer votre candidature" class="w-auto!" />
+        <FormButton type="submit" size="lg">Envoyer votre candidature</FormButton>
       </form>
 
       <ClanPresentation v-if="tab === 'show'" :clan="clan" :tournament="tournament" />

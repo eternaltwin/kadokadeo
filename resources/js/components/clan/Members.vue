@@ -58,7 +58,7 @@ const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(m, index) in sorted" :key="m.user.etwin_id" :class="index % 2 ? 'oddfalse' : 'oddtrue'">
+          <tr v-for="(m, index) in sorted" :key="m.user.etwin_id" :class="index % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
             <td class="text-right [font-variant:small-caps]">
               <img v-if="m.is_leader"
                    src="/gfx/clan/clanleader.gif"

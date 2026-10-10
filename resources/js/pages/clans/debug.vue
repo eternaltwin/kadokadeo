@@ -57,31 +57,28 @@ const endPeriod = () => {
       <h2 class="normal-case">Lancer une attaque</h2>
       <form class="flex flex-wrap items-end gap-2" @submit.prevent="run('/debug/clans/attack', attack)">
         <label class="flex flex-col text-sm">Clan attaquant
-          <select v-model="attack.attacker_clan_id" class="bg-white p-1 text-kado-blue">
+          <FormSelect v-model="attack.attacker_clan_id" class="p-1">
             <option v-for="c in data.clans" :key="c.id" :value="c.id">{{ c.name }} ({{ c.war_score }})</option>
-          </select>
+          </FormSelect>
         </label>
-        <button type="button"
-                class="clanSwap"
-                title="Inverser"
-                @click="swap">⇄</button>
+        <FormButton size="lg" title="Inverser" @click="swap">⇄</FormButton>
         <label class="flex flex-col text-sm">Clan attaqué
-          <select v-model="attack.defender_clan_id" class="bg-white p-1 text-kado-blue">
+          <FormSelect v-model="attack.defender_clan_id" class="p-1">
             <option v-for="c in data.clans" :key="c.id" :value="c.id">{{ c.name }} ({{ c.war_score }})</option>
-          </select>
+          </FormSelect>
         </label>
         <label class="flex flex-col text-sm">Jeu
-          <select v-model="attack.game_id" class="bg-white p-1 text-kado-blue">
+          <FormSelect v-model="attack.game_id" class="p-1">
             <option v-for="g in data.games" :key="g.id" :value="g.id">{{ g.name }}</option>
-          </select>
+          </FormSelect>
         </label>
         <label class="flex flex-col text-sm">Score
-          <input v-model.number="attack.score"
-                 type="number"
-                 min="0"
-                 class="w-24 bg-white p-1 text-kado-blue" />
+          <FormInput v-model.number="attack.score"
+                     type="number"
+                     min="0"
+                     class="w-24" />
         </label>
-        <input type="submit" value="Attaquer" class="pinkButton w-auto! h-8!" />
+        <FormButton type="submit" size="lg" variant="pink">Attaquer</FormButton>
       </form>
 
       <h2 class="normal-case">Attaques en cours</h2>
@@ -97,21 +94,18 @@ const endPeriod = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(a, i) in data.attacks" :key="a.id" :class="i % 2 ? 'oddfalse' : 'oddtrue'">
+          <tr v-for="(a, i) in data.attacks" :key="a.id" :class="i % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
             <td class="text-left">{{ a.attacker }} ({{ a.attacker_clan }}) → {{ a.defender_clan }}</td>
             <td>{{ a.game }}</td>
             <td class="font-bold">{{ a.score }}</td>
             <td><ClanCountdown :until="a.expires_at" /></td>
             <td class="whitespace-nowrap">
-              <input v-model.number="defenseScores[a.id]"
-                     type="number"
-                     min="0"
-                     :placeholder="a.score + 1"
-                     class="w-20 bg-white p-1 text-kado-blue" />
-              <input type="button"
-                     value="Défendre"
-                     class="w-auto! h-7! ml-1"
-                     @click="run(`/debug/clans/attacks/${a.id}/defend`, { score: defenseScores[a.id] ?? a.score + 1 })" />
+              <FormInput v-model.number="defenseScores[a.id]"
+                         type="number"
+                         min="0"
+                         :placeholder="a.score + 1"
+                         class="w-20" />
+              <FormButton class="ml-1" @click="run(`/debug/clans/attacks/${a.id}/defend`, { score: defenseScores[a.id] ?? a.score + 1 })">Défendre</FormButton>
             </td>
           </tr>
         </tbody>
@@ -125,40 +119,21 @@ const endPeriod = () => {
           <li v-for="step in data.mission.steps" :key="step.id" class="flex items-center gap-2">
             <span>{{ step.game }} : {{ step.target_score }} pts</span>
             <strong v-if="step.done" class="text-kado-green-600">réussie</strong>
-            <input v-else
-                   type="button"
-                   value="Réussir l'étape"
-                   class="w-auto! h-7!"
-                   @click="run(`/debug/clans/mission-steps/${step.id}`)" />
+            <FormButton v-else @click="run(`/debug/clans/mission-steps/${step.id}`)">Réussir l'étape</FormButton>
           </li>
         </ul>
       </template>
 
       <h2 class="normal-case">Le temps</h2>
       <p class="flex flex-wrap gap-2">
-        <input v-for="h in [1, 6, 12, 24]"
-               :key="h"
-               type="button"
-               :value="`+${h}h`"
-               class="w-auto! h-8!"
-               @click="run('/debug/clans/time', { hours: h })" />
-        <input type="button"
-               value="Terminer la période"
-               class="pinkButton w-auto! h-8!"
-               @click="endPeriod" />
+        <FormButton v-for="h in [1, 6, 12, 24]"
+                    :key="h"
+                    size="lg"
+                    @click="run('/debug/clans/time', { hours: h })">+{{ h }}h</FormButton>
+        <FormButton size="lg" variant="pink" @click="endPeriod">Terminer la période</FormButton>
       </p>
       <p class="mx-0 text-xs">« +12h » fait réussir les attaques non repoussées et échouer les missions en cours qui dépassent leur temps.</p>
     </template>
   </div>
 </template>
 
-<style scoped>
-.clanSwap {
-  height: 30px;
-  padding: 0 8px;
-  border: 1px solid var(--color-kado-cyan-800);
-  background: #fff;
-  color: var(--color-kado-blue);
-  cursor: pointer;
-}
-</style>

@@ -61,15 +61,13 @@ const distribute = () => {
 
       <h2 class="normal-case">Acheter des parties</h2>
       <div class="flex flex-wrap gap-2">
-        <button v-for="pack in data.packs"
-                :key="pack.count"
-                type="button"
-                class="clanButton"
-                :disabled="data.kado_points < pack.price"
-                :title="data.kado_points < pack.price ? 'Vous n\'avez pas assez de points Kado' : `${pack.unit_price} points Kado la partie`"
-                @click="buy(pack)">
+        <FormButton v-for="pack in data.packs"
+                    :key="pack.count"
+                    :disabled="data.kado_points < pack.price"
+                    :title="data.kado_points < pack.price ? 'Vous n\'avez pas assez de points Kado' : `${pack.unit_price} points Kado la partie`"
+                    @click="buy(pack)">
           {{ pack.count }} partie(s) : {{ formatScore(pack.price) }} pts
-        </button>
+        </FormButton>
       </div>
 
       <h2 class="normal-case">Donner au clan</h2>
@@ -78,33 +76,27 @@ const distribute = () => {
         droits les distribueront aux membres. Le clan en a <Number :value="data.clan.games" color="orange" />.
       </p>
       <form class="flex items-center gap-2" @submit.prevent="donate">
-        <input v-model.number="donateCount"
-               type="number"
-               min="1"
-               :max="data.games"
-               class="w-20!" />
-        <input type="submit"
-               value="Donner"
-               class="w-auto!"
-               :disabled="data.games < 1" />
+        <FormInput v-model.number="donateCount"
+                   type="number"
+                   min="1"
+                   :max="data.games"
+                   class="w-20" />
+        <FormButton type="submit" size="lg" :disabled="data.games < 1">Donner</FormButton>
       </form>
 
       <template v-if="data.clan.can_distribute">
         <h2 class="normal-case">Distribuer les parties du clan</h2>
         <form class="flex flex-wrap items-center gap-2" @submit.prevent="distribute">
-          <select v-model="distribution.member" class="text-kado-blue bg-white">
+          <FormSelect v-model="distribution.member">
             <option :value="null" disabled>Choisir un joueur</option>
             <option v-for="m in members" :key="m.user.etwin_id" :value="m.user.etwin_id">{{ m.user.display_name }}</option>
-          </select>
-          <input v-model.number="distribution.count"
-                 type="number"
-                 min="1"
-                 :max="data.clan.games"
-                 class="w-20!" />
-          <input type="submit"
-                 value="Distribuer"
-                 class="w-auto!"
-                 :disabled="!distribution.member || data.clan.games < 1" />
+          </FormSelect>
+          <FormInput v-model.number="distribution.count"
+                     type="number"
+                     min="1"
+                     :max="data.clan.games"
+                     class="w-20" />
+          <FormButton type="submit" size="lg" :disabled="!distribution.member || data.clan.games < 1">Distribuer</FormButton>
         </form>
       </template>
 
