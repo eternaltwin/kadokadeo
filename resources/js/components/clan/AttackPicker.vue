@@ -17,8 +17,9 @@ const choose = (game) =>
     <template v-else>
       <p class="mx-0">
         Choisissez un jeu et faites le meilleur score possible : il deviendra une attaque contre le clan
-        <strong>{{ clan.name }}</strong>. Si personne ne le bat dans les 12 heures, votre clan remporte des points et le
-        clan adverse en perd autant.
+        <strong>{{ clan.name }}</strong>. Si personne ne le bat dans les 12 heures, votre clan remporte
+        <Number :value="clan.viewer.attack_points" color="pink" /> point(s) et le clan adverse en perd autant. Si
+        l'attaque est repoussée, votre clan ne perd rien.
       </p>
       <MessageError v-if="error">{{ error }}</MessageError>
       <ClanGamePicker title="Attaquer avec" @select="choose" />

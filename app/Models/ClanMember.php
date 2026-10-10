@@ -2,11 +2,23 @@
 
 namespace App\Models;
 
+use App\Enums\ClanCombatRole;
+use App\Enums\ClanRole;
 use Illuminate\Database\Eloquent\Model;
 
 class ClanMember extends Model
 {
-    protected $fillable = ['clan_id', 'user_id'];
+    protected $fillable = ['clan_id', 'user_id', 'role', 'combat_role'];
+
+    // the leader is clans.leader_id: his role stays "member" here (App\Services\ClanService::roleOf)
+    protected $casts = [
+        'role' => ClanRole::class,
+        'combat_role' => ClanCombatRole::class,
+    ];
+
+    protected $attributes = [
+        'role' => 'member',
+    ];
 
     public function clan()
     {

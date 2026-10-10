@@ -23,7 +23,7 @@ class ClanActionController extends Controller implements HasMiddleware
     public function show(Request $request, ClanAction $action)
     {
         abort_unless($action->user_id === $request->user()->id, 404);
-        $action->load('game', 'clan', 'defenderClan', 'attack.attackerClan', 'attack.attackerUser', 'missionStep.mission', 'bonus');
+        $action->load('game', 'clan', 'defenderClan', 'attack.attackerClan', 'attack.attackerUser', 'missionStep.mission');
 
         return [
             'data' => [
@@ -32,13 +32,19 @@ class ClanActionController extends Controller implements HasMiddleware
                 'type_label' => $action->type->label(),
                 'game_id' => $action->game_id,
                 'clan' => ['id' => $action->clan->id, 'name' => $action->clan->name],
-                'bonus' => $action->bonus?->type->getLabel(),
+                // a new run on an attack of the player: its score replaces the attack only if it is higher
+                'is_improvement' => $action->type === ClanActionType::ATTACK && $action->clan_attack_id !== null,
+                // the runs of the missions are free
+                'is_free' => $action->type === ClanActionType::MISSION,
                 // begun or too old: playing again would be a normal run
                 'is_open' => $action->run_id === null && $action->completed_at === null
                     && $action->created_at->gte(now()->subMinutes(ClanWarService::ACTION_TTL_MINUTES)),
                 'result' => $action->result,
                 'target' => match ($action->type) {
-                    ClanActionType::ATTACK => ['clan' => ['id' => $action->defenderClan->id, 'name' => $action->defenderClan->name]],
+                    ClanActionType::ATTACK => [
+                        'clan' => ['id' => $action->defenderClan->id, 'name' => $action->defenderClan->name],
+                        'score' => $action->attack?->score,
+                    ],
                     ClanActionType::DEFENSE => [
                         'clan' => ['id' => $action->attack->attackerClan->id, 'name' => $action->attack->attackerClan->name],
                         'attacker' => $action->attack->attackerUser->display_name,

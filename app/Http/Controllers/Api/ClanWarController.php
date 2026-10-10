@@ -12,14 +12,15 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-// "Attaquer ce clan", "Défendre", "Annuler": the run itself is played on the clan action page (ClanActionController)
+// "Attaquer ce clan", "Améliorer", "Défendre", "Annuler": the run itself is played on the clan action page
+// (ClanActionController)
 class ClanWarController extends Controller implements HasMiddleware
 {
     public static function middleware()
     {
         return [
             new Middleware('auth:sanctum'),
-            new Middleware('throttle:30,1', only: ['attack', 'defend']),
+            new Middleware('throttle:30,1', only: ['attack', 'improve', 'defend']),
         ];
     }
 
@@ -33,12 +34,14 @@ class ClanWarController extends Controller implements HasMiddleware
         return $this->actionResponse($action);
     }
 
+    public function improve(Request $request, ClanAttack $attack)
+    {
+        return $this->actionResponse($this->warService->startImprovement($request->user(), $attack));
+    }
+
     public function defend(Request $request, ClanAttack $attack)
     {
-        $validated = $request->validate(['super_defense' => ['sometimes', 'boolean']]);
-        $action = $this->warService->startDefense($request->user(), $attack, $validated['super_defense'] ?? false);
-
-        return $this->actionResponse($action);
+        return $this->actionResponse($this->warService->startDefense($request->user(), $attack));
     }
 
     public function cancel(Request $request, ClanAttack $attack)

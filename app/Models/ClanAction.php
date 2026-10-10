@@ -15,7 +15,6 @@ class ClanAction extends Model
         'defender_clan_id',
         'clan_attack_id',
         'clan_mission_step_id',
-        'clan_bonus_id',
         'run_id',
         'result',
         'completed_at',
@@ -54,11 +53,6 @@ class ClanAction extends Model
     public function missionStep()
     {
         return $this->belongsTo(ClanMissionStep::class, 'clan_mission_step_id');
-    }
-
-    public function bonus()
-    {
-        return $this->belongsTo(ClanBonus::class, 'clan_bonus_id');
     }
 
     public function run()

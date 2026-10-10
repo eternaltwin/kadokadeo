@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ClanCombatRole;
+use App\Enums\ClanRole;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserLightResource;
 use App\Models\Clan;
@@ -11,8 +13,9 @@ use App\Services\ClanService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Validation\Rule;
 
-// joining (applications accepted by the leader), leaving and managing the members of a clan
+// joining (applications accepted by the leader or a right hand), leaving and managing the members of a clan
 class ClanMemberController extends Controller implements HasMiddleware
 {
     public static function middleware()
@@ -25,10 +28,10 @@ class ClanMemberController extends Controller implements HasMiddleware
 
     public function __construct(private readonly ClanService $clanService) {}
 
-    // the applications waiting for the decision of the leader
+    // the applications waiting for the decision of the leader or a right hand
     public function applications(Request $request, Clan $clan)
     {
-        $this->clanService->assertLeader($request->user(), $clan);
+        $this->clanService->assertManager($request->user(), $clan);
 
         return [
             'data' => $clan->applications()
@@ -91,6 +94,32 @@ class ClanMemberController extends Controller implements HasMiddleware
     public function promote(Request $request, Clan $clan, User $user)
     {
         $this->clanService->transferLeadership($request->user(), $clan, $user);
+
+        return response()->noContent();
+    }
+
+    // "Bras droit" or member
+    public function role(Request $request, Clan $clan, User $user)
+    {
+        $validated = $request->validate(['role' => ['required', Rule::in([ClanRole::RIGHT_HAND->value, ClanRole::MEMBER->value])]]);
+        $this->clanService->setRole($request->user(), $clan, $user, ClanRole::from($validated['role']));
+
+        return response()->noContent();
+    }
+
+    // "Attaquant", "Défenseur" or none (null)
+    public function combatRole(Request $request, Clan $clan, User $user)
+    {
+        $validated = $request->validate(['combat_role' => ['present', 'nullable', Rule::enum(ClanCombatRole::class)]]);
+        $role = $validated['combat_role'] !== null ? ClanCombatRole::from($validated['combat_role']) : null;
+        $this->clanService->setCombatRole($request->user(), $clan, $user, $role);
+
+        return response()->noContent();
+    }
+
+    public function dissolve(Request $request, Clan $clan)
+    {
+        $this->clanService->dissolve($request->user(), $clan);
 
         return response()->noContent();
     }
