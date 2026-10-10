@@ -4,6 +4,7 @@
 const props = defineProps({
   clan: { type: Object, required: true },
 })
+const emit = defineEmits(['updated'])
 
 const authStore = useAuthStore()
 const { fetchClanGames, buyClanGames, donateClanGames, distributeClanGames, fetchMembers, isLoading, error } = useClans()
@@ -27,6 +28,8 @@ const done = (message) => {
   notice.value = message
   authStore.fetchUser()
   load()
+  // the chest of the clan in its menu
+  emit('updated')
 }
 const buy = (pack) => {
   if (confirm(`Acheter ${pack.count} partie(s) de clan pour ${pack.price} points Kado ?`)) {
@@ -49,9 +52,11 @@ const distribute = () => {
 
     <template v-if="data">
       <p class="mx-0">
-        Les parties de clan servent aux attaques et aux défenses, une fois vos parties du jour jouées (les missions sont
-        gratuites). Vous avez <Number :value="data.games" color="blue" /> partie(s) de clan et
-        <strong>{{ formatScore(data.kado_points) }}</strong> points Kado.
+        Chaque jour, vous avez <Number :value="data.attack_games" color="green" /> partie(s) gratuite(s) pour attaquer et
+        défendre (sur {{ data.attack_games_per_day }} par jour). Une fois jouées, les attaques et les défenses utilisent vos
+        parties de clan achetées. Les missions, elles, sont gratuites et illimitées. Vous avez
+        <Number :value="data.games" color="blue" /> partie(s) de clan et <strong>{{ formatScore(data.kado_points) }}</strong>
+        points Kado.
       </p>
 
       <h2 class="normal-case">Acheter des parties</h2>
@@ -69,7 +74,7 @@ const distribute = () => {
 
       <h2 class="normal-case">Donner au clan</h2>
       <p class="mx-0 text-sm">
-        Vous pouvez donner à votre clan les parties que vous avez achetées (pas vos parties du jour). Le chef et ses bras
+        Vous pouvez donner à votre clan les parties que vous avez achetées (pas vos parties gratuites du jour). Le chef et ses bras
         droits les distribueront aux membres. Le clan en a <Number :value="data.clan.games" color="orange" />.
       </p>
       <form class="flex items-center gap-2" @submit.prevent="donate">

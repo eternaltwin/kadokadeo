@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\ClanActionType;
 use App\Http\Controllers\Controller;
 use App\Models\ClanAction;
+use App\Services\ClanRunService;
 use App\Services\ClanWarService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -17,7 +18,17 @@ class ClanActionController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum'),
+            new Middleware('throttle:30,1', only: ['again']),
         ];
+    }
+
+    // when a clan run ends: the next run on the page ("Rejouer") counts for the clan too while its target is open
+    public function again(Request $request, ClanAction $action, ClanRunService $clanRunService)
+    {
+        abort_unless($action->user_id === $request->user()->id, 404);
+        $next = $clanRunService->again($action);
+
+        return ['data' => $next ? ['id' => $next->id] : null];
     }
 
     public function show(Request $request, ClanAction $action)

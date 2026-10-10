@@ -85,7 +85,7 @@ const updated = () => {
         <li v-else-if="!viewer.has_clan && clan.is_recruiting && !applicationElsewhere">
           <button type="button" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</button>
         </li>
-        <li v-if="viewer.is_member">
+        <li v-if="viewer.is_member && !viewer.is_new_member">
           <button type="button" @click="leave">Quitter le clan</button>
         </li>
         <li v-if="clanStore.clan && clanStore.clan.id !== clan.id">
@@ -122,7 +122,7 @@ const updated = () => {
       <ClanMembers v-else-if="tab === 'members'" :clan="clan" />
       <ClanManage v-else-if="tab === 'manage'" :clan="clan" @updated="updated" />
       <ClanAttackPicker v-else-if="tab === 'attack'" :clan="clan" />
-      <ClanGames v-else-if="tab === 'games' && viewer.is_member" :clan="clan" />
+      <ClanGames v-else-if="tab === 'games' && viewer.is_member" :clan="clan" @updated="load" />
     </ClanLayout>
   </div>
 </template>

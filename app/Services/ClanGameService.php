@@ -9,8 +9,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 // the paid clan games: bought with Kado points by packs (kado.clans.game_packs), used for the attacks and the defenses once
-// the games of the day are used (ClanRunService::runCost). Their owner uses them or gives them to his clan, whose leader and
-// right hands distribute them to the members. The free games of the day can't be given.
+// the free attack games of the day are used (ClanRunService::useClanGame). Their owner uses them or gives them to his
+// clan, whose leader and right hands distribute them to the members. The free games of the day can't be given.
 class ClanGameService
 {
     public function __construct(private readonly ClanService $clanService) {}
@@ -52,7 +52,7 @@ class ClanGameService
         DB::transaction(function () use ($user, $clan, $count) {
             $user = User::query()->lockForUpdate()->findOrFail($user->id);
             if ($count < 1 || $user->clan_games < $count) {
-                throw new ClanException('Vous n\'avez pas assez de parties de clan achetées (les parties du jour ne peuvent pas être données).');
+                throw new ClanException('Vous n\'avez pas assez de parties de clan achetées (les parties gratuites du jour ne peuvent pas être données).');
             }
 
             $user->decrement('clan_games', $count);

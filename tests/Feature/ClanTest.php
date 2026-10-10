@@ -6,6 +6,7 @@ use App\Enums\ClanAttackStatus;
 use App\Enums\ClanBonusType;
 use App\Enums\ClanCombatRole;
 use App\Enums\ClanRole;
+use App\Filament\Pages\ManageClanSettings;
 use App\Models\Clan;
 use App\Models\ClanAction;
 use App\Models\ClanAttack;
@@ -23,8 +24,10 @@ use App\Services\ClanPeriodService;
 use App\Services\ClanRunService;
 use App\Services\ClanService;
 use App\Services\ClanWarService;
+use App\Settings\ClanSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class ClanTest extends TestCase
@@ -222,7 +225,6 @@ class ClanTest extends TestCase
         app(ClanWarService::class)->startAttack($attacker, $clanB, $game);
         $this->playClanRun($attacker, $game, $period, 500);
         $attack = ClanAttack::query()->sole();
-        $expiresAt = $attack->expires_at;
 
         Sanctum::actingAs($attacker);
         $this->getJson("/api/clans/{$clanB->id}/status")->assertOk()->assertJsonPath('data.received.0.can_improve', true);
@@ -230,12 +232,14 @@ class ClanTest extends TestCase
         $this->assertSame('not_improved', $this->playClanRun($attacker, $game, $period, 400)['result']);
         $this->assertSame(500, $attack->fresh()->score);
 
+        // 5 hours later: the defenders have 12 hours again
+        $this->travel(5)->hours();
         $actionId = $this->postJson("/api/clan-attacks/{$attack->id}/improve")->assertCreated()->json('data.id');
         $this->getJson("/api/clan-actions/{$actionId}")->assertOk()->assertJsonPath('data.is_improvement', true);
         $this->assertSame('improved', $this->playClanRun($attacker, $game, $period, 800)['result']);
         $attack->refresh();
         $this->assertSame(800, $attack->score);
-        $this->assertTrue($expiresAt->eq($attack->expires_at));
+        $this->assertEqualsWithDelta(now()->addHours(12)->timestamp, $attack->expires_at->timestamp, 1);
         // still a single attack
         $this->assertDatabaseCount('clan_attacks', 1);
         $this->assertDatabaseHas('clan_member_stats', ['user_id' => $attacker->id, 'attacks' => 1]);
@@ -245,14 +249,18 @@ class ClanTest extends TestCase
         $this->postJson("/api/clan-attacks/{$attack->id}/improve")->assertStatus(422);
     }
 
-    // a kind of Elo: half the points against a clan of the same score, more against a stronger clan, shown before attacking
+    // 10 points against a clan with as many points or more, one less by palier of 10 points below, shown before attacking
     public function test_the_points_of_an_attack(): void
     {
         $clanService = app(ClanService::class);
-        $this->assertSame(5, $clanService->attackPoints(0, 0));
+        $this->assertSame(10, $clanService->attackPoints(0, 0));
         $this->assertSame(10, $clanService->attackPoints(0, 100));
+        $this->assertSame(10, $clanService->attackPoints(100, 100));
+        $this->assertSame(9, $clanService->attackPoints(100, 99));
+        $this->assertSame(9, $clanService->attackPoints(100, 90));
+        $this->assertSame(8, $clanService->attackPoints(100, 89));
+        $this->assertSame(8, $clanService->attackPoints(100, 80));
         $this->assertSame(1, $clanService->attackPoints(100, 0));
-        $this->assertGreaterThan($clanService->attackPoints(20, 0), $clanService->attackPoints(20, 40));
 
         $period = $this->period();
         $attacker = User::factory()->create();
@@ -360,10 +368,13 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.0.user.etwin_id', $member->etwin_id)
             ->assertJsonPath('data.0.points', 5);
 
-        // the next mission: fewer points, a higher palier of the stars
+        // the next mission
         $this->getJson("/api/clans/{$clan->id}/missions")->assertOk()
             ->assertJsonPath('data.mission.number', 2)
-            ->assertJsonPath('data.mission.reward', 9);
+            ->assertJsonPath('data.mission.reward', 10);
+        // the ranking of the missions: the steps done of the mission in progress
+        $this->getJson('/api/clans?ranking=missions')->assertOk()
+            ->assertJsonPath('data.0.mission', ['number' => 2, 'steps' => 5, 'steps_done' => 0]);
     }
 
     public function test_the_steps_grow_with_the_members_of_the_clan(): void
@@ -376,7 +387,12 @@ class ClanTest extends TestCase
         config(['kado.clans.mission_steps.ratio' => 0.9]);
         $this->assertLessThan($missionService->stepsCount(50, 1), $missionService->stepsCount(50, 5));
 
+        // one point less every 10 missions
         $this->assertSame(10, $missionService->missionPoints(1));
+        $this->assertSame(10, $missionService->missionPoints(9));
+        $this->assertSame(9, $missionService->missionPoints(10));
+        $this->assertSame(9, $missionService->missionPoints(19));
+        $this->assertSame(8, $missionService->missionPoints(20));
         $this->assertSame(1, $missionService->missionPoints(100));
     }
 
@@ -437,12 +453,12 @@ class ClanTest extends TestCase
         $this->assertSame([1 => 500, 2 => 500, 3 => 1000, 4 => 1000, 5 => 1500, 7 => 2000, 9 => 2500, 11 => 3000, 12 => 3000], array_intersect_key($targets, array_flip([1, 2, 3, 4, 5, 7, 9, 11, 12])));
     }
 
-    // the runs of the missions don't cost a game, the attacks and the defenses do
+    // the runs of the missions don't cost a game, the attacks and the defenses have their own games
     public function test_the_runs_of_the_missions_are_free(): void
     {
         config(['kado.games_per_day' => 10]);
         $this->period();
-        $player = User::factory()->create(['kado_games' => 0]);
+        $player = User::factory()->create(['kado_games' => 0, 'clan_attack_games' => 0]);
         $clan = Clan::factory()->withLeader($player)->create();
         $defender = Clan::factory()->withLeader()->create();
         Game::factory()->count(6)->create();
@@ -455,12 +471,9 @@ class ClanTest extends TestCase
         $this->postJson("/api/runs/games/{$step->game_id}")->assertSuccessful();
         $this->assertSame(0, $player->fresh()->kado_games);
 
-        $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $step->game_id])->assertCreated();
-        $this->postJson("/api/runs/games/{$step->game_id}")->assertForbidden();
-
-        $player->update(['kado_games' => 3]);
-        $this->postJson("/api/runs/games/{$step->game_id}")->assertSuccessful();
-        $this->assertSame(2, $player->fresh()->kado_games);
+        // no attack game left
+        $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $step->game_id])->assertStatus(422)
+            ->assertJsonPath('message', 'Vous n\'avez plus de parties d\'attaque aujourd\'hui. Vous pouvez acheter des parties de clan avec vos points Kado.');
     }
 
     public function test_the_mission_bonuses_of_the_leader_and_his_right_hands(): void
@@ -545,15 +558,16 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.clan.transfers.1.type', 'donation');
     }
 
-    // attacks and defenses: the games of the day first, then the paid clan games
-    public function test_the_paid_clan_games_are_used_after_the_games_of_the_day(): void
+    // attacks and defenses: the attack games of the day first, then the paid clan games, never the games of the normal runs
+    public function test_the_attack_games_of_the_day_then_the_paid_clan_games(): void
     {
         config(['kado.games_per_day' => 10]);
         $this->period();
-        $player = User::factory()->create(['kado_games' => 1, 'clan_games' => 1]);
+        $player = User::factory()->create(['kado_games' => 3, 'clan_attack_games' => 1, 'clan_games' => 1]);
         Clan::factory()->withLeader($player)->create();
         $defender = Clan::factory()->withLeader()->create();
         $game = Game::factory()->create();
+        $games = fn () => [$player->fresh()->kado_games, $player->fresh()->clan_attack_games, $player->fresh()->clan_games];
         $attackRun = function () use ($defender, $game) {
             ClanAction::query()->delete();
             $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $game->id])->assertCreated();
@@ -563,16 +577,91 @@ class ClanTest extends TestCase
 
         Sanctum::actingAs($player);
         $attackRun()->assertSuccessful();
-        $this->assertSame([0, 1], [$player->fresh()->kado_games, $player->fresh()->clan_games]);
+        $this->assertSame([3, 0, 1], $games());
         $attackRun()->assertSuccessful();
-        $this->assertSame([0, 0], [$player->fresh()->kado_games, $player->fresh()->clan_games]);
-        $attackRun()->assertForbidden();
-
-        // not for a normal run (no attack asked)
+        $this->assertSame([3, 0, 0], $games());
         ClanAction::query()->delete();
-        $player->refresh()->update(['clan_games' => 1]);
-        $this->postJson("/api/runs/games/{$game->id}")->assertForbidden();
-        $this->assertSame(1, $player->fresh()->clan_games);
+        $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $game->id])->assertStatus(422);
+
+        // a normal run uses a game of the day only
+        $this->postJson("/api/runs/games/{$game->id}")->assertSuccessful();
+        $this->assertSame([2, 0, 0], $games());
+
+        // the attack games are given again every day (App\Settings\ClanSettings)
+        $settings = app(ClanSettings::class);
+        $settings->attack_games_per_day = 4;
+        $settings->save();
+        $this->artisan('kado:reset-daily-games')->assertSuccessful();
+        $this->assertSame([10, 4, 0], $games());
+    }
+
+    // a player accepted in a clan can't leave it nor be excluded during the period he joined it
+    public function test_a_new_member_stays_until_the_next_period(): void
+    {
+        $period = $this->period();
+        $leader = User::factory()->create();
+        $player = User::factory()->create();
+        $clan = Clan::factory()->withLeader($leader)->create();
+
+        Sanctum::actingAs($player);
+        $applicationId = $this->postJson("/api/clans/{$clan->id}/applications")->assertCreated()->json('data.id');
+        Sanctum::actingAs($leader);
+        $this->postJson("/api/clan-applications/{$applicationId}/accept")->assertNoContent();
+        $this->getJson("/api/clans/{$clan->id}/members")->assertOk()->assertJsonPath('data.1.is_new', true);
+        $this->postJson("/api/clans/{$clan->id}/members/{$player->etwin_id}/kick")->assertStatus(422)
+            ->assertJsonPath('message', 'Ce joueur a rejoint le clan pendant cette période : il pourra être exclu à partir de la prochaine période.');
+        Sanctum::actingAs($player);
+        $this->getJson("/api/clans/{$clan->id}")->assertOk()->assertJsonPath('data.viewer.is_new_member', true);
+        $this->postJson('/api/clans/leave')->assertStatus(422);
+
+        // the next period
+        $this->travelTo($period->end_at->clone()->addMinute());
+        Period::factory()->create(['start_at' => now()->startOfDay(), 'end_at' => now()->addDays(13)->endOfDay()]);
+        $this->postJson('/api/clans/leave')->assertNoContent();
+    }
+
+    // "Rejouer" on the page of a clan run: the next run counts for the clan while its target is open
+    public function test_playing_again_on_the_page_of_a_clan_run(): void
+    {
+        config(['kado.clans.bonus_chance' => 0]);
+        $period = $this->period();
+        $player = User::factory()->create();
+        $clan = Clan::factory()->withLeader($player)->create();
+        $clanB = Clan::factory()->withLeader()->create();
+        Game::factory()->count(6)->create();
+        $step = app(ClanMissionService::class)->currentMission($clan)->steps->first();
+        $game = $step->game;
+
+        // a step failed: the next run is the same step
+        Sanctum::actingAs($player);
+        $actionId = $this->postJson("/api/clan-mission-steps/{$step->id}/play")->assertCreated()->json('data.id');
+        $this->playClanRun($player, $game, $period, $step->target_score - 1);
+        $actionId = $this->postJson("/api/clan-actions/{$actionId}/again")->assertOk()->json('data.id');
+        $this->assertNotNull($actionId);
+        $this->assertSame('completed', $this->playClanRun($player, $game, $period, $step->target_score)['result']);
+        // completed: the next run is a normal one
+        $this->postJson("/api/clan-actions/{$actionId}/again")->assertOk()->assertJsonPath('data', null);
+
+        // an attack launched: the next run improves it
+        $actionId = $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertCreated()->json('data.id');
+        $this->playClanRun($player, $game, $period, 100);
+        $actionId = $this->postJson("/api/clan-actions/{$actionId}/again")->assertOk()->json('data.id');
+        $this->getJson("/api/clan-actions/{$actionId}")->assertOk()->assertJsonPath('data.is_improvement', true);
+        $this->assertSame('improved', $this->playClanRun($player, $game, $period, 200)['result']);
+        $this->assertSame(200, ClanAttack::query()->sole()->score);
+    }
+
+    public function test_the_admin_sets_the_attack_games_of_the_day(): void
+    {
+        $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+        Livewire::test(ManageClanSettings::class)
+            ->assertSet('data.attack_games_per_day', 10)
+            ->set('data.attack_games_per_day', 6)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertSame(6, app(ClanSettings::class)->refresh()->attack_games_per_day);
     }
 
     // the leader can do everything, a right hand everything but disband the clan and name a new leader
@@ -601,7 +690,6 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.viewer.role', 'right_hand');
         $this->postJson("/api/clan-applications/{$applicationId}/accept")->assertNoContent();
         $this->putJson("/api/clans/{$clan->id}", ['is_recruiting' => false])->assertNoContent();
-        $this->postJson("/api/clans/{$clan->id}/members/{$player->etwin_id}/kick")->assertNoContent();
         $this->postJson("/api/clans/{$clan->id}/members/{$leader->etwin_id}/kick")->assertStatus(422);
         // ... but does not disband it nor name a new leader
         $this->deleteJson("/api/clans/{$clan->id}")->assertStatus(422);

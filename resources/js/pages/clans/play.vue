@@ -1,13 +1,16 @@
 <script setup>
 // a clan run: an attack, a defense or a mission step. The next run of the game is bound to it on the server.
 const route = useRoute()
+const router = useRouter()
 const clanStore = useClanStore()
-const { fetchAction, error } = useClans()
+const { fetchAction, playAgain, error } = useClans()
 const { fetchGame } = useGames()
 
 const action = ref(null)
 const game = ref(null)
 const result = ref(null)
+// "Rejouer" in the game: false when the next run would be a normal run (the step completed, the attack over...)
+const countsAgain = ref(true)
 
 fetchAction(route.params.action).then((data) => {
   action.value = data.data
@@ -22,6 +25,16 @@ const onGameFinished = (e) => {
   if (e.detail?.clan) {
     result.value = e.detail.clan
     clanStore.reload()
+    // the next run of the page counts for the clan too while the target is open
+    playAgain(action.value.id).then((data) => {
+      countsAgain.value = data.data !== null
+      if (data.data) {
+        router.replace({ params: { action: data.data.id } })
+        fetchAction(data.data.id).then((actionData) => {
+          action.value = actionData.data
+        })
+      }
+    })
   }
 }
 onMounted(() => window.evts.addEventListener('gameFinished', onGameFinished))
@@ -69,6 +82,10 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
       <template v-if="result">
         <MessageSuccess v-if="isSuccess">{{ result.message }}</MessageSuccess>
         <MessageError v-else>{{ result.message }}</MessageError>
+        <p class="text-center text-sm">
+          <template v-if="countsAgain">Si vous rejouez, votre nouvelle partie comptera aussi pour votre clan.</template>
+          <template v-else>Si vous rejouez, ce sera une partie normale : elle ne comptera plus pour votre clan.</template>
+        </p>
       </template>
       <p class="text-center">
         <RouterLink :to="backRoute">Retour à la page du clan</RouterLink>

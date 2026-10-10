@@ -13,6 +13,7 @@ use App\Models\ClanApplication;
 use App\Models\ClanAttack;
 use App\Models\ClanMember;
 use App\Models\ClanMemberStat;
+use App\Models\ClanMission;
 use App\Models\ClanPeriodScore;
 use App\Services\ClanService;
 use App\Services\ClanWarService;
@@ -53,7 +54,20 @@ class ClanController extends Controller implements HasMiddleware
         }
 
         $clans = $query->paginate(50);
-        $clans->getCollection()->each(function (Clan $clan, int $index) use ($clans, $validated, $period, $ranking) {
+        // the missions ranking: the steps done of the mission in progress of each clan
+        $missions = $ranking === 'missions'
+            ? ClanMission::query()
+                ->where('period_id', $period->id)
+                ->whereIn('clan_id', $clans->getCollection()->pluck('id'))
+                ->where('status', ClanMission::ACTIVE)
+                ->where('expires_at', '>', now())
+                ->withCount(['steps', 'steps as steps_done_count' => fn ($q) => $q->where(fn ($q) => $q->whereNotNull('completed_at')->orWhere('skipped', true))])
+                ->get()
+                ->keyBy('clan_id')
+            : collect();
+        $clans->getCollection()->each(function (Clan $clan, int $index) use ($clans, $validated, $period, $ranking, $missions) {
+            $mission = $missions->get($clan->id);
+            $clan->mission = $mission ? ['number' => $mission->number, 'steps' => $mission->steps_count, 'steps_done' => $mission->steps_done_count] : null;
             // in a search, the position in the whole ranking
             $clan->rank = empty($validated['q'])
                 ? ($clans->currentPage() - 1) * $clans->perPage() + $index + 1
@@ -133,6 +147,8 @@ class ClanController extends Controller implements HasMiddleware
                 'leader' => $clan->leader ? UserLightResource::make($clan->leader) : null,
                 'members_count' => $clan->members_count,
                 'max_members' => (int) config('kado.clans.max_members'),
+                // the paid clan games given by the members, to distribute ("coffre" of the clan)
+                'clan_games' => $isMember ? $clan->clan_games : null,
                 'stats' => [
                     'war_rank' => $period ? $this->clanService->rankOf($clan, $period) : null,
                     'war_score' => $score?->war_score ?? 0,
@@ -155,6 +171,8 @@ class ClanController extends Controller implements HasMiddleware
                     'can_manage' => (bool) $role?->canManage(),
                     'role' => $role?->value,
                     'combat_role' => $isMember ? $this->clanService->combatRoleOf($user, $clan)?->value : null,
+                    // accepted during this period: he can't leave the clan before the next one
+                    'is_new_member' => $isMember && $this->clanService->isNewMember($user, $clan),
                     'has_clan' => $myClan !== null,
                     'application_id' => ClanApplication::query()
                         ->where('clan_id', $clan->id)
@@ -198,7 +216,7 @@ class ClanController extends Controller implements HasMiddleware
             ->with('user')
             ->orderBy('created_at')
             ->get()
-            ->map(function (ClanMember $member) use ($clan, $stats) {
+            ->map(function (ClanMember $member) use ($clan, $stats, $period) {
                 $stat = $stats->get($member->user_id);
                 $isLeader = $clan->leader_id === $member->user_id;
 
@@ -208,6 +226,8 @@ class ClanController extends Controller implements HasMiddleware
                     'role' => $isLeader ? ClanRole::LEADER->value : $member->role->value,
                     'combat_role' => $member->combat_role?->value,
                     'joined_at' => $member->created_at?->toIso8601String(),
+                    // accepted during this period: can't be excluded before the next one
+                    'is_new' => $period !== null && $member->joined_period_id === $period->id,
                     'points' => ($stat?->mission_steps ?? 0) + ($stat?->performance ?? 0),
                     'attacks' => $stat?->attacks ?? 0,
                     'attacks_won' => $stat?->attacks_won ?? 0,

@@ -101,10 +101,9 @@ return [
         // a clan has this time to beat the score of an attack (an attack not over at the end of the period is cancelled)
         'attack_hours' => 12,
         // a successful attack wins from 1 to max_points points, taken from the defender (its score never goes below 0):
-        // a kind of Elo, about half against a clan of the same score, up to max_points against a clan with more points.
-        // elo_scale: the difference of scores that makes a clan 10 times "stronger"
+        // max_points against a clan with as many points or more, one less by palier of protection_range / max_points
+        // points it has below the attacker (100 / 10: 9 points against a clan 1 to 10 points below, 8 from 11 to 20...)
         'attack_max_points' => 10,
-        'elo_scale' => (int) env('KADO_CLANS_ELO_SCALE', 50),
         // the clans too far from your score are protected from your attacks (and you from theirs)
         'protection_range' => (int) env('KADO_CLANS_PROTECTION_RANGE', 100),
         // the seats of "Attaquant" (two attacks at a time) and "Défenseur" (defends while attacking): this share of the
@@ -118,9 +117,9 @@ return [
         // the score to reach on each game: a palier of its stars, one palier higher every `every` missions: half the
         // first star, the first star, between the first and the second... up to the last star
         'mission_paliers_every' => 2,
-        // the points of a completed mission: first for the first one, times ratio^(number - 1), at least min (ratio to
-        // tune). A mission not finished in time loses 1 point by step not completed, minus one.
-        'mission_points' => ['first' => 10, 'ratio' => 0.9, 'min' => 1],
+        // the points of a completed mission: first, one less every `every` missions (missions 1 to 9: 10 points, 10 to 19:
+        // 9...), at least min. A mission not finished in time loses 1 point by step not completed, minus one.
+        'mission_points' => ['first' => 10, 'every' => 10, 'min' => 1],
         // chance to win an option with each completed mission, then the chances of each option (to tune)
         'bonus_chance' => (float) env('KADO_CLANS_BONUS_CHANCE', 0.07),
         'bonus_weights' => ['more_time' => 30, 'skip_step' => 30, 'next_mission' => 20, 'ban_game' => 10, 'force_game' => 10],

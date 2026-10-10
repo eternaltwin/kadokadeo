@@ -27,6 +27,9 @@ const sections = [
   { id: 'compte', title: 'Mon compte', level: 2, art: art('pks') },
   { id: 'questions', title: 'Questions', level: 2, art: art('gem') },
 ]
+
+const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+
 // the table of content: the parts and their sections
 const toc = sections.reduce((parts, section, index) => {
   if (section.level === 2) {
@@ -149,7 +152,7 @@ const clanRewards = [
                   <tr v-for="league in leagueStore.leagues" :key="league.level">
                     <td class="!text-left">
                       <div class="flex items-center gap-1">
-                        <img :src="`/gfx/leagues/${league.level}.png`" :alt="league.name" class="h-5">
+                        <img :src="`/gfx/leagues/${league.level}.svg`" :alt="league.name" class="h-5">
                         <div>{{ league.name }}</div>
                       </div>
                     </td>
@@ -175,6 +178,7 @@ const clanRewards = [
             <template v-else-if="section.id === 'clans'">
               <p>Un Clan est un groupe de joueurs (maximum 50) qui se rassemblent pour combattre ensemble contre d'autres clans.</p>
               <p>Vous pouvez soit rejoindre un Clan existant en envoyant votre candidature depuis sa page, soit créer votre propre Clan à partir de la rubrique <RouterLink :to="{ name: 'clans.index' }">Clans</RouterLink>.</p>
+              <p>Un joueur accepté dans un Clan ne peut pas le quitter ni en être exclu pendant la période où il l'a rejoint.</p>
               <p>Le Clan est dirigé par son <strong>chef</strong>, qui peut nommer des <strong>bras droits</strong> : ils ont tous les droits du chef (candidatures, exclusions, options, rôles), sauf dissoudre le Clan et nommer un nouveau chef.</p>
               <p>Chaque Clan a deux scores et deux positions : une dans le classement des attaques et une dans le classement des missions. Vous pouvez participer à l'un ou l'autre de ces classements, ou aux deux !</p>
               <p>Dans le Clan, les joueurs ont aussi leur classement : 1 point par étape de mission réussie, et les points de chaque attaque et de chaque défense réussies.</p>
@@ -183,9 +187,9 @@ const clanRewards = [
             <template v-else-if="section.id === 'attaques'">
               <p><img src="/assets/img/gfx/icons/atk.gif" alt="Attaque" class="inline" /> Pour gagner des points, un Clan doit attaquer un autre Clan : allez sur la page d'un Clan adverse, cliquez sur « Attaquer ce clan », choisissez un jeu et effectuez une partie.</p>
               <p>Votre score devient une attaque. Pour la repousser, le Clan adverse devra faire un score supérieur au vôtre. Une attaque repoussée est annulée, et votre Clan ne perd rien.</p>
-              <p>Si au bout de <strong>12 heures</strong> l'attaque n'a pas été repoussée, votre Clan remporte de 1 à <strong>10 points</strong> et le Clan adverse perd autant (jamais en dessous de zéro). Plus le Clan adverse a de points par rapport au vôtre, plus l'attaque rapporte : le nombre de points est affiché avant d'attaquer. Attaquez des clans au score proche du vôtre : les autres sont protégés de vos attaques.</p>
-              <p>Chaque joueur peut avoir une attaque en cours à la fois. Pour l'améliorer, cliquez sur « Améliorer » dans l'onglet Statut et rejouez sur le même jeu : le nouveau score ne remplace celui de l'attaque que s'il est meilleur. Chaque partie d'attaque ou de défense coûte une partie, comme une partie normale.</p>
-              <p>Quand vos parties du jour sont jouées, vous pouvez attaquer et défendre avec des <strong>parties de clan</strong>, achetées avec vos points Kado (1 partie pour 50 points, 5 pour 225, 10 pour 400, 50 pour 1 750). Vous pouvez les garder pour vous ou les donner à votre Clan : le chef et ses bras droits les distribuent ensuite aux membres. Les parties du jour ne peuvent pas être données.</p>
+              <p>Si au bout de <strong>12 heures</strong> l'attaque n'a pas été repoussée, votre Clan remporte de 1 à <strong>10 points</strong> et le Clan adverse perd autant (jamais en dessous de zéro). Contre un Clan qui a autant de points que le vôtre ou plus, l'attaque rapporte 10 points ; c'est un point de moins par tranche de 10 points qu'il a de moins que vous (9 points contre un Clan qui a 1 à 10 points de moins, 8 de 11 à 20...). Le nombre de points est affiché avant d'attaquer. Attaquez des clans au score proche du vôtre : les autres sont protégés de vos attaques.</p>
+              <p>Chaque joueur peut avoir une attaque en cours à la fois. Pour l'améliorer, cliquez sur « Améliorer » dans l'onglet Statut et rejouez sur le même jeu : le nouveau score ne remplace celui de l'attaque que s'il est meilleur, et le Clan adverse a de nouveau 12 heures pour le battre.</p>
+              <p>Chaque jour, vous avez un nombre de parties gratuites pour attaquer et défendre (indiqué par la gemme verte dans le menu du Clan), à part de vos parties normales. Quand elles sont jouées, vous pouvez attaquer et défendre avec des <strong>parties de clan</strong>, achetées avec vos points Kado (1 partie pour 50 points, 5 pour 225, 10 pour 400, 50 pour 1 750). Vous pouvez les garder pour vous ou les donner à votre Clan : le chef et ses bras droits les distribuent ensuite aux membres. Les parties gratuites du jour ne peuvent pas être données.</p>
             </template>
 
             <template v-else-if="section.id === 'defenses'">
@@ -227,11 +231,11 @@ const clanRewards = [
 
             <template v-else-if="section.id === 'compte'">
               <p>Dans <RouterLink :to="{ name: 'account' }">Mon compte</RouterLink>, vous pouvez changer l'apparence du site.</p>
-              <p>Le thème KadoKado est offert à tous. Le thème <strong>Karbon</strong> s'achète une seule fois avec vos points Kado : vous pourrez ensuite passer d'un thème à l'autre quand vous le voulez.</p>
+              <p>Le thème <strong>Karbon</strong> s'achète une seule fois avec vos points Kado : vous pourrez ensuite passer d'un thème à l'autre quand vous le voulez.</p>
             </template>
 
             <template v-else-if="section.id === 'questions'">
-              <p>Vous avez d'autres questions ? Les joueurs de KadoKadéo et l'équipe Eternaltwin vous répondent sur le <a href="https://discord.gg/ERc3svy" target="_blank">Discord Eternaltwin</a>.</p>
+              <p>Vous avez d'autres questions ? Les joueurs de KadoKadéo et l'équipe Eternaltwin vous répondent sur le <a href="https://discord.gg/cqasFsD" target="_blank">Discord KadoKadéo</a>.</p>
               <p>Bon jeu sur KadoKadéo !</p>
             </template>
           </div>
@@ -274,6 +278,34 @@ const clanRewards = [
 
 #toc ol ol a {
   font-weight: normal;
+}
+
+/* as the tabs of the site (components/nav/Tabs.vue) */
+.tocButton {
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--color-kado-cyan-800);
+  color: var(--color-kado-blue);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  font-variant: small-caps;
+  line-height: 24px;
+  white-space: nowrap;
+  background: url('/gfx/bgTabmenu.jpg') repeat-x;
+  cursor: pointer;
+}
+
+.tocButton:hover {
+  color: var(--color-kado-cyan-800);
+  background-image: url('/gfx/bgTabmenuHover.jpg');
+}
+
+.tocButton.current {
+  color: #fff;
+  border-color: #fff;
+  background: var(--color-kado-cyan-800) url('/gfx/bgTabmenuActive.jpg') repeat-x;
+  background-blend-mode: multiply;
 }
 
 .helpSubToc {

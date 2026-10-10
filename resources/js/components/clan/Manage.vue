@@ -154,7 +154,11 @@ const doDissolve = () => {
                         type="button"
                         class="clanButton"
                         @click="doPromote(m)">Nommer chef</button>
-                <button type="button" class="clanButton pink ml-1" @click="doKick(m)">Exclure</button>
+                <button v-if="!m.is_new"
+                        type="button"
+                        class="clanButton pink ml-1"
+                        @click="doKick(m)">Exclure</button>
+                <span v-else class="ml-1 text-xs italic" title="Un membre accepté pendant la période ne peut être exclu qu'à partir de la prochaine.">Nouveau</span>
               </template>
             </td>
           </tr>
