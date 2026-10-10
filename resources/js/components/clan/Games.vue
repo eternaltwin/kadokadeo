@@ -1,4 +1,5 @@
 <script setup>
+import KadoPoints from '@svg/k.svg'
 // "Parties de clan": the paid games of the player for the attacks and the defenses (used once the games of the day are),
 // bought by packs with Kado points, given to the clan, distributed by the leader and the right hands
 const props = defineProps({
@@ -32,15 +33,16 @@ const done = (message) => {
   emit('updated')
 }
 const buy = (pack) => {
-  if (confirm(`Acheter ${pack.count} partie(s) de clan pour ${pack.price} points Kado ?`)) {
-    buyClanGames(pack.count).then(() => done(`${pack.count} partie(s) de clan achetée(s) !`))
+  const s = pack.count > 1 ? 's' : ''
+  if (confirm(`Acheter ${pack.count} partie${pack.count > 1 ? 's' : ''} de clan pour ${pack.price} points Kado ?`)) {
+    buyClanGames(pack.count).then(() => done(`${pack.count} partie${pack.count > 1 ? 's' : ''} de clan achetée${pack.count > 1 ? 's' : ''} !`))
   }
 }
-const donate = () => donateClanGames(props.clan.id, donateCount.value).then(() => done(`${donateCount.value} partie(s) donnée(s) au clan.`))
+const donate = () => donateClanGames(props.clan.id, donateCount.value).then(() => done(`${donateCount.value} partie${donateCount.value > 1 ? 's' : ''} donnée${donateCount.value > 1 ? 's' : ''} au clan.`))
 const distribute = () => {
   const member = members.value.find((m) => m.user.etwin_id === distribution.member)
   distributeClanGames(props.clan.id, distribution.member, distribution.count)
-    .then(() => done(`${distribution.count} partie(s) donnée(s) à ${member?.user.display_name}.`))
+    .then(() => done(`${distribution.count} partie${distribution.count > 1 ? 's' : ''} donnée${distribution.count > 1 ? 's' : ''} à ${member?.user.display_name}.`))
 }
 </script>
 
@@ -60,20 +62,21 @@ const distribute = () => {
       </p>
 
       <h2 class="normal-case">Acheter des parties</h2>
-      <div class="flex flex-wrap gap-2">
+      <div class="space-y-2">
         <FormButton v-for="pack in data.packs"
                     :key="pack.count"
                     :disabled="data.kado_points < pack.price"
                     :title="data.kado_points < pack.price ? 'Vous n\'avez pas assez de points Kado' : `${pack.unit_price} points Kado la partie`"
-                    @click="buy(pack)">
-          {{ pack.count }} partie(s) : {{ formatScore(pack.price) }} pts
+                    @click="buy(pack)"
+                    class="flex items-center gap-1">
+          {{ pack.count }} partie{{ pack.count > 1 ? 's' : '' }} : {{ formatScore(pack.price) }} <KadoPoints class="inline size-4"/>
         </FormButton>
       </div>
 
       <h2 class="normal-case">Donner au clan</h2>
       <p class="mx-0 text-sm">
         Vous pouvez donner à votre clan les parties que vous avez achetées (pas vos parties gratuites du jour). Le chef et ses bras
-        droits les distribueront aux membres. Le clan en a <Number :value="data.clan.games" color="orange" />.
+        droits les distribueront aux membres. Le clan possède <Number :value="data.clan.games" color="orange" /> <img src="/gfx/gemOrange.svg" class="w-5 max-w-none"> parties en stock.
       </p>
       <form class="flex items-center gap-2" @submit.prevent="donate">
         <FormInput v-model.number="donateCount"

@@ -81,7 +81,9 @@ const doCancel = (attack) => {
               <td class="text-left">
                 <RouterLink :to="{ name: 'games.show', params: { id: attack.game.id } }" class="text-kado-blue">{{ attack.game.name }}</RouterLink>
               </td>
-              <td class="text-right font-bold text-kado-blue whitespace-nowrap">{{ formatScore(attack.score) }} pts</td>
+              <td class="text-right font-bold text-kado-blue whitespace-nowrap">
+                <Number :value="attack.score" color="blue" />
+              </td>
               <td class="whitespace-nowrap">
                 <!-- the countdown, then the small buttons of what the player can do -->
                 <div v-if="attack.status === 'active'" class="flex items-center justify-center gap-2">
@@ -98,7 +100,7 @@ const doCancel = (attack) => {
                               @click="doCancel(attack)">Annuler</FormButton>
                 </div>
                 <template v-else-if="attack.status === 'won'">
-                  Réussie <span class="font-bold text-[#ff6b9c]">+{{ attack.points }}</span>
+                  Réussie <span class="font-bold text-[#ff6b9c]">+<Number :value="attack.points" color="pink" /></span>
                 </template>
                 <template v-else-if="attack.status === 'repelled'">
                   Repoussée<template v-if="attack.defender"> par {{ attack.defender.display_name }}</template>
