@@ -80,7 +80,7 @@ const confirmBonus = () => {
                 <td class="text-left font-bold">
                   <RouterLink :to="{ name: 'games.show', params: { id: step.game.id } }">{{ step.game.name }}</RouterLink>
                 </td>
-                <td class="font-bold">{{ step.target_score }} pts</td>
+                <td class="font-bold"><Number color="blue" :value="step.target_score" /></td>
                 <td>
                   <template v-if="step.skipped">Étape passée</template>
                   <template v-else-if="step.done">
