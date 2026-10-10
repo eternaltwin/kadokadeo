@@ -9,6 +9,7 @@ use App\Models\ClanGameTransfer;
 use App\Models\User;
 use App\Services\ClanGameService;
 use App\Services\ClanService;
+use App\Settings\ClanSettings;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -29,7 +30,7 @@ class ClanGameController extends Controller implements HasMiddleware
         private readonly ClanGameService $gameService,
     ) {}
 
-    public function index(Request $request)
+    public function index(Request $request, ClanSettings $settings)
     {
         $user = $request->user()->fresh();
         $clan = $this->clanService->clanOf($user);
@@ -42,6 +43,9 @@ class ClanGameController extends Controller implements HasMiddleware
                     'unit_price' => intdiv($price, $count),
                 ])->values(),
                 'kado_points' => $user->kado_points,
+                // the free attack and defense games left today
+                'attack_games' => $user->clan_attack_games,
+                'attack_games_per_day' => $settings->attack_games_per_day,
                 'games' => $user->clan_games,
                 'clan' => $clan ? [
                     'id' => $clan->id,

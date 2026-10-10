@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 
 // the collaborative missions of the clans: a score (a palier of the stars) to reach on several games within
 // kado.clans.mission_hours, more games in a bigger clan, higher paliers with each mission. A completed mission gives up
-// to 10 points (fewer with each mission) and opens the next one; a mission not finished in time loses 1 point by game
+// to 10 points (one less every 10 missions) and opens the next one; a mission not finished in time loses 1 point by game
 // not completed, minus one, and the clan gets a new mission of the same number. The runs of the missions are free.
 class ClanMissionService
 {
@@ -159,12 +159,12 @@ class ClanMissionService
         });
     }
 
-    // the points of a completed mission: fewer with each mission
+    // the points of a completed mission: one less every kado.clans.mission_points.every missions (1 to 9: 10, 10 to 19: 9...)
     public function missionPoints(int $number): int
     {
         $config = config('kado.clans.mission_points');
 
-        return max((int) $config['min'], (int) round($config['first'] * $config['ratio'] ** ($number - 1)));
+        return max((int) $config['min'], (int) $config['first'] - intdiv($number, max(1, (int) $config['every'])));
     }
 
     // the steps of a mission: more in a bigger clan, (maybe) fewer with each mission

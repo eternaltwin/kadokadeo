@@ -135,7 +135,8 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                          alt="score"
                          title="Score de mission"
                          class="h-5" /></th>
-                <th>Missions</th>
+                <th title="Missions réussies pendant la période">Missions</th>
+                <th title="Étapes réussies de la mission en cours, sur son nombre d'étapes">Étapes</th>
               </template>
             </tr>
           </thead>
@@ -157,6 +158,10 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
               <template v-else>
                 <td class="text-right"><Number :value="clan.mission_score" color="blue" /></td>
                 <td class="text-right">{{ clan.missions_completed }}</td>
+                <td class="text-right whitespace-nowrap" :title="clan.mission ? `Mission ${clan.mission.number}` : ''">
+                  <template v-if="clan.mission">{{ clan.mission.steps_done }} / {{ clan.mission.steps }}</template>
+                  <template v-else>-</template>
+                </td>
               </template>
             </tr>
             <tr v-if="!isLoading && !clans.length">

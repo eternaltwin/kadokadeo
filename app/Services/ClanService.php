@@ -180,7 +180,8 @@ class ClanService
                 throw new ClanException('Ce joueur fait déjà partie d\'un clan.');
             }
 
-            $clan->members()->create(['user_id' => $application->user_id]);
+            // he can't leave nor be excluded during this period
+            $clan->members()->create(['user_id' => $application->user_id, 'joined_period_id' => $this->currentPeriod()?->id]);
             $application->update(['status' => ClanApplication::ACCEPTED]);
             // his other applications are no longer needed
             ClanApplication::query()
@@ -212,6 +213,9 @@ class ClanService
         if ($clan->leader_id === $user->id && $membersCount > 1) {
             throw new ClanException('Vous devez d\'abord nommer un nouveau chef de clan.');
         }
+        if ($this->isNewMember($user, $clan)) {
+            throw new ClanException('Vous avez rejoint ce clan pendant cette période : vous pourrez le quitter à partir de la prochaine période.');
+        }
 
         DB::transaction(function () use ($clan, $user, $membersCount) {
             $clan->members()->where('user_id', $user->id)->delete();
@@ -231,6 +235,9 @@ class ClanService
             throw new ClanException('Le chef de clan ne peut pas être exclu.');
         }
         $this->assertMember($member, $clan);
+        if ($this->isNewMember($member, $clan)) {
+            throw new ClanException('Ce joueur a rejoint le clan pendant cette période : il pourra être exclu à partir de la prochaine période.');
+        }
 
         $clan->members()->where('user_id', $member->id)->delete();
     }
@@ -279,6 +286,18 @@ class ClanService
             }
             $clan->members()->where('user_id', $member->id)->update(['combat_role' => $role]);
         });
+    }
+
+    // accepted in the clan during the current period: he can't leave nor be excluded before the next one
+    public function isNewMember(User $user, Clan $clan): bool
+    {
+        $periodId = $this->currentPeriod()?->id;
+
+        return $periodId !== null && ClanMember::query()
+            ->where('clan_id', $clan->id)
+            ->where('user_id', $user->id)
+            ->where('joined_period_id', $periodId)
+            ->exists();
     }
 
     // the clan and all it did (scores, attacks, missions) are deleted
@@ -331,15 +350,15 @@ class ClanService
         return $stat->wasRecentlyCreated ? $stat->refresh() : $stat;
     }
 
-    // 1 to max points, a kind of Elo: max times the chance the attacker had to lose (half against a clan of the same
-    // score, almost max against a much stronger clan)
+    // max points against a clan with as many points or more, one less by palier (protection_range / max points) the
+    // defender has below the attacker, at least 1
     public function attackPoints(int $attackerScore, int $defenderScore): int
     {
         $max = (int) config('kado.clans.attack_max_points');
-        $scale = max(1, (int) config('kado.clans.elo_scale'));
-        $expected = 1 / (1 + 10 ** (($defenderScore - $attackerScore) / $scale));
+        $palier = max(1, (int) config('kado.clans.protection_range') / max(1, $max));
+        $below = max(0, $attackerScore - $defenderScore);
 
-        return max(1, min($max, (int) round($max * (1 - $expected))));
+        return max(1, $max - (int) ceil($below / $palier));
     }
 
     public function isProtected(int $attackerScore, int $defenderScore): bool
