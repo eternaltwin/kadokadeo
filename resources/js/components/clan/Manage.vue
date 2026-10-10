@@ -77,20 +77,22 @@ const doDissolve = () => {
 
     <h2 class="normal-case">Candidatures</h2>
     <p v-if="!applications.length" class="italic mx-0">Aucune candidature en attente.</p>
-    <table v-else class="w-full">
-      <tbody>
-        <tr v-for="(application, index) in applications" :key="application.id" :class="index % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
-          <td class="text-left">
-            <RouterLink :to="{ name: 'profile.show', params: { id: application.user.etwin_id } }" class="font-bold">{{ application.user.display_name }}</RouterLink>
-            <div v-if="application.message" class="text-sm italic whitespace-pre-line">{{ application.message }}</div>
-          </td>
-          <td class="whitespace-nowrap">
-            <FormButton @click="accept(application)">Accepter</FormButton>
-            <FormButton variant="pink" class="ml-1" @click="refuse(application)">Refuser</FormButton>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-else class="overflow-x-auto">
+      <table class="w-full">
+        <tbody>
+          <tr v-for="(application, index) in applications" :key="application.id" :class="index % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
+            <td class="min-w-28 text-left">
+              <RouterLink :to="{ name: 'profile.show', params: { id: application.user.etwin_id } }" class="font-bold">{{ application.user.display_name }}</RouterLink>
+              <div v-if="application.message" class="text-sm italic whitespace-pre-line">{{ application.message }}</div>
+            </td>
+            <td class="whitespace-nowrap">
+              <FormButton @click="accept(application)">Accepter</FormButton>
+              <FormButton variant="pink" class="ml-1" @click="refuse(application)">Refuser</FormButton>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <h2 class="normal-case">Présentation du clan</h2>
     <form @submit.prevent="save">
@@ -114,7 +116,7 @@ const doDissolve = () => {
       <table class="w-full">
         <tbody>
           <tr v-for="(m, index) in members" :key="m.user.etwin_id" :class="index % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
-            <td class="text-left [font-variant:small-caps]">
+            <td class="min-w-28 text-left [font-variant:small-caps]">
               <img v-if="m.is_leader"
                    src="/gfx/clan/clanleader.gif"
                    alt="Chef de Clan"
