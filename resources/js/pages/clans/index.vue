@@ -78,33 +78,30 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
       <form v-else class="max-w-lg" @submit.prevent="submit">
         <div>
           <label for="clanName">Nom du clan</label>
-          <input id="clanName"
-                 v-model="name"
-                 type="text"
-                 minlength="3"
-                 maxlength="32"
-                 required />
+          <FormInput id="clanName"
+                     v-model="name"
+                     type="text"
+                     minlength="3"
+                     maxlength="32"
+                     required
+                     class="w-full" />
         </div>
         <div>
           <label for="clanDescription">Présentation (vous pourrez la modifier plus tard)</label>
-          <textarea id="clanDescription"
-                    v-model="description"
-                    rows="6"
-                    maxlength="5000"
-                    class="kadoTextarea"></textarea>
+          <FormTextarea id="clanDescription"
+                        v-model="description"
+                        rows="6"
+                        maxlength="5000" />
         </div>
         <MessageError v-if="createError">{{ createError }}</MessageError>
-        <input type="submit" value="Créer le clan" class="w-auto!" />
+        <FormButton type="submit" size="lg">Créer le clan</FormButton>
       </form>
     </template>
 
     <template v-else>
       <form class="flex items-center gap-2" @submit.prevent="doSearch">
-        <input v-model="search"
-               type="search"
-               placeholder="Rechercher un clan"
-               class="border-2 border-white bg-white bg-[url(/gfx/bgInput.jpg)] bg-repeat-x p-1 text-kado-blue" />
-        <input type="submit" value="Rechercher" class="w-auto! h-8!" />
+        <FormInput v-model="search" type="search" placeholder="Rechercher un clan" />
+        <FormButton type="submit" size="lg">Rechercher</FormButton>
       </form>
 
       <MessageError v-if="error">{{ error }}</MessageError>
@@ -143,8 +140,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
           <tbody>
             <tr v-for="(clan, index) in clans"
                 :key="clan.id"
-                :class="{ 'font-bold': clan.id === clanStore.clan?.id }"
-                :style="{ backgroundColor: index % 2 ? '#fff' : '#eaf8fa' }">
+                :class="[index % 2 ? 'bg-white' : 'bg-kado-cyan-200', { 'font-bold': clan.id === clanStore.clan?.id }]">
               <td><Number :value="clan.rank" color="green" /></td>
               <td class="text-left">
                 <RouterLink :to="{ name: 'clans.show', params: { id: clan.id } }">{{ clan.name }}</RouterLink>
@@ -171,10 +167,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
         </table>
       </div>
       <p v-if="hasNextPage" class="text-center">
-        <input type="button"
-               value="Charger plus de clans"
-               class="w-auto!"
-               @click="load(meta.current_page + 1)" />
+        <FormButton size="lg" @click="load(meta.current_page + 1)">Charger plus de clans</FormButton>
       </p>
     </template>
   </div>

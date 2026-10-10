@@ -79,20 +79,13 @@ const use = (theme) => {
             </template>
           </div>
           <span v-if="theme.active" class="font-bold text-kado-orange">Thème actuel</span>
-          <input v-else-if="theme.owned"
-                 type="button"
-                 value="Utiliser"
-                 class="w-auto! h-8!"
-                 @click="use(theme)" />
-          <input
-            v-else
-            type="button"
-            value="Acheter"
-            class="pinkButton w-auto! h-8!"
-            :disabled="(authStore.user?.kado_points ?? 0) < theme.price"
-            :title="(authStore.user?.kado_points ?? 0) < theme.price ? 'Vous n\'avez pas assez de points Kado' : ''"
-            @click="buy(theme)"
-          />
+          <FormButton v-else-if="theme.owned" size="lg" @click="use(theme)">Utiliser</FormButton>
+          <FormButton v-else
+                      size="lg"
+                      variant="pink"
+                      :disabled="(authStore.user?.kado_points ?? 0) < theme.price"
+                      :title="(authStore.user?.kado_points ?? 0) < theme.price ? 'Vous n\'avez pas assez de points Kado' : ''"
+                      @click="buy(theme)">Acheter</FormButton>
         </div>
       </div>
     </div>

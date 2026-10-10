@@ -84,12 +84,14 @@ const clanRewards = [
     <h1 class="mt-0 text-center">Aide</h1>
 
     <!-- the table of content: the parts as the tabs of the site, the sections of the open part below -->
-    <nav id="toc" class="mb-3">
+    <nav class="mb-3">
       <ul class="flex flex-wrap justify-center gap-1">
         <li v-for="(part, i) in toc" :key="part.id">
           <button type="button"
-                  class="tocButton"
-                  :class="{ current: openPart?.id === part.id }"
+                  class="h-[26px] cursor-pointer border border-solid bg-repeat-x px-2.5 font-[inherit] text-[15px] leading-6 font-bold whitespace-nowrap [font-variant:small-caps]"
+                  :class="openPart?.id === part.id
+                    ? 'border-white bg-kado-cyan-800 bg-[url(/gfx/bgTabmenuActive.jpg)] text-white bg-blend-multiply'
+                    : 'border-kado-cyan-800 bg-[url(/gfx/bgTabmenu.jpg)] text-kado-blue hover:bg-[url(/gfx/bgTabmenuHover.jpg)] hover:text-kado-cyan-800'"
                   :title="`${romans[i]}. ${part.title}`"
                   @click="go(part.index)">
             {{ part.title }}
@@ -99,21 +101,21 @@ const clanRewards = [
     </nav>
 
     <!-- one section at a time: they slide in the box -->
-    <div id="helpBoxCont">
-      <div class="helpSlides" :style="{ transform: `translateY(-${current * 400}px)` }">
+    <div class="h-[400px] overflow-hidden">
+      <div class="transition-transform duration-[600ms] ease-in-out" :style="{ transform: `translateY(-${current * 400}px)` }">
         <section v-for="(section, index) in sections"
                  :id="`help_${section.id}`"
                  :key="section.id"
-                 class="helpSection"
+                 class="flex h-[400px] gap-3"
                  :aria-hidden="index !== current">
-          <img :src="section.art" alt="" class="helpArt" />
-          <div class="helpText">
+          <img :src="section.art" alt="" class="hidden h-[400px] w-[275px] shrink-0 sm:block" />
+          <div class="h-[400px] min-w-0 flex-1 overflow-y-auto [&_h3]:mt-0 [&_h3]:mb-1.5 [&_p]:mt-1 [&_p]:mb-2.5 [&_p]:text-[13px] [&_p]:leading-4 [&_table]:mt-1 [&_table]:mb-2.5 [&_table]:text-[13px] [&_table]:leading-4 [&_ul]:mt-1 [&_ul]:mb-2.5 [&_ul]:pl-2.5 [&_ul]:text-[13px] [&_ul]:leading-4">
             <h3>{{ section.title }}</h3>
             <!-- the sections of the part (the clans), as small links -->
-            <nav v-if="partOf(index).children.length" class="helpSubToc">
+            <nav v-if="partOf(index).children.length" class="mb-2 text-xs">
               <template v-for="(s, i) in [partOf(index), ...partOf(index).children]" :key="s.id">
                 <span v-if="i" class="mx-1 text-kado-cyan-800">·</span>
-                <strong v-if="s.index === index">{{ i ? shortTitle(s) : 'Présentation' }}</strong>
+                <strong v-if="s.index === index" class="text-kado-blue">{{ i ? shortTitle(s) : 'Présentation' }}</strong>
                 <a v-else href="#" @click.prevent="go(s.index)">{{ i ? shortTitle(s) : 'Présentation' }}</a>
               </template>
             </nav>
@@ -244,127 +246,13 @@ const clanRewards = [
     </div>
 
     <p class="flex justify-between">
-      <input v-if="current > 0"
-             type="button"
-             value="Précédent"
-             class="pinkButton w-auto!"
-             @click="go(current - 1)" />
+      <FormButton v-if="current > 0"
+                  size="lg"
+                  variant="pink"
+                  @click="go(current - 1)">Précédent</FormButton>
       <span v-else></span>
-      <input v-if="current < sections.length - 1"
-             type="button"
-             value="Suivant"
-             class="w-auto!"
-             @click="go(current + 1)" />
+      <FormButton v-if="current < sections.length - 1" size="lg" @click="go(current + 1)">Suivant</FormButton>
     </p>
   </div>
 </template>
 
-<style scoped>
-#toc ol {
-  list-style-type: upper-roman;
-  margin: 0 0 0 30px;
-  padding: 0;
-}
-
-#toc ol a {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-#toc ol ol {
-  list-style-type: none;
-  margin-left: 10px;
-}
-
-#toc ol ol a {
-  font-weight: normal;
-}
-
-/* as the tabs of the site (components/nav/Tabs.vue) */
-.tocButton {
-  height: 26px;
-  padding: 0 10px;
-  border: 1px solid var(--color-kado-cyan-800);
-  color: var(--color-kado-blue);
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: bold;
-  font-variant: small-caps;
-  line-height: 24px;
-  white-space: nowrap;
-  background: url('/gfx/bgTabmenu.jpg') repeat-x;
-  cursor: pointer;
-}
-
-.tocButton:hover {
-  color: var(--color-kado-cyan-800);
-  background-image: url('/gfx/bgTabmenuHover.jpg');
-}
-
-.tocButton.current {
-  color: #fff;
-  border-color: #fff;
-  background: var(--color-kado-cyan-800) url('/gfx/bgTabmenuActive.jpg') repeat-x;
-  background-blend-mode: multiply;
-}
-
-.helpSubToc {
-  margin: 0 0 8px;
-  font-size: 12px;
-}
-
-.helpSubToc strong {
-  color: var(--color-kado-blue);
-}
-
-/* the box of 400px: the sections slide in it */
-#helpBoxCont {
-  overflow: hidden;
-  height: 400px;
-}
-
-.helpSlides {
-  transition: transform 0.6s ease-in-out;
-}
-
-.helpSection {
-  display: flex;
-  gap: 12px;
-  height: 400px;
-}
-
-.helpArt {
-  width: 275px;
-  height: 400px;
-  flex-shrink: 0;
-}
-
-.helpText {
-  flex: 1;
-  min-width: 0;
-  height: 400px;
-  overflow-y: auto;
-}
-
-.helpText h3 {
-  margin: 0 0 6px;
-}
-
-.helpText p,
-.helpText ul,
-.helpText table {
-  margin: 4px 0 10px;
-  font-size: 13px;
-  line-height: 16px;
-}
-
-.helpText ul {
-  padding-left: 10px;
-}
-
-@media (max-width: 640px) {
-  .helpArt {
-    display: none;
-  }
-}
-</style>
