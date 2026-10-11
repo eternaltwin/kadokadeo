@@ -89,7 +89,10 @@ class RunController extends Controller implements HasMiddleware
             $run->save();
         }
 
-        $clanRunService->bindRun($run, $clanAction);
+        // only the clan run chosen above (none for the daily game, even when it is played again as a normal run)
+        if ($clanAction) {
+            $clanRunService->bindRun($run, $clanAction);
+        }
 
         if ($cost === ClanRunService::COST_GAME && $user->kado_games > 0) {
             $user->kado_games -= 1;
