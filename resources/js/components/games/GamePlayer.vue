@@ -31,12 +31,18 @@ const gameInterfaceStyle = computed(() => {
   }
 })
 
-function toggleFavorite() {
-  if (!props.game.value || isFavoriteLoading.value) return
+// local copy: the prop is not mutated, re-synced when the parent gives another game
+const isFavorite = ref(!!props.game.is_favorite)
+watch(() => props.game.is_favorite, (value) => {
+  isFavorite.value = !!value
+})
 
-  put(`/games/${props.game.value.id}/favorite`, { is_favorite: !props.game.value.is_favorite })
+function toggleFavorite() {
+  if (isFavoriteLoading.value) return
+
+  put(`/games/${props.game.id}/favorite`, { is_favorite: !isFavorite.value })
     .then((response) => {
-      props.game.value.is_favorite = response.data.is_favorite
+      isFavorite.value = response.data.is_favorite
     })
     .catch(() => null)
 }
@@ -71,12 +77,12 @@ watchEffect((onInvalidate) => {
                   <button
                     type="button"
                     class="w-full h-full pt-1 font-bold text-center hover:text-kado-orange cursor-pointer disabled:cursor-wait"
-                    :title="game.is_favorite ? 'Retirer des favoris' : 'Ajouter aux favoris'"
-                    :aria-pressed="!!game.is_favorite"
+                    :title="isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+                    :aria-pressed="isFavorite"
                     :disabled="isFavoriteLoading"
                     @click="toggleFavorite"
                   >
-                    <img :src="game.is_favorite ? '/gfx/iconGameLiked.gif' : '/gfx/iconGameDisliked.gif'" alt="" class="size-4" />
+                    <img :src="isFavorite ? '/gfx/iconGameLiked.gif' : '/gfx/iconGameDisliked.gif'" alt="" class="size-4" />
                     Favori
                   </button>
                 </li>
