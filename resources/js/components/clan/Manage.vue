@@ -97,6 +97,11 @@ const doDissolve = () => {
     <h2 class="normal-case">Présentation du clan</h2>
     <form @submit.prevent="save">
       <FormTextarea v-model="description" rows="10" maxlength="5000" />
+      <p class="mx-0 mt-1 mb-2 text-xs text-kado-cyan-900">
+        Mise en forme (Markdown) : <code># Titre</code>, <code>## Sous-titre</code>, <code>### Petit titre</code>,
+        <code>- liste</code>, <code>1. liste numérotée</code>, <code>**gras**</code>, <code>*italique*</code>,
+        <code>[lien](https://…)</code>, <code>![image](https://….png)</code>.
+      </p>
       <label class="flex items-center gap-2 font-bold">
         <input v-model="isRecruiting" type="checkbox" />
         Le clan recrute de nouveaux membres

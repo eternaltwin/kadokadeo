@@ -16,6 +16,7 @@ export function useClans() {
     updateClan: (id, payload) => put(`/clans/${id}`, payload),
     fetchMembers: (id) => get(`/clans/${id}/members`).then(data),
     fetchStatus: (id) => get(`/clans/${id}/status`).then(data),
+    fetchHistory: (id, page = 1) => get(`/clans/${id}/history`, { params: { page } }).then(data),
     fetchMissions: (id) => get(`/clans/${id}/missions`).then(data),
     fetchApplications: (id) => get(`/clans/${id}/applications`).then(data),
     apply: (id, message) => post(`/clans/${id}/applications`, { message }).then(data),

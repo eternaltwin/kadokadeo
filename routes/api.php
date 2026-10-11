@@ -62,6 +62,7 @@ Route::prefix('/clans/{clan}')->whereNumber('clan')->group(function () {
     Route::put('/', [App\Http\Controllers\Api\ClanController::class, 'update']);
     Route::get('/members', [App\Http\Controllers\Api\ClanController::class, 'members']);
     Route::get('/status', [App\Http\Controllers\Api\ClanController::class, 'status']);
+    Route::get('/history', [App\Http\Controllers\Api\ClanController::class, 'history']);
     Route::get('/missions', [App\Http\Controllers\Api\ClanMissionController::class, 'index']);
     Route::get('/applications', [App\Http\Controllers\Api\ClanMemberController::class, 'applications']);
     Route::post('/applications', [App\Http\Controllers\Api\ClanMemberController::class, 'apply']);

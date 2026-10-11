@@ -46,14 +46,14 @@ const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
             <th title="Performance en attaque et défense : nombre de points rapportés par ses attaques + nombre de points sauvés par ses défenses." @click="sortBy('performances')">
               <img src="/assets/img/gfx/icons/clan_points.gif" alt="performance" class="h-5" />
             </th>
+            <th title="Étapes de mission réussies" @click="sortBy('missions')">
+              <img src="/assets/img/gfx/icons/sgame.gif" alt="missions" class="h-5" />
+            </th>
             <th title="Attaques réussies / lancées" @click="sortBy('attacks')">
               <img src="/assets/img/gfx/icons/atk.gif" alt="attaques" class="h-5" />
             </th>
             <th title="Défenses réussies / tentées" @click="sortBy('defenses')">
               <img src="/assets/img/gfx/icons/def.gif" alt="défenses" class="h-5" />
-            </th>
-            <th title="Étapes de mission réussies" @click="sortBy('missions')">
-              Missions
             </th>
           </tr>
         </thead>
@@ -72,9 +72,9 @@ const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
             </td>
             <td class="text-right font-bold"><Number :value="m.points" color="blue" /></td>
             <td class="text-right"><Number :value="m.performance" color="orange" /></td>
+            <td class="text-right"><Number :value="m.mission_steps" color="green" /></td>
             <td class="text-right" :title="`${m.attacks_won} réussie(s) sur ${m.attacks}`"><Number :value="m.attacks_won" color="pink" /></td>
             <td class="text-right" :title="`${m.defenses_won} réussie(s) sur ${m.defenses}`"><Number :value="m.defenses_won" color="blue" /></td>
-            <td class="text-right"><Number :value="m.mission_steps" color="green" /></td>
           </tr>
         </tbody>
       </table>

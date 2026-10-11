@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\ClanActionType;
+use App\Enums\ClanAttackStatus;
 use App\Enums\ClanBonusType;
 use App\Enums\ClanCombatRole;
 use App\Enums\ClanRole;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClanAttackResource;
+use App\Http\Resources\ClanHistoryResource;
 use App\Http\Resources\ClanListResource;
 use App\Http\Resources\UserLightResource;
 use App\Models\Clan;
@@ -24,6 +26,7 @@ use App\Services\ClanRunService;
 use App\Services\ClanService;
 use App\Services\ClanWarService;
 use App\Settings\ClanSettings;
+use App\Support\ClanMarkdown;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -153,6 +156,7 @@ class ClanController extends Controller implements HasMiddleware
                 'id' => $clan->id,
                 'name' => $clan->name,
                 'description' => $clan->description,
+                'description_html' => ClanMarkdown::toHtml($clan->description),
                 'is_recruiting' => $clan->is_recruiting,
                 'created_at' => $clan->created_at?->toIso8601String(),
                 'leader' => $clan->leader ? UserLightResource::make($clan->leader) : null,
@@ -264,18 +268,14 @@ class ClanController extends Controller implements HasMiddleware
         ];
     }
 
-    // "Statut": the attacks launched by the clan and the attacks against it, during the period
+    // "Statut": the attacks launched by the clan and the attacks against it still waiting for a defense
     public function status(Request $request, Clan $clan)
     {
-        $period = $this->clanService->currentPeriod();
         $this->warService->resolveExpired();
-        $with = ['game', 'attackerUser', 'attackerClan', 'defenderClan', 'defenderUser', 'reservedBy'];
         $base = fn () => ClanAttack::query()
-            ->with($with)
-            ->where('period_id', $period?->id)
-            ->orderByRaw("case when status = 'active' then 0 else 1 end")
-            ->orderByDesc('id')
-            ->limit(100);
+            ->with(['game', 'attackerUser', 'attackerClan', 'defenderClan', 'defenderUser', 'reservedBy'])
+            ->active()
+            ->orderBy('expires_at');
 
         return [
             'data' => [
@@ -284,6 +284,21 @@ class ClanController extends Controller implements HasMiddleware
             ],
             'tournament' => $this->clanService->tournamentInfo(),
         ];
+    }
+
+    // "Historique": the finished attacks (A) and defenses (D) of the clan, the newest first (App\Http\Resources\ClanHistoryResource)
+    public function history(Request $request, Clan $clan)
+    {
+        $this->warService->resolveExpired();
+        $attacks = ClanAttack::query()
+            ->with(['game', 'attackerUser', 'attackerClan', 'defenderClan', 'defenderUser', 'defenseRun'])
+            ->whereIn('status', [ClanAttackStatus::WON, ClanAttackStatus::REPELLED])
+            ->where(fn ($query) => $query->where('attacker_clan_id', $clan->id)->orWhere('defender_clan_id', $clan->id))
+            ->orderByDesc('resolved_at')
+            ->orderByDesc('id')
+            ->paginate(50);
+
+        return ClanHistoryResource::collection($attacks);
     }
 
     private function unfinishedActions($user): array

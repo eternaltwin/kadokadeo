@@ -75,6 +75,11 @@ class ClanAttack extends Model
         return $this->belongsTo(Run::class);
     }
 
+    public function defenseRun()
+    {
+        return $this->belongsTo(Run::class, 'defense_run_id');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', ClanAttackStatus::ACTIVE);

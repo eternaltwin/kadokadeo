@@ -6,6 +6,7 @@ use App\Enums\ClanAttackStatus;
 use App\Enums\ClanBonusType;
 use App\Enums\ClanCombatRole;
 use App\Enums\ClanRole;
+use App\Exceptions\ClanException;
 use App\Filament\Pages\ManageClanSettings;
 use App\Models\Clan;
 use App\Models\ClanAction;
@@ -189,6 +190,100 @@ class ClanTest extends TestCase
         $this->assertSame(ClanAttackStatus::REPELLED, $attack->fresh()->status);
         $this->assertSame(1, ClanPeriodScore::query()->where('clan_id', $clanB->id)->value('defenses_won'));
         $this->assertDatabaseHas('clan_member_stats', ['user_id' => $defender->id, 'defenses' => 2, 'defenses_won' => 1]);
+    }
+
+    // the presentation is written in Markdown: titles, lists, links and images, without the HTML of the players
+    public function test_the_presentation_is_shown_from_markdown(): void
+    {
+        $leader = User::factory()->create();
+        $clan = Clan::factory()->withLeader($leader)->create([
+            'description' => "# Titre\n## Sous-titre\n### Petit titre\n- un\n- deux\n\n1. premier\n\n[lien](https://google.fr) [piège](javascript:alert(1))\n![image](https://google.fr/test.png)\n<script>alert(1)</script>",
+        ]);
+        Sanctum::actingAs($leader);
+
+        $html = $this->getJson("/api/clans/{$clan->id}")->assertOk()->json('data.description_html');
+        foreach (['<h1>Titre</h1>', '<h2>Sous-titre</h2>', '<h3>Petit titre</h3>', '<li>un</li>', '<ol>', '<img src="https://google.fr/test.png" alt="image" />', '&lt;script&gt;'] as $part) {
+            $this->assertStringContainsString($part, $html);
+        }
+        $this->assertStringContainsString('target="_blank" href="https://google.fr"', $html);
+        $this->assertStringNotContainsString('javascript:', $html);
+        $this->assertStringNotContainsString('<script>', $html);
+    }
+
+    // "Statut" shows the attacks waiting for a defense, "Historique" the finished ones (not the cancelled ones), from the
+    // side of the clan
+    public function test_the_status_shows_the_running_attacks_and_the_history_the_finished_ones(): void
+    {
+        $period = $this->period();
+        [$attacker1, $attacker2, $attacker3, $attacker4, $defender] = User::factory()->count(5)->create();
+        $clanA = Clan::factory()->withLeader($attacker1)->create();
+        foreach ([$attacker2, $attacker3, $attacker4] as $member) {
+            $clanA->members()->create(['user_id' => $member->id]);
+        }
+        $clanB = Clan::factory()->withLeader($defender)->create();
+        $game = Game::factory()->create();
+        $warService = app(ClanWarService::class);
+
+        // won: not repelled in time
+        $warService->startAttack($attacker1, $clanB, $game);
+        $this->playClanRun($attacker1, $game, $period, 500);
+        $this->travel(13)->hours();
+        $warService->resolveExpired();
+        $won = ClanAttack::query()->sole();
+        // repelled
+        $warService->startAttack($attacker2, $clanB, $game);
+        $this->playClanRun($attacker2, $game, $period, 300);
+        $repelled = ClanAttack::query()->latest('id')->first();
+        Sanctum::actingAs($defender);
+        $this->postJson("/api/clan-attacks/{$repelled->id}/defend")->assertCreated();
+        $this->playClanRun($defender, $game, $period, 301);
+        // cancelled
+        $warService->startAttack($attacker3, $clanB, $game);
+        $this->playClanRun($attacker3, $game, $period, 200);
+        Sanctum::actingAs($attacker3);
+        $this->postJson('/api/clan-attacks/'.ClanAttack::query()->latest('id')->value('id').'/cancel')->assertNoContent();
+        // running
+        $warService->startAttack($attacker4, $clanB, $game);
+        $this->playClanRun($attacker4, $game, $period, 100);
+        $running = ClanAttack::query()->latest('id')->first();
+
+        $this->getJson("/api/clans/{$clanA->id}/status")->assertOk()
+            ->assertJsonCount(1, 'data.launched')
+            ->assertJsonPath('data.launched.0.id', $running->id)
+            ->assertJsonCount(0, 'data.received');
+
+        // the attacks of the clan A
+        $this->getJson("/api/clans/{$clanA->id}/history")->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('meta.current_page', 1)
+            ->assertJsonPath('meta.last_page', 1)
+            ->assertJsonPath('data.0.id', $repelled->id)
+            ->assertJsonPath('data.0.type', 'attack')
+            ->assertJsonPath('data.0.player.etwin_id', $attacker2->etwin_id)
+            ->assertJsonPath('data.0.clan.id', $clanB->id)
+            ->assertJsonPath('data.0.score', 300)
+            ->assertJsonPath('data.0.status_label', 'Repoussée')
+            ->assertJsonPath('data.0.other_player.etwin_id', $defender->etwin_id)
+            ->assertJsonPath('data.0.points', 0)
+            ->assertJsonPath('data.1.id', $won->id)
+            ->assertJsonPath('data.1.score', 500)
+            ->assertJsonPath('data.1.status_label', 'Réussie')
+            ->assertJsonPath('data.1.points', $won->points);
+
+        // the defenses of the clan B: its defender and his score, the points he saved
+        $this->getJson("/api/clans/{$clanB->id}/history")->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.type', 'defense')
+            ->assertJsonPath('data.0.player.etwin_id', $defender->etwin_id)
+            ->assertJsonPath('data.0.clan.id', $clanA->id)
+            ->assertJsonPath('data.0.score', 301)
+            ->assertJsonPath('data.0.points', $repelled->fresh()->points)
+            ->assertJsonPath('data.1.player', null)
+            ->assertJsonPath('data.1.score', 500)
+            ->assertJsonPath('data.1.status_label', 'Non repoussée')
+            ->assertJsonPath('data.1.other_player.etwin_id', $attacker1->etwin_id)
+            ->assertJsonPath('data.1.points', -$won->points);
+        $this->assertGreaterThan(0, $repelled->fresh()->points);
     }
 
     // an "Attaquant" has two attacks at a time, a "Défenseur" defends while he attacks, within the seats of the clan
@@ -585,6 +680,17 @@ class ClanTest extends TestCase
         $mission = $missionService->currentMission($clan);
         // "Jeu cool": the game is in the next missions
         $missionService->useBonus($rightHand, $bonus(ClanBonusType::FORCE_GAME), ['game_id' => $games[0]->id]);
+        // ... that can't be the "Jeu caca" too: the option is not used
+        $ban = $bonus(ClanBonusType::BAN_GAME);
+        try {
+            $missionService->useBonus($leader, $ban, ['game_id' => $games[0]->id]);
+            $this->fail('A "Jeu cool" can\'t be the "Jeu caca".');
+        } catch (ClanException $e) {
+            $this->assertSame('Ce jeu est le jeu cool du clan : il ne peut pas être aussi le jeu caca.', $e->getMessage());
+        }
+        $this->assertNull($ban->fresh()->used_at);
+        $missionService->useBonus($leader, $ban, ['game_id' => $games[1]->id]);
+        $this->assertDatabaseHas('clan_period_scores', ['clan_id' => $clan->id, 'forced_game_id' => $games[0]->id, 'banned_game_id' => $games[1]->id]);
         // "Plus de temps"
         $expiresAt = $mission->expires_at;
         $missionService->useBonus($leader, $bonus(ClanBonusType::MORE_TIME));

@@ -1,5 +1,5 @@
 <script setup>
-// the page of a clan: Présentation, Statut, Mission, Membres, Gestion, Parties de clan, and the choice of the game of an
+// the page of a clan: Présentation, Statut, Mission, Membres, Gestion, Parties de clan, Historique, and the choice of the game of an
 // attack
 const route = useRoute()
 const router = useRouter()
@@ -50,6 +50,10 @@ const cancelApplication = () => {
   })
 }
 const leave = () => {
+  if (viewer.value.is_new_member) {
+    alert('Vous ne pourrez quitter le clan qu\'après la fin de cette période.')
+    return
+  }
   if (confirm('Quitter ce clan ?')) {
     actions.leave().then(() => {
       clanStore.reload()
@@ -72,12 +76,13 @@ const updated = () => {
       <template #actions>
         <ClanMenuAction v-if="viewer.can_manage" :to="{ name: 'clans.manage', params: { id: clan.id } }">Gérer le clan</ClanMenuAction>
         <ClanMenuAction v-if="viewer.is_member" :to="{ name: 'clans.games', params: { id: clan.id } }">Parties de clan</ClanMenuAction>
+        <ClanMenuAction :to="{ name: 'clans.history', params: { id: clan.id } }">Historique</ClanMenuAction>
         <ClanMenuAction v-if="!viewer.is_member && viewer.has_clan"
                         :to="{ name: 'clans.attack', params: { id: clan.id } }"
                         :title="viewer.attack_blocked ?? 'Attaquer ce clan'">Attaquer ce clan</ClanMenuAction>
         <ClanMenuAction v-if="!viewer.has_clan && viewer.application_id" title="Annuler ma candidature" @click="cancelApplication">Retirer ma demande</ClanMenuAction>
         <ClanMenuAction v-else-if="!viewer.has_clan && clan.is_recruiting && !applicationElsewhere" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</ClanMenuAction>
-        <ClanMenuAction v-if="viewer.is_member && !viewer.is_new_member" @click="leave">Quitter le clan</ClanMenuAction>
+        <ClanMenuAction v-if="viewer.is_member" @click="leave" :class="{'grayscale cursor-not-allowed': viewer.is_new_member}">Quitter le clan</ClanMenuAction>
         <ClanMenuAction v-if="clanStore.clan && clanStore.clan.id !== clan.id" :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }">Mon clan</ClanMenuAction>
       </template>
 
@@ -111,6 +116,7 @@ const updated = () => {
       <ClanMembers v-else-if="tab === 'members'" :clan="clan" />
       <ClanManage v-else-if="tab === 'manage'" :clan="clan" @updated="updated" />
       <ClanAttackPicker v-else-if="tab === 'attack'" :clan="clan" />
+      <ClanHistory v-else-if="tab === 'history'" :clan="clan" />
       <ClanGames v-else-if="tab === 'games' && viewer.is_member" :clan="clan" @updated="load" />
     </ClanLayout>
   </div>
