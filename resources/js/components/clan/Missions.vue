@@ -12,6 +12,8 @@ const tournament = ref(null)
 const games = ref([])
 const selectedBonus = ref(null)
 const bonusGame = ref(null)
+// a "Jeu caca" can't be the "Jeu cool" too, and the other way round
+const oppositeGame = (type) => (type === 'ban_game' ? data.value?.forced_game : type === 'force_game' ? data.value?.banned_game : null)
 const bonusStep = ref(null)
 // the leader and the right hands use the options
 const canManage = computed(() => props.clan.viewer.can_manage)
@@ -138,7 +140,13 @@ const confirmBonus = () => {
           <template v-else>
             <FormSelect v-if="['ban_game', 'force_game'].includes(selectedBonus.type)" v-model="bonusGame" class="m-1">
               <option :value="null" disabled>Choisir un jeu</option>
-              <option v-for="g in games" :key="g.id" :value="g.id">{{ g.name }}</option>
+              <!-- the game of the opposite option can't be chosen -->
+              <option v-for="g in games"
+                      :key="g.id"
+                      :value="g.id"
+                      :disabled="g.id === oppositeGame(selectedBonus.type)?.id">
+                {{ g.name }}<template v-if="g.id === oppositeGame(selectedBonus.type)?.id"> ({{ selectedBonus.type === 'ban_game' ? 'jeu cool' : 'jeu caca' }})</template>
+              </option>
             </FormSelect>
             <FormSelect v-if="selectedBonus.type === 'skip_step'" v-model="bonusStep" class="m-1">
               <option :value="null" disabled>Choisir une étape</option>

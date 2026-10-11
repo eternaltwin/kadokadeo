@@ -1,5 +1,6 @@
 <script setup>
-// "Statut": the attacks launched by the clan and the attacks against it, as on the old site
+// "Statut": the attacks launched by the clan and the attacks against it still waiting for a defense, as on the old site
+// (the finished ones are in "Historique")
 const props = defineProps({
   clan: { type: Object, required: true },
 })
@@ -59,7 +60,7 @@ const doCancel = (attack) => {
           <!-- no attack: the frame of the table with a single line -->
           <tr v-if="!sections.length" class="bg-kado-cyan-200">
             <td colspan="5" class="py-4 italic text-kado-blue">
-              Aucune attaque de ce clan ni contre ce clan pour le moment.
+              Aucune attaque en cours de ce clan ni contre ce clan.
             </td>
           </tr>
           <template v-for="section in sections" :key="section.key">
@@ -89,7 +90,7 @@ const doCancel = (attack) => {
               </td>
               <td class="whitespace-nowrap">
                 <!-- the countdown, then the small buttons of what the player can do -->
-                <div v-if="attack.status === 'active'" class="flex flex-col items-center justify-center gap-2">
+                <div class="flex flex-col items-center justify-center gap-2">
                   <ClanCountdown :until="attack.expires_at" @done="load" />
                   <FormButton v-if="attack.can_defend" size="sm" @click="doDefend(attack)">Défendre</FormButton>
                   <FormButton v-if="attack.can_improve"
@@ -108,13 +109,6 @@ const doCancel = (attack) => {
                               @click="doReserve(attack)">{{ reserveLabel(attack) }}</FormButton>
                   <span v-if="attack.reserved_by" class="text-xs italic">Réservée par {{ attack.reserved_by.display_name }}</span>
                 </div>
-                <template v-else-if="attack.status === 'won'">
-                  Réussie <span class="font-bold text-[#ff6b9c]">+<Number :value="attack.points" color="pink" /></span>
-                </template>
-                <template v-else-if="attack.status === 'repelled'">
-                  Repoussée<template v-if="attack.defender"> par {{ attack.defender.display_name }}</template>
-                </template>
-                <template v-else>{{ attack.status_label }}</template>
               </td>
             </tr>
           </template>

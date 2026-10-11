@@ -6,8 +6,8 @@ defineProps({
 </script>
 
 <template>
-  <li class="flex h-[30px] items-center justify-end gap-1.5 border-b border-solid border-white pr-1 pl-[27px]">
+  <div class="flex h-8 items-center justify-end gap-1.5 px-1">
     <slot />
     <img :src="icon" alt="" class="w-5 max-w-none" />
-  </li>
+  </div>
 </template>

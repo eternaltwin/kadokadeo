@@ -223,19 +223,20 @@ class ClanMissionService
                     }
                     $this->generateMission($clan, $period);
                     break;
+                    // a "Jeu caca" can't be the "Jeu cool" too, and the other way round
                 case ClanBonusType::BAN_GAME:
                     $game = $this->activeGame($params['game_id'] ?? null);
-                    $score->update([
-                        'banned_game_id' => $game->id,
-                        'forced_game_id' => $score->forced_game_id === $game->id ? null : $score->forced_game_id,
-                    ]);
+                    if ($score->forced_game_id === $game->id) {
+                        throw new ClanException('Ce jeu est le jeu cool du clan : il ne peut pas être aussi le jeu caca.');
+                    }
+                    $score->update(['banned_game_id' => $game->id]);
                     break;
                 case ClanBonusType::FORCE_GAME:
                     $game = $this->activeGame($params['game_id'] ?? null);
-                    $score->update([
-                        'forced_game_id' => $game->id,
-                        'banned_game_id' => $score->banned_game_id === $game->id ? null : $score->banned_game_id,
-                    ]);
+                    if ($score->banned_game_id === $game->id) {
+                        throw new ClanException('Ce jeu est le jeu caca du clan : il ne peut pas être aussi le jeu cool.');
+                    }
+                    $score->update(['forced_game_id' => $game->id]);
                     break;
                 case ClanBonusType::MORE_TIME:
                     $mission->update(['expires_at' => $mission->expires_at->addHours(app(ClanSettings::class)->mission_more_time_hours)]);

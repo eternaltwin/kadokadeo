@@ -21,6 +21,7 @@ const sections = [
   { id: 'clans', title: 'Les clans', level: 2, art: art('clan') },
   { id: 'attaques', title: 'Les attaques', level: 3, art: art('clan') },
   { id: 'defenses', title: 'Les défenses', level: 3, art: art('clan') },
+  { id: 'roles', title: 'Les rôles', level: 3, art: art('clan') },
   { id: 'missions', title: 'Les missions', level: 3, art: art('clan') },
   { id: 'options', title: 'Les options', level: 3, art: art('clan') },
   { id: 'classement', title: 'Le classement des clans', level: 3, art: art('clan') },
@@ -71,6 +72,9 @@ const clanRewards = computed(() => [
   { title: 'Classement des attaques', rewards: rules.value.rewards?.war ?? [] },
   { title: 'Classement des missions', rewards: rules.value.rewards?.missions ?? [] },
 ])
+// the seats of a role for a clan of n members (App\Services\ClanService::combatSeats): at least one (nothing while
+// the rules load)
+const seatsFor = (members, share) => (members && share != null ? Math.max(1, Math.floor((members * share) / 100)) : '')
 const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `${pack.count} pour ${formatScore(pack.price)} points`).join(', '))
 </script>
 
@@ -192,9 +196,45 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
             <template v-else-if="section.id === 'defenses'">
               <p><img src="/assets/img/gfx/icons/def.gif" alt="Défense" class="inline" /> Les attaques lancées par votre Clan et celles menées contre lui sont indiquées dans l'onglet Statut de votre clan. Cliquez sur « Défendre » et battez le score de l'attaque sur le même jeu.</p>
               <p>Sachez que tant que vous avez une attaque en cours, vous ne pouvez pas défendre ! Il faudra donc coordonner les membres du Clan entre attaquants et défenseurs.</p>
-              <p>Le chef et ses bras droits peuvent donner des sièges, au moins un de chaque : un <strong>Attaquant</strong> ({{ rules.attacker_seats }} % des membres) peut lancer deux attaques en même temps, un <strong>Défenseur</strong> ({{ rules.defender_seats }} % des membres) peut défendre même quand il a une attaque en cours. Un siège choisi est gardé jusqu'à la fin de la période.</p>
+              <p>Un <strong>Défenseur</strong> peut défendre même quand il a une attaque en cours : voyez <a href="#" @click.prevent="go(sections.findIndex((s) => s.id === 'roles'))">les rôles</a>.</p>
               <p>Vous battrez le score d'une attaque plus tard ? Cliquez sur « Réserver » dans l'onglet Statut pour prévenir votre Clan. N'importe quel membre peut prendre la réservation à son tour : c'est seulement une information.</p>
               <p>Pour progresser dans le classement, il faudra à la fois remporter des attaques et défendre efficacement contre les clans ennemis.</p>
+            </template>
+
+            <template v-else-if="section.id === 'roles'">
+              <p>Pour les attaques et les défenses, chaque joueur du Clan a un rôle. Sans siège, c'est un simple <strong>Membre</strong>. Le chef et ses bras droits peuvent donner les sièges d'<strong>Attaquant</strong> et de <strong>Défenseur</strong> depuis « Gérer le clan ».</p>
+              <table class="w-full">
+                <thead>
+                  <tr>
+                    <th class="!text-left">Rôle</th>
+                    <th>Attaques en même temps</th>
+                    <th>Défendre avec une attaque en cours</th>
+                    <th>Sièges</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="!text-left"><strong>Attaquant</strong></td>
+                    <td>2</td>
+                    <td>Non</td>
+                    <td>{{ rules.attacker_seats }} % des membres</td>
+                  </tr>
+                  <tr>
+                    <td class="!text-left"><strong>Défenseur</strong></td>
+                    <td>1</td>
+                    <td>Oui</td>
+                    <td>{{ rules.defender_seats }} % des membres</td>
+                  </tr>
+                  <tr>
+                    <td class="!text-left"><strong>Membre</strong></td>
+                    <td>1</td>
+                    <td>Non</td>
+                    <td>Les autres</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>Le nombre de sièges dépend du nombre de membres, arrondi en dessous, avec au moins un siège de chaque rôle. Par exemple, un Clan de {{ rules.max_members }} joueurs a {{ seatsFor(rules.max_members, rules.attacker_seats) }} sièges d'Attaquant et {{ seatsFor(rules.max_members, rules.defender_seats) }} de Défenseur ; un Clan de 4 joueurs en a un de chaque.</p>
+              <p>Attention, un rôle donné est <strong>bloqué jusqu'à la fin de la période</strong> : il ne peut plus être changé ni retiré avant la période suivante. Choisissez bien vos Attaquants et vos Défenseurs ! Les rôles de chacun sont indiqués dans l'onglet Membres.</p>
             </template>
 
             <template v-else-if="section.id === 'missions'">
@@ -205,7 +245,7 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
             </template>
 
             <template v-else-if="section.id === 'options'">
-              <p>Au début de chaque période, votre Clan reçoit les options Jeu cool et Jeu caca. Chaque mission réussie a {{ rules.bonus_chance }} % de chances de lui en faire gagner une autre. C'est le chef de clan ou un bras droit qui les utilise. Elles sont remises à zéro à la fin de la période.</p>
+              <p>Au début de chaque période, votre Clan reçoit les options Jeu cool et Jeu caca. Chaque mission réussie a {{ rules.bonus_chance }} % de chances de lui en faire gagner une autre. C'est le chef de clan ou un bras droit qui les utilise. Le jeu cool ne peut pas être aussi le jeu caca, et inversement. Elles sont remises à zéro à la fin de la période.</p>
               <table class="w-full">
                 <tbody>
                   <tr v-for="bonus in rules.bonuses ?? []" :key="bonus.type">

@@ -232,6 +232,8 @@ class ClanWarService
                 'status' => ClanAttackStatus::REPELLED,
                 'defender_user_id' => $action->user_id,
                 'defense_run_id' => $run->id,
+                // the points of the defender in the ranking of his clan (the scores of the clans do not change)
+                'points' => $saved,
                 'resolved_at' => now(),
             ]);
             $this->clanService->periodScore($attack->defenderClan, $period)->increment('defenses_won');

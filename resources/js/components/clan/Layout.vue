@@ -23,6 +23,7 @@ const stats = computed(() => props.clan.stats)
 const authStore = useAuthStore()
 // the free attack and defense games of the player left today
 const freeGames = computed(() => authStore.user?.clan_attack_games ?? 0)
+const paidGames = computed(() => authStore.user?.clan_games ?? 0)
 </script>
 
 <template>
@@ -34,33 +35,41 @@ const freeGames = computed(() => authStore.user?.clan_attack_games ?? 0)
       <div class="min-w-0">
         <ClanMenuTitle>Infos</ClanMenuTitle>
         <ul class="m-0 mb-2.5 ml-1 list-none border border-solid border-[#738e93] bg-[url(/gfx/clan/greyBg.jpg)] bg-[position:-650px_-8px] bg-no-repeat p-0">
-          <ClanMenuStat icon="/assets/img/gfx/icons/clan_points.gif" title="Score d'attaque : il augmente lorsque le clan réussit une attaque.">
-            <Number :value="stats.war_score" color="orange" />
-          </ClanMenuStat>
-          <ClanMenuStat icon="/assets/img/gfx/icons/clan_score.gif" title="Position du clan dans le classement des attaques.">
-            <Number :value="stats.war_rank ?? 0" color="green" />
-          </ClanMenuStat>
-          <ClanMenuStat icon="/assets/img/gfx/icons/atk.gif" title="Attaques réussies : quand une attaque n'est pas repoussée par le clan adverse à temps, elle est réussie.">
-            <Number :value="stats.attacks_won" color="pink" />
-          </ClanMenuStat>
-          <ClanMenuStat icon="/assets/img/gfx/icons/def.gif" title="Défenses réussies : c'est le nombre d'attaques repoussées par ce clan.">
-            <Number :value="stats.defenses_won" color="blue" />
-          </ClanMenuStat>
-          <template v-if="clan.viewer.is_member">
+          <div class="flex justify-around items-center gap-2 border-b border-solid border-white">
+            <ClanMenuStat icon="/assets/img/gfx/icons/clan_score.gif" title="Position du clan dans le classement des attaques.">
+              <Number :value="stats.war_rank ?? 0" color="green" />
+            </ClanMenuStat>
+            <ClanMenuStat icon="/assets/img/gfx/icons/clan_points.gif" title="Score d'attaque : il augmente lorsque le clan réussit une attaque.">
+              <Number :value="stats.war_score" color="orange" />
+            </ClanMenuStat>
+          </div>
+          <div class="flex justify-around items-center gap-2 border-b border-solid border-white">
+            <ClanMenuStat icon="/assets/img/gfx/icons/clan_score.gif" title="Position du clan dans le classement des attaques.">
+              <Number :value="stats.mission_rank ?? 0" color="green" />
+            </ClanMenuStat>
+            <ClanMenuStat icon="/gfx/clan/clan_mission_points.png" title="Score de mission : il augmente lorsque le clan réussit une mission.">
+              <Number :value="stats.mission_score" color="orange" />
+            </ClanMenuStat>
+          </div>
+          <div v-if="clan.viewer.is_member" class="flex justify-around items-center gap-2 border-b border-solid border-white">
             <ClanMenuStat icon="/gfx/gemGreen.svg" title="Vos parties gratuites du jour pour attaquer et défendre (les missions sont illimitées).">
               <Number :value="freeGames" color="green" />
             </ClanMenuStat>
-            <ClanMenuStat icon="/gfx/gemOrange.svg" title="Parties dans le coffre du clan : données par les membres, distribuées par le chef et ses bras droits.">
-              <Number :value="clan.clan_games ?? 0" color="orange" />
+            <ClanMenuStat icon="/gfx/gemOrange.svg" title="Parties supplémentaires : achetées et/ou distribuées par le chef et ses bras droits.">
+              <Number :value="paidGames ?? 0" color="orange" />
             </ClanMenuStat>
-          </template>
+          </div>
+          <div v-if="clan.viewer.is_member" class="grayscale flex justify-around items-center gap-2 border-b border-solid border-white">
+            <ClanMenuStat icon="/gfx/gemOrange.svg" title="Parties dans le coffre du clan : données par les membres, distribuées par le chef et ses bras droits.">
+              Coffre: <Number :value="clan.clan_games ?? 0" color="orange" />
+            </ClanMenuStat>
+          </div>
         </ul>
       </div>
       <div class="min-w-0">
         <ClanMenuTitle>Actions</ClanMenuTitle>
         <ul class="m-0 mb-2.5 ml-1 list-none p-0">
           <slot name="actions" />
-          <ClanMenuAction :to="{ name: 'clans.index' }">Classement</ClanMenuAction>
         </ul>
       </div>
     </div>
