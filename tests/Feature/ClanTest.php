@@ -264,10 +264,13 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.0.score', 300)
             ->assertJsonPath('data.0.status_label', 'Repoussée')
             ->assertJsonPath('data.0.other_player.etwin_id', $defender->etwin_id)
+            // the score of the defender who repelled it
+            ->assertJsonPath('data.0.other_score', 301)
             ->assertJsonPath('data.0.points', 0)
             ->assertJsonPath('data.1.id', $won->id)
             ->assertJsonPath('data.1.score', 500)
             ->assertJsonPath('data.1.status_label', 'Réussie')
+            ->assertJsonPath('data.1.other_score', null)
             ->assertJsonPath('data.1.points', $won->points);
 
         // the defenses of the clan B: its defender and his score, the points he saved
@@ -277,6 +280,7 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.0.player.etwin_id', $defender->etwin_id)
             ->assertJsonPath('data.0.clan.id', $clanA->id)
             ->assertJsonPath('data.0.score', 301)
+            ->assertJsonPath('data.0.other_score', null)
             ->assertJsonPath('data.0.points', $repelled->fresh()->points)
             ->assertJsonPath('data.1.player', null)
             ->assertJsonPath('data.1.score', 500)
@@ -1160,6 +1164,111 @@ class ClanTest extends TestCase
             ->assertJsonPath('message', 'Vous n\'avez plus de parties de clan. Vous pouvez en acheter avec vos points Kado.');
         $this->assertSame(0, $game->runs()->count());
         $this->assertDatabaseHas('clan_actions', ['id' => $actionId, 'run_id' => null]);
+    }
+
+    // the missions of another clan can be seen, without the reservations of its steps nor its options, and looking at them
+    // does not start its next mission
+    public function test_the_missions_of_another_clan(): void
+    {
+        $period = $this->period();
+        $leader = User::factory()->create();
+        $visitor = User::factory()->create();
+        $clan = Clan::factory()->withLeader($leader)->create();
+        $idle = Clan::factory()->withLeader()->create();
+        Clan::factory()->withLeader($visitor)->create();
+        Game::factory()->count(6)->create();
+        $step = app(ClanMissionService::class)->currentMission($clan)->steps->first();
+        ClanBonus::query()->create(['clan_id' => $clan->id, 'period_id' => $period->id, 'type' => ClanBonusType::SKIP_STEP]);
+        Sanctum::actingAs($leader);
+        $this->postJson("/api/clan-mission-steps/{$step->id}/reserve")->assertNoContent();
+        $this->getJson("/api/clans/{$clan->id}/missions")->assertOk()
+            ->assertJsonPath('data.mission.steps.0.reserved_by.etwin_id', $leader->etwin_id)
+            // (with the "Jeu cool" and the "Jeu caca" of the start of the period)
+            ->assertJsonCount(3, 'data.bonuses');
+
+        Sanctum::actingAs($visitor);
+        $this->getJson("/api/clans/{$clan->id}/missions")->assertOk()
+            ->assertJsonPath('data.mission.steps.0.target_score', $step->target_score)
+            ->assertJsonPath('data.mission.steps.0.reserved_by', null)
+            ->assertJsonPath('data.mission.steps.0.reserved_by_me', false)
+            ->assertJsonPath('data.bonuses', [])
+            ->assertJsonPath('data.banned_game', null);
+        $this->postJson("/api/clan-mission-steps/{$step->id}/play")->assertStatus(422);
+
+        $this->getJson("/api/clans/{$idle->id}/missions")->assertOk()->assertJsonPath('data.mission', null);
+        $this->assertDatabaseMissing('clan_missions', ['clan_id' => $idle->id]);
+    }
+
+    // the leader and the right hands declare the war to 3 clans at most: shown in the "Statut" of both clans
+    public function test_the_wars_declared_by_a_clan(): void
+    {
+        $this->period();
+        $leader = User::factory()->create();
+        $rightHand = User::factory()->create();
+        $member = User::factory()->create();
+        $clan = Clan::factory()->withLeader($leader)->create(['name' => 'Les Rouges']);
+        $clan->members()->create(['user_id' => $rightHand->id, 'role' => ClanRole::RIGHT_HAND]);
+        $clan->members()->create(['user_id' => $member->id]);
+        $targets = Clan::factory()->count(4)->withLeader()->create();
+
+        Sanctum::actingAs($member);
+        $this->getJson("/api/clans/{$targets[0]->id}")->assertOk()->assertJsonPath('data.viewer.can_declare_war', false);
+        $this->postJson("/api/clans/{$targets[0]->id}/war")->assertStatus(422)
+            ->assertJsonPath('message', 'Seuls le chef de clan et ses bras droits peuvent faire ça.');
+
+        Sanctum::actingAs($leader);
+        $this->getJson("/api/clans/{$targets[0]->id}")->assertOk()
+            ->assertJsonPath('data.viewer.can_declare_war', true)
+            ->assertJsonPath('data.viewer.at_war', false);
+        $this->getJson("/api/clans/{$clan->id}")->assertOk()->assertJsonPath('data.viewer.can_declare_war', false);
+        $this->postJson("/api/clans/{$clan->id}/war")->assertStatus(422);
+        $this->postJson("/api/clans/{$targets[0]->id}/war")->assertNoContent();
+        $this->postJson("/api/clans/{$targets[0]->id}/war")->assertNoContent();
+        $this->getJson("/api/clans/{$targets[0]->id}")->assertOk()->assertJsonPath('data.viewer.at_war', true);
+        Sanctum::actingAs($rightHand);
+        $this->postJson("/api/clans/{$targets[1]->id}/war")->assertNoContent();
+        $this->postJson("/api/clans/{$targets[2]->id}/war")->assertNoContent();
+        $this->postJson("/api/clans/{$targets[3]->id}/war")->assertStatus(422)
+            ->assertJsonPath('message', 'Votre clan est déjà en guerre contre 3 clans : faites la paix avec l\'un d\'eux d\'abord.');
+        $this->assertDatabaseCount('clan_wars', 3);
+
+        // in the status of both clans, for anyone
+        Sanctum::actingAs(User::factory()->create());
+        $this->getJson("/api/clans/{$clan->id}/status")->assertOk()->assertJsonCount(3, 'data.wars');
+        $this->getJson("/api/clans/{$targets[0]->id}/status")->assertOk()
+            ->assertJsonCount(1, 'data.wars')
+            ->assertJsonPath('data.wars.0.clan', ['id' => $clan->id, 'name' => 'Les Rouges'])
+            ->assertJsonPath('data.wars.0.target.id', $targets[0]->id);
+
+        // the peace: another war can be declared
+        Sanctum::actingAs($leader);
+        $this->deleteJson("/api/clans/{$targets[0]->id}/war")->assertNoContent();
+        $this->postJson("/api/clans/{$targets[3]->id}/war")->assertNoContent();
+        $this->assertDatabaseMissing('clan_wars', ['clan_id' => $clan->id, 'target_clan_id' => $targets[0]->id]);
+
+        // a dissolved clan is no longer at war
+        $targets[3]->delete();
+        $this->assertDatabaseCount('clan_wars', 2);
+    }
+
+    // the wars end with the period; closed again once the next period started, the wars of the new one stay
+    public function test_the_wars_end_with_the_period(): void
+    {
+        $period = $this->period();
+        $leader = User::factory()->create();
+        Clan::factory()->withLeader($leader)->create();
+        [$old, $new] = Clan::factory()->count(2)->withLeader()->create();
+        Sanctum::actingAs($leader);
+        $this->postJson("/api/clans/{$old->id}/war")->assertNoContent();
+
+        $this->travelTo($period->end_at->copy()->addMinute());
+        Period::factory()->create(['start_at' => $period->end_at->copy()->addSecond(), 'end_at' => $period->end_at->copy()->addDays(14)]);
+        app(ClanPeriodService::class)->closePeriod($period);
+        $this->assertDatabaseCount('clan_wars', 0);
+
+        $this->postJson("/api/clans/{$new->id}/war")->assertNoContent();
+        app(ClanPeriodService::class)->closePeriod($period);
+        $this->assertDatabaseHas('clan_wars', ['target_clan_id' => $new->id]);
     }
 
     public function test_the_ranking_and_the_overview(): void

@@ -6,16 +6,14 @@ const props = defineProps({
 })
 const tabs = computed(() => {
   const id = props.clan.id
-  const items = [
+  return [
     { label: 'Présentation', value: 'show', route: { name: 'clans.show', params: { id } } },
     { label: 'Statut', value: 'status', route: { name: 'clans.status', params: { id } } },
+    // (the missions of another clan: without the reservations nor the options)
+    { label: 'Mission', value: 'missions', route: { name: 'clans.missions', params: { id } } },
+    // 4 tabs at most, as on the old site (the management is in the "Actions" menu)
+    { label: 'Membres', value: 'members', route: { name: 'clans.members', params: { id } } },
   ]
-  if (props.clan.viewer.is_member) {
-    items.push({ label: 'Mission', value: 'missions', route: { name: 'clans.missions', params: { id } } })
-  }
-  // 4 tabs at most, as on the old site (the management is in the "Actions" menu)
-  items.push({ label: 'Membres', value: 'members', route: { name: 'clans.members', params: { id } } })
-  return items
 })
 const selectedIndex = computed(() => Math.max(0, tabs.value.findIndex((t) => t.value === props.tab)))
 
@@ -45,10 +43,10 @@ const paidGames = computed(() => authStore.user?.clan_games ?? 0)
           </div>
           <div class="flex justify-around items-center gap-2 border-b border-solid border-white">
             <ClanMenuStat icon="/gfx/clan/clan_rank_missions.svg" title="Position du clan dans le classement des missions.">
-              <Number :value="stats.mission_rank ?? 0" color="green" />
+              <Number :value="stats.mission_rank ?? 0" color="violet" />
             </ClanMenuStat>
             <ClanMenuStat icon="/gfx/clan/clan_mission_points.png" title="Score de mission : il augmente lorsque le clan réussit une mission.">
-              <Number :value="stats.mission_score" color="orange" />
+              <Number :value="stats.mission_score" color="violet" />
             </ClanMenuStat>
           </div>
           <div v-if="clan.viewer.is_member" class="flex justify-around items-center gap-2 border-b border-solid border-white">

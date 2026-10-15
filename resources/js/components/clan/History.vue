@@ -67,12 +67,21 @@ const formatDate = (date) => (date ? dayjs(date).format('DD/MM/YYYY HH:mm') : '�
               <template v-if="row.other_player">
                 {{ row.type === 'attack' ? 'par' : 'attaque de' }} {{ row.other_player.display_name }}
               </template>
+              <template v-if="row.other_score !== null">
+                (<Number :value="row.other_score" color="blue" />)
+              </template>
             </td>
-            <td class="text-right whitespace-nowrap font-bold"
+            <td class="text-center whitespace-nowrap font-bold"
                 :title="row.type === 'defense' && row.points > 0 ? 'Points du défenseur dans le classement du clan' : null">
-              <span v-if="row.points > 0" class="text-[#ff6b9c]">+<Number :value="row.points" color="pink" /></span>
-              <span v-else-if="row.points < 0" class="text-kado-blue">-<Number :value="-row.points" color="blue" /></span>
-              <template v-else>0</template>
+              <Number v-if="row.points > 0"
+                      :value="row.points"
+                      color="pink"
+                      signed />
+              <Number v-else-if="row.points < 0"
+                      :value="row.points"
+                      color="blue"
+                      signed />
+              <template v-else>—</template>
             </td>
           </tr>
         </tbody>

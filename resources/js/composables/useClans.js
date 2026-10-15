@@ -31,6 +31,8 @@ export function useClans() {
     setStatus: (id, etwinId, status) => put(`/clans/${id}/members/${etwinId}/status`, { status }),
     dissolve: (id) => del(`/clans/${id}`),
     attack: (id, gameId) => post(`/clans/${id}/attacks`, { game_id: gameId }).then(data),
+    declareWar: (id) => post(`/clans/${id}/war`),
+    endWar: (id) => del(`/clans/${id}/war`),
     defend: (attackId) => post(`/clan-attacks/${attackId}/defend`).then(data),
     improveAttack: (attackId) => post(`/clan-attacks/${attackId}/improve`).then(data),
     cancelAttack: (attackId) => post(`/clan-attacks/${attackId}/cancel`),
