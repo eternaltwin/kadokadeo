@@ -55,7 +55,8 @@ html[data-theme='karbon'] .kTab:not(.kTabActive):hover {
 /* the boxes of the sidebar */
 html[data-theme='karbon'] #containerSide .sideBoxGreen,
 html[data-theme='karbon'] #containerSide .sideBoxBlue,
-html[data-theme='karbon'] #containerSide .sideBoxPink {
+html[data-theme='karbon'] #containerSide .sideBoxPink,
+html[data-theme='karbon'] #containerSide .sideBoxViolet {
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.35);
 }
 

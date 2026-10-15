@@ -88,14 +88,14 @@ class ClanController extends Controller implements HasMiddleware
         return ClanListResource::collection($clans)->additional(['tournament' => $this->clanService->tournamentInfo()]);
     }
 
-    // what the menus need: the period of the tournament, the clan of the player, the top 3
+    // what the menus need: the period of the tournament, the clan of the player, the top 3 of the wars and of the missions
     public function overview(Request $request)
     {
         $user = $request->user();
         $period = $this->clanService->currentPeriod();
         $clan = $this->clanService->clanOf($user);
-        $top = $period
-            ? $this->clanService->rankingQuery($period)->limit(3)->get()->each(fn ($c, $i) => $c->rank = $i + 1)
+        $top = fn (string $ranking) => $period
+            ? $this->clanService->rankingQuery($period, $ranking)->limit(3)->get()->each(fn ($c, $i) => $c->rank = $i + 1)
             : collect();
 
         return [
@@ -113,7 +113,8 @@ class ClanController extends Controller implements HasMiddleware
                     ->with('clan:id,name')
                     ->get()
                     ->map(fn (ClanApplication $a) => ['id' => $a->id, 'clan' => ['id' => $a->clan->id, 'name' => $a->clan->name]]),
-                'top' => ClanListResource::collection($top),
+                'top' => ClanListResource::collection($top('war')),
+                'top_missions' => ClanListResource::collection($top('missions')),
                 // the tools of /clans/debug (kado.debug_tools)
                 'debug' => (bool) config('kado.debug_tools'),
                 // the rules of the clans (App\Settings\ClanSettings), for the help page and the clan pages

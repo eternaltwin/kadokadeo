@@ -7,7 +7,7 @@ const themes = ref([])
 const notice = ref(null)
 // the look of each theme: its pattern and its title bar
 const previews = {
-  base: { pattern: '/gfx/bgBodyPattern.jpg', title: '/gfx/bgTitleBlue.jpg', panel: '#dffaff' },
+  base: { pattern: '/gfx/bgBodyPattern.jpg', title: '/gfx/bgTitleBlue.svg', panel: '#dffaff' },
   karbon: { pattern: '/gfx/themes/karbon/patternBG.jpg', title: '/gfx/themes/karbon/greyh2_bg.jpg', panel: '#eef3f4' },
 }
 
