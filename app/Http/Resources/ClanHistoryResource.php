@@ -45,6 +45,8 @@ class ClanHistoryResource extends JsonResource
                 !$isAttack && $won => UserLightResource::make($this->attackerUser),
                 default => null,
             },
+            // the score of the defender who repelled an attack of the clan
+            'other_score' => $isAttack && !$won ? $this->defenseRun?->score : null,
             'points' => match (true) {
                 $isAttack && $won => $this->points,
                 $isAttack => 0,

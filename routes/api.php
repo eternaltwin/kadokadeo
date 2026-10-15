@@ -75,6 +75,8 @@ Route::prefix('/clans/{clan}')->whereNumber('clan')->group(function () {
     Route::post('/games/donate', [App\Http\Controllers\Api\ClanGameController::class, 'donate']);
     Route::post('/members/{user:etwin_id}/games', [App\Http\Controllers\Api\ClanGameController::class, 'distribute'])->whereUuid('user');
     Route::post('/attacks', [App\Http\Controllers\Api\ClanWarController::class, 'attack']);
+    Route::post('/war', [App\Http\Controllers\Api\ClanWarController::class, 'declareWar']);
+    Route::delete('/war', [App\Http\Controllers\Api\ClanWarController::class, 'endWar']);
 });
 Route::delete('/clan-applications/{application}', [App\Http\Controllers\Api\ClanMemberController::class, 'cancel'])->whereNumber('application');
 Route::post('/clan-applications/{application}/accept', [App\Http\Controllers\Api\ClanMemberController::class, 'accept'])->whereNumber('application');

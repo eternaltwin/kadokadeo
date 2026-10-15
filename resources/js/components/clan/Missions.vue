@@ -1,5 +1,6 @@
 <script setup>
-// "Mission": the mission in progress (a score to reach on several games), the previous ones and the options of the clan
+// "Mission": the mission in progress (a score to reach on several games), the previous ones and the options of the clan.
+// Another clan sees the missions only: no buttons, no reservations, no options (the API does not give them)
 const props = defineProps({
   clan: { type: Object, required: true },
 })
@@ -17,6 +18,7 @@ const oppositeGame = (type) => (type === 'ban_game' ? data.value?.forced_game : 
 const bonusStep = ref(null)
 // the leader and the right hands use the options
 const canManage = computed(() => props.clan.viewer.can_manage)
+const isMember = computed(() => props.clan.viewer.is_member)
 
 const load = () =>
   fetchMissions(props.clan.id).then((response) => {
@@ -59,22 +61,27 @@ const confirmBonus = () => {
 
     <template v-if="data">
       <p class="mx-0">
-        Score de mission du clan : <Number :value="data.mission_score" color="blue" />
+        Score de mission du clan : <Number :value="data.mission_score" color="violet" />
         ({{ data.missions_completed }} mission(s) réussie(s))
       </p>
 
       <template v-if="mission">
         <h2 class="normal-case">Mission {{ mission.number }}</h2>
-        <p class="mx-0">
+        <p v-if="isMember" class="mx-0">
           Réussissez toutes les étapes avant la fin du temps imparti
           (<ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" />) : votre clan remportera
-          <Number :value="mission.reward" color="orange" /> points et passera à la mission suivante. Sinon, il perdra un
+          <Number :value="mission.reward" color="violet" /> points et passera à la mission suivante. Sinon, il perdra un
           point par étape non réussie, moins une. Les parties des missions sont gratuites !
+        </p>
+        <p v-else class="mx-0">
+          Si le clan réussit toutes les étapes avant la fin du temps imparti
+          (<ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" />), il remportera
+          <Number :value="mission.reward" color="violet" /> points et passera à la mission suivante.
         </p>
         <div class="overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="text-[10px] uppercase">
+              <tr class="text-2xs uppercase">
                 <th class="min-w-24">Jeu</th>
                 <th>Score à atteindre</th>
                 <th>Étape</th>
@@ -90,8 +97,9 @@ const confirmBonus = () => {
                   <template v-if="step.skipped">Étape passée</template>
                   <template v-else-if="step.done">
                     <img src="/gfx/clan/clan_home.gif" alt="" class="h-4" />
-                    Réussie par {{ step.completed_by?.display_name }} ({{ step.score }})
+                    Réussie par {{ step.completed_by?.display_name }} (<Number :value="step.score" color="blue" />)
                   </template>
+                  <span v-else-if="!isMember" class="italic">À réussir</span>
                   <div v-else class="flex flex-wrap items-center justify-center gap-1">
                     <FormButton @click="play(step)">Jouer</FormButton>
                     <FormButton :variant="step.reserved_by_me ? 'pink' : 'green'"
@@ -109,16 +117,16 @@ const confirmBonus = () => {
         Aucune mission en cours : une nouvelle mission sera proposée à la prochaine période.
       </p>
 
-      <p v-if="data.banned_game || data.forced_game" class="text-sm mx-0">
+      <p v-if="isMember && (data.banned_game || data.forced_game)" class="text-sm mx-0">
         <span v-if="data.banned_game">Jeu caca : <strong>{{ data.banned_game.name }}</strong>. </span>
         <span v-if="data.forced_game">Jeu cool : <strong>{{ data.forced_game.name }}</strong>.</span>
       </p>
 
-      <h2 class="normal-case">Options du clan</h2>
-      <p v-if="!data.bonuses.length" class="italic mx-0">
+      <h2 v-if="isMember" class="normal-case">Options du clan</h2>
+      <p v-if="isMember && !data.bonuses.length" class="italic mx-0">
         Votre clan n'a aucune option. Chaque mission réussie peut vous en faire gagner une !
       </p>
-      <div class="relative flex flex-wrap gap-2">
+      <div v-if="isMember" class="relative flex flex-wrap gap-2">
         <div v-for="bonus in data.bonuses" :key="bonus.id" class="w-[81px] text-center">
           <button type="button"
                   class="border-0 bg-transparent p-0.5 hover:p-0 hover:border-2 hover:border-solid hover:border-[#ffffaf] hover:bg-[#ff9a00] cursor-pointer"
@@ -126,7 +134,7 @@ const confirmBonus = () => {
                   @click="openBonus(bonus)">
             <img :src="bonus.icon" :alt="bonus.label" class="w-[77px] h-[68px]" />
           </button>
-          <div class="text-[10px] leading-tight">{{ bonus.label }}</div>
+          <div class="text-2xs leading-tight">{{ bonus.label }}</div>
         </div>
 
         <div v-if="selectedBonus" class="absolute z-20 left-5 -top-6 w-[470px] max-w-full min-h-[150px] border-2 border-solid border-[#1d2024] bg-[#3d4045] text-[#f0feff]">
@@ -167,7 +175,7 @@ const confirmBonus = () => {
           <li v-for="m in data.missions" :key="m.id">
             Mission {{ m.number }} : {{ statusLabels[m.status] ?? m.status }}
             <template v-if="m.status === 'completed'">
-              (+{{ m.points }} points)
+              (<Number :value="m.points" color="violet" signed /> points)
               <template v-if="m.bonus">
                 — option gagnée :
                 <img :src="m.bonus.icon"
@@ -177,9 +185,9 @@ const confirmBonus = () => {
                 <strong>{{ m.bonus.label }}</strong>
                 <span v-if="m.bonus.used" class="italic">(utilisée)</span>
               </template>
-              <span v-else class="italic">— aucune option gagnée</span>
+              <span v-else-if="isMember" class="italic">— aucune option gagnée</span>
             </template>
-            <template v-else-if="m.status === 'failed' && m.points < 0">({{ -m.points }} points perdus)</template>
+            <template v-else-if="m.status === 'failed' && m.points < 0">(<Number :value="m.points" color="violet" signed /> points)</template>
           </li>
         </ul>
       </template>

@@ -61,6 +61,20 @@ const leave = () => {
     })
   }
 }
+// "Déclarer la guerre": the targets of the members of the clan of the player (3 at most, until the end of the period), shown
+// in "Statut"
+const toggleWar = () => {
+  const atWar = viewer.value.at_war
+  if (!confirm(atWar ? `Faire la paix avec le clan ${clan.value.name} ?` : `Déclarer la guerre au clan ${clan.value.name} ?`)) {
+    return
+  }
+  ;(atWar ? actions.endWar(clan.value.id) : actions.declareWar(clan.value.id)).then(() => {
+    notice.value = atWar
+      ? `Votre clan a fait la paix avec le clan ${clan.value.name}.`
+      : `Votre clan a déclaré la guerre au clan ${clan.value.name} jusqu'à la fin de la période : elle apparaît maintenant dans le statut des deux clans.`
+    load()
+  })
+}
 const updated = () => {
   load()
   clanStore.reload()
@@ -80,6 +94,9 @@ const updated = () => {
         <ClanMenuAction v-if="!viewer.is_member && viewer.has_clan"
                         :to="{ name: 'clans.attack', params: { id: clan.id } }"
                         :title="viewer.attack_blocked ?? 'Attaquer ce clan'">Attaquer ce clan</ClanMenuAction>
+        <ClanMenuAction v-if="viewer.can_declare_war"
+                        :title="viewer.at_war ? 'Ne plus faire de ce clan une cible de votre clan' : 'Indiquer ce clan comme cible à votre clan jusqu\'à la fin de la période (3 clans au maximum)'"
+                        @click="toggleWar">{{ viewer.at_war ? 'Faire la paix' : 'Déclarer la guerre' }}</ClanMenuAction>
         <ClanMenuAction v-if="!viewer.has_clan && viewer.application_id" title="Annuler ma candidature" @click="cancelApplication">Retirer ma demande</ClanMenuAction>
         <ClanMenuAction v-else-if="!viewer.has_clan && clan.is_recruiting && !applicationElsewhere" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</ClanMenuAction>
         <ClanMenuAction v-if="viewer.is_member" @click="leave" :class="{'grayscale cursor-not-allowed': viewer.is_new_member}">Quitter le clan</ClanMenuAction>

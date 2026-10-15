@@ -9,6 +9,7 @@ use App\Exceptions\ClanException;
 use App\Models\Clan;
 use App\Models\ClanAction;
 use App\Models\ClanAttack;
+use App\Models\ClanWar;
 use App\Models\Game;
 use App\Models\Period;
 use App\Models\Run;
@@ -24,7 +25,66 @@ class ClanWarService
     // a clan run asked but not begun after this time is forgotten
     public const ACTION_TTL_MINUTES = 15;
 
+    // the wars a clan can declare at the same time
+    public const MAX_WARS = 3;
+
     public function __construct(private readonly ClanService $clanService) {}
+
+    // ---------------------------------------------------------------- wars
+
+    // "Déclarer la guerre": the clan of the leader or the right hand shows the target to its members (the "Statut" of both
+    // clans) until the end of the period (endWarsOf). Nothing else changes: any clan can still be attacked.
+    public function declareWar(User $user, Clan $target): ClanWar
+    {
+        $clan = $this->clanService->clanOf($user);
+        if (!$clan) {
+            throw new ClanException('Vous n\'avez pas de clan.');
+        }
+        $this->clanService->assertManager($user, $clan);
+        if ($clan->id === $target->id) {
+            throw new ClanException('Vous ne pouvez pas déclarer la guerre à votre propre clan.');
+        }
+
+        return DB::transaction(function () use ($user, $clan, $target) {
+            // (two managers at the same time: the 3 wars at most stay true)
+            Clan::query()->lockForUpdate()->find($clan->id);
+            $existing = ClanWar::query()->where('clan_id', $clan->id)->where('target_clan_id', $target->id)->first();
+            if ($existing) {
+                return $existing;
+            }
+            if (ClanWar::query()->where('clan_id', $clan->id)->count() >= self::MAX_WARS) {
+                throw new ClanException('Votre clan est déjà en guerre contre '.self::MAX_WARS.' clans : faites la paix avec l\'un d\'eux d\'abord.');
+            }
+
+            return ClanWar::query()->create([
+                'clan_id' => $clan->id,
+                'target_clan_id' => $target->id,
+                'declared_by_user_id' => $user->id,
+            ]);
+        });
+    }
+
+    // "Faire la paix": the war declared by the clan of the player ends
+    public function endWar(User $user, Clan $target): void
+    {
+        $clan = $this->clanService->clanOf($user);
+        if (!$clan) {
+            throw new ClanException('Vous n\'avez pas de clan.');
+        }
+        $this->clanService->assertManager($user, $clan);
+
+        ClanWar::query()->where('clan_id', $clan->id)->where('target_clan_id', $target->id)->delete();
+    }
+
+    // the wars declared by the clan and against it, the newest first
+    public function warsOf(Clan $clan)
+    {
+        return ClanWar::query()
+            ->with('clan:id,name', 'targetClan:id,name')
+            ->where(fn ($query) => $query->where('clan_id', $clan->id)->orWhere('target_clan_id', $clan->id))
+            ->latest('id')
+            ->get();
+    }
 
     // an attack game of the day or a paid clan game (used when the run begins, ClanRunService::useClanGame)
     private function assertClanGame(User $user): void
@@ -252,6 +312,12 @@ class ClanWarService
             ->active()
             ->where('period_id', $period->id)
             ->update(['status' => ClanAttackStatus::CANCELLED, 'resolved_at' => now()]);
+    }
+
+    // the wars end with the period (declared before its end only: closePeriod can run again once the next period started)
+    public function endWarsOf(Period $period): void
+    {
+        ClanWar::query()->where('created_at', '<=', $period->end_at)->delete();
     }
 
     // the attacks not repelled in time are won

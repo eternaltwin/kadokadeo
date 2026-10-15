@@ -20,6 +20,7 @@ use App\Models\ClanMember;
 use App\Models\ClanMemberStat;
 use App\Models\ClanMission;
 use App\Models\ClanPeriodScore;
+use App\Models\ClanWar;
 use App\Rules\ClanName;
 use App\Services\ClanMissionService;
 use App\Services\ClanRunService;
@@ -150,6 +151,8 @@ class ClanController extends Controller implements HasMiddleware
         $isMember = $myClan?->id === $clan->id;
         $role = $isMember ? $this->clanService->roleOf($user, $clan) : null;
         $attackBlocked = $this->attackBlockedReason($user, $myClan, $clan, $period);
+        // another clan: the leader and the right hands of the clan of the player declare the war to it
+        $canDeclareWar = $myClan !== null && !$isMember && (bool) $this->clanService->roleOf($user, $myClan)?->canManage();
 
         return [
             'data' => [
@@ -195,6 +198,10 @@ class ClanController extends Controller implements HasMiddleware
                         ->where('status', ClanApplication::PENDING)
                         ->value('id'),
                     'attack_blocked' => $attackBlocked,
+                    'can_declare_war' => $canDeclareWar,
+                    // the clan of the player declared the war to this one
+                    'at_war' => $myClan !== null && !$isMember
+                        && ClanWar::query()->where('clan_id', $myClan->id)->where('target_clan_id', $clan->id)->exists(),
                     // his clan runs begun and never ended, to cancel them
                     'unfinished_actions' => $isMember ? $this->unfinishedActions($user) : [],
                     // the points his clan would win if the attack is not repelled
@@ -289,6 +296,13 @@ class ClanController extends Controller implements HasMiddleware
             'data' => [
                 'launched' => ClanAttackResource::collection($base()->where('attacker_clan_id', $clan->id)->get()),
                 'received' => ClanAttackResource::collection($base()->where('defender_clan_id', $clan->id)->get()),
+                // the wars declared by the clan and against it: the targets of its members, its enemies
+                'wars' => $this->warService->warsOf($clan)->map(fn (ClanWar $war) => [
+                    'id' => $war->id,
+                    'clan' => $war->clan->only(['id', 'name']),
+                    'target' => $war->targetClan->only(['id', 'name']),
+                    'declared_at' => $war->created_at->toIso8601String(),
+                ]),
             ],
             'tournament' => $this->clanService->tournamentInfo(),
         ];

@@ -142,7 +142,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
             <tr v-for="(clan, index) in clans"
                 :key="clan.id"
                 :class="[index % 2 ? 'bg-white' : 'bg-kado-cyan-200', { 'font-bold': clan.id === clanStore.clan?.id }]">
-              <td><Number :value="clan.rank" color="green" /></td>
+              <td><Number :value="clan.rank" :color="tab === 'war' ? 'green' : 'violet'" /></td>
               <td class="text-left">
                 <RouterLink :to="{ name: 'clans.show', params: { id: clan.id } }">{{ clan.name }}</RouterLink>
               </td>
@@ -153,7 +153,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                 <td class="text-right"><Number :value="clan.defenses_won" color="blue" /></td>
               </template>
               <template v-else>
-                <td class="text-right"><Number :value="clan.mission_score" color="blue" /></td>
+                <td class="text-right"><Number :value="clan.mission_score" color="violet" /></td>
                 <td class="text-right">{{ clan.missions_completed }}</td>
                 <td class="text-right whitespace-nowrap" :title="clan.mission ? `Mission ${clan.mission.number}` : ''">
                   <template v-if="clan.mission">{{ clan.mission.steps_done }} / {{ clan.mission.steps }}</template>

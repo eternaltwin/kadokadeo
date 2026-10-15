@@ -1,6 +1,6 @@
 <script setup>
 // "Statut": the attacks launched by the clan and the attacks against it still waiting for a defense, as on the old site
-// (the finished ones are in "Historique")
+// (the finished ones are in "Historique"), then the wars declared by the clan and against it
 const props = defineProps({
   clan: { type: Object, required: true },
 })
@@ -115,5 +115,19 @@ const doCancel = (attack) => {
         </tbody>
       </table>
     </div>
+
+    <!-- the wars declared by the clan (its targets) and against it -->
+    <template v-if="status?.wars?.length">
+      <h2 class="normal-case">Clans en guerre</h2>
+      <ul class="list-inside list-image-[url(/gfx/puce.jpg)] ml-4 space-y-1">
+        <li v-for="war in status.wars" :key="war.id">
+          <template v-for="(side, index) in [war.clan, war.target]" :key="side.id">
+            <strong v-if="side.id === clan.id">{{ side.name }}</strong>
+            <RouterLink v-else :to="{ name: 'clans.status', params: { id: side.id } }" class="font-bold">{{ side.name }}</RouterLink>
+            <template v-if="index === 0"> a déclaré la guerre à </template>
+          </template>
+        </li>
+      </ul>
+    </template>
   </div>
 </template>

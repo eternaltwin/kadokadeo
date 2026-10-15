@@ -13,14 +13,14 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
 // "Attaquer ce clan", "Améliorer", "Défendre", "Annuler": the run itself is played on the clan action page
-// (ClanActionController)
+// (ClanActionController). And "Déclarer la guerre" / "Faire la paix".
 class ClanWarController extends Controller implements HasMiddleware
 {
     public static function middleware()
     {
         return [
             new Middleware('auth:sanctum'),
-            new Middleware('throttle:30,1', only: ['attack', 'improve', 'defend', 'reserve']),
+            new Middleware('throttle:30,1', only: ['attack', 'improve', 'defend', 'reserve', 'declareWar', 'endWar']),
         ];
     }
 
@@ -32,6 +32,21 @@ class ClanWarController extends Controller implements HasMiddleware
         $action = $this->warService->startAttack($request->user(), $clan, Game::query()->findOrFail($validated['game_id']));
 
         return $this->actionResponse($action);
+    }
+
+    // "Déclarer la guerre" / "Faire la paix" to the clan of the page (the leader and the right hands of another clan)
+    public function declareWar(Request $request, Clan $clan)
+    {
+        $this->warService->declareWar($request->user(), $clan);
+
+        return response()->noContent();
+    }
+
+    public function endWar(Request $request, Clan $clan)
+    {
+        $this->warService->endWar($request->user(), $clan);
+
+        return response()->noContent();
     }
 
     public function improve(Request $request, ClanAttack $attack)

@@ -71,4 +71,10 @@ class Clan extends Model
     {
         return $this->hasMany(ClanAttack::class, 'defender_clan_id');
     }
+
+    // the wars declared by the clan (3 at most)
+    public function wars()
+    {
+        return $this->hasMany(ClanWar::class);
+    }
 }

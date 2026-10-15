@@ -30,19 +30,25 @@ class ClanMissionController extends Controller implements HasMiddleware
         private readonly ClanMissionService $missionService,
     ) {}
 
+    // the missions of a clan: anyone can see them, its members also see the reservations of the steps and the options of
+    // the clan (its strategy)
     public function index(Request $request, Clan $clan)
     {
-        $this->clanService->assertMember($request->user(), $clan);
         $period = $this->clanService->currentPeriod();
         abort_unless($period, 404, 'Aucune période en cours.');
+        $isMember = $this->clanService->isMember($request->user(), $clan);
 
-        $mission = $this->missionService->currentMission($clan, $period);
+        // (another clan looking does not start the next mission and its countdown: only the members do)
+        $mission = $isMember
+            ? $this->missionService->currentMission($clan, $period)
+            : ClanMission::query()->where('clan_id', $clan->id)->where('period_id', $period->id)
+                ->where('status', ClanMission::ACTIVE)->where('expires_at', '>', now())->first();
         $score = $this->clanService->periodScore($clan, $period)->load('bannedGame', 'forcedGame');
         $viewerId = $request->user()->id;
 
         return [
             'data' => [
-                'mission' => $mission ? $this->missionData($mission->load('steps.game', 'steps.completedBy', 'steps.reservedBy'), $viewerId) : null,
+                'mission' => $mission ? $this->missionData($mission->load('steps.game', 'steps.completedBy', 'steps.reservedBy'), $viewerId, $isMember) : null,
                 'missions' => ClanMission::query()
                     ->where('clan_id', $clan->id)
                     ->where('period_id', $period->id)
@@ -54,19 +60,21 @@ class ClanMissionController extends Controller implements HasMiddleware
                         ...$mission->only(['id', 'number', 'status', 'points']),
                         'completed_at' => $mission->completed_at?->toIso8601String(),
                         // the option won with the mission, if any
-                        'bonus' => $mission->bonus ? $this->bonusData($mission->bonus) + ['used' => $mission->bonus->used_at !== null] : null,
+                        'bonus' => $isMember && $mission->bonus ? $this->bonusData($mission->bonus) + ['used' => $mission->bonus->used_at !== null] : null,
                     ]),
                 'mission_score' => $score->mission_score,
                 'missions_completed' => $score->missions_completed,
-                'banned_game' => $score->bannedGame?->only(['id', 'name']),
-                'forced_game' => $score->forcedGame?->only(['id', 'name']),
-                'bonuses' => ClanBonus::query()
-                    ->available()
-                    ->where('clan_id', $clan->id)
-                    ->where('period_id', $period->id)
-                    ->orderBy('id')
-                    ->get()
-                    ->map(fn (ClanBonus $bonus) => $this->bonusData($bonus)),
+                'banned_game' => $isMember ? $score->bannedGame?->only(['id', 'name']) : null,
+                'forced_game' => $isMember ? $score->forcedGame?->only(['id', 'name']) : null,
+                'bonuses' => $isMember
+                    ? ClanBonus::query()
+                        ->available()
+                        ->where('clan_id', $clan->id)
+                        ->where('period_id', $period->id)
+                        ->orderBy('id')
+                        ->get()
+                        ->map(fn (ClanBonus $bonus) => $this->bonusData($bonus))
+                    : [],
             ],
             'tournament' => $this->clanService->tournamentInfo(),
         ];
@@ -108,7 +116,7 @@ class ClanMissionController extends Controller implements HasMiddleware
         ];
     }
 
-    private function missionData(ClanMission $mission, int $viewerId): array
+    private function missionData(ClanMission $mission, int $viewerId, bool $isMember): array
     {
         return [
             'id' => $mission->id,
@@ -126,10 +134,10 @@ class ClanMissionController extends Controller implements HasMiddleware
                 'score' => $step->score,
                 'completed_by' => $step->completedBy ? UserLightResource::make($step->completedBy) : null,
                 'completed_at' => $step->completed_at?->toIso8601String(),
-                // "Je m'en occupe"
-                'reserved_by' => $step->reservedBy ? UserLightResource::make($step->reservedBy) : null,
-                'reserved_at' => $step->reserved_at?->toIso8601String(),
-                'reserved_by_me' => $step->reserved_by_user_id === $viewerId,
+                // "Je m'en occupe" (for the members)
+                'reserved_by' => $isMember && $step->reservedBy ? UserLightResource::make($step->reservedBy) : null,
+                'reserved_at' => $isMember ? $step->reserved_at?->toIso8601String() : null,
+                'reserved_by_me' => $isMember && $step->reserved_by_user_id === $viewerId,
             ]),
         ];
     }
