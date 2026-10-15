@@ -33,6 +33,13 @@ if (props.clan.viewer.can_manage) {
 }
 
 const mission = computed(() => data.value?.mission)
+// the star of the score to reach of a step (-1: under the green star), a "+" above the red one
+const stars = {
+  '-1': { img: '/gfx/iconGreyStar.gif', alt: 'Sous l\'étoile verte' },
+  0: { img: '/gfx/iconGreenStar.gif', alt: 'Étoile verte' },
+  1: { img: '/gfx/iconOrangeStar.gif', alt: 'Étoile orange' },
+  2: { img: '/gfx/iconRedStar.gif', alt: 'Étoile rouge' },
+}
 const statusLabels = { completed: 'Réussie', failed: 'Échouée', skipped: 'Remplacée' }
 
 // "Je m'en occupe": reserve the step, take the place of another member, or give it up
@@ -92,7 +99,20 @@ const confirmBonus = () => {
                 <td class="text-left font-bold">
                   <RouterLink :to="{ name: 'games.show', params: { id: step.game.id } }">{{ step.game.name }}</RouterLink>
                 </td>
-                <td class="font-bold"><Number color="blue" :value="step.target_score" /></td>
+                <td class="font-bold whitespace-nowrap">
+                  <span class="inline-flex items-center gap-1">
+                    <span v-if="stars[step.star]"
+                          class="inline-flex items-center"
+                          :title="step.beyond_last_star ? 'Au-delà de l\'étoile rouge' : stars[step.star].alt">
+                      <img :src="stars[step.star].img" :alt="stars[step.star].alt" />
+                      <img v-if="step.beyond_last_star"
+                           src="/gfx/typo/pink/plus.svg"
+                           alt="+"
+                           class="h-2.5" />
+                    </span>
+                    <Number color="blue" :value="step.target_score" />
+                  </span>
+                </td>
                 <td>
                   <template v-if="step.skipped">Étape passée</template>
                   <template v-else-if="step.done">
