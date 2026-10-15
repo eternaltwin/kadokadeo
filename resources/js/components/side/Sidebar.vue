@@ -43,15 +43,28 @@ const otherGames = [
       </ul>
     </nav>
     <aside class="sideBoxBlue">
-      <h2>Top 3 clans</h2>
+      <h2>Top 3 clans de guerre</h2>
       <ul>
         <li v-for="clan in clanStore.top" :key="clan.id" class="flex justify-between gap-1">
           <RouterLink :to="{ name: 'clans.show', params: { id: clan.id } }" class="truncate">{{ clan.rank }}. {{ clan.name }}</RouterLink>
-          <span class="text-kado-orange font-bold">{{ clan.war_score }}</span>
+          <Number :value="clan.war_score" color="orange" />
         </li>
         <li v-if="!clanStore.top.length" class="text-center italic">Aucun clan</li>
         <li class="text-center mt-1">
-          <RouterLink :to="{ name: 'clans.index' }">Classement des clans</RouterLink>
+          <RouterLink :to="{ name: 'clans.index', query: { tab: 'war' } }">Classement des attaques</RouterLink>
+        </li>
+      </ul>
+    </aside>
+    <aside class="sideBoxViolet">
+      <h2>Top 3 clans de mission</h2>
+      <ul>
+        <li v-for="clan in clanStore.topMissions" :key="clan.id" class="flex justify-between gap-1">
+          <RouterLink :to="{ name: 'clans.show', params: { id: clan.id } }" class="truncate">{{ clan.rank }}. {{ clan.name }}</RouterLink>
+          <Number :value="clan.mission_score" color="violet" />
+        </li>
+        <li v-if="!clanStore.topMissions.length" class="text-center italic">Aucun clan</li>
+        <li class="text-center mt-1">
+          <RouterLink :to="{ name: 'clans.index', query: { tab: 'missions' } }">Classement des missions</RouterLink>
         </li>
       </ul>
     </aside>

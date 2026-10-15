@@ -1278,6 +1278,7 @@ class ClanTest extends TestCase
         $mine = Clan::factory()->withLeader($user)->create(['name' => 'Les pirates']);
         $best = Clan::factory()->withLeader()->create(['name' => 'Dino RPG']);
         ClanPeriodScore::query()->create(['clan_id' => $best->id, 'period_id' => $period->id, 'war_score' => 42]);
+        ClanPeriodScore::query()->create(['clan_id' => $mine->id, 'period_id' => $period->id, 'mission_score' => 7]);
 
         Sanctum::actingAs($user);
         $this->getJson('/api/clans')->assertOk()
@@ -1288,6 +1289,8 @@ class ClanTest extends TestCase
         $this->getJson('/api/clans?q=pira')->assertOk()->assertJsonPath('data.0.rank', 2);
         $this->getJson('/api/clans/overview')->assertOk()
             ->assertJsonPath('data.clan.id', $mine->id)
-            ->assertJsonPath('data.top.0.id', $best->id);
+            ->assertJsonPath('data.top.0.id', $best->id)
+            ->assertJsonPath('data.top_missions.0.id', $mine->id)
+            ->assertJsonPath('data.top_missions.0.mission_score', 7);
     }
 }

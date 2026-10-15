@@ -152,6 +152,13 @@
   --color-kado-pink-400: #ff6b9c;
   --color-kado-pink-600: #f40b58;
   --color-kado-pink-900: #860f3f;
+
+  /* the purples of the missions (public/gfx/clan/clan_mission_points.png, the violet typos of scripts/typo-svg.py) */
+  --color-kado-violet-50: #f7ecfb;
+  --color-kado-violet-200: #e1adf4;
+  --color-kado-violet-400: #a637ba;
+  --color-kado-violet-600: #7d099a;
+  --color-kado-violet-900: #4f0a62;
 }
 
 @layer base {
@@ -301,7 +308,7 @@
     height: 35px;
     padding: 4px 5px 0 40px;
     font-size: 1.5em;
-    background: url('/gfx/bgTitleBlue.jpg') no-repeat;
+    background: url('/gfx/bgTitleBlue.svg') no-repeat;
     text-transform: capitalize;
   }
 
@@ -459,7 +466,7 @@
 
   #bodySection {
     background:
-      url('/gfx/bgContainerTopBlue.jpg') top left no-repeat,
+      url('/gfx/bgContainerTopBlue.svg') top left no-repeat,
       url('/gfx/bgContainerTopRepeat.jpg') top repeat-x;
     box-shadow:
       0 0 0 2px #ffffff,
@@ -496,19 +503,20 @@
 
   #containerSide .sideBoxGreen,
   #containerSide .sideBoxBlue,
-  #containerSide .sideBoxPink {
+  #containerSide .sideBoxPink,
+  #containerSide .sideBoxViolet {
     margin: 30px 0 0 0;
     box-shadow: 10px 10px 10px rgba(90, 170, 182, 0.25);
   }
 
   #containerSide .sideBoxGreen {
-    background: url('/gfx/bgContainerTopGreen.jpg') -205px 13px no-repeat;
+    background: url('/gfx/bgContainerTopGreen.svg') -205px 13px no-repeat;
     background-color: var(--color-kado-green-50);
     border: 3px solid var(--color-kado-green-500);
   }
 
   #containerSide .sideBoxGreen h2 {
-    background: url('/gfx/bgTitleGreen.jpg') -15px -5px no-repeat;
+    background: url('/gfx/bgTitleGreen.svg') -15px -5px no-repeat;
     color: var(--color-kado-green-600);
     border-bottom: 3px solid var(--color-kado-green-500);
   }
@@ -556,27 +564,40 @@
   }
 
   #containerSide .sideBoxBlue {
-    background: url('/gfx/bgContainerTopBlue.jpg') -205px 13px no-repeat;
+    background: url('/gfx/bgContainerTopBlue.svg') -205px 13px no-repeat;
     background-color: var(--color-kado-cyan-200);
     border: 3px solid var(--color-kado-cyan-800);
   }
 
   #containerSide .sideBoxBlue h2 {
-    background: url('/gfx/bgTitleBlue.jpg') -15px -5px no-repeat;
+    background: url('/gfx/bgTitleBlue.svg') -15px -5px no-repeat;
     color: var(--color-kado-blue);
     border-bottom: 3px solid var(--color-kado-cyan-800);
   }
 
   #containerSide .sideBoxPink {
-    background: url('/gfx/bgContainerTopPink.jpg') -205px 13px no-repeat;
+    background: url('/gfx/bgContainerTopPink.svg') -205px 13px no-repeat;
     background-color: var(--color-kado-pink-50);
     border: 3px solid var(--color-kado-pink-400);
   }
 
   #containerSide .sideBoxPink h2 {
-    background: url('/gfx/bgTitlePink.jpg') -15px -5px no-repeat;
+    background: url('/gfx/bgTitlePink.svg') -15px -5px no-repeat;
     color: var(--color-kado-pink-400);
     border-bottom: 3px solid var(--color-kado-pink-400);
+  }
+
+  /* (the images: scripts/side-box-svg.py) */
+  #containerSide .sideBoxViolet {
+    background: url('/gfx/bgContainerTopViolet.svg') -205px 13px no-repeat;
+    background-color: var(--color-kado-violet-50);
+    border: 3px solid var(--color-kado-violet-400);
+  }
+
+  #containerSide .sideBoxViolet h2 {
+    background: url('/gfx/bgTitleViolet.svg') -15px -5px no-repeat;
+    color: var(--color-kado-violet-400);
+    border-bottom: 3px solid var(--color-kado-violet-400);
   }
 
   /* HOME PAGE */
