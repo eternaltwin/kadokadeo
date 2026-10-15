@@ -11,8 +11,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
-// the daily game is played once a day: the next runs of the day on its game are normal runs (no shared seed, no
-// contract). Outside the production it can be played again (0fe63e9c, the staging).
+// the daily game is played once a day: asked again the same day, it is refused with a message shown in the game. Outside
+// the production it can be played again (0fe63e9c, the staging).
 class DailyGameOnceTest extends TestCase
 {
     use RefreshDatabase;
@@ -51,13 +51,12 @@ class DailyGameOnceTest extends TestCase
             ->assertJsonPath('data.contract_score', 1234)
             ->assertJsonPath('data.contract_points', 50);
 
-        // again the same day: a normal run
-        $response = $this->beginDaily()
-            ->assertJsonPath('data.shared_seed', false)
-            ->assertJsonPath('data.contract_score', 0)
-            ->assertJsonPath('data.contract_points', 0);
-        $this->assertNotSame('daily-seed', $response->json('data.seed'));
+        // again the same day: refused
+        $this->postJson("/api/runs/games/{$this->game->id}", ['daily' => true])
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Vous avez déjà joué la partie du jour : revenez demain !');
         $this->assertSame(1, $this->daily->runs()->count());
+        $this->assertSame(1, $this->game->runs()->count());
 
         // the next day: the daily game of that day can be played
         $this->travel(1)->days();
@@ -88,9 +87,22 @@ class DailyGameOnceTest extends TestCase
 
         $this->beginDaily()->assertJsonPath('data.shared_seed', true);
         $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $this->game->id])->assertCreated();
-        $this->beginDaily()->assertJsonPath('data.shared_seed', false);
+        $this->postJson("/api/runs/games/{$this->game->id}", ['daily' => true])->assertForbidden();
         $this->assertSame(1, $this->daily->runs()->count());
         $this->assertDatabaseHas('clan_actions', ['user_id' => $player->id, 'run_id' => null]);
+    }
+
+    // another game asked as the daily game (a page opened the day before...): refused, in the staging too
+    public function test_a_game_that_is_not_the_daily_game_is_refused(): void
+    {
+        $this->app['env'] = 'staging';
+        Sanctum::actingAs(User::factory()->create());
+        $other = Game::factory()->create();
+
+        $this->postJson("/api/runs/games/{$other->id}", ['daily' => true])
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Ce jeu n\'est pas la partie du jour.');
+        $this->assertSame(0, $other->runs()->count());
     }
 
     public function test_the_daily_game_can_be_played_again_outside_the_production(): void

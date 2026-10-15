@@ -1102,6 +1102,66 @@ class ClanTest extends TestCase
         $this->assertDatabaseMissing('clan_actions', ['run_id' => $otherRunId]);
     }
 
+    // the goal of the clan run in the bottom bar of the game, instead of the contract: the score of the attack to improve (0
+    // for a new one), the score to reach for a defense or a mission step, and the clan games left
+    public function test_the_goal_of_a_clan_run_is_given_when_it_begins(): void
+    {
+        config(['kado.games_per_day' => 10]);
+        $period = $this->period();
+        $attacker = User::factory()->create(['clan_attack_games' => 2, 'clan_games' => 3]);
+        $defender = User::factory()->create();
+        $clanA = Clan::factory()->withLeader($attacker)->create();
+        $clanB = Clan::factory()->withLeader($defender)->create();
+        $game = Game::factory()->create();
+        Sanctum::actingAs($attacker);
+
+        // a normal run
+        $this->postJson("/api/runs/games/{$game->id}")->assertSuccessful()->assertJsonPath('data.clan', null);
+
+        $this->postJson("/api/clans/{$clanB->id}/attacks", ['game_id' => $game->id])->assertCreated();
+        $this->postJson("/api/runs/games/{$game->id}")->assertSuccessful()
+            ->assertJsonPath('data.clan', ['type' => 'attack', 'score' => 0, 'attack_games' => 1, 'clan_games' => 3]);
+        ClanAction::query()->delete();
+        app(ClanWarService::class)->startAttack($attacker, $clanB, $game);
+        $this->playClanRun($attacker, $game, $period, 500);
+        $attack = ClanAttack::query()->sole();
+
+        $this->postJson("/api/clan-attacks/{$attack->id}/improve")->assertCreated();
+        $this->postJson("/api/runs/games/{$game->id}")->assertSuccessful()
+            ->assertJsonPath('data.clan', ['type' => 'attack', 'score' => 500, 'attack_games' => 0, 'clan_games' => 3]);
+
+        Sanctum::actingAs($defender);
+        $this->postJson("/api/clan-attacks/{$attack->id}/defend")->assertCreated();
+        $this->postJson("/api/runs/games/{$game->id}")->assertSuccessful()->assertJsonPath('data.clan.type', 'defense')
+            ->assertJsonPath('data.clan.score', 501);
+
+        Game::factory()->count(6)->create();
+        $step = app(ClanMissionService::class)->currentMission($clanA)->steps->first();
+        Sanctum::actingAs($attacker);
+        $this->postJson("/api/clan-mission-steps/{$step->id}/play")->assertCreated();
+        $this->postJson("/api/runs/games/{$step->game_id}")->assertSuccessful()->assertJsonPath('data.clan.type', 'mission')
+            ->assertJsonPath('data.clan.score', $step->target_score);
+    }
+
+    // no clan game left when the run begins (the last one used by another tab...): refused with a message shown in the game
+    public function test_a_clan_run_without_clan_games_is_refused_when_it_begins(): void
+    {
+        $this->period();
+        $attacker = User::factory()->create(['clan_attack_games' => 1, 'clan_games' => 0]);
+        Clan::factory()->withLeader($attacker)->create();
+        $defender = Clan::factory()->withLeader()->create();
+        $game = Game::factory()->create();
+        Sanctum::actingAs($attacker);
+
+        $actionId = $this->postJson("/api/clans/{$defender->id}/attacks", ['game_id' => $game->id])->assertCreated()->json('data.id');
+        $attacker->update(['clan_attack_games' => 0]);
+
+        $this->postJson("/api/runs/games/{$game->id}")->assertForbidden()
+            ->assertJsonPath('message', 'Vous n\'avez plus de parties de clan. Vous pouvez en acheter avec vos points Kado.');
+        $this->assertSame(0, $game->runs()->count());
+        $this->assertDatabaseHas('clan_actions', ['id' => $actionId, 'run_id' => null]);
+    }
+
     public function test_the_ranking_and_the_overview(): void
     {
         $period = $this->period();

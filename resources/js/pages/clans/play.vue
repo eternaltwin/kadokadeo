@@ -72,6 +72,26 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
     <template v-else>
       <h1 class="mt-0 text-center">{{ action.type_label }}</h1>
 
+      <template v-if="result">
+        <MessageSuccess v-if="isSuccess">{{ result.message }}</MessageSuccess>
+        <MessageError v-else>{{ result.message }}</MessageError>
+        <p class="text-center text-sm">
+          <template v-if="countsAgain">Si vous rejouez, votre nouvelle partie comptera aussi pour votre clan.</template>
+          <template v-else>Si vous rejouez, ce sera une partie normale : elle ne comptera plus pour votre clan.</template>
+        </p>
+      </template>
+
+      <MessageError v-if="!action.is_open && !result">
+        Cette action de clan est terminée ou a expiré. Retournez sur la page de votre clan pour en lancer une nouvelle.
+      </MessageError>
+      <div v-else-if="!game && !result" class="relative min-h-48">
+        <Loader>Chargement du jeu ...</Loader>
+      </div>
+      <template v-else-if="game">
+        <h2 class="text-center">{{ game.name }}</h2>
+        <GamesGamePlayer :game="game" :goals="goals" />
+      </template>
+
       <div class="flex items-center gap-2 border-l-4 px-2 py-1" :class="action.type === 'attack' ? 'border-kado-pink-400 bg-[#ffe3ec] text-kado-pink-400' : 'border-kado-cyan-800 bg-kado-cyan-100'">
         <img :src="action.type === 'attack' ? '/assets/img/gfx/icons/atk.gif' : action.type === 'defense' ? '/assets/img/gfx/icons/def.gif' : '/gfx/clan/clan_mission_points.png'" alt="" />
         <div>
@@ -93,15 +113,6 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
           </template>
         </div>
       </div>
-
-      <template v-if="result">
-        <MessageSuccess v-if="isSuccess">{{ result.message }}</MessageSuccess>
-        <MessageError v-else>{{ result.message }}</MessageError>
-        <p class="text-center text-sm">
-          <template v-if="countsAgain">Si vous rejouez, votre nouvelle partie comptera aussi pour votre clan.</template>
-          <template v-else>Si vous rejouez, ce sera une partie normale : elle ne comptera plus pour votre clan.</template>
-        </p>
-      </template>
       <p class="text-center">
         <RouterLink :to="backRoute">Retour à la page du clan</RouterLink>
       </p>
@@ -111,17 +122,6 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
         <img src="/gfx/gemOrange.svg" alt="" class="w-4" />
         {{ authStore.user.clan_games }} partie(s) de clan achetée(s)
       </p>
-
-      <MessageError v-if="!action.is_open && !result">
-        Cette action de clan est terminée ou a expiré. Retournez sur la page de votre clan pour en lancer une nouvelle.
-      </MessageError>
-      <div v-else-if="!game && !result" class="relative min-h-48">
-        <Loader>Chargement du jeu ...</Loader>
-      </div>
-      <template v-else-if="game">
-        <h2 class="text-center">{{ game.name }}</h2>
-        <GamesGamePlayer :game="game" :goals="goals" />
-      </template>
     </template>
   </div>
 </template>

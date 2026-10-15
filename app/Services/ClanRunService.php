@@ -126,6 +126,25 @@ class ClanRunService
             || User::query()->whereKey($user->id)->where('clan_games', '>', 0)->decrement('clan_games') > 0;
     }
 
+    // shown in the bottom bar of the game instead of the contract: the score to reach (a mission step, a defense: higher than
+    // the attack), the score of the attack to improve (0 for a new attack), and the clan games left
+    /**
+     * @return array{type: string, score: int, attack_games: int, clan_games: int}
+     */
+    public function goal(ClanAction $action, User $user): array
+    {
+        return [
+            'type' => $action->type->value,
+            'score' => match ($action->type) {
+                ClanActionType::MISSION => $action->missionStep->target_score,
+                ClanActionType::DEFENSE => $action->attack->score + 1,
+                ClanActionType::ATTACK => $action->attack?->score ?? 0,
+            },
+            'attack_games' => $user->clan_attack_games,
+            'clan_games' => $user->clan_games,
+        ];
+    }
+
     public function bindRun(Run $run, ?ClanAction $action = null): ?ClanAction
     {
         if ($run->daily_game_id) {
