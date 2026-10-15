@@ -129,6 +129,9 @@ class ClanMissionController extends Controller implements HasMiddleware
                 'id' => $step->id,
                 'game' => ['id' => $step->game->id, 'name' => $step->game->name],
                 'target_score' => $step->target_score,
+                // the star of the score to reach (-1: none, 0: green, 1: orange, 2: red), above the last star
+                'star' => $step->game->getStarFromScore($step->target_score),
+                'beyond_last_star' => $step->target_score > max($step->game->stars ?: [PHP_INT_MAX]),
                 'skipped' => $step->skipped,
                 'done' => $step->isDone(),
                 'score' => $step->score,

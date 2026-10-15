@@ -383,6 +383,8 @@ class ClanController extends Controller implements HasMiddleware
             // the steps of the first mission of a lone player, of a full clan
             'mission_steps_alone' => $missionService->stepsCount(1, 1),
             'mission_steps_full' => $missionService->stepsCount($settings->max_members, 1),
+            // the steps of every mission at half the first star
+            'mission_easy_steps' => $settings->mission_easy_steps,
             'mission_points_first' => $settings->mission_points_first,
             'mission_points_every' => $settings->mission_points_every,
             'mission_points_min' => $settings->mission_points_min,

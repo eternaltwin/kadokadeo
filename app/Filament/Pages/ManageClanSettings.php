@@ -3,14 +3,18 @@
 namespace App\Filament\Pages;
 
 use App\Enums\ClanBonusType;
+use App\Services\ClanMissionPaliers;
 use App\Settings\ClanSettings;
 use BackedEnum;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\SettingsPage;
+use Filament\Schemas\Components\Html;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 use UnitEnum;
 
 // the rules of the clans, shown as they are on the help page
@@ -59,18 +63,43 @@ class ManageClanSettings extends SettingsPage
                     ->schema([
                         $this->integer('mission_hours', 'Durée d\'une mission (heures)', min: 1),
                         $this->integer('mission_more_time_hours', 'Heures ajoutées par « Plus de temps »', min: 1),
-                        $this->integer('mission_steps_base', 'Étapes pour un joueur seul', min: 1),
+                        $this->integer('mission_steps_base', 'Étapes pour un joueur seul', min: 1)->live(onBlur: true),
                         $this->decimal('mission_steps_per_member', 'Étapes en plus par membre')
-                            ->helperText('0,38 : 24 étapes pour 50 membres.'),
-                        $this->integer('mission_steps_max', 'Étapes maximum', min: 1),
-                        $this->integer('mission_steps_min', 'Étapes minimum', min: 1),
+                            ->helperText('0,38 : 24 étapes pour 50 membres.')
+                            ->live(onBlur: true),
+                        $this->integer('mission_steps_max', 'Étapes maximum', min: 1)->live(onBlur: true),
+                        $this->integer('mission_steps_min', 'Étapes minimum', min: 1)->live(onBlur: true),
                         $this->decimal('mission_steps_ratio', 'Coefficient des étapes par mission')
-                            ->helperText('1 : autant d\'étapes à chaque mission. En dessous de 1, moins d\'étapes à chaque nouvelle mission.'),
-                        $this->integer('mission_paliers_every', 'Missions par palier de score', min: 1)
-                            ->helperText('Le score à atteindre monte d\'un palier des étoiles du jeu toutes les N missions.'),
+                            ->helperText('1 : autant d\'étapes à chaque mission. En dessous de 1, moins d\'étapes à chaque nouvelle mission.')
+                            ->live(onBlur: true),
                         $this->integer('mission_points_first', 'Points d\'une mission réussie', min: 1),
                         $this->integer('mission_points_every', 'Un point de moins toutes les N missions', min: 1),
                         $this->integer('mission_points_min', 'Points minimum d\'une mission réussie'),
+                    ]),
+
+                Section::make('Scores des missions')
+                    ->description('Paliers d\'un jeu : ½ étoile verte, verte, entre verte et orange, orange, entre orange et rouge, rouge, puis au-delà de la rouge vers le « Score 1500 » du jeu (s\'il est renseigné). Chaque mission mélange des étapes faciles et difficiles, dans le désordre.')
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->schema([
+                        $this->integer('mission_paliers_every', 'Missions par palier de score', min: 1)
+                            ->helperText('Le palier le plus haut d\'une mission monte d\'un cran toutes les N missions.')
+                            ->live(onBlur: true),
+                        $this->integer('mission_easy_steps', 'Étapes faciles par mission')
+                            ->helperText('Toujours à la moitié de l\'étoile verte, pour que tout le monde puisse participer.')
+                            ->live(onBlur: true),
+                        $this->share('mission_hard_share_min', 'Part des étapes au palier le plus haut (au départ)')->live(onBlur: true),
+                        $this->share('mission_hard_share_step', 'Part en plus à chaque palier')->live(onBlur: true),
+                        $this->share('mission_hard_share_max', 'Part maximum au palier le plus haut')->live(onBlur: true),
+                        $this->integer('mission_spread_paliers', 'Paliers des autres étapes', min: 1)
+                            ->helperText('Les autres étapes sont réparties sur les N paliers sous le plus haut.')
+                            ->live(onBlur: true),
+                        $this->share('mission_beyond_last_star', 'Au-delà de l\'étoile rouge : pas par palier')
+                            ->helperText('Part de l\'écart entre l\'étoile rouge et le « Score 1500 » du jeu (0,1 = 10 % par palier, 0 : rien au-delà de la rouge).')
+                            ->live(onBlur: true),
+                        // what the settings give, before saving them
+                        Html::make(fn (Get $get) => new HtmlString(view('filament.clan-missions-preview', $this->preview($get))->render()))
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Options des missions')
@@ -105,6 +134,35 @@ class ManageClanSettings extends SettingsPage
                         $this->rewards('mission_rewards', 'Classement des missions'),
                     ]),
             ]);
+    }
+
+    // the missions 1, 1 + every, 1 + 2 * every... until the top palier, for a clan of 10 members
+    private function preview(Get $get): array
+    {
+        $values = collect(['mission_paliers_every', 'mission_hard_share_min', 'mission_hard_share_step', 'mission_hard_share_max',
+            'mission_easy_steps', 'mission_spread_paliers', 'mission_beyond_last_star', 'mission_steps_base', 'mission_steps_per_member',
+            'mission_steps_max', 'mission_steps_min', 'mission_steps_ratio'])
+            ->mapWithKeys(fn (string $name) => [$name => (float) str_replace(',', '.', (string) $get($name))])
+            ->all();
+        $paliers = ClanMissionPaliers::fromArray($values);
+        $members = 10;
+        $base = min($values['mission_steps_max'], $values['mission_steps_base'] + ($members - 1) * $values['mission_steps_per_member']);
+
+        $rows = [];
+        $lastTop = $paliers->topPalier(PHP_INT_MAX);
+        for ($top = 0; $top <= $lastTop; $top++) {
+            $number = 1 + $top * $paliers->every;
+            $steps = max((int) $values['mission_steps_min'], (int) round($base * $values['mission_steps_ratio'] ** ($number - 1)));
+            $rows[] = [
+                'number' => $number,
+                // "2 × orange"
+                'steps' => collect($paliers->levels($number, $steps))->countBy()
+                    ->map(fn (int $count, int $palier) => "{$count} × {$paliers->label($palier)}")
+                    ->values()->all(),
+            ];
+        }
+
+        return ['rows' => $rows, 'members' => $members];
     }
 
     private function integer(string $name, string $label, int $min = 0): TextInput

@@ -626,28 +626,41 @@ class ClanTest extends TestCase
         $this->assertSame(17, ClanPeriodScore::query()->where('clan_id', $clan->id)->value('mission_score'));
     }
 
+    // the top palier goes up every 2 missions (half the first star, the first star, between the first and the second...,
+    // then beyond the red star towards the "Score 1500" of the game), an easy step stays at half the first star
     public function test_the_paliers_get_higher_with_the_missions_completed(): void
     {
-        ClanSettings::fake(['bonus_chance' => 0]);
+        ClanSettings::fake(['bonus_chance' => 0, 'mission_paliers_every' => 2]);
         $period = $this->period();
         $leader = User::factory()->create();
         $clan = Clan::factory()->withLeader($leader)->create();
-        Game::factory()->count(6)->create(['stars' => [1000, 2000, 3000]]);
+        Game::factory()->count(6)->create(['stars' => [1000, 2000, 3000], 'score_rankv1' => 4000]);
         $missionService = app(ClanMissionService::class);
 
-        $targets = [];
-        foreach (range(1, 12) as $number) {
+        $hardest = [];
+        foreach (range(1, 14) as $number) {
             $mission = $missionService->currentMission($clan);
             $this->assertSame($number, $mission->number);
-            $targets[$number] = $mission->steps->first()->target_score;
+            $targets = $mission->steps->pluck('target_score');
+            $hardest[$number] = $targets->max();
+            // the easy step (a lone player: 5 steps)
+            $this->assertSame(500, $targets->min());
             foreach ($mission->steps as $step) {
                 $missionService->startStep($leader, $step);
                 $this->playClanRun($leader, $step->game, $period, $step->target_score);
             }
         }
 
-        // one palier higher every 2 missions: half the first star, the first star, between the first and the second...
-        $this->assertSame([1 => 500, 2 => 500, 3 => 1000, 4 => 1000, 5 => 1500, 7 => 2000, 9 => 2500, 11 => 3000, 12 => 3000], array_intersect_key($targets, array_flip([1, 2, 3, 4, 5, 7, 9, 11, 12])));
+        $this->assertSame([1 => 500, 2 => 500, 3 => 1000, 5 => 1500, 7 => 2000, 9 => 2500, 11 => 3000, 13 => 3100, 14 => 3100], array_intersect_key($hardest, array_flip([1, 2, 3, 5, 7, 9, 11, 13, 14])));
+
+        // the star of each step, a "+" above the red one
+        $mission = $missionService->currentMission($clan);
+        Sanctum::actingAs($leader);
+        $steps = collect($this->getJson("/api/clans/{$clan->id}/missions")->assertOk()->json('data.mission.steps'));
+        $this->assertSame(['-1' => false], $steps->where('target_score', 500)->mapWithKeys(fn ($step) => [(string) $step['star'] => $step['beyond_last_star']])->all());
+        $this->assertSame(3200, $steps->max('target_score'));
+        $this->assertSame(['2' => true], $steps->where('target_score', 3200)->mapWithKeys(fn ($step) => [(string) $step['star'] => $step['beyond_last_star']])->all());
+        $this->assertSame(15, $mission->number);
     }
 
     // the runs of the missions don't cost a game, the attacks and the defenses have their own games
@@ -975,6 +988,23 @@ class ClanTest extends TestCase
         // the lists are kept
         $this->assertSame([1 => 50, 5 => 225, 10 => 400, 50 => 1750], $settings->gamePacks());
         $this->assertSame(150000, $settings->rewards('war')[1]);
+    }
+
+    // the preview of the steps of the missions follows the form, before saving it
+    public function test_the_admin_previews_the_steps_of_the_missions(): void
+    {
+        $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+        Livewire::test(ManageClanSettings::class)
+            ->assertSee('pour un clan de 10 membres')
+            ->assertSee('n° 11')
+            ->assertSee('rouge +100 %')
+            ->set('data.mission_paliers_every', 3)
+            ->set('data.mission_beyond_last_star', '0.5')
+            ->assertSee('n° 16')
+            ->assertSee('4 × rouge +50 %')
+            ->assertDontSee('rouge +10 %')
+            ->assertDontSee('n° 11');
     }
 
     // the help page shows the rules set in the admin

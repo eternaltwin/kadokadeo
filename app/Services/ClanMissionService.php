@@ -78,11 +78,14 @@ class ClanMissionService
                 'expires_at' => now()->addHours(app(ClanSettings::class)->mission_hours),
             ]);
 
-            $steps = $this->stepsCount($clan->members()->count(), $number);
-            foreach ($this->pickGames($steps, $score->banned_game_id, $score->forced_game_id) as $game) {
+            // easy and hard steps mixed, in no order
+            $paliers = ClanMissionPaliers::fromSettings(app(ClanSettings::class));
+            $games = $this->pickGames($this->stepsCount($clan->members()->count(), $number), $score->banned_game_id, $score->forced_game_id);
+            $levels = collect($paliers->levels($number, $games->count()))->shuffle()->values();
+            foreach ($games as $index => $game) {
                 $mission->steps()->create([
                     'game_id' => $game->id,
-                    'target_score' => $this->targetScore($game, $number),
+                    'target_score' => $paliers->targetScore($game, $levels[$index]),
                 ]);
             }
 
@@ -315,21 +318,6 @@ class ClanMissionService
         }
 
         return $game;
-    }
-
-    // a palier of the stars of the game, one higher every ClanSettings::$mission_paliers_every missions: half the first star,
-    // the first star, between the first and the second, the second... up to the last star
-    private function targetScore(Game $game, int $number): int
-    {
-        $stars = collect($game->stars)->sort()->values();
-        $paliers = [];
-        foreach ($stars as $index => $star) {
-            $paliers[] = $index === 0 ? $star / 2 : ($stars[$index - 1] + $star) / 2;
-            $paliers[] = $star;
-        }
-        $palier = min(count($paliers) - 1, intdiv($number - 1, max(1, app(ClanSettings::class)->mission_paliers_every)));
-
-        return max(1, (int) round($paliers[$palier]));
     }
 
     /**
