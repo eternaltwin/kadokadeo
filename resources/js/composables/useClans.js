@@ -28,6 +28,7 @@ export function useClans() {
     promote: (id, etwinId) => post(`/clans/${id}/members/${etwinId}/leader`),
     setRole: (id, etwinId, role) => put(`/clans/${id}/members/${etwinId}/role`, { role }),
     setCombatRole: (id, etwinId, combatRole) => put(`/clans/${id}/members/${etwinId}/combat-role`, { combat_role: combatRole }),
+    setStatus: (id, etwinId, status) => put(`/clans/${id}/members/${etwinId}/status`, { status }),
     dissolve: (id) => del(`/clans/${id}`),
     attack: (id, gameId) => post(`/clans/${id}/attacks`, { game_id: gameId }).then(data),
     defend: (attackId) => post(`/clan-attacks/${attackId}/defend`).then(data),

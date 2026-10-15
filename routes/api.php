@@ -70,6 +70,7 @@ Route::prefix('/clans/{clan}')->whereNumber('clan')->group(function () {
     Route::post('/members/{user:etwin_id}/leader', [App\Http\Controllers\Api\ClanMemberController::class, 'promote'])->whereUuid('user');
     Route::put('/members/{user:etwin_id}/role', [App\Http\Controllers\Api\ClanMemberController::class, 'role'])->whereUuid('user');
     Route::put('/members/{user:etwin_id}/combat-role', [App\Http\Controllers\Api\ClanMemberController::class, 'combatRole'])->whereUuid('user');
+    Route::put('/members/{user:etwin_id}/status', [App\Http\Controllers\Api\ClanMemberController::class, 'status'])->whereUuid('user');
     Route::delete('/', [App\Http\Controllers\Api\ClanMemberController::class, 'dissolve']);
     Route::post('/games/donate', [App\Http\Controllers\Api\ClanGameController::class, 'donate']);
     Route::post('/members/{user:etwin_id}/games', [App\Http\Controllers\Api\ClanGameController::class, 'distribute'])->whereUuid('user');

@@ -38,4 +38,10 @@ class ClanMission extends Model
     {
         return $this->hasMany(ClanMissionStep::class)->orderBy('id');
     }
+
+    // the option won with the mission (by chance, App\Settings\ClanSettings::$bonus_chance)
+    public function bonus()
+    {
+        return $this->hasOne(ClanBonus::class);
+    }
 }

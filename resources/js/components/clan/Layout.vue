@@ -36,7 +36,7 @@ const paidGames = computed(() => authStore.user?.clan_games ?? 0)
         <ClanMenuTitle>Infos</ClanMenuTitle>
         <ul class="m-0 mb-2.5 ml-1 list-none border border-solid border-[#738e93] bg-[url(/gfx/clan/greyBg.jpg)] bg-[position:-650px_-8px] bg-no-repeat p-0">
           <div class="flex justify-around items-center gap-2 border-b border-solid border-white">
-            <ClanMenuStat icon="/assets/img/gfx/icons/clan_score.gif" title="Position du clan dans le classement des attaques.">
+            <ClanMenuStat icon="/gfx/clan/clan_rank.svg" title="Position du clan dans le classement des attaques.">
               <Number :value="stats.war_rank ?? 0" color="green" />
             </ClanMenuStat>
             <ClanMenuStat icon="/assets/img/gfx/icons/clan_points.gif" title="Score d'attaque : il augmente lorsque le clan réussit une attaque.">
@@ -44,7 +44,7 @@ const paidGames = computed(() => authStore.user?.clan_games ?? 0)
             </ClanMenuStat>
           </div>
           <div class="flex justify-around items-center gap-2 border-b border-solid border-white">
-            <ClanMenuStat icon="/assets/img/gfx/icons/clan_score.gif" title="Position du clan dans le classement des attaques.">
+            <ClanMenuStat icon="/gfx/clan/clan_rank_missions.svg" title="Position du clan dans le classement des missions.">
               <Number :value="stats.mission_rank ?? 0" color="green" />
             </ClanMenuStat>
             <ClanMenuStat icon="/gfx/clan/clan_mission_points.png" title="Score de mission : il augmente lorsque le clan réussit une mission.">

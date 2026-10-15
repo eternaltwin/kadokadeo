@@ -557,10 +557,14 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.0.user.etwin_id', $member->etwin_id)
             ->assertJsonPath('data.0.points', 5);
 
-        // the next mission
-        $this->getJson("/api/clans/{$clan->id}/missions")->assertOk()
+        // the next mission, and the option won with the previous one
+        $response = $this->getJson("/api/clans/{$clan->id}/missions")->assertOk()
             ->assertJsonPath('data.mission.number', 2)
-            ->assertJsonPath('data.mission.reward', 10);
+            ->assertJsonPath('data.mission.reward', 10)
+            ->assertJsonPath('data.missions.0.number', 1)
+            ->assertJsonPath('data.missions.0.bonus.used', false);
+        $won = ClanBonus::query()->where('clan_mission_id', $mission->id)->sole();
+        $this->assertSame($won->type->value, $response->json('data.missions.0.bonus.type'));
         // the ranking of the missions: the steps done of the mission in progress
         $this->getJson('/api/clans?ranking=missions')->assertOk()
             ->assertJsonPath('data.0.mission', ['number' => 2, 'steps' => 5, 'steps_done' => 0]);
@@ -715,6 +719,42 @@ class ClanTest extends TestCase
         $clan->members()->create(['user_id' => $member->id]);
         $this->expectExceptionMessage('Seuls le chef de clan et ses bras droits peuvent faire ça.');
         $missionService->useBonus($member, $bonus(ClanBonusType::MORE_TIME));
+    }
+
+    public function test_the_status_of_the_members(): void
+    {
+        $this->period();
+        $leader = User::factory()->create();
+        $rightHand = User::factory()->create();
+        $member = User::factory()->create();
+        $other = User::factory()->create();
+        $clan = Clan::factory()->withLeader($leader)->create();
+        $clan->members()->create(['user_id' => $rightHand->id, 'role' => ClanRole::RIGHT_HAND]);
+        $clan->members()->create(['user_id' => $member->id]);
+        $status = fn (User $user) => "/api/clans/{$clan->id}/members/{$user->etwin_id}/status";
+
+        // his own status
+        Sanctum::actingAs($member);
+        $this->putJson($status($member), ['status' => '  dispo le soir '])->assertNoContent();
+        $this->assertDatabaseHas('clan_members', ['user_id' => $member->id, 'status' => 'dispo le soir']);
+        $this->putJson($status($leader), ['status' => 'en vacances'])->assertStatus(422);
+        $this->putJson($status($member), ['status' => str_repeat('a', 61)])->assertStatus(422);
+        $members = collect($this->getJson("/api/clans/{$clan->id}/members")->assertOk()->json('data'))->keyBy('user.etwin_id');
+        $this->assertSame('dispo le soir', $members[$member->etwin_id]['status']);
+        $this->assertTrue($members[$member->etwin_id]['can_edit_status']);
+        $this->assertFalse($members[$leader->etwin_id]['can_edit_status']);
+
+        // anyone's for the right hands and the leader
+        Sanctum::actingAs($rightHand);
+        $this->putJson($status($leader), ['status' => 'en vacances'])->assertNoContent();
+        $this->putJson($status($member), ['status' => null])->assertNoContent();
+        $this->assertDatabaseHas('clan_members', ['user_id' => $member->id, 'status' => null]);
+        $this->assertTrue(collect($this->getJson("/api/clans/{$clan->id}/members")->json('data'))->every('can_edit_status'));
+
+        // the statuses are seen by the clan only
+        Sanctum::actingAs($other);
+        $this->getJson("/api/clans/{$clan->id}/members")->assertOk()->assertJsonMissingPath('data.0.status');
+        $this->putJson($status($member), ['status' => 'coucou'])->assertStatus(422);
     }
 
     // bought by packs with Kado points, given to the clan, distributed by the leader and the right hands

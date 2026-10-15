@@ -117,6 +117,15 @@ class ClanMemberController extends Controller implements HasMiddleware
         return response()->noContent();
     }
 
+    // the status shown to the clan in the list of the members ("dispo le soir"...)
+    public function status(Request $request, Clan $clan, User $user)
+    {
+        $validated = $request->validate(['status' => ['present', 'nullable', 'string', 'max:60']]);
+        $this->clanService->setStatus($request->user(), $clan, $user, $validated['status']);
+
+        return response()->noContent();
+    }
+
     public function dissolve(Request $request, Clan $clan)
     {
         $this->clanService->dissolve($request->user(), $clan);
