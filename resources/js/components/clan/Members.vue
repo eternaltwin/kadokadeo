@@ -7,12 +7,13 @@ const props = defineProps({
 
 const route = useRoute()
 const router = useRouter()
-const { fetchMembers, isLoading, error } = useClans()
+const { fetchMembers, setStatus, isLoading, error } = useClans()
 const members = ref([])
 
-watchEffect(() => fetchMembers(props.clan.id).then((data) => {
+const load = () => fetchMembers(props.clan.id).then((data) => {
   members.value = data.data
-}))
+})
+watchEffect(load)
 
 const sorts = {
   names: (a, b) => a.user.display_name.localeCompare(b.user.display_name),
@@ -27,6 +28,22 @@ const roleLabels = { right_hand: 'Bras droit' }
 const combatRoleLabels = { attacker: 'Attaquant', defender: 'Défenseur' }
 const sorted = computed(() => [...members.value].sort(sorts[sort.value]))
 const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
+
+// the totals of the clan
+const total = (key) => members.value.reduce((sum, m) => sum + m[key], 0)
+
+// the statuses ("dispo le soir"...), seen by the clan only: his own, or anyone's for the leader and the right hands
+const showStatus = computed(() => props.clan.viewer.is_member)
+const editing = ref(null)
+const draft = ref('')
+const editStatus = (m) => {
+  editing.value = m.user.etwin_id
+  draft.value = m.status ?? ''
+}
+const saveStatus = (m) => setStatus(props.clan.id, m.user.etwin_id, draft.value).then(() => {
+  editing.value = null
+  return load()
+})
 </script>
 
 <template>
@@ -55,6 +72,7 @@ const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
             <th title="Défenses réussies / tentées" @click="sortBy('defenses')">
               <img src="/assets/img/gfx/icons/def.gif" alt="défenses" class="h-5" />
             </th>
+            <th v-if="showStatus" class="min-w-40 cursor-default! text-left" title="Visible uniquement par les membres du clan">Statut</th>
           </tr>
         </thead>
         <tbody>
@@ -75,8 +93,37 @@ const sortBy = (key) => router.replace({ query: { ...route.query, sort: key } })
             <td class="text-right"><Number :value="m.mission_steps" color="green" /></td>
             <td class="text-right" :title="`${m.attacks_won} réussie(s) sur ${m.attacks}`"><Number :value="m.attacks_won" color="pink" /></td>
             <td class="text-right" :title="`${m.defenses_won} réussie(s) sur ${m.defenses}`"><Number :value="m.defenses_won" color="blue" /></td>
+            <td v-if="showStatus" class="text-left text-xs">
+              <form v-if="editing === m.user.etwin_id" class="flex items-center gap-1" @submit.prevent="saveStatus(m)">
+                <FormInput v-model="draft"
+                           maxlength="60"
+                           placeholder="Vos dispos, vos absences..."
+                           class="w-full min-w-0"
+                           @keydown.esc="editing = null" />
+                <FormButton type="submit" size="sm">OK</FormButton>
+                <FormButton variant="pink" size="sm" @click="editing = null">Annuler</FormButton>
+              </form>
+              <template v-else>
+                <span class="break-words">{{ m.status }}</span>
+                <a v-if="m.can_edit_status"
+                   href="#"
+                   class="ml-1 text-kado-orange"
+                   @click.prevent="editStatus(m)">Éditer</a>
+              </template>
+            </td>
           </tr>
         </tbody>
+        <tfoot v-if="members.length > 1">
+          <tr class="border-t-2 border-solid border-kado-cyan-800 font-bold">
+            <td class="text-right [font-variant:small-caps]">Total</td>
+            <td class="text-right"><Number :value="total('points')" color="blue" /></td>
+            <td class="text-right"><Number :value="total('performance')" color="orange" /></td>
+            <td class="text-right"><Number :value="total('mission_steps')" color="green" /></td>
+            <td class="text-right" :title="`${total('attacks_won')} réussie(s) sur ${total('attacks')}`"><Number :value="total('attacks_won')" color="pink" /></td>
+            <td class="text-right" :title="`${total('defenses_won')} réussie(s) sur ${total('defenses')}`"><Number :value="total('defenses_won')" color="blue" /></td>
+            <td v-if="showStatus" />
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>

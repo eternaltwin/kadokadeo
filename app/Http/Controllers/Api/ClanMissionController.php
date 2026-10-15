@@ -47,8 +47,15 @@ class ClanMissionController extends Controller implements HasMiddleware
                     ->where('clan_id', $clan->id)
                     ->where('period_id', $period->id)
                     ->where('status', '!=', ClanMission::ACTIVE)
-                    ->orderByDesc('number')
-                    ->get(['id', 'number', 'status', 'points', 'completed_at']),
+                    ->with('bonus')
+                    ->orderByDesc('id')
+                    ->get()
+                    ->map(fn (ClanMission $mission) => [
+                        ...$mission->only(['id', 'number', 'status', 'points']),
+                        'completed_at' => $mission->completed_at?->toIso8601String(),
+                        // the option won with the mission, if any
+                        'bonus' => $mission->bonus ? $this->bonusData($mission->bonus) + ['used' => $mission->bonus->used_at !== null] : null,
+                    ]),
                 'mission_score' => $score->mission_score,
                 'missions_completed' => $score->missions_completed,
                 'banned_game' => $score->bannedGame?->only(['id', 'name']),
@@ -59,13 +66,7 @@ class ClanMissionController extends Controller implements HasMiddleware
                     ->where('period_id', $period->id)
                     ->orderBy('id')
                     ->get()
-                    ->map(fn (ClanBonus $bonus) => [
-                        'id' => $bonus->id,
-                        'type' => $bonus->type->value,
-                        'label' => $bonus->type->getLabel(),
-                        'description' => $bonus->type->description(),
-                        'icon' => $bonus->type->icon(),
-                    ]),
+                    ->map(fn (ClanBonus $bonus) => $this->bonusData($bonus)),
             ],
             'tournament' => $this->clanService->tournamentInfo(),
         ];
@@ -94,6 +95,17 @@ class ClanMissionController extends Controller implements HasMiddleware
         $this->missionService->useBonus($request->user(), $bonus, $validated);
 
         return response()->noContent();
+    }
+
+    private function bonusData(ClanBonus $bonus): array
+    {
+        return [
+            'id' => $bonus->id,
+            'type' => $bonus->type->value,
+            'label' => $bonus->type->getLabel(),
+            'description' => $bonus->type->description(),
+            'icon' => $bonus->type->icon(),
+        ];
     }
 
     private function missionData(ClanMission $mission, int $viewerId): array

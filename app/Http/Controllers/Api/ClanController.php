@@ -228,12 +228,16 @@ class ClanController extends Controller implements HasMiddleware
             ? ClanMemberStat::query()->where('clan_id', $clan->id)->where('period_id', $period->id)->get()->keyBy('user_id')
             : collect();
 
+        // the statuses are seen by the clan only: its own, or anyone's for the leader and the right hands
+        $viewer = $request->user();
+        $viewerRole = $this->clanService->roleOf($viewer, $clan);
+
         $members = ClanMember::query()
             ->where('clan_id', $clan->id)
             ->with('user')
             ->orderBy('created_at')
             ->get()
-            ->map(function (ClanMember $member) use ($clan, $stats, $period) {
+            ->map(function (ClanMember $member) use ($clan, $stats, $period, $viewer, $viewerRole) {
                 $stat = $stats->get($member->user_id);
                 $isLeader = $clan->leader_id === $member->user_id;
 
@@ -254,6 +258,10 @@ class ClanController extends Controller implements HasMiddleware
                     'defenses_won' => $stat?->defenses_won ?? 0,
                     'mission_steps' => $stat?->mission_steps ?? 0,
                     'performance' => $stat?->performance ?? 0,
+                    ...($viewerRole ? [
+                        'status' => $member->status,
+                        'can_edit_status' => $member->user_id === $viewer->id || $viewerRole->canManage(),
+                    ] : []),
                 ];
             })
             ->sortByDesc('points')

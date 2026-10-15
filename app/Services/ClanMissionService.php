@@ -275,6 +275,7 @@ class ClanMissionService
             ClanBonus::query()->create([
                 'clan_id' => $mission->clan_id,
                 'period_id' => $mission->period_id,
+                'clan_mission_id' => $mission->id,
                 'type' => $this->randomBonusType(),
             ]);
         }

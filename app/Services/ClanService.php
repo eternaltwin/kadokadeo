@@ -302,6 +302,19 @@ class ClanService
         });
     }
 
+    // the status of a member in the list of the members, seen by the clan only: his own, or anyone's for the leader and the
+    // right hands
+    public function setStatus(User $user, Clan $clan, User $member, ?string $status): void
+    {
+        $this->assertMember($member, $clan);
+        if ($user->id !== $member->id) {
+            $this->assertManager($user, $clan);
+        }
+
+        $status = trim($status ?? '');
+        $clan->members()->where('user_id', $member->id)->update(['status' => $status !== '' ? $status : null]);
+    }
+
     // accepted in the clan during the current period: he can't leave nor be excluded before the next one
     public function isNewMember(User $user, Clan $clan): bool
     {

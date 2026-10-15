@@ -166,7 +166,19 @@ const confirmBonus = () => {
         <ul class="list-inside list-image-[url(/gfx/puce.jpg)] ml-4 space-y-1">
           <li v-for="m in data.missions" :key="m.id">
             Mission {{ m.number }} : {{ statusLabels[m.status] ?? m.status }}
-            <template v-if="m.status === 'completed'">(+{{ m.points }} points)</template>
+            <template v-if="m.status === 'completed'">
+              (+{{ m.points }} points)
+              <template v-if="m.bonus">
+                — option gagnée :
+                <img :src="m.bonus.icon"
+                     :alt="m.bonus.label"
+                     :title="m.bonus.description"
+                     class="h-5 align-middle" />
+                <strong>{{ m.bonus.label }}</strong>
+                <span v-if="m.bonus.used" class="italic">(utilisée)</span>
+              </template>
+              <span v-else class="italic">— aucune option gagnée</span>
+            </template>
             <template v-else-if="m.status === 'failed' && m.points < 0">({{ -m.points }} points perdus)</template>
           </li>
         </ul>
