@@ -31,6 +31,13 @@ class ClanForm
                     ->preload(),
                 Toggle::make('is_recruiting')
                     ->label('Recrute'),
+                // the paid clan games given by the members, distributed by the leader and the right hands
+                TextInput::make('clan_games')
+                    ->label('Coffre (parties de clan)')
+                    ->helperText('Parties données par les membres, que le chef et ses bras droits distribuent.')
+                    ->required()
+                    ->integer()
+                    ->minValue(0),
                 Textarea::make('description')
                     ->label('Présentation')
                     ->rows(8)
