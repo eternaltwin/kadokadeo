@@ -8,6 +8,7 @@ use App\Models\Clan;
 use App\Models\ClanBonus;
 use App\Models\ClanMission;
 use App\Models\ClanMissionStep;
+use App\Services\ClanMissionPaliers;
 use App\Services\ClanMissionService;
 use App\Services\ClanService;
 use Illuminate\Http\Request;
@@ -125,23 +126,27 @@ class ClanMissionController extends Controller implements HasMiddleware
             'expires_at' => $mission->expires_at->toIso8601String(),
             // won if all the steps are done in time, otherwise 1 point lost by step not done, minus one
             'reward' => $this->missionService->missionPoints($mission->number),
-            'steps' => $mission->steps->map(fn (ClanMissionStep $step) => [
-                'id' => $step->id,
-                'game' => ['id' => $step->game->id, 'name' => $step->game->name],
-                'target_score' => $step->target_score,
-                // the star of the score to reach (-1: none, 0: green, 1: orange, 2: red), above the last star
-                'star' => $step->game->getStarFromScore($step->target_score),
-                'beyond_last_star' => $step->target_score > max($step->game->stars ?: [PHP_INT_MAX]),
-                'skipped' => $step->skipped,
-                'done' => $step->isDone(),
-                'score' => $step->score,
-                'completed_by' => $step->completedBy ? UserLightResource::make($step->completedBy) : null,
-                'completed_at' => $step->completed_at?->toIso8601String(),
-                // "Je m'en occupe" (for the members)
-                'reserved_by' => $isMember && $step->reservedBy ? UserLightResource::make($step->reservedBy) : null,
-                'reserved_at' => $isMember ? $step->reserved_at?->toIso8601String() : null,
-                'reserved_by_me' => $isMember && $step->reserved_by_user_id === $viewerId,
-            ]),
+            // the hardest steps first
+            'steps' => $mission->steps
+                ->sortByDesc(fn (ClanMissionStep $step) => ClanMissionPaliers::difficulty($step->game->stars ?? [], $step->game->score_rankv1, $step->target_score))
+                ->values()
+                ->map(fn (ClanMissionStep $step) => [
+                    'id' => $step->id,
+                    'game' => ['id' => $step->game->id, 'name' => $step->game->name],
+                    'target_score' => $step->target_score,
+                    // the star of the score to reach (-1: none, 0: green, 1: orange, 2: red), above the last star
+                    'star' => $step->game->getStarFromScore($step->target_score),
+                    'beyond_last_star' => $step->target_score > max($step->game->stars ?: [PHP_INT_MAX]),
+                    'skipped' => $step->skipped,
+                    'done' => $step->isDone(),
+                    'score' => $step->score,
+                    'completed_by' => $step->completedBy ? UserLightResource::make($step->completedBy) : null,
+                    'completed_at' => $step->completed_at?->toIso8601String(),
+                    // "Je m'en occupe" (for the members)
+                    'reserved_by' => $isMember && $step->reservedBy ? UserLightResource::make($step->reservedBy) : null,
+                    'reserved_at' => $isMember ? $step->reserved_at?->toIso8601String() : null,
+                    'reserved_by_me' => $isMember && $step->reserved_by_user_id === $viewerId,
+                ]),
         ];
     }
 }
