@@ -33,15 +33,7 @@ class ClanMissionService
             return null;
         }
 
-        $expired = ClanMission::query()
-            ->where('clan_id', $clan->id)
-            ->where('period_id', $period->id)
-            ->where('status', ClanMission::ACTIVE)
-            ->where('expires_at', '<=', now())
-            ->get();
-        foreach ($expired as $mission) {
-            $this->loseMission($mission, ClanMission::FAILED);
-        }
+        $this->failExpired($clan, $period);
 
         $mission = ClanMission::query()
             ->where('clan_id', $clan->id)
@@ -54,6 +46,38 @@ class ClanMissionService
         }
 
         return $mission;
+    }
+
+    // "Régénérer la mission" (admin): the mission in progress replaced by a new one of the same number, made with the
+    // settings of now, without losing any point (as the "Mission suivante" option)
+    public function regenerateMission(Clan $clan): ClanMission
+    {
+        $period = $this->clanService->assertPeriod();
+        $this->failExpired($clan, $period);
+
+        return DB::transaction(function () use ($clan, $period) {
+            $mission = ClanMission::query()->where('clan_id', $clan->id)->where('period_id', $period->id)
+                ->where('status', ClanMission::ACTIVE)->first();
+            if ($mission) {
+                $this->loseMission($mission, ClanMission::SKIPPED);
+            }
+
+            return $this->generateMission($clan, $period);
+        });
+    }
+
+    // the missions not finished in time are failed
+    private function failExpired(Clan $clan, Period $period): void
+    {
+        $expired = ClanMission::query()
+            ->where('clan_id', $clan->id)
+            ->where('period_id', $period->id)
+            ->where('status', ClanMission::ACTIVE)
+            ->where('expires_at', '<=', now())
+            ->get();
+        foreach ($expired as $mission) {
+            $this->loseMission($mission, ClanMission::FAILED);
+        }
     }
 
     // the number of the mission: one more than the missions completed in the period

@@ -4,6 +4,9 @@ namespace App\Filament\Resources\Clans;
 
 use App\Filament\Resources\Clans\Pages\EditClan;
 use App\Filament\Resources\Clans\Pages\ListClans;
+use App\Filament\Resources\Clans\RelationManagers\BonusesRelationManager;
+use App\Filament\Resources\Clans\RelationManagers\MembersRelationManager;
+use App\Filament\Resources\Clans\RelationManagers\MissionsRelationManager;
 use App\Filament\Resources\Clans\Schemas\ClanForm;
 use App\Filament\Resources\Clans\Tables\ClansTable;
 use App\Models\Clan;
@@ -34,6 +37,15 @@ class ClanResource extends Resource
     public static function table(Table $table): Table
     {
         return ClansTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            MembersRelationManager::class,
+            MissionsRelationManager::class,
+            BonusesRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
