@@ -97,6 +97,20 @@ class LeagueService
         return min($slots, $activePlayersCount);
     }
 
+    /**
+     * Nobody played in the league during the period: the first player is promoted alone (with the stars),
+     * unless the next league is empty too (see promoteEligiblePlayers).
+     */
+    public function canBePromotedAlone(Game $game, Period $period, League $league): bool
+    {
+        $nextLeague = League::query()->where('level', $league->level + 1)->first();
+        if (!$nextLeague || $this->getPromotionSlots($league, 1) <= 0) {
+            return false;
+        }
+
+        return LeagueMembership::query()->where('game_id', $game->id)->where('period_id', $period->id)->where('league_id', $nextLeague->id)->exists();
+    }
+
     public function closePeriod(Period $period, Period $nextPeriod): void
     {
         DB::transaction(function () use ($period, $nextPeriod) {

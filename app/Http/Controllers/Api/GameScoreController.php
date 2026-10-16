@@ -34,7 +34,11 @@ class GameScoreController extends Controller implements HasMiddleware
         $personalBest = $scoreService->getUserBestScore($game, Auth::id());
         $personalBestForPeriod = $scoreService->getUserBestScore($game, Auth::id(), $currentPeriod?->id);
         $worldsBest = $scoreService->getUserBestScore($game, null);
-        $leaguesScores = $currentPeriod ? $scoreService->getLeagueScoresForPromotion($game, $currentPeriod?->id) : [];
+        $leaguesScores = $currentPeriod ? $scoreService->getLeagueScoresForPromotion($game, $currentPeriod?->id) : collect();
+        // nobody played in the league yet: any score with the stars is enough
+        if ($league && !$leaguesScores->has($league->id) && $leagueService->canBePromotedAlone($game, $currentPeriod, $league)) {
+            $leaguesScores = $leaguesScores->put($league->id, ['required_score' => null, 'active_players_count' => 0, 'promotion_slots' => 1]);
+        }
 
         return response()->json([
             'scores' => RunResource::collection($scores),

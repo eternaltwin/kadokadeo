@@ -177,6 +177,22 @@ class LeagueSystemTest extends TestCase
         ]);
     }
 
+    public function test_lone_promotion_depends_on_next_league_members(): void
+    {
+        $leagueService = app(LeagueService::class);
+        $beginner = $leagueService->getBeginnerLeague();
+        $confirmed = League::query()->where('level', 2)->firstOrFail();
+        $period = Period::factory()->create();
+        $game = Game::factory()->create(['name' => 'Lone Promotion']);
+
+        $this->assertFalse($leagueService->canBePromotedAlone($game, $period, $beginner));
+        $this->assertFalse($leagueService->canBePromotedAlone($game, $period, $leagueService->getParadiseLeague()));
+
+        LeagueMembership::factory()->for(User::factory()->create())->for($period)->for($game)->for($confirmed, 'league')->create();
+
+        $this->assertTrue($leagueService->canBePromotedAlone($game, $period, $beginner));
+    }
+
     public function test_period_close_does_not_promote_without_required_star(): void
     {
         $leagueService = app(LeagueService::class);
