@@ -51,23 +51,19 @@ class ClanSettings extends Settings
 
     public float $mission_steps_ratio;
 
-    // the scores to reach (App\Services\ClanMissionPaliers): the top palier of the stars of the game one higher every this
-    // many missions; this share of the steps at the top palier (min + step by palier, at most max); this many steps kept
-    // easy (half the first star); the others spread on this many paliers under the top one; beyond the last star, paliers
-    // of this share of the way up to the "Score 1500" of the game
-    public int $mission_paliers_every;
+    // the scores to reach (App\Services\ClanMissionPaliers), by difficulty in stars: the top difficulty of a mission goes up
+    // by this many stars with each mission from half the first star, then beyond the last star by this share of the way
+    // up to the "Score 1500" of the game with each mission; this share of the steps at the top difficulty (min + step by
+    // mission, at most max), the others spread from half the first star up to it
+    public float $mission_stars_per_mission;
+
+    public float $mission_beyond_last_star;
 
     public float $mission_hard_share_min;
 
     public float $mission_hard_share_step;
 
     public float $mission_hard_share_max;
-
-    public int $mission_easy_steps;
-
-    public int $mission_spread_paliers;
-
-    public float $mission_beyond_last_star;
 
     // the points of a completed mission: first, one less every `every` missions, at least min
     public int $mission_points_first;

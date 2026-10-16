@@ -399,9 +399,9 @@ class ClanTest extends TestCase
         $step = app(ClanMissionService::class)->currentMission($clanB)->steps->first();
         Sanctum::actingAs($other);
         $this->postJson("/api/clan-mission-steps/{$step->id}/reserve")->assertNoContent();
-        $this->getJson("/api/clans/{$clanB->id}/missions")->assertOk()
-            ->assertJsonPath('data.mission.steps.0.reserved_by.etwin_id', $other->etwin_id)
-            ->assertJsonPath('data.mission.steps.0.reserved_by_me', true);
+        $steps = collect($this->getJson("/api/clans/{$clanB->id}/missions")->assertOk()->json('data.mission.steps'))->keyBy('id');
+        $this->assertSame($other->etwin_id, $steps[$step->id]['reserved_by']['etwin_id']);
+        $this->assertTrue($steps[$step->id]['reserved_by_me']);
         Sanctum::actingAs($attacker);
         $this->postJson("/api/clan-mission-steps/{$step->id}/reserve")->assertStatus(422);
     }
@@ -626,11 +626,11 @@ class ClanTest extends TestCase
         $this->assertSame(17, ClanPeriodScore::query()->where('clan_id', $clan->id)->value('mission_score'));
     }
 
-    // the top palier goes up every 2 missions (half the first star, the first star, between the first and the second...,
-    // then beyond the red star towards the "Score 1500" of the game), an easy step stays at half the first star
+    // the top difficulty goes up by a quarter of star with each mission from half the first star, then by 10 % of the way to
+    // the "Score 1500" of the game beyond the red star; the other steps start from half the first star
     public function test_the_paliers_get_higher_with_the_missions_completed(): void
     {
-        ClanSettings::fake(['bonus_chance' => 0, 'mission_paliers_every' => 2]);
+        ClanSettings::fake(['bonus_chance' => 0, 'mission_stars_per_mission' => 0.25, 'mission_beyond_last_star' => 0.1]);
         $period = $this->period();
         $leader = User::factory()->create();
         $clan = Clan::factory()->withLeader($leader)->create();
@@ -643,7 +643,7 @@ class ClanTest extends TestCase
             $this->assertSame($number, $mission->number);
             $targets = $mission->steps->pluck('target_score');
             $hardest[$number] = $targets->max();
-            // the easy step (a lone player: 5 steps)
+            // the easiest step (a lone player: 5 steps)
             $this->assertSame(500, $targets->min());
             foreach ($mission->steps as $step) {
                 $missionService->startStep($leader, $step);
@@ -651,15 +651,15 @@ class ClanTest extends TestCase
             }
         }
 
-        $this->assertSame([1 => 500, 2 => 500, 3 => 1000, 5 => 1500, 7 => 2000, 9 => 2500, 11 => 3000, 13 => 3100, 14 => 3100], array_intersect_key($hardest, array_flip([1, 2, 3, 5, 7, 9, 11, 13, 14])));
+        $this->assertSame([1 => 500, 2 => 750, 3 => 1000, 5 => 1500, 7 => 2000, 9 => 2500, 11 => 3000, 12 => 3100, 14 => 3300], array_intersect_key($hardest, array_flip([1, 2, 3, 5, 7, 9, 11, 12, 14])));
 
         // the star of each step, a "+" above the red one
         $mission = $missionService->currentMission($clan);
         Sanctum::actingAs($leader);
         $steps = collect($this->getJson("/api/clans/{$clan->id}/missions")->assertOk()->json('data.mission.steps'));
         $this->assertSame(['-1' => false], $steps->where('target_score', 500)->mapWithKeys(fn ($step) => [(string) $step['star'] => $step['beyond_last_star']])->all());
-        $this->assertSame(3200, $steps->max('target_score'));
-        $this->assertSame(['2' => true], $steps->where('target_score', 3200)->mapWithKeys(fn ($step) => [(string) $step['star'] => $step['beyond_last_star']])->all());
+        $this->assertSame(3400, $steps->max('target_score'));
+        $this->assertSame(['2' => true], $steps->where('target_score', 3400)->mapWithKeys(fn ($step) => [(string) $step['star'] => $step['beyond_last_star']])->all());
         $this->assertSame(15, $mission->number);
     }
 
@@ -997,14 +997,16 @@ class ClanTest extends TestCase
 
         Livewire::test(ManageClanSettings::class)
             ->assertSee('pour un clan de 10 membres')
-            ->assertSee('n° 11')
+            ->assertSee('Palier le plus haut')
+            // a row every 2 missions (a quarter of star by mission), up to the "Score 1500" at the mission 21
+            ->assertSee('n° 21')
             ->assertSee('rouge +100 %')
-            ->set('data.mission_paliers_every', 3)
+            ->assertDontSee('n° 23')
+            ->set('data.mission_stars_per_mission', '0.5')
             ->set('data.mission_beyond_last_star', '0.5')
-            ->assertSee('n° 16')
-            ->assertSee('4 × rouge +50 %')
-            ->assertDontSee('rouge +10 %')
-            ->assertDontSee('n° 11');
+            ->assertSee('n° 8')
+            ->assertSee('1 × grise · 2 × verte · 2 × orange · 3 × rouge +50 %')
+            ->assertDontSee('n° 9');
     }
 
     // the help page shows the rules set in the admin

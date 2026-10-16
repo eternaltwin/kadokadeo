@@ -78,7 +78,7 @@ class ClanMissionService
                 'expires_at' => now()->addHours(app(ClanSettings::class)->mission_hours),
             ]);
 
-            // easy and hard steps mixed, in no order
+            // steps of all the difficulties, in no order
             $paliers = ClanMissionPaliers::fromSettings(app(ClanSettings::class));
             $games = $this->pickGames($this->stepsCount($clan->members()->count(), $number), $score->banned_game_id, $score->forced_game_id);
             $levels = collect($paliers->levels($number, $games->count()))->shuffle()->values();
