@@ -116,7 +116,7 @@ const date = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', mo
               <td class="text-left [font-variant:small-caps]">
                 <template v-if="box === 'sent'">{{ message.recipient.display_name }}</template>
                 <template v-else-if="message.sender">{{ message.sender.display_name }}</template>
-                <template v-else><span class="text-kado-orange">KadoKado</span></template>
+                <template v-else><span class="text-kado-orange">KadoKadéo</span></template>
               </td>
               <td class="text-left">
                 <RouterLink :to="{ name: 'messages.show', params: { id: message.id } }">{{ message.subject }}</RouterLink>
