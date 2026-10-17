@@ -57,7 +57,7 @@ const date = (iso) => new Date(iso).toLocaleString('fr-FR', { weekday: 'long', d
         </template>
         le {{ date(message.created_at) }}
       </p>
-      <div class="border-2 border-white bg-white/70 p-3 whitespace-pre-line break-words">{{ message.body }}</div>
+      <MarktwinContent :text="message.body" class="border-2 border-white bg-white/70 p-3" />
 
       <div class="flex gap-2">
         <FormButton v-if="received && message.sender" size="lg" @click="answer">Répondre</FormButton>
