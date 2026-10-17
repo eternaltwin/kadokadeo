@@ -14,7 +14,7 @@ import svgLoader from 'vite-svg-loader'
 export default defineConfig({
   plugins: [
     laravel({
-      input: ['resources/css/app.css', 'resources/js/main.js', 'resources/js/replay-player.js'],
+      input: ['resources/css/app.css', 'resources/js/main.js', 'resources/js/replay-player.js', 'resources/js/admin/marktwin.js'],
       refresh: true,
     }),
     tailwindcss(),

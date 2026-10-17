@@ -30,6 +30,26 @@ class MessageService
         ]);
     }
 
+    // a message of the site to every player not banned (sent from the admin panel): the number of messages sent
+    public function systemToAll(string $subject, string $body): int
+    {
+        $sent = 0;
+        User::query()->whereNull('banned_at')->select('id')->chunkById(500, function ($users) use ($subject, $body, &$sent) {
+            $now = now();
+            Message::query()->insert($users->map(fn (User $user) => [
+                'sender_id' => null,
+                'recipient_id' => $user->id,
+                'subject' => $subject,
+                'body' => $body,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])->all());
+            $sent += $users->count();
+        });
+
+        return $sent;
+    }
+
     public function unreadCount(User $user): int
     {
         return Message::query()->inboxOf($user)->whereNull('read_at')->count();
