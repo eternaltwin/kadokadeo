@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClanBonus extends Model
 {
-    protected $fillable = ['clan_id', 'period_id', 'clan_mission_id', 'type', 'used_at'];
+    protected $fillable = ['clan_id', 'period_id', 'clan_mission_id', 'type', 'used_at', 'game_id'];
 
     protected $casts = [
         'type' => ClanBonusType::class,
@@ -28,6 +28,12 @@ class ClanBonus extends Model
     public function mission()
     {
         return $this->belongsTo(ClanMission::class, 'clan_mission_id');
+    }
+
+    // the game added to the "Jeux caca" or the "Jeux cool" by the option
+    public function game()
+    {
+        return $this->belongsTo(Game::class);
     }
 
     public function scopeAvailable($query)

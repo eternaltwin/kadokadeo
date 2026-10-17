@@ -8,6 +8,7 @@ use App\Models\Clan;
 use App\Models\ClanBonus;
 use App\Models\ClanMission;
 use App\Models\ClanMissionStep;
+use App\Models\Game;
 use App\Services\ClanMissionPaliers;
 use App\Services\ClanMissionService;
 use App\Services\ClanService;
@@ -44,7 +45,11 @@ class ClanMissionController extends Controller implements HasMiddleware
             ? $this->missionService->currentMission($clan, $period)
             : ClanMission::query()->where('clan_id', $clan->id)->where('period_id', $period->id)
                 ->where('status', ClanMission::ACTIVE)->where('expires_at', '>', now())->first();
-        $score = $this->clanService->periodScore($clan, $period)->load('bannedGame', 'forcedGame');
+        $score = $this->clanService->periodScore($clan, $period);
+        // the "Jeux caca" and the "Jeux cool", in the order they were added
+        $lists = $isMember ? $this->missionService->gameLists($clan, $period) : ['banned' => collect(), 'forced' => collect()];
+        $listGames = Game::query()->whereIn('id', $lists['banned']->concat($lists['forced']))->get(['id', 'name'])->keyBy('id');
+        $gameList = fn ($ids) => $ids->map(fn (int $id) => $listGames->get($id)?->only(['id', 'name']))->filter()->values();
         $viewerId = $request->user()->id;
 
         return [
@@ -65,8 +70,8 @@ class ClanMissionController extends Controller implements HasMiddleware
                     ]),
                 'mission_score' => $score->mission_score,
                 'missions_completed' => $score->missions_completed,
-                'banned_game' => $isMember ? $score->bannedGame?->only(['id', 'name']) : null,
-                'forced_game' => $isMember ? $score->forcedGame?->only(['id', 'name']) : null,
+                'banned_games' => $gameList($lists['banned']),
+                'forced_games' => $gameList($lists['forced']),
                 'bonuses' => $isMember
                     ? ClanBonus::query()
                         ->available()

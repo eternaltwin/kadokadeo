@@ -19,8 +19,6 @@ class ClanPeriodScore extends Model
         'mission_rank',
         'reward',
         'closed_at',
-        'banned_game_id',
-        'forced_game_id',
     ];
 
     protected $casts = [
@@ -37,15 +35,5 @@ class ClanPeriodScore extends Model
     public function period()
     {
         return $this->belongsTo(Period::class);
-    }
-
-    public function bannedGame()
-    {
-        return $this->belongsTo(Game::class, 'banned_game_id');
-    }
-
-    public function forcedGame()
-    {
-        return $this->belongsTo(Game::class, 'forced_game_id');
     }
 }

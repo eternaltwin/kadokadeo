@@ -245,7 +245,7 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
             </template>
 
             <template v-else-if="section.id === 'options'">
-              <p>Au début de chaque période, votre Clan reçoit les options Jeu cool et Jeu caca. Chaque mission réussie a {{ rules.bonus_chance }} % de chances de lui en faire gagner une autre. C'est le chef de clan ou un bras droit qui les utilise. Le jeu cool ne peut pas être aussi le jeu caca, et inversement. Elles sont remises à zéro à la fin de la période.</p>
+              <p>Au début de chaque période, votre Clan reçoit les options Jeu cool et Jeu caca. Chaque mission réussie a {{ rules.bonus_chance }} % de chances de lui en faire gagner une autre. C'est le chef de clan ou un bras droit qui les utilise. Chaque Jeu caca et chaque Jeu cool ajoute un jeu à la liste des jeux caca ou des jeux cool du Clan ; un jeu ne peut être que dans une seule liste. S'il y a plus de jeux cool que d'étapes, la mission en prend une partie au hasard. Elles sont remises à zéro à la fin de la période.</p>
               <table class="w-full">
                 <tbody>
                   <tr v-for="bonus in rules.bonuses ?? []" :key="bonus.type">

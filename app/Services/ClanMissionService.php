@@ -15,6 +15,7 @@ use App\Models\Period;
 use App\Models\Run;
 use App\Models\User;
 use App\Settings\ClanSettings;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 // the collaborative missions of the clans: a score (a palier of the stars) to reach on several games within
@@ -104,7 +105,8 @@ class ClanMissionService
 
             // steps of all the difficulties, in no order
             $paliers = ClanMissionPaliers::fromSettings(app(ClanSettings::class));
-            $games = $this->pickGames($this->stepsCount($clan->members()->count(), $number), $score->banned_game_id, $score->forced_game_id);
+            $lists = $this->gameLists($clan, $period);
+            $games = $this->pickGames($this->stepsCount($clan->members()->count(), $number), $lists['banned'], $lists['forced']);
             $levels = collect($paliers->levels($number, $games->count()))->shuffle()->values();
             foreach ($games as $index => $game) {
                 $mission->steps()->create([
@@ -236,8 +238,9 @@ class ClanMissionService
         $period = $this->clanService->assertPeriod();
 
         DB::transaction(function () use ($bonus, $clan, $period, $params) {
-            $score = $this->clanService->periodScore($clan, $period);
             $mission = $this->currentMission($clan, $period);
+            // the game added to the "Jeux caca" or the "Jeux cool"
+            $gameId = null;
             if (!$mission && in_array($bonus->type, [ClanBonusType::MORE_TIME, ClanBonusType::SKIP_STEP], true)) {
                 throw new ClanException('Aucune mission en cours.');
             }
@@ -250,20 +253,9 @@ class ClanMissionService
                     }
                     $this->generateMission($clan, $period);
                     break;
-                    // a "Jeu caca" can't be the "Jeu cool" too, and the other way round
                 case ClanBonusType::BAN_GAME:
-                    $game = $this->activeGame($params['game_id'] ?? null);
-                    if ($score->forced_game_id === $game->id) {
-                        throw new ClanException('Ce jeu est le jeu cool du clan : il ne peut pas être aussi le jeu caca.');
-                    }
-                    $score->update(['banned_game_id' => $game->id]);
-                    break;
                 case ClanBonusType::FORCE_GAME:
-                    $game = $this->activeGame($params['game_id'] ?? null);
-                    if ($score->banned_game_id === $game->id) {
-                        throw new ClanException('Ce jeu est le jeu caca du clan : il ne peut pas être aussi le jeu cool.');
-                    }
-                    $score->update(['forced_game_id' => $game->id]);
+                    $gameId = $this->addToGameList($bonus, $period, $params['game_id'] ?? null);
                     break;
                 case ClanBonusType::MORE_TIME:
                     $mission->update(['expires_at' => $mission->expires_at->addHours(app(ClanSettings::class)->mission_more_time_hours)]);
@@ -278,11 +270,55 @@ class ClanMissionService
                     break;
             }
 
-            $bonus->update(['used_at' => now()]);
+            $bonus->update(['used_at' => now(), 'game_id' => $gameId]);
         });
     }
 
+    // the "Jeux caca" (never in the next missions of the period) and the "Jeux cool" (in the next missions first): the
+    // games of the options used, in the order they were added
+    /**
+     * @return array{banned: \Illuminate\Support\Collection<int, int>, forced: \Illuminate\Support\Collection<int, int>}
+     */
+    public function gameLists(Clan $clan, Period $period): array
+    {
+        $games = ClanBonus::query()
+            ->where('clan_id', $clan->id)
+            ->where('period_id', $period->id)
+            ->whereNotNull('game_id')
+            ->orderBy('used_at')
+            ->orderBy('id')
+            ->get(['type', 'game_id']);
+
+        return [
+            'banned' => $games->where('type', ClanBonusType::BAN_GAME)->pluck('game_id')->values(),
+            'forced' => $games->where('type', ClanBonusType::FORCE_GAME)->pluck('game_id')->values(),
+        ];
+    }
+
     // ---------------------------------------------------------------- internals
+
+    // a "Jeu caca" or a "Jeu cool" adds its game to its list: a game is in one list at most, once
+    // (clan_bonuses: unique clan_id, period_id, game_id)
+    private function addToGameList(ClanBonus $bonus, Period $period, ?int $gameId): int
+    {
+        $game = $this->activeGame($gameId);
+        // the clan is locked: two options used at the same time can't add the same game
+        Clan::query()->lockForUpdate()->find($bonus->clan_id);
+        $lists = $this->gameLists($bonus->clan, $period);
+        $isBan = $bonus->type === ClanBonusType::BAN_GAME;
+        [$same, $opposite] = $isBan ? [$lists['banned'], $lists['forced']] : [$lists['forced'], $lists['banned']];
+
+        if ($same->contains($game->id)) {
+            throw new ClanException($isBan ? 'Ce jeu est déjà un jeu caca du clan.' : 'Ce jeu est déjà un jeu cool du clan.');
+        }
+        if ($opposite->contains($game->id)) {
+            throw new ClanException($isBan
+                ? 'Ce jeu est un jeu cool du clan : il ne peut pas être aussi un jeu caca.'
+                : 'Ce jeu est un jeu caca du clan : il ne peut pas être aussi un jeu cool.');
+        }
+
+        return $game->id;
+    }
 
     // all the steps done in time: the points of the mission, maybe an option, and the next mission
     private function completeMissionIfDone(ClanMission $mission): void
@@ -344,24 +380,24 @@ class ClanMissionService
         return $game;
     }
 
+    // the "Jeux cool" first (some of them at random when there are more than the steps), then other games at random,
+    // never a "Jeu caca"
     /**
+     * @param  \Illuminate\Support\Collection<int, int>  $bannedIds
+     * @param  \Illuminate\Support\Collection<int, int>  $forcedIds
      * @return \Illuminate\Support\Collection<int, Game>
      */
-    private function pickGames(int $count, ?int $bannedGameId, ?int $forcedGameId)
+    private function pickGames(int $count, Collection $bannedIds, Collection $forcedIds)
     {
         $games = Game::query()
             ->where('is_active', true)
             ->where('is_arkadeo', false)
-            ->when($bannedGameId, fn ($q) => $q->where('id', '!=', $bannedGameId))
+            ->whereNotIn('id', $bannedIds)
             ->get()
             ->filter(fn (Game $game) => is_array($game->stars) && count($game->stars) >= 3)
             ->shuffle();
+        [$forced, $others] = $games->partition(fn (Game $game) => $forcedIds->contains($game->id));
 
-        $forced = $forcedGameId ? $games->firstWhere('id', $forcedGameId) : null;
-        if ($forced) {
-            $games = $games->reject(fn (Game $game) => $game->id === $forced->id)->prepend($forced);
-        }
-
-        return $games->take($count)->values();
+        return $forced->concat($others)->take($count)->values();
     }
 }

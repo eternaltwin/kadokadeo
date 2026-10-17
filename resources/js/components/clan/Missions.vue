@@ -13,8 +13,14 @@ const tournament = ref(null)
 const games = ref([])
 const selectedBonus = ref(null)
 const bonusGame = ref(null)
-// a "Jeu caca" can't be the "Jeu cool" too, and the other way round
-const oppositeGame = (type) => (type === 'ban_game' ? data.value?.forced_game : type === 'force_game' ? data.value?.banned_game : null)
+// a game is in the "Jeux caca" or in the "Jeux cool", once: it can't be chosen again
+const gameTag = (id) => {
+  if (data.value?.banned_games?.some((g) => g.id === id)) {
+    return 'jeu caca'
+  }
+  return data.value?.forced_games?.some((g) => g.id === id) ? 'jeu cool' : null
+}
+const gameNames = (list) => list.map((g) => g.name).join(', ')
 const bonusStep = ref(null)
 // the leader and the right hands use the options
 const canManage = computed(() => props.clan.viewer.can_manage)
@@ -137,9 +143,9 @@ const confirmBonus = () => {
         Aucune mission en cours : une nouvelle mission sera proposée à la prochaine période.
       </p>
 
-      <p v-if="isMember && (data.banned_game || data.forced_game)" class="text-sm mx-0">
-        <span v-if="data.banned_game">Jeu caca : <strong>{{ data.banned_game.name }}</strong>. </span>
-        <span v-if="data.forced_game">Jeu cool : <strong>{{ data.forced_game.name }}</strong>.</span>
+      <p v-if="isMember && (data.banned_games.length || data.forced_games.length)" class="text-sm mx-0">
+        <span v-if="data.banned_games.length">{{ data.banned_games.length > 1 ? 'Jeux caca' : 'Jeu caca' }} : <strong>{{ gameNames(data.banned_games) }}</strong>. </span>
+        <span v-if="data.forced_games.length">{{ data.forced_games.length > 1 ? 'Jeux cool' : 'Jeu cool' }} : <strong>{{ gameNames(data.forced_games) }}</strong>.</span>
       </p>
 
       <h2 v-if="isMember" class="normal-case">Options du clan</h2>
@@ -168,12 +174,12 @@ const confirmBonus = () => {
           <template v-else>
             <FormSelect v-if="['ban_game', 'force_game'].includes(selectedBonus.type)" v-model="bonusGame" class="m-1">
               <option :value="null" disabled>Choisir un jeu</option>
-              <!-- the game of the opposite option can't be chosen -->
+              <!-- the games already in a list can't be chosen -->
               <option v-for="g in games"
                       :key="g.id"
                       :value="g.id"
-                      :disabled="g.id === oppositeGame(selectedBonus.type)?.id">
-                {{ g.name }}<template v-if="g.id === oppositeGame(selectedBonus.type)?.id"> ({{ selectedBonus.type === 'ban_game' ? 'jeu cool' : 'jeu caca' }})</template>
+                      :disabled="gameTag(g.id) !== null">
+                {{ g.name }}<template v-if="gameTag(g.id)"> ({{ gameTag(g.id) }})</template>
               </option>
             </FormSelect>
             <FormSelect v-if="selectedBonus.type === 'skip_step'" v-model="bonusStep" class="m-1">

@@ -30,8 +30,8 @@ enum ClanBonusType: string implements HasLabel
     {
         return match ($this) {
             self::MORE_TIME => 'Repousse la fin de la mission de '.app(ClanSettings::class)->mission_more_time_hours.' heures pour avoir plus de temps pour la terminer.',
-            self::BAN_GAME => 'Sélectionne un jeu qui ne sera jamais présent dans les futures missions de la période.',
-            self::FORCE_GAME => 'Sélectionne un jeu qui sera obligatoirement présent dans toutes les futures missions de la période.',
+            self::BAN_GAME => 'Ajoute un jeu aux jeux caca du clan : ils ne seront jamais présents dans les futures missions de la période.',
+            self::FORCE_GAME => 'Ajoute un jeu aux jeux cool du clan : ils seront présents dans les futures missions de la période (une partie d\'entre eux au hasard s\'il y en a plus que d\'étapes).',
             self::NEXT_MISSION => 'Annule la mission en cours, sans perdre de points, et génère une nouvelle mission.',
             self::SKIP_STEP => 'Supprime une étape au choix de votre mission.',
         };

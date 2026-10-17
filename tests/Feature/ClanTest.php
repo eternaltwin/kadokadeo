@@ -686,6 +686,28 @@ class ClanTest extends TestCase
             ->assertJsonPath('message', 'Vous n\'avez plus de parties d\'attaque aujourd\'hui. Vous pouvez acheter des parties de clan avec vos points Kado.');
     }
 
+    // more "Jeux cool" than steps: the mission takes some of them at random
+    public function test_more_jeux_cool_than_steps(): void
+    {
+        ClanSettings::fake(['bonus_chance' => 0, 'mission_steps_base' => 2, 'mission_steps_min' => 1, 'mission_steps_ratio' => 1.0]);
+        $period = $this->period();
+        $leader = User::factory()->create();
+        $clan = Clan::factory()->withLeader($leader)->create();
+        $games = Game::factory()->count(8)->create();
+        $missionService = app(ClanMissionService::class);
+        $bonus = fn (ClanBonusType $type) => ClanBonus::query()->create(['clan_id' => $clan->id, 'period_id' => $period->id, 'type' => $type]);
+
+        $missionService->currentMission($clan);
+        foreach ($games->take(3) as $game) {
+            $missionService->useBonus($leader, $bonus(ClanBonusType::FORCE_GAME), ['game_id' => $game->id]);
+        }
+        $missionService->useBonus($leader, $bonus(ClanBonusType::NEXT_MISSION));
+
+        $steps = $missionService->currentMission($clan)->steps->pluck('game_id');
+        $this->assertCount(2, $steps);
+        $this->assertEmpty($steps->diff($games->take(3)->pluck('id')));
+    }
+
     public function test_the_mission_bonuses_of_the_leader_and_his_right_hands(): void
     {
         ClanSettings::fake(['bonus_chance' => 0]);
@@ -699,19 +721,32 @@ class ClanTest extends TestCase
         $bonus = fn (ClanBonusType $type) => ClanBonus::query()->create(['clan_id' => $clan->id, 'period_id' => $period->id, 'type' => $type]);
 
         $mission = $missionService->currentMission($clan);
-        // "Jeu cool": the game is in the next missions
+        // "Jeu cool" and "Jeu caca": each one adds its game to its list, the games are in (or never in) the next missions
         $missionService->useBonus($rightHand, $bonus(ClanBonusType::FORCE_GAME), ['game_id' => $games[0]->id]);
-        // ... that can't be the "Jeu caca" too: the option is not used
-        $ban = $bonus(ClanBonusType::BAN_GAME);
-        try {
-            $missionService->useBonus($leader, $ban, ['game_id' => $games[0]->id]);
-            $this->fail('A "Jeu cool" can\'t be the "Jeu caca".');
-        } catch (ClanException $e) {
-            $this->assertSame('Ce jeu est le jeu cool du clan : il ne peut pas être aussi le jeu caca.', $e->getMessage());
-        }
-        $this->assertNull($ban->fresh()->used_at);
-        $missionService->useBonus($leader, $ban, ['game_id' => $games[1]->id]);
-        $this->assertDatabaseHas('clan_period_scores', ['clan_id' => $clan->id, 'forced_game_id' => $games[0]->id, 'banned_game_id' => $games[1]->id]);
+        $missionService->useBonus($leader, $bonus(ClanBonusType::FORCE_GAME), ['game_id' => $games[1]->id]);
+        $missionService->useBonus($leader, $bonus(ClanBonusType::BAN_GAME), ['game_id' => $games[2]->id]);
+        // a game is in one list, once: the option is not used
+        $refused = function (ClanBonusType $type, Game $game, string $message) use ($missionService, $leader, $bonus) {
+            $option = $bonus($type);
+            try {
+                $missionService->useBonus($leader, $option, ['game_id' => $game->id]);
+                $this->fail($message);
+            } catch (ClanException $e) {
+                $this->assertSame($message, $e->getMessage());
+            }
+            $this->assertNull($option->fresh()->used_at);
+            $option->delete();
+        };
+        $refused(ClanBonusType::FORCE_GAME, $games[0], 'Ce jeu est déjà un jeu cool du clan.');
+        $refused(ClanBonusType::BAN_GAME, $games[0], 'Ce jeu est un jeu cool du clan : il ne peut pas être aussi un jeu caca.');
+        $refused(ClanBonusType::FORCE_GAME, $games[2], 'Ce jeu est un jeu caca du clan : il ne peut pas être aussi un jeu cool.');
+        $lists = $missionService->gameLists($clan, $period);
+        $this->assertSame([$games[0]->id, $games[1]->id], $lists['forced']->all());
+        $this->assertSame([$games[2]->id], $lists['banned']->all());
+        Sanctum::actingAs($leader);
+        $this->getJson("/api/clans/{$clan->id}/missions")->assertOk()
+            ->assertJsonPath('data.forced_games.1.name', $games[1]->name)
+            ->assertJsonPath('data.banned_games.0.id', $games[2]->id);
         // "Plus de temps"
         $expiresAt = $mission->expires_at;
         $missionService->useBonus($leader, $bonus(ClanBonusType::MORE_TIME));
@@ -723,7 +758,9 @@ class ClanTest extends TestCase
 
         $next = $missionService->currentMission($clan);
         $this->assertSame(1, $next->number);
-        $this->assertTrue($next->steps->pluck('game_id')->contains($games[0]->id));
+        $nextGames = $next->steps->pluck('game_id');
+        $this->assertTrue($nextGames->contains($games[0]->id) && $nextGames->contains($games[1]->id));
+        $this->assertFalse($nextGames->contains($games[2]->id));
 
         // "Passe étape" on every step completes the mission
         foreach ($next->steps as $step) {
@@ -1224,7 +1261,7 @@ class ClanTest extends TestCase
             ->assertJsonPath('data.mission.steps.0.reserved_by', null)
             ->assertJsonPath('data.mission.steps.0.reserved_by_me', false)
             ->assertJsonPath('data.bonuses', [])
-            ->assertJsonPath('data.banned_game', null);
+            ->assertJsonPath('data.banned_games', []);
         $this->postJson("/api/clan-mission-steps/{$step->id}/play")->assertStatus(422);
 
         $this->getJson("/api/clans/{$idle->id}/missions")->assertOk()->assertJsonPath('data.mission', null);
