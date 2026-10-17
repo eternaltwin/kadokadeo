@@ -37,8 +37,8 @@ const sidebarOpen = ref(false)
 
     <main class="items-center flex flex-col flex-1 overflow-auto md:overflow-clip pt-10 space-y-10">
 
-      <div>
-        <Announcement class="w-fit md:w-full max-w-4xl mb-6 text-sm" />
+      <div class="space-y-6">
+        <Announcement class="w-fit md:w-full max-w-4xl text-sm" />
         <PendingRuns class="w-fit md:w-full max-w-4xl text-sm" />
       </div>
 
