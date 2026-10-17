@@ -39,6 +39,7 @@
 - Public RSA key is injected into `window.Kado.public_key` in `resources/views/layouts/default.blade.php`; game clients use it to encrypt run payloads.
 - Admin panel (Filament, `/admin`) UI must be in **French**: every user-facing string in `app/Filament/`, `app/Livewire/` admin widgets and `resources/views/filament/` (labels, headings, notifications, options, tabs). Always set an explicit French `->label()` on fields/columns (Filament otherwise derives English labels from column names) and `$modelLabel`/`$pluralModelLabel` on resources. Code identifiers stay in English.
 - Scheduled commands are defined in `routes/console.php` and executed by container cron (`docker/app/conf/crontab` runs `artisan schedule:run` every minute).
+- Clan forum (`App\Services\ClanForumService`, `/api/clans/{clan}/forum`): messages are stored as raw Marktwin and rendered client-side only (`useMarktwin`, grammar in `resources/js/marktwin/grammar.js`). The `@eternaltwin/marktwin` 0.6.0 WASM panics (and corrupts its memory) on non-ASCII input: `useMarktwin` sends it ASCII only (entities put back after). It is loaded through `vite-plugin-wasm`, whose dev helper `/__vite-plugin-wasm-helper` must be proxied to Vite (`docker/app/conf/kadokadeo.conf`).
 
 ## Existing Agent Guidance
 

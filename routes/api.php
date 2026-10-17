@@ -77,6 +77,18 @@ Route::prefix('/clans/{clan}')->whereNumber('clan')->group(function () {
     Route::post('/attacks', [App\Http\Controllers\Api\ClanWarController::class, 'attack']);
     Route::post('/war', [App\Http\Controllers\Api\ClanWarController::class, 'declareWar']);
     Route::delete('/war', [App\Http\Controllers\Api\ClanWarController::class, 'endWar']);
+    // the private forum of the clan (App\Services\ClanForumService)
+    Route::prefix('/forum')->group(function () {
+        Route::get('/topics', [App\Http\Controllers\Api\ClanForumController::class, 'index']);
+        Route::post('/topics', [App\Http\Controllers\Api\ClanForumController::class, 'store']);
+        Route::get('/topics/{topic}', [App\Http\Controllers\Api\ClanForumController::class, 'show'])->whereNumber('topic');
+        Route::patch('/topics/{topic}', [App\Http\Controllers\Api\ClanForumController::class, 'update'])->whereNumber('topic');
+        Route::delete('/topics/{topic}', [App\Http\Controllers\Api\ClanForumController::class, 'destroy'])->whereNumber('topic');
+        Route::post('/topics/{topic}/messages', [App\Http\Controllers\Api\ClanForumController::class, 'reply'])->whereNumber('topic');
+        Route::patch('/messages/{message}', [App\Http\Controllers\Api\ClanForumController::class, 'updateMessage'])->whereNumber('message');
+        Route::delete('/messages/{message}', [App\Http\Controllers\Api\ClanForumController::class, 'destroyMessage'])->whereNumber('message');
+        Route::post('/messages/{message}/restore', [App\Http\Controllers\Api\ClanForumController::class, 'restoreMessage'])->whereNumber('message');
+    });
 });
 Route::delete('/clan-applications/{application}', [App\Http\Controllers\Api\ClanMemberController::class, 'cancel'])->whereNumber('application');
 Route::post('/clan-applications/{application}/accept', [App\Http\Controllers\Api\ClanMemberController::class, 'accept'])->whereNumber('application');
