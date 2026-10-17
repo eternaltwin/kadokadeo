@@ -5,7 +5,8 @@ namespace App\Services;
 use App\Models\Message;
 use App\Models\User;
 
-// the private messages: between players, and the messages of the site (the answer to an application to a clan...)
+// the private messages: between players, and the messages of the site (the answer to an application to a clan...). Their
+// body is written in Marktwin, rendered by the client (resources/js/composables/useMarktwin.js), as the clan forums.
 class MessageService
 {
     public function send(User $sender, User $recipient, string $subject, string $body): Message

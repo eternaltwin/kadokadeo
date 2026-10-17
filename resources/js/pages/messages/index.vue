@@ -75,13 +75,12 @@ const date = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', mo
         </div>
         <div>
           <label for="messageBody" class="block font-bold">Message</label>
-          <FormTextarea id="messageBody"
-                        v-model="body"
-                        rows="10"
-                        maxlength="5000"
-                        required />
+          <MarktwinEditor id="messageBody"
+                          v-model="body"
+                          :maxlength="5000"
+                          :rows="10" />
         </div>
-        <FormButton type="submit" size="lg" :disabled="isSending">Envoyer</FormButton>
+        <FormButton type="submit" size="lg" :disabled="isSending || !body.trim()">Envoyer</FormButton>
       </form>
       <MessageError v-if="sendError">{{ sendError }}</MessageError>
     </template>

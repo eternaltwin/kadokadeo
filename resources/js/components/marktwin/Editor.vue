@@ -5,6 +5,8 @@ import { SMILEYS, smileyUrl } from '@/marktwin/grammar'
 // rendered here (the same renderer as the messages shown)
 const model = defineModel({ type: String, default: '' })
 defineProps({
+  // (of the text area, for its label)
+  id: { type: String, default: null },
   maxlength: { type: Number, default: 10000 },
   rows: { type: Number, default: 8 },
 })
@@ -36,6 +38,7 @@ const insertSmiley = (smiley) => {
           <p v-else class="m-0 italic text-kado-slate-400">Rien à prévisualiser.</p>
         </div>
         <FormTextarea v-else
+                      :id="id"
                       ref="textarea"
                       v-model="model"
                       :rows="rows"
