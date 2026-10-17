@@ -37,7 +37,7 @@ const logout = () => {
           {{ messagesStore.unread > 9 ? '9+' : messagesStore.unread }}
         </span>
       </li>
-      <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconForum.gif" alt="forum"></RouterLink></li>
+      <li><RouterLink :to="{ name: 'forum.index' }" title="Forum"><img src="/gfx/kalendarIconForum.gif" alt="forum"></RouterLink></li>
       <li><RouterLink :to="{ name: 'profile.index' }"><img src="/gfx/kalendarIconScore.gif" alt="scores"></RouterLink></li>
       <li>
         <RouterLink :to="clanStore.clan ? { name: 'clans.show', params: { id: clanStore.clan.id } } : { name: 'clans.index' }" title="Mon clan">

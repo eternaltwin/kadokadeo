@@ -139,6 +139,11 @@
   /* the blue-grey of the cells of the tables of the old forum (and of the Karbon theme) */
   --color-kado-slate-500: #4e7f88;
   --color-kado-slate-600: #466167;
+  /* the forum of Eternaltwin in the look of the forum of Twinoid (data.twinoid.com/css/bar.css), coloured by KadoKado */
+  --color-kado-slate-450: #738e93;
+  --color-twinoid-500: #4e5162;
+  --color-twinoid-600: #3b4151;
+  --color-twinoid-900: #1d2028;
 
   /* the light orange of the notices and of the box of the smileys */
   --color-kado-orange-50: #fff4dc;

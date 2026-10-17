@@ -13,6 +13,7 @@ export function useMarktwin() {
 
   return {
     isReady: computed(() => renderer.value !== null),
-    render: (text) => renderHtml(renderer.value, text),
+    // (options: the grammar and the icons, for the forum of Eternaltwin)
+    render: (text, options = {}) => renderHtml(renderer.value, text, options),
   }
 }

@@ -3,11 +3,18 @@
 // by the renderer only (the text of the players is escaped), so it is shown with v-html
 const props = defineProps({
   text: { type: String, default: '' },
+  // the grammar and the images of the icons (resources/js/marktwin/render.js), when not the ones of the site (the
+  // forum of Eternaltwin)
+  grammar: { type: Object, default: null },
+  iconUrl: { type: Function, default: null },
 })
 
 const { render } = useMarktwin()
 // (rendered again once the renderer is loaded: render reads it)
-const html = computed(() => render(props.text))
+const html = computed(() => render(props.text, {
+  ...(props.grammar ? { grammar: props.grammar } : {}),
+  ...(props.iconUrl ? { iconUrl: props.iconUrl } : {}),
+}))
 
 // the classes made by the renderer (mkt-*): the quotes as the "cite" of the old forum, the spoilers hidden until
 // clicked

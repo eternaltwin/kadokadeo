@@ -45,6 +45,15 @@ Route::post('/messages', [App\Http\Controllers\Api\MessageController::class, 'st
 Route::get('/messages/{message}', [App\Http\Controllers\Api\MessageController::class, 'show'])->whereNumber('message');
 Route::delete('/messages/{message}', [App\Http\Controllers\Api\MessageController::class, 'destroy'])->whereNumber('message');
 
+// the forum of Eternaltwin, called as the player (Eternaltwin sends no CORS headers)
+Route::prefix('/etwin-forum')->group(function () {
+    Route::get('/status', [App\Http\Controllers\Api\EtwinForumController::class, 'status']);
+    Route::get('/config', [App\Http\Controllers\Api\EtwinForumController::class, 'config']);
+    Route::get('/{path}', [App\Http\Controllers\Api\EtwinForumController::class, 'read'])->where('path', '.+');
+    Route::post('/{path}', [App\Http\Controllers\Api\EtwinForumController::class, 'write'])->where('path', '.+');
+    Route::patch('/{path}', [App\Http\Controllers\Api\EtwinForumController::class, 'write'])->where('path', '.+');
+});
+
 // the looks of the site, bought with Kado points
 Route::get('/themes', [App\Http\Controllers\Api\ThemeController::class, 'index']);
 Route::post('/themes/{theme}/buy', [App\Http\Controllers\Api\ThemeController::class, 'buy'])->whereAlpha('theme');

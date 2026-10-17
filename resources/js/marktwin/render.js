@@ -23,16 +23,23 @@ const fromAscii = (html) =>
 
 const smileyFiles = Object.fromEntries(SMILEYS.map((smiley) => [smiley.key, smileyUrl(smiley)]))
 
-// the icons (<span class="mkt-icon mkt-icon-kk-smile">) become the images of the smileys, the links open a new tab
-const finish = (html) =>
+// the image of an icon of the KadoKado smileys (the clan forums, the private messages): its URL or null
+export const smileyIconUrl = (key) => smileyFiles[key] ?? null
+
+// the icons (<span class="mkt-icon mkt-icon-kk-smile">) become their images (iconUrl), the links open a new tab. Also
+// for the HTML rendered by Eternaltwin (its forum).
+export const finishHtml = (html, iconUrl = smileyIconUrl) =>
   html
-    .replace(/<span class="mkt-icon mkt-icon-([a-z0-9-]+)"><\/span>/g, (span, key) =>
-      smileyFiles[key] ? `<img src="${smileyFiles[key]}" alt=":${key}:" title=":${key}:" />` : span)
+    .replace(/<span class="mkt-icon mkt-icon-([a-z0-9-]+)"><\/span>/g, (span, key) => {
+      const url = iconUrl(key)
+      return url ? `<img src="${url}" alt=":${key}:" title=":${key}:" />` : span
+    })
     .replaceAll('<a href="', '<a target="_blank" rel="nofollow noopener noreferrer" href="')
 
 // the HTML of a text: it comes from the renderer only (it escapes the text and keeps the links of the grammar), so it
-// can be shown as HTML. Without the renderer (not loaded yet, or failing): the text as it was written.
-export function renderHtml(renderer, text) {
+// can be shown as HTML. Without the renderer (not loaded yet, or failing): the text as it was written. By default the
+// grammar and the smileys of the site; the forum of Eternaltwin gives its own (served with its sections).
+export function renderHtml(renderer, text, { grammar = FORUM_GRAMMAR, iconUrl = smileyIconUrl } = {}) {
   if (!text) {
     return ''
   }
@@ -40,7 +47,7 @@ export function renderHtml(renderer, text) {
     return plainHtml(text)
   }
   try {
-    return finish(fromAscii(renderer(FORUM_GRAMMAR, toAscii(text))))
+    return finishHtml(fromAscii(renderer(grammar, toAscii(text))), iconUrl)
   } catch {
     return plainHtml(text)
   }
