@@ -35,10 +35,12 @@ const sidebarOpen = ref(false)
       </template>
     </header>
 
-    <main class="items-center flex flex-col flex-1 overflow-auto md:overflow-clip pt-10">
+    <main class="items-center flex flex-col flex-1 overflow-auto md:overflow-clip pt-10 space-y-10">
 
-      <Announcement class="w-fit md:w-full max-w-4xl mb-6 text-sm" />
-      <PendingRuns class="w-fit md:w-full max-w-4xl mb-6 text-sm" />
+      <div>
+        <Announcement class="w-fit md:w-full max-w-4xl mb-6 text-sm" />
+        <PendingRuns class="w-fit md:w-full max-w-4xl text-sm" />
+      </div>
 
       <section id="bodySection" class="w-full md:mx-4 lg:mx-8 flex max-w-4xl border-2 border-solid border-kado-cyan-800 bg-kado-cyan-200 pb-4 md:mb-10">
         <div class="flex-1 min-w-0">
