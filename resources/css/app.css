@@ -136,6 +136,12 @@
   --color-kado-cyan-900: #1f6776;
 
   --color-kado-slate-400: #7a9ca4;
+  /* the blue-grey of the cells of the tables of the old forum (and of the Karbon theme) */
+  --color-kado-slate-500: #4e7f88;
+  --color-kado-slate-600: #466167;
+
+  /* the light orange of the notices and of the box of the smileys */
+  --color-kado-orange-50: #fff4dc;
 
   --color-kado-green-50: #f3ffd7;
   --color-kado-green-100: #e6ffbd;

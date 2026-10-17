@@ -2,9 +2,11 @@
 const authStore = useAuthStore()
 const periodStore = usePeriodStore()
 const clanStore = useClanStore()
+const messagesStore = useMessagesStore()
 const router = useRouter()
 
 clanStore.reload()
+messagesStore.watchUnread()
 
 const logout = () => {
   authStore.logout()
@@ -26,7 +28,15 @@ const logout = () => {
     </aside>
     <ul class="navKalendrierButtonsRight">
       <li><RouterLink to="/" @click="logout"><img src="/gfx/kalendarPreviousDay.gif" alt="logout"></RouterLink></li>
-      <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconMail.gif" alt="mail"></RouterLink></li>
+      <!-- the yellow mail of KadoKado when a message is unread -->
+      <li class="relative">
+        <RouterLink :to="{ name: 'messages.inbox' }" :title="messagesStore.unread ? `${messagesStore.unread} nouveau(x) message(s)` : 'Messages'">
+          <img :src="messagesStore.unread ? '/assets/img/gfx/icons/newMail.gif' : '/gfx/kalendarIconMail.gif'" alt="mail">
+        </RouterLink>
+        <span v-if="messagesStore.unread" class="pointer-events-none absolute -top-1 -right-1 min-w-4 rounded-full border border-white bg-kado-pink-600 px-0.5 text-center text-2xs leading-3.5 font-bold text-white">
+          {{ messagesStore.unread > 9 ? '9+' : messagesStore.unread }}
+        </span>
+      </li>
       <li><RouterLink to="/" class="grayscale"><img src="/gfx/kalendarIconForum.gif" alt="forum"></RouterLink></li>
       <li><RouterLink :to="{ name: 'profile.index' }"><img src="/gfx/kalendarIconScore.gif" alt="scores"></RouterLink></li>
       <li>

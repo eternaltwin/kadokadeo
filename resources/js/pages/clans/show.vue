@@ -90,6 +90,7 @@ const updated = () => {
       <template #actions>
         <ClanMenuAction v-if="viewer.can_manage" :to="{ name: 'clans.manage', params: { id: clan.id } }">Gérer le clan</ClanMenuAction>
         <ClanMenuAction v-if="viewer.is_member" :to="{ name: 'clans.games', params: { id: clan.id } }">Parties de clan</ClanMenuAction>
+        <ClanMenuAction v-if="viewer.is_member" :to="{ name: 'clans.forum', params: { id: clan.id } }">Forum</ClanMenuAction>
         <ClanMenuAction :to="{ name: 'clans.history', params: { id: clan.id } }">Historique</ClanMenuAction>
         <ClanMenuAction v-if="!viewer.is_member && viewer.has_clan"
                         :to="{ name: 'clans.attack', params: { id: clan.id } }"
