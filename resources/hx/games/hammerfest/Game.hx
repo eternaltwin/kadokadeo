@@ -707,9 +707,10 @@ class Game implements kado.GameInterface {
 	// VITE ! comes sooner and sooner in the well (35 s then 25 s in the original)
 	function hurryStep(state:Int):Float {
 		var d = world.currentId;
+		// (the design: the deeper, the sooner the fire ball comes: 35 s at the start, 14 s at level 15, down to 7 s at 65)
 		if (state == 0)
-			return Math.max(14, 35 - d * 1.4) * Data.SECOND;
-		return Math.max(9, 25 - d * 1.0) * Data.SECOND;
+			return Math.max(7, Math.min(35 - d * 1.4, 14 - 0.14 * (d - 15))) * Data.SECOND;
+		return Math.max(6, Math.min(25 - d * 1.0, 10 - 0.08 * (d - 15))) * Data.SECOND;
 	}
 
 	public function onHurryUp() {
@@ -954,8 +955,10 @@ class Game implements kado.GameInterface {
 		var depth = world.currentId;
 		// (players: the big rise was felt from level 10: the bads angry from the start at level 14, faster a little
 		// slower)
-		speedFactor = 1.0 + Math.min(0.45, depth * 0.025);
-		var anger = depth < 14 ? 0 : (depth < 26 ? 1 : 2);
+		// (the design: the levels keep getting harder, past 50 too: faster up to +75 % around level 48, angry at the start
+		// a step more at 40)
+		speedFactor = 1.0 + Math.min(0.75, Math.min(0.45, depth * 0.025) + Math.max(0, depth - 18) * 0.01);
+		var anger = depth < 14 ? 0 : (depth < 26 ? 1 : (depth < 40 ? 2 : 3));
 		var n = 0;
 		for (b in world.current.bads) {
 			// ScriptEngine E_BAD: in the case, on its ground

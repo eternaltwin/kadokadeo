@@ -25,21 +25,23 @@ class LevelCast {
 		[Data.BAD_LITCHI, 10], [Data.BAD_ANANAS, 11], [Data.BAD_FRAMBOISE, 16]
 	];
 
-	// what a bad counts for in the number of bads of a level
+	// the weight of a bad (the design: "chaque ennemi possède un poids, plus le niveau augmente, plus le poids total du
+	// niveau est lourd"): what it counts for in the budget of a level
 	public static function cost(id:Int):Float {
 		return switch (id) {
-			case Data.BAD_CERISE, Data.BAD_ORANGE: 1.0;
-			case Data.BAD_BANANE: 1.15;
-			case Data.BAD_POMME, Data.BAD_BOMBE: 1.2;
-			case Data.BAD_CITRON: 1.25;
-			case Data.BAD_FRAISE: 1.3;
-			case Data.BAD_POIRE: 1.35;
-			case Data.BAD_ABRICOT: 1.9; // (an apricot gives two small ones: deep in the well the levels never ended)
-			case Data.BAD_KIWI: 1.5;
-			case Data.BAD_LITCHI: 1.6; // (two hits)
-			case Data.BAD_FRAMBOISE: 2.2;
-			case Data.BAD_ANANAS: 2.4;
+			case Data.BAD_CERISE: 1.0;
+			case Data.BAD_ORANGE: 1.2;
+			case Data.BAD_BOMBE: 1.4;
+			case Data.BAD_POMME, Data.BAD_FRAISE: 1.5;
+			case Data.BAD_BANANE, Data.BAD_CITRON: 1.6;
+			case Data.BAD_POIRE: 1.8;
+			case Data.BAD_KIWI, Data.BAD_LITCHI: 1.9; // (the litchi: two hits)
+			case Data.BAD_ABRICOT: 2.2; // (an apricot gives two small ones)
 			case Data.BAD_BALEINE: 2.4;
+			case Data.BAD_FRAMBOISE: 2.5;
+			case Data.BAD_ANANAS: 2.6;
+			case Data.BAD_CRAWLER: 1.3;
+			case Data.BAD_SAW: 0.8;
 			default: 1.3;
 		}
 	}
@@ -47,7 +49,7 @@ class LevelCast {
 	// how often a kind leads a level (the levels of the original led by each kind)
 	static function leadWeight(id:Int):Int {
 		return switch (id) {
-			case Data.BAD_CITRON: 36;
+			case Data.BAD_CITRON: 24; // (the design: at the bottom or the top of the level: not in every level)
 			case Data.BAD_BOMBE, Data.BAD_POMME, Data.BAD_POIRE: 25;
 			case Data.BAD_ABRICOT, Data.BAD_ORANGE, Data.BAD_FRAISE: 22;
 			case Data.BAD_CERISE: 17;
@@ -63,7 +65,7 @@ class LevelCast {
 		inline function k(x:Int, y:Int)
 			return (a == x && b == y) || (a == y && b == x);
 		if (b == Data.BAD_CITRON || a == Data.BAD_CITRON)
-			return 14; // (the lemons go with all of them)
+			return 9; // (the lemons go with all of them)
 		if (k(Data.BAD_CERISE, Data.BAD_ORANGE) || k(Data.BAD_ORANGE, Data.BAD_POMME) || k(Data.BAD_POMME, Data.BAD_BANANE)
 			|| k(Data.BAD_ORANGE, Data.BAD_BANANE) || k(Data.BAD_POIRE, Data.BAD_ABRICOT) || k(Data.BAD_FRAISE, Data.BAD_POIRE)
 			|| k(Data.BAD_FRAISE, Data.BAD_ANANAS) || k(Data.BAD_FRAISE, Data.BAD_FRAMBOISE) || k(Data.BAD_POIRE, Data.BAD_FRAMBOISE)
@@ -101,26 +103,30 @@ class LevelCast {
 	// the chapters of 5 levels (a zone of skins): calm at their start, the hardest at their end
 	public static function rhythm(depth:Int):Float {
 		// (a steady rise first: the chapters only from level 15)
-		return depth < 15 ? 1.0 : [0.95, 1.0, 1.03, 1.06, 1.1][depth % 5];
+		// (a breather at the start of a chapter, but a small one: the design wants the difficulty to keep growing)
+		return depth < 15 ? 1.0 : [0.97, 1.0, 1.02, 1.05, 1.08][depth % 5];
 	}
 
 	// the bads of a level, counted with cost(): 2 or 3 at first, about 6 at level 5, 8 at level 10, 10 to 11 from level
 	// 14 (the hard levels of the original: 6 to 13)
 	public static function budget(depth:Int):Float {
-		// (players: "à partir du niveau 10 on sent déjà le gros pic": a little gentler, the top a level later)
-		return Math.min(15, 3 + 0.85 * depth) * rhythm(depth);
+		// (players: "à partir du niveau 10 on sent déjà le gros pic": a steady rise up to level 14, then a slower one that
+		// never stops (the design: the weight grows with the level, the levels after 50 harder still); the number of
+		// bads being capped, the weight goes up by heavier kinds)
+		var b = depth <= 14 ? 3 + 1.0 * depth : 17 + 0.2 * (depth - 14);
+		return b * rhythm(depth);
 	}
 
 	// the most bads in a level (the field is small)
 	static function maxBads(depth:Int):Int {
-		return depth < 14 ? 10 : 11;
+		return depth < 14 ? 10 : (depth < 25 ? 11 : (depth < 40 ? 12 : 13));
 	}
 
 	// bads of a kind in its first level (the original: 3 bananas, 3 lemons, 3 bombs, 2 then 4 pears, 2 apricots...)
 	static function introMax(id:Int):Int {
 		return switch (id) {
 			case Data.BAD_CERISE: 2;
-			case Data.BAD_BOMBE: 4;
+			case Data.BAD_BOMBE: 3;
 			default: 3;
 		}
 	}
@@ -130,7 +136,11 @@ class LevelCast {
 		return switch (id) {
 			case Data.BAD_ANANAS: lead && depth >= 18 ? 2 : 1;
 			case Data.BAD_FRAMBOISE: lead ? (depth >= 22 ? 3 : 2) : (depth >= 20 ? 2 : 1);
-			case Data.BAD_FRAISE, Data.BAD_POIRE, Data.BAD_POMME, Data.BAD_BANANE: lead ? 4 : 2;
+			// (the strawberries cover the level, 6 at the most (the design); the Bombinos never in a group: 3 at the most)
+			case Data.BAD_FRAISE: lead ? (depth >= 40 ? 6 : (depth >= 28 ? 5 : 4)) : 2;
+			case Data.BAD_BOMBE: lead ? 3 : 2;
+			case Data.BAD_POIRE, Data.BAD_POMME, Data.BAD_BANANE: lead ? 4 : 2;
+			// (4 apricots at the most (the design): 2 or 3)
 			case Data.BAD_ABRICOT: depth >= 14 ? (lead ? 2 : 1) : (lead ? 3 : 2);
 			case Data.BAD_KIWI, Data.BAD_LITCHI: lead ? 4 : 2;
 			case Data.BAD_CITRON: lead ? 4 : 3;
@@ -196,6 +206,9 @@ class LevelCast {
 					w *= depth >= 14 ? 0.25 : 0.5;
 				if (!weak && depth >= 12)
 					w *= k == Data.BAD_ANANAS || k == Data.BAD_FRAMBOISE ? 1.2 : 1.5;
+				// (deeper, the heavy kinds lead more often: the weight of the levels keeps growing)
+				if (depth > 30)
+					w *= Math.pow(cost(k) / 1.6, Math.min(2, (depth - 30) / 10));
 				if (k == Data.BAD_ABRICOT && depth >= 14)
 					w *= 0.5;
 				// (the bads of the dimension of the level)
@@ -254,6 +267,10 @@ class LevelCast {
 				// (the strong ones are rare around another kind at first)
 				if (k == Data.BAD_ANANAS || k == Data.BAD_FRAMBOISE)
 					v *= depth < 15 ? 0.5 : 0.9;
+				// (deep in the well the heavy kinds come around the leading one: the number of bads being capped, the
+				// weight of the level keeps growing by them)
+				if (depth > 25)
+					v *= Math.pow(cost(k) / 1.6, Math.min(3, (depth - 25) / 8));
 				v * 10;
 			}];
 			var k = drawIn(pool, w);
@@ -287,7 +304,7 @@ class LevelCast {
 		var idea = concept != null && intro < 0;
 		inline function more(id:Int):Int
 			return !idea || id == Data.BAD_FRAISE || id == Data.BAD_ANANAS || id == Data.BAD_FRAMBOISE || id == Data.BAD_ABRICOT
-				|| id == Data.BAD_BALEINE ? 0 : 2;
+				|| id == Data.BAD_BALEINE || id == Data.BAD_BOMBE ? 0 : 2;
 		while (guard++ < 60 && total() < maxBads(depth)) {
 			// the kind that is the furthest under its share of the budget
 			var best = -1;

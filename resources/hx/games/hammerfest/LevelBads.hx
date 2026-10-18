@@ -436,7 +436,71 @@ class LevelBads {
 		if (id == Data.BAD_CRAWLER && !(s.x0 > 0 && g.gr(s.x0 - 1, s.y) && g.gr(s.x0 - 1, s.y - 1))
 			&& !(s.x1 < W - 1 && g.gr(s.x1 + 1, s.y) && g.gr(s.x1 + 1, s.y - 1)))
 			return false;
+		// (a lemon: its juice goes through the floors; the design: at the bottom or at the top of the level, in the
+		// middle only out in the open, shut in there only with a laser of black bombs)
+		if (id == Data.BAD_CITRON && midBand(s.y) && shutIn(k) && !g.hasLaser(-2))
+			return false;
+		// (never Bombinos in a group (the design): none within 4 cases of another one)
+		if (id == Data.BAD_BOMBE)
+			for (p in placed)
+				if (p.id == Data.BAD_BOMBE && Math.abs(p.y - s.y) + Math.max(0, Math.max(s.x0 - p.x, p.x - s.x1)) <= 4)
+					return false;
 		return true;
+	}
+
+	// the rows of the middle of the level (not the top floors, not the bottom ones)
+	inline function midBand(y:Int):Bool {
+		return y >= 5 && y <= H - 6;
+	}
+
+	// a platform shut in: walls at both ends, or a ceiling low over it
+	function shutIn(k:Int):Bool {
+		var f = inf[k];
+		return (f.wallL && f.wallR) || f.head <= 3;
+	}
+
+	// the length of the row of platforms the platform k belongs to: the platforms of its row joined by holes of 1 or 2
+	// cases (an orange jumps over them)
+	function rowLength(k:Int):Int {
+		var s = segs[k];
+		var len = s.x1 - s.x0 + 1;
+		for (d in [-1, 1]) {
+			var x = d < 0 ? s.x0 : s.x1;
+			var guard = 0;
+			while (guard++ < W) {
+				var gap = 0;
+				var nx = x + d;
+				while (nx >= 0 && nx < W && !g.canStand(nx, s.y) && g.m[nx][s.y] <= 0 && gap < 3) {
+					gap++;
+					nx += d;
+				}
+				if (gap == 0 || gap > 2 || nx < 0 || nx >= W || !g.canStand(nx, s.y))
+					break;
+				var e = nx;
+				while (e + d >= 0 && e + d < W && g.canStand(e + d, s.y))
+					e += d;
+				len += Std.int(Math.abs(e - nx)) + 1;
+				x = e;
+			}
+		}
+		return len;
+	}
+
+	// the way of Igor to a pear crosses the fall of its bombs (the design: "Igor doit prendre des risques pour venir la
+	// tuer"): cases of the way under the lob of the pear
+	function lobRisk(k:Int):Int {
+		var s = segs[k];
+		var w = g.routes.wayNear([for (x in s.x0...s.x1 + 1) {x: x, y: s.y}], 2, 2);
+		if (w == null)
+			return 0;
+		var n = 0;
+		for (c in w) {
+			var x = Std.int(c / H);
+			var y = c % H;
+			if (y >= s.y - 1 && y <= s.y + 9 && (x <= s.x0 - 2 || x >= s.x1 + 2) && Math.abs(x - (x < s.x0 ? s.x0 : s.x1)) <= 9)
+				n++;
+		}
+		return n;
 	}
 
 	// how many bads a platform can take (a bad every 4 cases)
@@ -462,13 +526,22 @@ class LevelBads {
 			case Data.BAD_CERISE:
 				2 * r + Math.min(6, len - 2) * 0.6 + (len <= 3 ? -1.5 : 0) + (inner(s) ? 0.5 : 0) + 0.08 * Math.min(25, f.own);
 			case Data.BAD_ORANGE:
-				2.5 * Math.min(2, f.hop) + 1.5 * r + ((len >= 2 && len <= 6) ? 1 : 0) - (f.hop == 0 ? 2 : 0) + 0.05 * Math.min(25, f.own);
+				// (the design: "elle se place sur des plans qui ont de la longueur": the long rows, cut by holes it jumps over
+				// or not)
+				0.5 * Math.min(9, rowLength(k) - 2) + 1.0 * Math.min(2, f.hop) + 1.5 * r + 0.05 * Math.min(25, f.own);
 			case Data.BAD_POMME:
-				0.08 * Math.min(60, rowExposure(s)) + 1.5 * r + (len >= 4 ? 1 : 0);
+				// (the design: in the corners or in the open, with the difficulty: in the open at first, in the corners deep
+				// in the well, where its pips come through the walls)
+				var corner = (f.wallL || f.wallR) && f.head <= 4 ? 1.0 : 0.0;
+				0.08 * Math.min(60, rowExposure(s)) + 1.5 * r + (len >= 4 ? 1 : 0)
+					+ (g.depth < 15 ? (corner > 0 ? -1.0 : 0.8 + 0.1 * Math.min(6, f.head)) : (corner > 0 ? 1.5 : -0.5));
 			case Data.BAD_BANANE:
 				0.12 * Math.min(40, f.zone) + low + r;
 			case Data.BAD_CITRON:
-				0.06 * Math.min(80, columnsExposure(s)) + (s.y >= H - 6 ? 1 : 0) + ((len >= 2 && len <= 9) ? 0.5 : 0);
+				// (the design: at the bottom of the level or at the top, reached indirectly; in the middle only out in the
+				// open)
+				0.06 * Math.min(80, columnsExposure(s)) + (s.y >= H - 5 ? 1.5 : (s.y <= topLand + 4 ? 1.0 : (shutIn(k) ? -1.5 : 0)))
+					+ ((len >= 2 && len <= 9) ? 0.5 : 0) + (f.reached ? 0 : 0.5);
 			case Data.BAD_BOMBE:
 				var stairs = false;
 				for (o in segs)
@@ -479,7 +552,7 @@ class LevelBads {
 					+ (stairs ? 1 : 0) + (f.wallL ? 0.6 : 0) + (f.wallR ? 0.6 : 0) + (f.head <= 3 ? 0.8 : 0);
 			case Data.BAD_POIRE:
 				0.05 * Math.min(80, lobExposure(s)) + 0.25 * (H - s.y) + ((len >= 2 && len <= 6) ? 1 : 0)
-					- Math.min(2, f.above * 0.25) + (f.steps >= 2 ? 0.5 : 0);
+					- Math.min(2, f.above * 0.25) + (f.steps >= 2 ? 0.5 : 0) + 0.2 * Math.min(8, lobRisk(k));
 			case Data.BAD_FRAISE:
 				// (alone: a high ledge away from the ways of Igor, seeing the level; no bomb from above reaching it, its
 				// ice not out of the level at the first push)
@@ -493,8 +566,11 @@ class LevelBads {
 			case Data.BAD_LITCHI:
 				0.4 * Math.min(8, len) + 1.5 * r + ((f.wallL && f.wallR) ? 0.5 : 0) + 0.05 * Math.min(25, f.own);
 			case Data.BAD_ANANAS:
+				// (the design: "se place de manière peu pratique pour Igor": a wide floor, away from his ways, many moves
+				// from where he comes in)
 				var c = (s.x0 + s.x1) / 2;
-				0.5 * Math.min(8, len) + low + 1.5 * (1 - Math.abs(c - 8.5) / 9) + 0.2 * Math.min(5, f.head) + 1.5 * r;
+				0.5 * Math.min(8, len) + low + 1.0 * (1 - Math.abs(c - 8.5) / 9) + 0.2 * Math.min(5, f.head) + 1.0 * r
+					+ Math.min(2, f.far / 4) - 0.04 * Math.min(40, f.own);
 			case Data.BAD_FRAMBOISE:
 				r + 0.3 * Math.min(6, len) + 0.5 * low;
 			default:
@@ -541,7 +617,10 @@ class LevelBads {
 		for (p in placed) {
 			var mirror = g.sym && p.y == s.y && p.x == W - 1 - x;
 			if (!mirror && Math.abs(p.y - s.y) <= 1 && p.x >= s.x0 - 3 && p.x <= s.x1 + 3)
-				v -= p.id == id && id == Data.BAD_BOMBE ? 0.5 : 2;
+				v -= 2;
+			// (the design: never Bombinos in a group, the level would be too easy (one blast takes them all))
+			if (p.id == id && id == Data.BAD_BOMBE && Math.abs(p.x - x) + Math.abs(p.y - s.y) <= 4)
+				v -= 6;
 			if (p.id != id || mirror)
 				continue;
 			switch (id) {
@@ -731,6 +810,9 @@ class LevelBads {
 			// (by mirrored pairs on a row; not in the first levels with few of them: one a floor)
 			if (g.sym && i < n && id != Data.BAD_ANANAS && (g.depth > LevelDesign.EASY_DEPTH || n >= 4) && g.chance(0.6)) {
 				var mr = mirrorOf(id, b.k, x);
+				// (no pair of Bombinos close to each other)
+				if (mr != null && id == Data.BAD_BOMBE && Math.abs(mr.x - x) <= 4)
+					mr = null;
 				if (mr != null) {
 					put(id, mr.k, mr.x, liking(id, mr.k));
 					i++;

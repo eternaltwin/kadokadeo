@@ -234,7 +234,7 @@ class LevelConcept {
 			if (depth >= 15) {
 				var pos = depth % 5;
 				if (k.hard < 1)
-					v *= pos == 0 ? 3 : 0.6;
+					v *= pos == 0 ? 2 : 0.6;
 				else if (k.hard > 1)
 					v *= pos >= 3 ? 1.6 : 0.8;
 			}

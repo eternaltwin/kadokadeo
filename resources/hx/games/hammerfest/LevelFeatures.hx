@@ -69,6 +69,10 @@ class LevelFeatures {
 			n = chance(0.5) ? 1 : 0;
 		else if (d >= 8 && d < 15)
 			n = chance(0.15) ? 0 : (chance(0.65) ? 1 : 2);
+		else if (d >= 45)
+			n = chance(0.05) ? 1 : (chance(0.5) ? 2 : 3);
+		else if (d >= 30)
+			n = chance(0.06) ? 0 : (chance(0.35) ? 1 : 2);
 		else if (d >= 15)
 			n = chance(0.08) ? 0 : (chance(0.45) ? 1 : 2);
 		var perched = lineup != null
@@ -191,7 +195,9 @@ class LevelFeatures {
 			return g.chance(0.65) ? 1 : 0;
 		if (d < 20)
 			return 1 + (g.chance(0.5) ? 1 : 0);
-		return 2 + (g.chance(0.4) ? 1 : 0);
+		if (d < 35)
+			return 2 + (g.chance(0.4) ? 1 : 0);
+		return 2 + (g.chance(0.7) ? 1 : 0) + (g.chance(0.25) ? 1 : 0);
 	}
 
 	// ---------------------------------------------------------------- the cellar
@@ -1160,8 +1166,27 @@ class LevelFeatures {
 		}
 		if (best == null)
 			return false;
-		put(best, BLACK);
-		g.gates.push({cells: best.cells, v: BLACK});
+		// the colour: black kills; blue when every pocket drops onto a platform the ice gets out of (or out of the level);
+		// red when every pocket is a pit in a U (the design: "pour un puits, éventuellement un changeur rouge")
+		var blueOk = pockets.length > 0;
+		var redOk = pockets.length > 0;
+		for (p in pockets) {
+			if (!g.blueOpens(p))
+				blueOk = false;
+			if (!g.uPit(p))
+				redOk = false;
+		}
+		var c = LevelTheme.of(g.depth).colors;
+		// (lemons in the lineup: the black one, the only one that lets them be shut in the middle of the level)
+		var lemons = g.lineup != null && g.lineup.list.indexOf(Data.BAD_CITRON) >= 0;
+		var w = [c[1] * 30, blueOk && !lemons ? c[2] * 25 : 0, redOk && !lemons && g.depth >= 6 ? c[4] * 20 : 0];
+		var v = switch (g.draw(w)) {
+			case 1: BLUE;
+			case 2: RED;
+			default: BLACK;
+		}
+		put(best, v);
+		g.gates.push({cells: best.cells, v: v});
 		g.computeReach();
 		return true;
 	}

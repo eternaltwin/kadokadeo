@@ -462,6 +462,11 @@ class LevelDesign {
 			rows = [4, 7, 10, 13];
 		// (long platforms in the first levels, like the original's: 5 to 7 cases)
 		unit = light ? g.range(5, 7) : (dense ? g.range(2, 3) : g.range(3, 4));
+		// (a pineapple: few platforms, long ones (its floor is wide, its shock wave felt everywhere): the design)
+		if (g.lineup != null && g.lineup.list.indexOf(Data.BAD_ANANAS) >= 0) {
+			dense = false;
+			unit = g.range(4, 5);
+		}
 		sym = p.sym;
 		variant = "";
 		// the bottom (its ways out cut once the motifs are drawn); none over the void

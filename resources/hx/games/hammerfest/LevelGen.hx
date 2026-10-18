@@ -70,7 +70,7 @@ class LevelGen {
 				for (b in bads)
 					if (b.y >= 0 && b.y < H)
 						rows[b.y] = rows[b.y].substr(0, b.x) + (b.id == Data.BAD_SPEAR ? "^" : (b.id == Data.BAD_SAW ? "X" : "B")) + rows[b.y].substr(b.x + 1);
-			failMaps.push(k + " (missing " + missing + ")\n" + rows.join("\n"));
+			failMaps.push(k + " (missing " + missing + ", lineup " + (lineup != null ? lineup.list.join(",") : "") + ")\n" + rows.join("\n"));
 		}
 		#end
 		fails.set(k, (fails.exists(k) ? fails.get(k) : 0) + 1);
@@ -96,6 +96,9 @@ class LevelGen {
 	#if gentest
 	public var designMap:Array<Array<Int>>;
 	public static var lastDesign:Array<Array<Int>>;
+	// (the standing cells Igor reaches in the level kept, its pockets: check.py)
+	public static var lastReach:Array<Array<Bool>>;
+	public static var lastPockets:Int = 0;
 	#end
 	public var sym:Bool;
 
@@ -244,14 +247,25 @@ class LevelGen {
 		}
 		// (nothing right with these features: the device of the idea only, then none; fewer bads, the supporting ones
 		// going first)
+		// (40 tries, up to 7 bads fewer: the hard-coded level of fallback() is never meant to be seen)
 		if (best == null)
-			for (i in 0...20) {
+			for (i in 0...40) {
 				var g = new LevelGen(depth);
 				var drop = Std.int(i / 5);
-				// (the leapers stay: they fly, they need no place on a floor)
-				var walk = [for (id in lineup.list) if (id != Data.BAD_BALEINE) id];
+				// (the leapers stay: they fly, they need no place on a floor; the supporting kinds go first, then the
+				// leading kind down to 4, then 2: five strawberries or four pears are what the level could not hold)
+				var leads = [for (id in lineup.list) if (id == lineup.lead) id];
+				var others = [for (id in lineup.list) if (id != lineup.lead && id != Data.BAD_BALEINE) id];
 				var fly = [for (id in lineup.list) if (id == Data.BAD_BALEINE) id];
-				g.lineup = {lead: lineup.lead, intro: lineup.intro, list: walk.slice(0, Std.int(Math.max(2, walk.length - drop))).concat(fly)};
+				var d = drop;
+				while (d-- > 0) {
+					if (leads.length > 4 || others.length == 0) {
+						if (leads.length > 2)
+							leads.pop();
+					} else
+						others.pop();
+				}
+				g.lineup = {lead: lineup.lead, intro: lineup.intro, list: leads.concat(others).concat(fly)};
 				// (the device of the idea kept for the first tries)
 				g.want = i < 10 ? [for (f in want) if (concept.want.indexOf(f) >= 0) f] : [];
 				#if gentest
@@ -268,6 +282,9 @@ class LevelGen {
 		if (best == null) {
 			best = new LevelGen(depth);
 			best.fallback();
+			#if gentest
+			fails.set("fallback", (fails.exists("fallback") ? fails.get("fallback") : 0) + 1);
+			#end
 		}
 		lastLike = best.likeness();
 		recentMaps.unshift([for (c in best.m) [for (v in c) v > 0 ? 1 : 0]]);
@@ -293,6 +310,9 @@ class LevelGen {
 		lastKind = concept.id + (best.open ? " (vide) " : " ") + lastKind;
 		#if gentest
 		lastDesign = best.designMap;
+		best.computeReach();
+		lastReach = [for (c in best.reach) c.copy()];
+		lastPockets = best.m != null && best.kind != "fallback" ? best.pockets() : 0;
 		#end
 		lastSym = best.sym;
 		lastFit = best.roleFit;
@@ -387,7 +407,8 @@ class LevelGen {
 			return fail("purpose");
 		placeItems();
 		entry = entryColumns();
-		if (entryCount() < 3)
+		// (Igor comes in falling from where he left the level above: a third of the columns at least must do)
+		if (entryCount() < Std.int(W / 3))
 			return fail("entry");
 		return true;
 	}
@@ -474,7 +495,7 @@ class LevelGen {
 		var list = [for (id in lineup.list) if (id != Data.BAD_BALEINE) id];
 		// (crawlers on the walls deep in the well; not in a level made for its spikes: they would crawl over them)
 		if (depth >= 8 && (concept == null || concept.id != "pics"))
-			for (i in 0...Std.int(Math.min(3, (depth - 5) / 5 * rhythm(depth) * LevelTheme.of(depth).crawlers)))
+			for (i in 0...Std.int(Math.min(depth >= 40 ? 4 : 3, (depth - 5) / 5 * rhythm(depth) * LevelTheme.of(depth).crawlers)))
 				if (chance(0.6))
 					list.push(Data.BAD_CRAWLER);
 		var want = 0;
@@ -502,7 +523,8 @@ class LevelGen {
 			}
 			// (all of them, one missing at the most in a level of 6 or more; the leading kind there)
 			var n = lineup.list.length - flyers;
-			if (leads >= Std.int(Math.min(2, want)) && real >= n - (n >= 6 ? 1 : 0))
+			// (all of them; one missing at the most in a level of 6 or more, two in a level of 11 or more: the field is small)
+			if (leads >= Std.int(Math.min(2, want)) && real >= n - (n >= 11 ? 2 : (n >= 6 ? 1 : 0)))
 				return placeFlyers(flyers);
 			// not enough places their ice can be kicked out from: like the original, a laser of black bombs on the way
 			// to them (they kill the bads) and the bads placed again
@@ -683,7 +705,10 @@ class LevelGen {
 		// Igor can go back up to the top from most of the places
 		r += 2.0 * wayBack();
 		// coming in falling from anywhere, Igor can play
-		r += 2.0 * entryCount() / W;
+		r += 4.0 * entryCount() / W;
+		// (a pineapple: few platforms, its shock wave felt everywhere; the design: "niveaux restreints en plateformes")
+		if (lineup != null && lineup.list.indexOf(Data.BAD_ANANAS) >= 0)
+			r -= 0.6 * Math.max(0, segs.length - 14);
 		// better without pockets (their bads killed only with the bombs of a black laser), but in the vault; a laser of
 		// black bombs for them is a last resort
 		r -= pockets() * (vault != null || close != null ? 0.1 : (killerLaser() ? 0.4 : 1.0));
@@ -758,6 +783,9 @@ class LevelGen {
 		bads.push({id: Data.BAD_CERISE, x: 2, y: 8});
 		bads.push({id: Data.BAD_CERISE, x: 15, y: 8});
 		bads.push({id: Data.BAD_CERISE, x: 6, y: 13});
+		computeReach();
+		routes = new LevelRoutes(this);
+		entry = entryColumns();
 	}
 
 	// skin of the levels: the same for 5 or 6 levels, a pair of the original of the difficulty of the depth
@@ -790,14 +818,27 @@ class LevelGen {
 			scoreSlots: scores,
 			skinBg: sk[1],
 			skinTiles: sk[2],
-			// (the darkness: from level 3, then black all around the light of Igor at level 50)
-			darkness: depth < 3 ? 0 : Std.int(Math.min(100, 10 + (depth - 3) * 90 / 47)),
+			// (the darkness: nothing up to level 3, a soft rise (5 % at 10, 22 % at 20, half at 32), black all around
+			// the light of Igor from level 50: the design, "au niveau 50 il doit faire complètement noir")
+			darkness: darkness(depth),
 			openAtEnd: openAtEnd,
 			entry: entry,
 			levers: levers,
 			blocks: [],
 			endBlocks: []
 		};
+	}
+
+	public static inline var DARK_START = 4;
+	public static inline var DARK_FULL = 50;
+	public static inline var DARK_CURVE = 1.6;
+
+	public static function darkness(depth:Int):Int {
+		if (depth < DARK_START)
+			return 0;
+		if (depth >= DARK_FULL)
+			return 100;
+		return Std.int(Math.max(1, Math.round(100 * Math.pow((depth - DARK_START) / (DARK_FULL - DARK_START), DARK_CURVE))));
 	}
 
 	// ---------------------------------------------------------------- random, map
@@ -1058,8 +1099,10 @@ class LevelGen {
 			busy[x][y] = true;
 	}
 
+	// (a standing cell: a ground under it and, like the design wants (floors 2 free cases apart at least), the case
+	// over it free: nobody stands in a slot of one case)
 	inline function canStand(x:Int, y:Int):Bool {
-		return inb(x, y) && y + 1 < H && m[x][y] <= 0 && m[x][y + 1] > 0 && !danger[x][y];
+		return inb(x, y) && y + 1 < H && m[x][y] <= 0 && m[x][y + 1] > 0 && !danger[x][y] && (y == 0 || m[x][y - 1] <= 0);
 	}
 
 	inline function passable(x:Int, y:Int):Bool {
@@ -1319,9 +1362,9 @@ class LevelGen {
 			reachTele(x, y);
 		var dir = -1;
 		while (dir <= 1) {
-			// walk
+			// walk (the head too: no slot of one case)
 			var nx = x + dir;
-			if (passable(nx, y)) {
+			if (passable(nx, y) && passable(nx, y - 1)) {
 				if (canStand(nx, y))
 					reachLand(nx, y);
 				else
@@ -2446,12 +2489,74 @@ class LevelGen {
 	// a laser of black bombs (they kill the bads around: Black.onExplode) or red ones (they throw them high) Igor
 	// goes through: the bads shut between walls can be killed
 	function killerLaser():Bool {
-		// (only the black bombs: the red ones do not lift a bad high enough out of a pocket)
+		// the black bombs kill them; the blue ones drop them through their floor onto the platform under it (out of the
+		// level when there is none): good when every pocket opens that way; the red ones throw them up: good for the pits
+		// in a U (low walls, open over them)
+		var black = false;
+		var blue = false;
+		var red = false;
 		for (x in 0...W)
 			for (y in 0...H)
-				if (m[x][y] == -2 && reachedNear(x, y))
-					return true;
+				if (m[x][y] < 0 && reachedNear(x, y)) {
+					if (m[x][y] == -2)
+						black = true;
+					if (m[x][y] == -3)
+						blue = true;
+					if (m[x][y] == -5)
+						red = true;
+				}
+		if (black)
+			return true;
+		if (!blue && !red)
+			return false;
+		var zone = badZone(true);
+		for (sg in segments())
+			if (pocket(sg, zone) && !((blue && blueOpens(sg)) || (red && uPit(sg))))
+				return false;
+		return true;
+	}
+
+	// the floor of this platform dropped through (a blue bomb): the bad falls out of the level, or onto a platform its
+	// ice can be kicked out of
+	function blueOpens(sg:GSeg):Bool {
+		for (x in sg.x0...sg.x1 + 1) {
+			var y = sg.y + 2;
+			while (y < H && m[x][y] <= 0)
+				y++;
+			if (y >= H)
+				return true;
+			var ly = y - 1;
+			if (ly == sg.y + 1)
+				continue; // (a wall under the floor: nothing to fall through there)
+			var x0 = x;
+			var x1 = x;
+			while (x0 > 0 && canStand(x0 - 1, ly))
+				x0--;
+			while (x1 < W - 1 && canStand(x1 + 1, ly))
+				x1++;
+			if (iceEscapes({y: ly, x0: x0, x1: x1}))
+				return true;
+		}
 		return false;
+	}
+
+	// a pit in a U: walls of 3 cases at most at both ends of the platform, the air open over it (a red bomb throws the
+	// ice out of it)
+	function uPit(sg:GSeg):Bool {
+		for (x in [sg.x0 - 1, sg.x1 + 1]) {
+			if (x < 0 || x >= W)
+				return false;
+			var h = 0;
+			while (sg.y - h >= 0 && m[x][sg.y - h] > 0)
+				h++;
+			if (h == 0 || h > 3)
+				return false;
+		}
+		for (x in sg.x0...sg.x1 + 1)
+			for (y in sg.y - 4...sg.y)
+				if (y >= 0 && m[x][y] > 0)
+					return false;
+		return true;
 	}
 
 	// platforms where the ice of a bad could not be kicked out of the level (pockets between walls, against a side
