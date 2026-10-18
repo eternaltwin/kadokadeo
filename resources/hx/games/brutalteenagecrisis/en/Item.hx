@@ -49,12 +49,12 @@ class Item extends Entity {
 		sprite.graphics.drawCircle(0,-14,14);
 		// (the DropShadowFilter of the original is not drawn, like in the Arkadeo HTML5 port)
 		sprite.filters = [
-			new common_haxe_avm2.filters.GlowFilter(col, 0.9, 16,16,1, 2),
+			new GlowFilter(col, 0.9, 16,16,1, 2),
 		];
 
 		var tf = mode.createField(letter, 0xFFFFFF, true);
 		sprite.addChild(tf);
-		tf.filters = [ new common_haxe_avm2.filters.GlowFilter(0x0, 0.8, 4,4,1) ];
+		tf.filters = [ new GlowFilter(0x0, 0.8, 4,4,1) ];
 		tf.x = Std.int(-tf.width*0.5 + 1);
 		tf.y = Std.int(-r - tf.height*0.5 - 1);
 	}

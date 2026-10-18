@@ -1,21 +1,19 @@
 package brutalteenagecrisis;
 
-import common_haxe_avm2.display.Bitmap;
-import common_haxe_avm2.display.BitmapData;
 import mt.deepnight.Color;
 import mt.deepnight.slb.BLib;
 import mt.deepnight.slb.BSprite;
 
 // The tutorials of the original (and their cinematics; Progression only: never shown in the League) and the in-game
-// prizes of Arkadeo are not ported; the random generators draw from KadoKadeo's seed (kado.SeedRand). The base is the
+// prizes of Arkadeo are not ported; the random generators of the original (mt.Rand) are
+// KadoKadeo's seed (kado.Seed, Seed.*Vfx for the pictures). The base is the
 // mt.deepnight.Mode of the lib: root, cd / delayer / tw updated each frame by super.update(), pause.
 class Mode extends mt.deepnight.Mode {
 	public static var ME : Mode;
 
-	public var dm			: mt.flash.DepthManager;
+	public var dm			: DepthManager;
 	public var level		: Level;
 	public var fx			: Fx;
-	public var rseed		: kado.SeedRand;
 	public var hud			: Hud;
 	public var hero			: brutalteenagecrisis.en.Hero;
 	public var diff			: Int;
@@ -31,7 +29,7 @@ class Mode extends mt.deepnight.Mode {
 		ME = this;
 		g.addChild(root);
 
-		dm = new mt.flash.DepthManager(root);
+		dm = new DepthManager(root);
 
 		diff = 0;
 		skill = 0;
@@ -47,8 +45,6 @@ class Mode extends mt.deepnight.Mode {
 		// Various tools
 		fx = new Fx();
 
-		rseed = new SeedRand();
-
 		// HUD
 		hud = new Hud();
 
@@ -59,7 +55,7 @@ class Mode extends mt.deepnight.Mode {
 
 		var perlin = new BitmapData(Const.WID, Const.HEI, false, 0x0);
 		perlin.perlinNoise(128, 64, 3, 1866, false, true, 1, true);
-		phaseMask.bitmapData.draw(perlin, new common_haxe_avm2.geom.ColorTransform(1,1,1, 0.5), common_haxe_avm2.display.BlendMode.OVERLAY);
+		phaseMask.bitmapData.draw(perlin, new ColorTransform(1,1,1, 0.5), BlendMode.OVERLAY);
 		perlin.dispose();
 
 		// Level
@@ -92,17 +88,17 @@ class Mode extends mt.deepnight.Mode {
 
 
 	public function newLevel() {
-		nextPowerUp = Const.seconds( rseed.irange(2, 5) );
+		nextPowerUp = Const.seconds( Seed.irange(2, 5) );
 	}
 
 
 	public function createField(str:Dynamic, ?col=0xFFFFFF, ?adjustSize=false) {
-		var f = new common_haxe_avm2.text.TextFormat();
+		var f = new TextFormat();
 		f.font = "def";
 		f.size = 16;
 		f.color = col;
 
-		var tf = new common_haxe_avm2.text.TextField();
+		var tf = new TextField();
 		tf.width = adjustSize ? 500 : 300;
 		tf.height = 50;
 		tf.mouseEnabled = tf.selectable = false;
@@ -116,7 +112,7 @@ class Mode extends mt.deepnight.Mode {
 		}
 
 		tf.filters = [
-			new common_haxe_avm2.filters.GlowFilter(0x0,1, 4,4,4),
+			new GlowFilter(0x0,1, 4,4,4),
 		];
 
 		return tf;

@@ -2,16 +2,14 @@ package mt.deepnight.slb;
 
 import mt.deepnight.slb.BLib;
 
-// slb.SpriteInterface. The `scale(v)` method of the original is removed:
-// it would collide with the PIXI field `Container.scale : Point`. Use scaleX /
-// scaleY.
+// slb.SpriteInterface (the `scale(v)` method of the original is not used: scaleX / scaleY)
 interface SpriteInterface {
 	public var destroyed			: Bool;
 	public var lib					: BLib;
 	public var group				: Null<LibGroup>;
 	public var groupName			: Null<String>;
 	public var frame				: Int;
-	private var slbPivot			: SpritePivot; // renamed: `pivot` is DisplayObject.pivot in PixiJS
+	private var slbPivot			: SpritePivot;
 	public var a					: AnimManager;
 	private var frameData			: FrameData;
 

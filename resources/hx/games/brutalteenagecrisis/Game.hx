@@ -4,15 +4,13 @@ import haxe.io.UInt16Array;
 import common_haxe_avm1.display.ASprite;
 import kado.TouchControlsConfig.TouchButtonShape;
 import kado.TouchControlsConfig.TouchControlsMode;
-import common_haxe_avm2.filters.BlurFilter;
-import common_haxe_avm2.filters.GlowFilter;
 import mt.deepnight.Particle;
 import mt.deepnight.slb.AnimManager;
 import mt.deepnight.slb.BSprite;
 
 // Brutal Teenage Crisis (Arkadeo, Motion Twin, 600 x 460 at 30 frames/s), its League. The code is the Arkadeo HTML5
-// port of the original Haxe sources: the logic of the original, the Flash display rewritten on PixiJS (the AS3 display
-// list of common_haxe_avm2 and the SpriteLib mt.deepnight.slb, in the lib). This class replaces its Boot and the
+// port of the original Haxe sources: the logic of the original on the AS3 display list of the lib (arkadeo, over the
+// ASprite of the site) and the SpriteLib mt.deepnight.slb. This class replaces its Boot and the
 // original Game: KadoKadeo creates it, steps it and records its replay (the arrows and space, polled by the hero every
 // frame); the game gives its score and its end to KadoKadeo (addScore, onGameOver).
 //
@@ -91,7 +89,7 @@ class Game implements kado.GameInterface {
 
 	// the sprite sheets of the game (brutalteenagecrisis-N.json), loaded by KadoKadeo before the game is created
 	public var sheets(default, null):Array<Dynamic>;
-	var root:common_haxe_avm2.display.Sprite;
+	var root:Sprite;
 	var mode:Mode;
 	var isReplay:Bool;
 	var frameAcc:Int;
@@ -99,9 +97,6 @@ class Game implements kado.GameInterface {
 	var over:Bool;
 	var score:Int;
 	var prevJumpExtend:Bool;
-	var smooth:Smooth;
-	var beforeRender:Float->Void;
-	var afterRender:Float->Void;
 
 	public function new(mc:ASprite, ?isReplay:Bool = false) {
 		this.isReplay = isReplay;
@@ -133,34 +128,29 @@ class Game implements kado.GameInterface {
 		for (s in sheets)
 			s.baseTexture.scaleMode = 0;
 
-		root = new common_haxe_avm2.display.Sprite();
-		mc.addChild(root);
+		root = new Sprite();
+		mc.addChild(root.node);
 		mode = new brutalteenagecrisis.mode.League(this);
 		warmShaders();
-
-		// smoothed display: the positions are set before each picture (with the pictures of KadoKadeo, before PIXI
-		// draws at the LOW priority) and put back after it (UTILITY priority, -50)
-		smooth = new Smooth(mode.root);
-		smooth.afterFrame();
-		smooth.afterStep(0);
-		beforeRender = (_) -> smooth.beforeRender(@:privateAccess KadoKadeoManager.kkm.ff.alpha);
-		afterRender = (_) -> smooth.afterRender();
-		KadoKadeoManager.kkm.ticker.add(beforeRender);
-		(KadoKadeoManager.kkm.ticker : Dynamic).add(afterRender, null, -50);
+		Flash.display(root, 1);
 	}
 
-	public function addChild(o:pixi.core.display.DisplayObject) {
+	public function addChild(o:DisplayObject) {
 		root.addChild(o);
 	}
 
 	// ---------------------------------------------------------------- KadoKadeo step: 15 frames of the game every 16 steps
+	// Shown 30/32 of a frame behind the last frame of the game (always between the last two frames: the moves are even,
+	// see arkadeo.Flash), ASprite interpolating between two steps
 	public function update(delta:Float) {
 		frameAcc += FPS;
 		while (frameAcc >= STEPS_PER_SECOND) {
 			frameAcc -= STEPS_PER_SECOND;
+			Flash.frameStart(root);
 			gameFrame();
+			Flash.frameEnd(root);
 		}
-		smooth.afterStep(frameAcc / STEPS_PER_SECOND);
+		Flash.display(root, (frameAcc + STEPS_PER_SECOND - FPS) / STEPS_PER_SECOND);
 	}
 
 	// one frame of the game: the update of the original Game, then the hero guards of the Arkadeo HTML5 port
@@ -170,7 +160,6 @@ class Game implements kado.GameInterface {
 		superPowerJumpBoost();
 		clampHero();
 		syncHeroAttachAlpha();
-		smooth.afterFrame();
 	}
 
 	// nothing more after the end
@@ -193,22 +182,30 @@ class Game implements kado.GameInterface {
 	}
 
 	public function destroy():Void {
-		KadoKadeoManager.kkm.ticker.remove(beforeRender);
-		KadoKadeoManager.kkm.ticker.remove(afterRender);
-		smooth.afterRender();
 		mode.destroy();
 		for (s in BSprite.ALL.copy())
 			s.dispose();
 		resetStatics();
-		if (root.parent != null)
-			root.parent.removeChild(root);
-		root.destroy({children: true});
+		if (root.node.parent != null)
+			root.node.parent.removeChild(root.node);
+		root.node.destroy({children: true});
 		mode = null;
 		ME = null;
 	}
 
 	// statics of the game: one page plays several games and replays
 	static function resetStatics() {
+		// the display of the game: positions of the HTML5 port (no twips), pixel art (whole pixels), the glow of the
+		// HTML5 port, the blur of PIXI; the first move of a new object and a move of more than 2 cells (a respawn, the dash
+		// of the Fly) are jumps
+		Flash.reset();
+		Flash.useTwips = false;
+		Flash.snapFirstMove = true;
+		Flash.teleport = 64;
+		Flash.roundMoving = true;
+		GlowFilter.style = SAMPLED;
+		BlurFilter.scale = 1;
+		BlurFilter.forceQuality = null;
 		Const.UID = 0;
 		Const.PHASE_CD = Const.seconds(15);
 		Const.PHASE_DURATION = Const.seconds(2.5);
@@ -245,10 +242,11 @@ class Game implements kado.GameInterface {
 	// once here (GlowFilter: one shader by distance and quality; BlurFilter; ColorMatrixFilter of the Simple mob)
 	function warmShaders() {
 		var renderer:Dynamic = KadoKadeoManager.kkm.renderer;
-		var filters:Array<Dynamic> = [for (d in [2, 4, 6, 8, 16]) new GlowFilter(0xFFFFFF, 1, d, d, 1)];
-		filters.push(new GlowFilter(0xFFFFFF, 0.9, 16, 16, 1, 2));
-		filters.push(new BlurFilter(16, 16));
-		filters.push(mt.deepnight.Color.getColorizeMatrixFilter(0x64979B, 0.5, 0.5));
+		var flts:Array<BitmapFilter> = [for (d in [2, 4, 6, 8, 16]) new GlowFilter(0xFFFFFF, 1, d, d, 1)];
+		flts.push(new GlowFilter(0xFFFFFF, 0.9, 16, 16, 1, 2));
+		flts.push(new BlurFilter(16, 16));
+		flts.push(mt.deepnight.Color.getColorizeMatrixFilter(0x64979B, 0.5, 0.5));
+		var filters = [for (f in flts) f.toPixi()];
 		var rt:Dynamic = (cast pixi.core.textures.RenderTexture : Dynamic).create({width: 32, height: 32});
 		for (f in filters) {
 			var holder = new pixi.core.display.Container();

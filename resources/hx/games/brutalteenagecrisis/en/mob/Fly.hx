@@ -21,7 +21,7 @@ class Fly extends Mob {
 
 	public function new() {
 		super(0, 100);
-		setPos( rseed.irange(0, Const.LWID), Const.LHEI+2 );
+		setPos( Seed.irange(0, Const.LWID), Const.LHEI+2 );
 
 		type = MT_Fly;
 		phase = Wander;
@@ -58,14 +58,14 @@ class Fly extends Mob {
 	}
 
 	function initTarget() {
-		var tcx = rseed.irange(1, Const.LWID-1);
-		var tcy = rseed.irange(1, Const.LHEI-1);
+		var tcx = Seed.irange(1, Const.LWID-1);
+		var tcy = Seed.irange(1, Const.LHEI-1);
 		var d2 = Lib.distanceSqr(cx,cy, tcx,tcy);
 		// after 50 tries, the last draw is kept
 		var tries = 0;
 		while ( (d2<5*5 || d2>10*10) && tries++ < 50 ) {
-			tcx = rseed.irange(1, Const.LWID-1);
-			tcy = rseed.irange(1, Const.LHEI-1);
+			tcx = Seed.irange(1, Const.LWID-1);
+			tcy = Seed.irange(1, Const.LHEI-1);
 			d2 = Lib.distanceSqr(cx,cy, tcx,tcy);
 		}
 
@@ -102,22 +102,22 @@ class Fly extends Mob {
 		if( phase==ChargeEnd ) {
 			// Charge hit
 			var a = Math.atan2(dy,dx);
-			var s = rseed.range(0.9, 1);
+			var s = Seed.range(0.9, 1);
 			h.dx = Const.q(Math.cos(a))*s;
 			h.dy = Const.q(Math.sin(a))*s*2;
 			fx.flashBang(0x0ACCF5, 0.4);
-			h.cd.set("stun", Const.seconds( rseed.range(0.35, 0.45)));
+			h.cd.set("stun", Const.seconds( Seed.range(0.35, 0.45)));
 		}
 		else {
 			// Normal hit
 			var a = Math.atan2(h.yy-yy, h.xx-xx);
-			var p = rseed.range(0.2, 0.3);
+			var p = Seed.range(0.2, 0.3);
 			h.dx = Const.q(Math.cos(a))*p;
-			//h.dy = (h.yy>yy+10 ? 1 : -1) * rseed.range(0.2, 0.3);
+			//h.dy = (h.yy>yy+10 ? 1 : -1) * Seed.range(0.2, 0.3);
 			h.dy = Const.q(Math.sin(a))*p;
 			if( h.dy>0 )
 				h.dy = 0;
-			h.cd.set("stun", Const.seconds( rseed.range(0.15, 0.25)));
+			h.cd.set("stun", Const.seconds( Seed.range(0.15, 0.25)));
 		}
 
 		h.frictX = h.frictY = 0.98;
@@ -156,7 +156,7 @@ class Fly extends Mob {
 
 				// Reach target
 				if( Lib.distanceSqr(xx,yy, target.x, target.y) < 30*30 ) {
-					cd.set("stationary", Const.seconds( rseed.range(0.5, 1.5)) );
+					cd.set("stationary", Const.seconds( Seed.range(0.5, 1.5)) );
 					initTarget();
 				}
 

@@ -1,6 +1,5 @@
 package brutalteenagecrisis;
 
-import common_haxe_avm2.display.Sprite;
 import mt.deepnight.slb.BSprite;
 import mt.deepnight.Color;
 
@@ -14,9 +13,6 @@ class Entity {
 
 	public var sprite		: BSprite;
 	public var cd			: mt.deepnight.Cooldown;
-	public var rseed		: kado.SeedRand;
-	// draws that only change pictures (Hero's slashes, Bomber's sparks): not on the gameplay random
-	public var rvfx			: kado.SeedRand;
 
 	public var cx			: Int;
 	public var cy			: Int;
@@ -44,7 +40,7 @@ class Entity {
 	var collides			: Bool;
 	var killOnBottom		: Bool;
 
-	var bar					: common_haxe_avm2.display.Bitmap;
+	var bar					: Bitmap;
 	var barY				: Int;
 
 
@@ -55,9 +51,6 @@ class Entity {
 		uid = Const.UID++;
 		ALL.push(this);
 		cd = new mt.deepnight.Cooldown();
-
-		rseed = new SeedRand();
-		rvfx = new SeedRand(true);
 
 		stable = false;
 		killed = false;
@@ -83,9 +76,9 @@ class Entity {
 		sprite.setCenter(0.5, 1);
 		mode.dm.add(sprite, Const.DP_ENTITY);
 
-		bar = new common_haxe_avm2.display.Bitmap( new common_haxe_avm2.display.BitmapData(20, 4, true, 0x0) );
+		bar = new Bitmap( new BitmapData(20, 4, true, 0x0) );
 		mode.dm.add(bar, Const.DP_ENTITY);
-		bar.filters = [ new common_haxe_avm2.filters.GlowFilter(0x000000,0.8, 2,2, 4) ];
+		bar.filters = [ new GlowFilter(0x000000,0.8, 2,2, 4) ];
 		initLife(1);
 	}
 
@@ -116,7 +109,7 @@ class Entity {
 			life = 0;
 		var bd = bar.bitmapData;
 		bd.fillRect( bd.rect, Color.addAlphaF(0x950000, 0.6) );
-		bd.fillRect( new common_haxe_avm2.geom.Rectangle(0, 0, bd.width*life/maxLife, bd.height), Color.addAlphaF(0xFFCC00) );
+		bd.fillRect( new Rectangle(0, 0, bd.width*life/maxLife, bd.height), Color.addAlphaF(0xFFCC00) );
 		bar.visible = life<maxLife;
 	}
 
@@ -126,10 +119,10 @@ class Entity {
 	}
 
 	public inline function rnd(min,max,?sign) {
-		return rseed.range(min,max,sign);
+		return Seed.range(min,max,sign);
 	}
 	public inline function irnd(min,max,?sign) {
-		return rseed.irange(min,max,sign);
+		return Seed.irange(min,max,sign);
 	}
 
 	public function destroy() {

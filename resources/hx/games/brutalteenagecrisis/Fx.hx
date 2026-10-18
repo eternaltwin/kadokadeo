@@ -1,8 +1,5 @@
 package brutalteenagecrisis;
 
-import common_haxe_avm2.display.BlendMode;
-import common_haxe_avm2.filters.GlowFilter;
-import common_haxe_avm2.filters.BlurFilter;
 import mt.deepnight.Particle;
 import mt.deepnight.Lib;
 import mt.deepnight.Color;
@@ -10,11 +7,11 @@ import mt.deepnight.slb.BSprite;
 import mt.MLib;
 import brutalteenagecrisis.Const;
 
-// Effects of the game (PixiJS particles), all on the visual random. Differences with the Flash original (Arkadeo HTML5
-// port): ADD blend through register() (given to the leaves of the tree), rotations in RADIANS where the original had
-// degrees, a hand-made shake (damped oscillation of root.y, no drift), Flash-only cases adapted (colorTransform ->
-// alpha, flatten -> direct child). The effects of the progression mode (locks, exit, in-game prizes, tutorials) are
-// not ported.
+// Effects of the game (particles), all on the visual random. Differences with the Flash original (Arkadeo HTML5 port):
+// ADD blend through register() (given to the leaves of the tree), angles of the HTML5 port in radians (MLib.toDeg: the
+// rotations are Flash degrees again), a hand-made shake (damped oscillation of root.y, no drift), Flash-only cases
+// adapted (colorTransform -> alpha, flatten -> direct child). The effects of the progression mode (locks, exit, in-game
+// prizes, tutorials) are not ported.
 class Fx {
 	public static var ME:Fx;
 	var mode:Mode;
@@ -86,7 +83,7 @@ class Fx {
 		s.y = y;
 		s.width = r * 2;
 		s.height = r * 2;
-		s.rotation = rnd(0, 6.28);
+		s.rotation = MLib.toDeg(rnd(0, 6.28));
 	}
 
 	public function heroDash(e:Entity):Void {
@@ -192,7 +189,7 @@ class Fx {
 			p.moveAng(a, rnd(2, 16));
 			p.frict = 0.91;
 			p.life = rnd(5, 30);
-			p.rotation = a;
+			p.rotation = MLib.toDeg(a);
 			register(p);
 		}
 
@@ -270,13 +267,13 @@ class Fx {
 			p.delay = rnd(0, 20);
 			p.gy = rnd(1.5, 3);
 			p.frict = rnd(0.96, 0.99);
-			p.rotation = rnd(0, 6.28);
+			p.rotation = MLib.toDeg(rnd(0, 6.28));
 			p.groundY = Const.HEI + rnd(0, 20);
 			p.life = rnd(40, 60);
 			p.onBounce = function() {
 				p.gy = p.dy = 0;
 				p.groundY = 99999;
-				p.rotation += rnd(0.3, 0.7, true);
+				p.rotation += MLib.toDeg(rnd(0.3, 0.7, true));
 				shake(1, 500);
 			};
 			register(p, BlendMode.NORMAL);
@@ -380,11 +377,11 @@ class Fx {
 
 	public function popScore(x:Float, y:Float, v:Int):Void {
 		// golden score, smaller than createField (size 13, tight halo): floats up, then fades with the Particle
-		var fmt = new common_haxe_avm2.text.TextFormat();
+		var fmt = new TextFormat();
 		fmt.font = "def";
 		fmt.size = 13;
 		fmt.color = 0xFFD24A;
-		var tf = new common_haxe_avm2.text.TextField();
+		var tf = new TextField();
 		tf.defaultTextFormat = fmt;
 		tf.embedFonts = true;
 		tf.text = Std.string(v);
@@ -416,7 +413,7 @@ class Fx {
 			var p = new Particle(fc.x, fc.y);
 			p.drawBox(rnd(5, 15), 2, col, rnd(0.4, 0.8));
 			p.moveAng(a, rnd(20, 40));
-			p.rotation = a;
+			p.rotation = MLib.toDeg(a);
 			p.frictX = p.frictY = rnd(0.80, 0.90);
 			p.life = rnd(3, 10);
 			p.filters = [new GlowFilter(col, 0.8, 4, 4, 2)];
@@ -448,7 +445,7 @@ class Fx {
 				var s = mode.tiles.get("fxDash");
 				s.setCenter(0.5, 0.5);
 				p.addChild(s);
-				p.rotation = a;
+				p.rotation = MLib.toDeg(a);
 				p.onKill = function() s.destroy();
 				p.ds = -rnd(0.02, 0.05);
 				p.scaleX = p.scaleY = rnd(1, 2);
@@ -473,7 +470,7 @@ class Fx {
 			p.da = 0.2;
 			p.dx = -dir * rnd(0, 2);
 			p.dy = -rnd(0.2, 2);
-			p.rotation = Math.atan2(p.dy, p.dx);
+			p.rotation = MLib.toDeg(Math.atan2(p.dy, p.dx));
 			if (Seed.randomVfx(100) < 30) p.dx *= 3;
 			if (Seed.randomVfx(100) < 30) p.dy *= 5;
 			p.gy = rnd(0.1, 0.3);

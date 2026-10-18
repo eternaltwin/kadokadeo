@@ -19,3 +19,6 @@ TEST_MODES.btc = (P, q) => {
     if (N && this.frameCount >= N && !this.over) m.gameOver(false)
   }
 }
+
+// fp=1 (game.html, fp.mjs): the gameplay state after each step
+FP_STATE.brutalteenagecrisis = (g) => g.mode && g.mode.hero ? [g.debugState(), g.botState()] : null

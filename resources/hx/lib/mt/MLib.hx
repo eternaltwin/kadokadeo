@@ -70,6 +70,10 @@ class MLib {
 		return deg * Math.PI / 180;
 	}
 
+	public static inline function toDeg(rad:Float):Float {
+		return rad * 180 / Math.PI;
+	}
+
 	public static function randRange(lo:Int, hi:Int, ?rnd:Void->Float):Int {
 		var r = (rnd != null) ? rnd() : Seed.randVfx();
 		return lo + Std.int(r * (hi - lo + 1));

@@ -32,9 +32,9 @@ class League extends Mode {
 		rlist.add( function() new brutalteenagecrisis.en.it.Bomb(pt.cx, pt.cy), 100 );
 		rlist.add( function() new brutalteenagecrisis.en.it.SuperPower(pt.cx, pt.cy), 5 );
 		rlist.add( function() new brutalteenagecrisis.en.it.MegaBomb(pt.cx, pt.cy), 10 );
-		rlist.draw(rseed.random)();
+		rlist.draw(Seed.random)();
 
-		nextPowerUp = Const.seconds( rseed.range(5,7) );
+		nextPowerUp = Const.seconds( Seed.range(5,7) );
 	}
 
 	public inline function getMaxMobs() {
@@ -42,7 +42,7 @@ class League extends Mode {
 	}
 
 	public function addMob() {
-		var pt = level.getRandomSpotFar( rseed.irange(0,1) );
+		var pt = level.getRandomSpotFar( Seed.irange(0,1) );
 
 		var rlist = new mt.deepnight.RandList();
 		// Small and slow
@@ -66,7 +66,7 @@ class League extends Mode {
 		if( diff>=250 )
 			rlist.add( function() new brutalteenagecrisis.en.mob.Fly(), 10 );
 
-		rlist.draw(rseed.random)();
+		rlist.draw(Seed.random)();
 		var d = 30 * ( 0.25 + 1.25 * Math.max(0, 1-diff/60) );
 		cd.set( "mobSpawn", d );
 	}

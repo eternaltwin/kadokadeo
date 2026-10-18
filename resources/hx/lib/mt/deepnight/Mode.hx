@@ -1,6 +1,6 @@
 package mt.deepnight;
 
-import common_haxe_avm2.display.Sprite;
+import arkadeo.Sprite;
 
 class Mode {
 	static var ALL:Array<Mode> = [];
@@ -36,8 +36,7 @@ class Mode {
 		if (!destroyed) {
 			destroyed = true;
 			pause();
-			if (root.parent != null)
-				root.parent.removeChild(root);
+			root.detach();
 			KILL_LIST.push(this);
 		}
 	}

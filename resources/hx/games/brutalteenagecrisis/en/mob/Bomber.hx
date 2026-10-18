@@ -43,7 +43,7 @@ class Bomber extends Walker {
 	override function update() {
 		super.update();
 
-		if (!cd.hasSet("spark", rvfx.range(4, 8)))
+		if (!cd.hasSet("spark", Seed.rangeVfx(4, 8)))
 			fx.sparks(xx + dir * 5, yy - 50, dir);
 	}
 }

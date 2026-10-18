@@ -34,7 +34,7 @@ class Mob extends Entity {
 		stable = true;
 		slamImmune = false;
 		floor = -1;
-		dir = rseed.sign();
+		dir = Seed.sign();
 
 		mode.dm.add(sprite, Const.DP_MOB);
 	}

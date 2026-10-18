@@ -57,7 +57,7 @@ class Smart extends Walker {
 			rightDist = 999;
 
 		if( mt.MLib.iabs(leftDist-rightDist)<=2 )
-			dir = rseed.sign();
+			dir = Seed.sign();
 		else
 			dir = leftDist<rightDist ? -1 : 1;
 	}

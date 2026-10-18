@@ -2,8 +2,6 @@ package brutalteenagecrisis.en;
 
 import mt.MLib;
 import mt.deepnight.slb.BSprite;
-import common_haxe_avm2.display.Sprite;
-import common_haxe_avm2.display.BlendMode;
 
 class Hero extends Entity {
 	static var ATTACKS = ["atk_a", "atk_b", "atk_c", "atk_d"];
@@ -105,9 +103,9 @@ class Hero extends Entity {
 
 	function attack(e:Mob) {
 		// Slash anim (a picture: on the visual random)
-		var slash = ATTACKS[rvfx.random(ATTACKS.length)];
+		var slash = ATTACKS[Seed.randomVfx(ATTACKS.length)];
 		while( slash==lastAttack )
-			slash = ATTACKS[rvfx.random(ATTACKS.length)];
+			slash = ATTACKS[Seed.randomVfx(ATTACKS.length)];
 		lastAttack = slash;
 
 		var s = mode.tiles.getAndPlay(slash, 1, true);
@@ -115,9 +113,9 @@ class Hero extends Entity {
 		s.setCenter(0.5, 0.5);
 		s.x = xx + dir*15;
 		s.y = yy - 25;
-		s.alpha = rvfx.range(0.6, 1);
+		s.alpha = Seed.rangeVfx(0.6, 1);
 		s.scaleX = dir;
-		s.filters = [ new common_haxe_avm2.filters.GlowFilter(0xF07800,0.8, 16,16) ];
+		s.filters = [ new GlowFilter(0xF07800,0.8, 16,16) ];
 		s.blendMode = BlendMode.ADD;
 
 		sprite.a.play("atk");

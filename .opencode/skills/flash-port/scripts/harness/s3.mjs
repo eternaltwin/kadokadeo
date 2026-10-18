@@ -13,7 +13,11 @@ const KEYS = [[37, 'ArrowLeft'], [38, 'ArrowUp'], [39, 'ArrowRight'], [40, 'Arro
   [87, 'KeyW'], [65, 'KeyA'], [83, 'KeyS'], [68, 'KeyD'], [16, 'ShiftLeft']]
 const result = { game: pkg }
 let b = await launch(PORT)
-const key = (type, code, k) => b.send('Input.dispatchKeyEvent', { type, windowsVirtualKeyCode: code, nativeVirtualKeyCode: code, key: k, code: k })
+// (headless Chrome on macOS hides the page on a Control key event: no more frames until it is brought to the front)
+const key = async (type, code, k) => {
+  await b.send('Input.dispatchKeyEvent', { type, windowsVirtualKeyCode: code, nativeVirtualKeyCode: code, key: k, code: k })
+  if (code === 17) await b.send('Page.bringToFront')
+}
 const mouse = (type, x, y, buttons = 0) => b.send('Input.dispatchMouseEvent', { type, x: 8 + x, y: 8 + y, button: type === 'mouseMoved' ? 'none' : 'left', buttons, clickCount: 1 })
 let data, live
 try {

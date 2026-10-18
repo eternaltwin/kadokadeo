@@ -1,7 +1,7 @@
 package mt.deepnight.slb;
 
 import kado.Seed;
-import common_haxe_avm2.geom.Rectangle;
+import arkadeo.Rectangle;
 import mt.MLib;
 
 typedef FrameData = {
@@ -101,7 +101,7 @@ class BLib {
 	// no-op: the frames are textures of the sheet, nothing to blit (kept for the original callers)
 	public function initBdGroups():Void {}
 
-	public inline function get(k:String, ?frame = 0, ?xr = 0.0, ?yr = 0.0, ?p:common_haxe_avm2.display.DisplayObjectContainer):BSprite {
+	public inline function get(k:String, ?frame = 0, ?xr = 0.0, ?yr = 0.0, ?p:arkadeo.DisplayObjectContainer):BSprite {
 		var s = new BSprite(this, k, frame);
 		s.setCenterRatio(xr, yr);
 		if (p != null)

@@ -4,9 +4,9 @@ import kado.Seed;
 import mt.MLib;
 import mt.deepnight.slb.BLib; // the typedefs LibGroup / FrameData / SLBError
 
-// slb.BSprite on PixiJS: a flash.display.Sprite (a PIXI.Container) showing a child PIXI.Sprite (`bmp`) textured with a
-// frame of the sheet. AnimManager plays its anims.
-class BSprite extends common_haxe_avm2.display.Sprite implements SpriteInterface {
+// slb.BSprite on the AS3 display list of arkadeo: a Sprite showing a child Bitmap (`bmp`, under the other children)
+// with a frame of the sheet, placed by the pivot. AnimManager plays its anims.
+class BSprite extends arkadeo.Sprite implements SpriteInterface {
 	public static var ALL:Array<BSprite> = [];
 
 	public var a:AnimManager;
@@ -21,7 +21,7 @@ class BSprite extends common_haxe_avm2.display.Sprite implements SpriteInterface
 	public var beforeRender:Null<Void->Void>;
 	public var onFrameChange:Null<Void->Void>;
 
-	var bmp:Dynamic; // the child PIXI.Sprite
+	var bmp:arkadeo.Bitmap;
 
 	public function new(?l:BLib, ?g:String, ?frame = 0) {
 		super();
@@ -29,7 +29,7 @@ class BSprite extends common_haxe_avm2.display.Sprite implements SpriteInterface
 		this.frame = 0;
 		slbPivot = new SpritePivot();
 		a = new AnimManager(this);
-		bmp = js.Syntax.code("new PIXI.Sprite()");
+		bmp = new arkadeo.Bitmap();
 		addChild(bmp);
 		ALL.push(this);
 		if (l != null)
@@ -66,7 +66,8 @@ class BSprite extends common_haxe_avm2.display.Sprite implements SpriteInterface
 		if (isReady()) {
 			frameData = lib.getFrameData(groupName, frame);
 			if (frameData == null) throw 'Unknown frame: $groupName($frame)';
-			bmp.texture = lib.getFrameTexture(groupName, frame);
+			var t:Dynamic = lib.getFrameTexture(groupName, frame);
+			bmp.setTexture(t, t.orig.width, t.orig.height);
 			applyPivot();
 			if (onFrameChange != null) onFrameChange();
 		}
@@ -84,24 +85,12 @@ class BSprite extends common_haxe_avm2.display.Sprite implements SpriteInterface
 			py = Std.int(-frameData.realFrame.realHei * slbPivot.centerFactorY - frameData.realFrame.y);
 		} else
 			return;
-		// horizontal flip on the BITMAP, not on the container: the scale x of the container stays positive, so its
-		// PIXI width too (Hero places its hair with it). bmp.x = -px when flipped: mirrored around the origin.
-		bmp.scale.x = flipX;
-		bmp.x = flipX > 0 ? px : -px;
-		bmp.y = py;
-	}
-
-	// sign of the flip, kept apart so that the scale of the container stays positive: get_scaleX gives the signed value
-	// (Hero tests scaleX < 0), set_scaleX sets a scale >= 0 on the container and flips the bitmap
-	var flipX:Float = 1;
-
-	override function get_scaleX():Float return flipX * scale.x;
-
-	override function set_scaleX(v:Float):Float {
-		flipX = v < 0 ? -1 : 1;
-		scale.x = v < 0 ? -v : v;
-		applyPivot();
-		return v;
+		// (a new frame is drawn where its pivot puts it at once)
+		if (bmp.x != px || bmp.y != py) {
+			bmp.x = px;
+			bmp.y = py;
+			bmp.snap();
+		}
 	}
 
 	// (the name of the original callers)
@@ -134,7 +123,7 @@ class BSprite extends common_haxe_avm2.display.Sprite implements SpriteInterface
 
 	// multiplicative tint of the frame
 	public function setTint(c:Int):Void
-		untyped if (bmp != null) bmp.tint = c;
+		if (bmp != null) bmp.node.tint = c;
 
 	public function constraintSize(w:Float, ?h:Null<Float>, ?useFrameDataRealSize = false):Void {
 		if (useFrameDataRealSize)
@@ -165,9 +154,9 @@ class BSprite extends common_haxe_avm2.display.Sprite implements SpriteInterface
 	// the pixels of an attach colour in the current frame (Hero: hair and chain), as the original found them with
 	// getBitmapData().getColorBoundsRect(): measured in the frames when the sheet is built (Data.HAIR / Data.CHAIN),
 	// nothing is read from the pictures at run time. (0, 0, 0, 0) when the frame has none.
-	public function getAttachRect(points:Map<String, Array<Int>>):common_haxe_avm2.geom.Rectangle {
+	public function getAttachRect(points:Map<String, Array<Int>>):arkadeo.Rectangle {
 		var r = isReady() ? points.get(groupName + "#" + frame) : null;
-		return r == null ? new common_haxe_avm2.geom.Rectangle(0, 0, 0, 0) : new common_haxe_avm2.geom.Rectangle(r[0], r[1], r[2], r[3]);
+		return r == null ? new arkadeo.Rectangle(0, 0, 0, 0) : new arkadeo.Rectangle(r[0], r[1], r[2], r[3]);
 	}
 
 	public function clone<T>(?s:T):T {
@@ -177,11 +166,15 @@ class BSprite extends common_haxe_avm2.display.Sprite implements SpriteInterface
 
 	public function toString():String return "BSprite_" + groupName + "[" + frame + "]";
 
+	// (the name of the older SpriteLib the originals call)
+	public inline function destroy():Void
+		dispose();
+
 	public function dispose():Void {
 		if (destroyed) return;
 		destroyed = true;
 		if (lib != null) lib.removeChild(this);
-		if (parent != null) parent.removeChild(this);
+		detach();
 		ALL.remove(this);
 		if (a != null) a.destroy();
 		a = null;

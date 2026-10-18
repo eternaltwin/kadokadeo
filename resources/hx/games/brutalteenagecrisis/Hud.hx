@@ -1,7 +1,5 @@
 package brutalteenagecrisis;
 
-import common_haxe_avm2.display.Sprite;
-import common_haxe_avm2.display.Graphics;
 import mt.deepnight.slb.BSprite;
 
 // Hud: hearts (credits) + phase icon with its reload gauge. The lit icon (phaseOn) is
@@ -15,7 +13,7 @@ class Hud {
 	var credits:Array<BSprite>;
 	var phaseOn:BSprite;
 	var phaseOff:BSprite;
-	var phaseGauge:Graphics;
+	var phaseGauge:Shape;
 
 	public function new() {
 		mode = Mode.ME;
@@ -32,10 +30,9 @@ class Hud {
 			phaseOff.x = phaseOn.x = Const.WID - 40;
 			phaseOff.y = phaseOn.y = 6;
 
-			phaseGauge = new Graphics();
+			phaseGauge = new Shape();
 			wrapper.addChild(phaseGauge);
-			untyped phaseOn.mask = phaseGauge; // permanent mask (reveals phaseOn from the bottom up)
-			untyped phaseGauge.renderable = false; // never drawn white
+			phaseOn.mask = phaseGauge; // permanent mask (reveals phaseOn from the bottom up), never drawn
 		}
 	}
 
@@ -68,8 +65,8 @@ class Hud {
 		// While reloading: the "charging" glyph (frame 1) revealed from the bottom up; the
 		// filled glyph (frame 2) only shows at 100 %. The grey base (phaseOff) is only
 		// visible while reloading. The icon is 40x40: the mask must cover all of it.
-		phaseGauge.clear();
-		phaseGauge.beginFill(0xFFFFFF, 1);
+		phaseGauge.graphics.clear();
+		phaseGauge.graphics.beginFill(0xFFFFFF, 1);
 		if (t > 0) {
 			phaseOff.visible = true;
 			phaseOn.visible = true;
@@ -81,15 +78,15 @@ class Hud {
 			var sweep = 28.0; // height of the glyph
 			var inset = 6.0; // inset in the 40 px box
 			var h = sweep * f;
-			phaseGauge.drawRect(phaseOn.x, phaseOn.y + inset + (sweep - h), phaseOn.width, h);
+			phaseGauge.graphics.drawRect(phaseOn.x, phaseOn.y + inset + (sweep - h), phaseOn.width, h);
 		} else {
 			// 100 % only: FILLED ghost (frame 2), whole icon, base hidden
 			phaseOff.visible = false;
 			phaseOn.visible = true;
 			phaseOn.setFrame(2);
 			phaseOn.alpha = 1;
-			phaseGauge.drawRect(phaseOn.x, phaseOn.y, phaseOn.width, phaseOn.height);
+			phaseGauge.graphics.drawRect(phaseOn.x, phaseOn.y, phaseOn.width, phaseOn.height);
 		}
-		phaseGauge.endFill();
+		phaseGauge.graphics.endFill();
 	}
 }

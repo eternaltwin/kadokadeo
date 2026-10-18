@@ -2,8 +2,8 @@ package brutalteenagecrisis;
 
 import kado.KadoKadeoManager;
 import kado.Seed;
-import kado.SeedRand;
 import common_haxe_avm1.KeyboardManager;
+import arkadeo.*;
 import brutalteenagecrisis.Const;
 import brutalteenagecrisis.Entity;
 import brutalteenagecrisis.Fx;

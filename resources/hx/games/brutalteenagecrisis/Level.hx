@@ -1,6 +1,5 @@
 package brutalteenagecrisis;
 
-import common_haxe_avm2.display.Sprite;
 import mt.deepnight.Lib;
 import mt.deepnight.slb.BSprite;
 import mt.deepnight.RandList;
@@ -18,15 +17,11 @@ class Level {
 	var mode:Mode;
 	var map:Array<Array<MapCell>>;
 	var walls:Sprite;
-	var rseed:kado.SeedRand;
-	var rvfx:kado.SeedRand;
 	var spots:Map<String, Array<{cx:Int, cy:Int}>>;
 
 	public function new() {
 		mode = Mode.ME;
 		map = new Array();
-		rseed = new SeedRand();
-		rvfx = new SeedRand(true);
 		spots = new Map();
 
 		for (cx in 0...Const.LWID) {
@@ -125,8 +120,9 @@ class Level {
 		walls.addChild(ladderLayer);
 
 		// Drop shadow under the exposed bottom edge of each platform (relief)
-		var shadowG = new common_haxe_avm2.display.Graphics();
-		shadowLayer.addChild(shadowG);
+		var shadow = new Shape();
+		shadowLayer.addChild(shadow);
+		var shadowG = shadow.graphics;
 
 		// Background (frame 0 in the League)
 		if (mode.bgs != null && mode.bgs.exists("bg")) {
@@ -138,7 +134,7 @@ class Level {
 
 		// Skin of the scenery: "Rock" in the League; a skin is drawn for each cell
 		var skinSet:Array<Map<String, Int>> = [["Rock" => 10]];
-		var skin = skinSet[rvfx.random(skinSet.length)];
+		var skin = skinSet[Seed.randomVfx(skinSet.length)];
 		var skinList = new RandList<String>();
 		for (k in skin.keys())
 			skinList.add(k, skin.get(k));
@@ -152,7 +148,7 @@ class Level {
 				var y = cy * Const.GRID;
 
 				if (hasCollision(cx, cy)) {
-					var id = skinList.draw(rvfx.random);
+					var id = skinList.draw(Seed.randomVfx);
 					if (mode.tiles.exists("plateform" + id)) {
 						var hasSide = mode.tiles.exists("plateform" + id + "Side");
 						var s:BSprite;
@@ -165,7 +161,7 @@ class Level {
 							s.x = x + Const.GRID;
 						} else {
 							s = mode.tiles.get("plateform" + id);
-							s.scaleX = rvfx.sign();
+							s.scaleX = Seed.signVfx();
 							s.x = s.scaleX < 0 ? x + Const.GRID : x;
 						}
 						s.setCenter(0, 0);
@@ -187,8 +183,8 @@ class Level {
 				var interior = hasCollision(cx, cy) && hasCollision(cx - 1, cy) && hasCollision(cx + 1, cy);
 
 				// Back decoration (25 %)
-				if (rvfx.random(100) < 25 && interior && hasBack) {
-					var s = mode.tiles.getRandom("deco_back", rvfx.random);
+				if (Seed.randomVfx(100) < 25 && interior && hasBack) {
+					var s = mode.tiles.getRandom("deco_back", Seed.randomVfx);
 					s.setCenter(0.5, 0);
 					s.x = x;
 					s.y = y - Const.GRID;
@@ -196,10 +192,10 @@ class Level {
 				}
 
 				// Front decoration (10 %)
-				if (rvfx.random(100) < 10 && interior && hasFront) {
-					var s = mode.tiles.getRandom("deco_front", rvfx.random);
-					s.scaleX = rvfx.sign();
-					s.scaleY = rvfx.range(0.5, 1);
+				if (Seed.randomVfx(100) < 10 && interior && hasFront) {
+					var s = mode.tiles.getRandom("deco_front", Seed.randomVfx);
+					s.scaleX = Seed.signVfx();
+					s.scaleY = Seed.rangeVfx(0.5, 1);
 					s.x = x;
 					s.y = y;
 					s.setPivotCoord(s.width * 0.5, 34);
@@ -247,13 +243,13 @@ class Level {
 	public function getRandomSpot(?floor:Int) {
 		if (floor == null) {
 			var all = spots.get("ground");
-			return all[rseed.random(all.length)];
+			return all[Seed.random(all.length)];
 		} else {
 			var all = spots.get("floor_" + floor);
 			// fallback: a floor without any spot gives the ground spots (no all[random(0)] = null)
 			if (all == null || all.length == 0)
 				all = spots.get("ground");
-			return all[rseed.random(all.length)];
+			return all[Seed.random(all.length)];
 		}
 	}
 }

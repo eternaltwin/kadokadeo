@@ -2,12 +2,12 @@ package mt.deepnight;
 
 import kado.Seed;
 
-// On PixiJS (common_haxe_avm2): a Sprite (children allowed, rotation in radians), the random draws on KadoKadeo's
-// visual random (the effects of a replay are the ones of the game), a scale changed by ds / dsx / dsy that stops at
-// 0, destroy() frees the particle at once.
-class Particle extends common_haxe_avm2.display.Sprite {
+// On the AS3 display list of arkadeo: a Sprite (children allowed), the random draws on KadoKadeo's visual random (the
+// effects of a replay are the ones of the game), a scale changed by ds / dsx / dsy that stops at 0, destroy() frees the
+// particle at once.
+class Particle extends arkadeo.Sprite {
 	public static var ALL:Array<Particle> = [];
-	public static var DEFAULT_BOUNDS:common_haxe_avm2.geom.Rectangle = null;
+	public static var DEFAULT_BOUNDS:arkadeo.Rectangle = null;
 	public static var AUTO_RESET_SETTINGS = true;
 	public static var GX = 0;
 	public static var GY = 0.4;
@@ -37,7 +37,7 @@ class Particle extends common_haxe_avm2.display.Sprite {
 	var rlife:Float;
 	var maxLife:Float;
 
-	public var bounds:Null<common_haxe_avm2.geom.Rectangle>;
+	public var bounds:Null<arkadeo.Rectangle>;
 	public var fl_wind:Bool;
 	public var groundY:Null<Float>;
 	public var groupId:Null<String>;
@@ -163,12 +163,11 @@ class Particle extends common_haxe_avm2.display.Sprite {
 		return list;
 	}
 
-	// out of ALL and of the display list, then the PixiJS destroy
-	override public function destroy(?options:haxe.extern.EitherType<Bool, pixi.core.display.DisplayObject.DestroyOptions>) {
+	// out of ALL and of the display list, its node freed
+	public function destroy() {
 		ALL.remove(this);
-		if (parent != null)
-			parent.removeChild(this);
-		super.destroy(options);
+		detach();
+		node.destroy({children: true});
 	}
 
 	public inline function getSpeed() {
@@ -274,8 +273,7 @@ class Particle extends common_haxe_avm2.display.Sprite {
 					count--;
 					if (p.onKill != null)
 						p.onKill();
-					if (p.parent != null)
-						p.parent.removeChild(p);
+					p.detach();
 				} else {
 					if (p.onUpdate != null)
 						p.onUpdate();
