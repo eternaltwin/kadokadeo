@@ -118,4 +118,15 @@ Route::prefix('/runs')->group(function () {
     Route::get('/{run}', [App\Http\Controllers\Api\RunController::class, 'show'])->whereUlid('run');
     Route::post('/games/{game}', [App\Http\Controllers\Api\RunController::class, 'begin'])->whereNumber('game');
     Route::post('/{run}/finish', [App\Http\Controllers\Api\RunController::class, 'end'])->whereUlid('run');
+    Route::get('/{run}/comments', [App\Http\Controllers\Api\RunCommentController::class, 'index'])->whereUlid('run');
+    Route::post('/{run}/comments', [App\Http\Controllers\Api\RunCommentController::class, 'store'])->whereUlid('run');
+    Route::post('/{run}/view', [App\Http\Controllers\Api\RunCommentController::class, 'view'])->whereUlid('run');
+});
+
+Route::prefix('/run-comments/{comment}')->whereNumber('comment')->group(function () {
+    Route::patch('/', [App\Http\Controllers\Api\RunCommentController::class, 'update']);
+    Route::delete('/', [App\Http\Controllers\Api\RunCommentController::class, 'destroy']);
+    Route::put('/like', [App\Http\Controllers\Api\RunCommentController::class, 'like']);
+    Route::delete('/like', [App\Http\Controllers\Api\RunCommentController::class, 'unlike']);
+    Route::post('/report', [App\Http\Controllers\Api\RunCommentController::class, 'report']);
 });
