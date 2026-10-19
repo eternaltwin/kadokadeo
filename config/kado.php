@@ -77,10 +77,6 @@ return [
         'max_concurrency' => env('KADO_RUNS_MAX_CONCURRENCY', 50),
     ],
 
-    'poids_plume' => [
-        'jackpot' => env('KADO_POIDS_PLUME_JACKPOT', 0),
-    ],
-
     // the looks of the site (App\Http\Controllers\Api\ThemeController): "base" for everyone, the others bought once with
     // Kado points. Karbon: the second theme of KadoKado (its images were in dat.kadokado.com/gfx/gui/karbon)
     'themes' => [
