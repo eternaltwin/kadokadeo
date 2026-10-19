@@ -40,9 +40,13 @@ const logout = () => {
       <li><RouterLink :to="{ name: 'forum.index' }" title="Forum"><img src="/gfx/kalendarIconForum.gif" alt="forum"></RouterLink></li>
       <li><RouterLink :to="{ name: 'profile.index' }"><img src="/gfx/kalendarIconScore.gif" alt="scores"></RouterLink></li>
       <li>
-        <RouterLink :to="clanStore.clan ? { name: 'clans.show', params: { id: clanStore.clan.id } } : { name: 'clans.index' }" title="Mon clan">
+        <RouterLink v-if="clanStore.enabled" :to="clanStore.clan ? { name: 'clans.show', params: { id: clanStore.clan.id } } : { name: 'clans.index' }" title="Mon clan">
           <img src="/gfx/kalendarIconClan.gif" alt="clans">
         </RouterLink>
+        <!-- the clans turned off in the admin -->
+        <a v-else class="grayscale cursor-default" title="Mon clan : prochainement disponible">
+          <img src="/gfx/kalendarIconClan.gif" alt="clans">
+        </a>
       </li>
     </ul>
     <ul class="navKalendrierButtonsBottom">

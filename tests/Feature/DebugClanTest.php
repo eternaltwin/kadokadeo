@@ -11,11 +11,12 @@ use App\Models\Period;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Tests\Concerns\EnablesClans;
 use Tests\TestCase;
 
 class DebugClanTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, EnablesClans;
 
     public function test_the_debug_tools_are_off_without_kado_debug_tools(): void
     {

@@ -6,6 +6,8 @@ import { useApi } from '@/composables/useApi'
 // what the menus need about the clans: the period of the tournament, the clan of the player, the top 3 of the wars and of
 // the missions
 export const useClanStore = defineStore('clan', () => {
+  // the clans are open (App\Settings\ClanSettings::$enabled): else their pages are closed and their API refused
+  const enabled = Boolean(window.Kado?.clans_enabled)
   const tournament = ref(null)
   const clan = ref(null)
   const applications = ref([])
@@ -18,8 +20,11 @@ export const useClanStore = defineStore('clan', () => {
 
   const { get } = useApi()
 
-  const reload = () =>
-    get('/clans/overview').then((response) => {
+  const reload = () => {
+    if (!enabled) {
+      return Promise.resolve()
+    }
+    return get('/clans/overview').then((response) => {
       const data = response.data.data
       tournament.value = data.tournament
       clan.value = data.clan
@@ -29,8 +34,10 @@ export const useClanStore = defineStore('clan', () => {
       debug.value = data.debug
       rules.value = data.rules
     }).catch(() => {})
+  }
 
   return {
+    enabled,
     tournament,
     clan,
     applications,

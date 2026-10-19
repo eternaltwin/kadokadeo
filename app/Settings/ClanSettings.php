@@ -9,6 +9,10 @@ use Spatie\LaravelSettings\Settings;
 // (App\Services\ClanService::rules)
 class ClanSettings extends Settings
 {
+    // the clans are open to the players (App\Http\Middleware\EnsureClansAreEnabled, window.Kado.clans_enabled); the admin
+    // panel manages them anyway
+    public bool $enabled;
+
     public int $max_members;
 
     // ---------------------------------------------------------------- attacks and defenses

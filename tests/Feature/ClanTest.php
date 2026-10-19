@@ -29,11 +29,12 @@ use App\Settings\ClanSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Livewire\Livewire;
+use Tests\Concerns\EnablesClans;
 use Tests\TestCase;
 
 class ClanTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, EnablesClans;
 
     // day 2 of the period
     private function period(): Period

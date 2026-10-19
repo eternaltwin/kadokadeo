@@ -42,9 +42,13 @@ const otherGames = [
         </li>
       </ul>
     </nav>
-    <aside class="sideBoxBlue">
+    <!-- the clans turned off in the admin: the boxes greyed, without their rankings -->
+    <aside class="sideBoxBlue" :class="{ grayscale: !clanStore.enabled }">
       <h2>Top 3 clans de guerre</h2>
-      <ul>
+      <ul v-if="!clanStore.enabled">
+        <li class="text-center italic">Prochainement disponible</li>
+      </ul>
+      <ul v-else>
         <li v-for="clan in clanStore.top" :key="clan.id" class="flex justify-between gap-1">
           <RouterLink :to="{ name: 'clans.show', params: { id: clan.id } }" class="truncate">{{ clan.rank }}. {{ clan.name }}</RouterLink>
           <Number :value="clan.war_score" color="orange" />
@@ -55,9 +59,12 @@ const otherGames = [
         </li>
       </ul>
     </aside>
-    <aside class="sideBoxViolet">
+    <aside class="sideBoxViolet" :class="{ grayscale: !clanStore.enabled }">
       <h2>Top 3 clans de mission</h2>
-      <ul>
+      <ul v-if="!clanStore.enabled">
+        <li class="text-center italic">Prochainement disponible</li>
+      </ul>
+      <ul v-else>
         <li v-for="clan in clanStore.topMissions" :key="clan.id" class="flex justify-between gap-1">
           <RouterLink :to="{ name: 'clans.show', params: { id: clan.id } }" class="truncate">{{ clan.rank }}. {{ clan.name }}</RouterLink>
           <Number :value="clan.mission_score" color="violet" />

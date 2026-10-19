@@ -34,17 +34,8 @@ class PrepareNewPeriod extends Command
         $period = Period::orderBy('id', 'desc')->first();
 
         // the command runs every Monday: the Monday in the middle of a period does nothing (the players are promoted
-        // only at the end of a period)
+        // only at the end of a period, and the previous period is never closed again)
         if ($period && $period->start_at->diffInDays(now()) < Period::DAYS_PER_PERIOD) {
-            $previousPeriod = Period::query()
-                ->where('id', '<', $period->id)
-                ->orderByDesc('id')
-                ->first();
-
-            if ($previousPeriod) {
-                $this->closePeriod($previousPeriod, $period, $leagueService, $poidsPlumeService, $clanPeriodService);
-            }
-
             $this->info('Current period is still active, no new period created.');
 
             return 0;
@@ -58,8 +49,9 @@ class PrepareNewPeriod extends Command
 
         // the new period becomes current (Period::current) only once the memberships are carried over and the players
         // promoted: a run started during the close would otherwise take the league of before the promotion, and its
-        // membership would collide with the one the close inserts (league_memberships_user_id_period_id_game_id_unique)
-        DB::transaction(function () use ($period, $newPeriodStartDate, $leagueService, $poidsPlumeService, $clanPeriodService) {
+        // membership would collide with the one the close inserts (league_memberships_user_id_period_id_game_id_unique).
+        // Until then Period::current finds no period: the runs started during the close are outside of any period
+        DB::transaction(function () use ($period, $newPeriodStartDate, $leagueService) {
             $newPeriod = Period::create([
                 'start_at' => $newPeriodStartDate,
                 'end_at' => $newPeriodStartDate->clone()->addDays(Period::DAYS_PER_PERIOD)->endOfDay(),
@@ -68,19 +60,18 @@ class PrepareNewPeriod extends Command
 
             if ($period) {
                 $this->info('Closing period '.$period->id.'...');
-                $this->closePeriod($period, $newPeriod, $leagueService, $poidsPlumeService, $clanPeriodService);
+                $leagueService->closePeriod($period, $newPeriod);
             }
         });
 
+        // the rewards of the closed period, once the new one is current: they keep the transaction above short (the rows
+        // of the rewarded players stay locked until it ends), and a failure there does not take the new period back. Each
+        // pays a player once (PoidsPlumeResult / ClanMemberStat::user_point_id)
+        if ($period) {
+            $poidsPlumeService->closePeriod($period);
+            $clanPeriodService->closePeriod($period);
+        }
+
         return 0;
-    }
-
-    private function closePeriod(Period $period, Period $nextPeriod, LeagueService $leagueService, PoidsPlumeService $poidsPlumeService, ClanPeriodService $clanPeriodService): void
-    {
-        $this->info('Closing period '.$period->id.'...');
-
-        $leagueService->closePeriod($period, $nextPeriod);
-        $poidsPlumeService->closePeriod($period);
-        $clanPeriodService->closePeriod($period);
     }
 }

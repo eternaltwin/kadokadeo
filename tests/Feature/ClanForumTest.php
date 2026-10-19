@@ -8,11 +8,12 @@ use App\Models\ClanForumTopic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Tests\Concerns\EnablesClans;
 use Tests\TestCase;
 
 class ClanForumTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, EnablesClans;
 
     private User $leader;
 

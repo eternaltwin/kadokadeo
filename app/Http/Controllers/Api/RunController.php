@@ -23,6 +23,7 @@ use App\Services\LeagueService;
 use App\Services\ReplayVerifier;
 use App\Services\RunService;
 use App\Services\ScoreService;
+use App\Settings\ClanSettings;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
@@ -53,8 +54,9 @@ class RunController extends Controller implements HasMiddleware
             }
         }
         // an attack, a defense or a mission step asked on the clan pages: the runs of the missions are free, the attacks
-        // and the defenses have their own games (attack games of the day, then paid clan games)
-        $clanAction = $isDaily ? null : $clanRunService->pendingAction($request->user()->id, $game->id);
+        // and the defenses have their own games (attack games of the day, then paid clan games). None while the clans are
+        // turned off (ClanSettings::$enabled)
+        $clanAction = $isDaily || !app(ClanSettings::class)->enabled ? null : $clanRunService->pendingAction($request->user()->id, $game->id);
         $cost = $clanRunService->runCost($clanAction);
         if ($cost === ClanRunService::COST_GAME) {
             Gate::authorize('create', Run::class);

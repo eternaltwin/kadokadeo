@@ -8,6 +8,7 @@ use App\Settings\ClanSettings;
 use BackedEnum;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Html;
 use Filament\Schemas\Components\Section;
@@ -37,6 +38,9 @@ class ManageClanSettings extends SettingsPage
                 Section::make('Clans')
                     ->columnSpanFull()
                     ->schema([
+                        Toggle::make('enabled')
+                            ->label('Activer les clans')
+                            ->helperText('Désactivés, les pages des clans sont fermées aux joueurs (« Prochainement disponible ») et leurs routes refusées. L\'administration des clans reste accessible.'),
                         $this->integer('max_members', 'Nombre maximum de membres', min: 1),
                     ]),
 

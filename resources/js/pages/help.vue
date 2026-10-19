@@ -2,6 +2,7 @@
 // the help as on KadoKado (HelpUI of kk.js, 2008): a box of 400px showing one section at a time with its art on the
 // left, the table of content in roman numbers, a "Suivant" button, and the sections sliding from one to the next
 const leagueStore = useLeagueStore()
+const clanStore = useClanStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -12,23 +13,23 @@ const stars = [
 ]
 
 const art = (name) => `/assets/img/gfx/art/${name}.jpg`
-// level 2: a part of the table of content, level 3: one of its sections
+// level 2: a part of the table of content, level 3: one of its sections (those of the clans only once they are open)
 const sections = [
   { id: 'bienvenue', title: 'Bienvenue', level: 2, art: art('general') },
   { id: 'periodes', title: 'Les périodes', level: 2, art: art('periode') },
   { id: 'etoiles', title: 'Les étoiles', level: 2, art: art('star') },
   { id: 'niveaux', title: 'Les niveaux', level: 2, art: art('scoring') },
-  { id: 'clans', title: 'Les clans', level: 2, art: art('clan') },
-  { id: 'attaques', title: 'Les attaques', level: 3, art: art('clan') },
-  { id: 'defenses', title: 'Les défenses', level: 3, art: art('clan') },
-  { id: 'roles', title: 'Les rôles', level: 3, art: art('clan') },
-  { id: 'missions', title: 'Les missions', level: 3, art: art('clan') },
-  { id: 'options', title: 'Les options', level: 3, art: art('clan') },
-  { id: 'classement', title: 'Le classement des clans', level: 3, art: art('clan') },
+  { id: 'clans', title: 'Les clans', level: 2, art: art('clan'), clan: true },
+  { id: 'attaques', title: 'Les attaques', level: 3, art: art('clan'), clan: true },
+  { id: 'defenses', title: 'Les défenses', level: 3, art: art('clan'), clan: true },
+  { id: 'roles', title: 'Les rôles', level: 3, art: art('clan'), clan: true },
+  { id: 'missions', title: 'Les missions', level: 3, art: art('clan'), clan: true },
+  { id: 'options', title: 'Les options', level: 3, art: art('clan'), clan: true },
+  { id: 'classement', title: 'Le classement des clans', level: 3, art: art('clan'), clan: true },
   { id: 'classementv1', title: 'Le classement V1', level: 2, art: art('general') },
   { id: 'compte', title: 'Mon compte', level: 2, art: art('pks') },
   { id: 'questions', title: 'Questions', level: 2, art: art('gem') },
-]
+].filter((section) => clanStore.enabled || !section.clan)
 
 const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
 
@@ -60,7 +61,6 @@ const go = (index) => {
 }
 
 // the rules of the clans set in the admin (App\Settings\ClanSettings)
-const clanStore = useClanStore()
 if (!clanStore.rules) {
   clanStore.reload()
 }
@@ -122,12 +122,12 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
             <template v-if="section.id === 'bienvenue'">
               <p>Bienvenue sur <strong>KadoKadéo</strong>, le retour de KadoKado par le projet Eternaltwin ! Retrouvez les jeux de Motion-Twin, battez vos records et grimpez dans les niveaux de chaque jeu.</p>
               <p>Chaque jour, vous disposez d'un nombre de parties à jouer sur les jeux que vous préférez. Le jeu du jour vous propose en plus un contrat : un score à battre pour remporter des <strong>points Kado</strong> <img src="/gfx/skpoint.gif" alt="Kado" class="inline size-4" />.</p>
-              <p>Rejoignez un clan pour jouer en équipe, et utilisez ce menu ou le bouton « Suivant » pour découvrir le reste du site !</p>
+              <p><template v-if="clanStore.enabled">Rejoignez un clan pour jouer en équipe, et utilisez</template><template v-else>Utilisez</template> ce menu ou le bouton « Suivant » pour découvrir le reste du site !</p>
             </template>
 
             <template v-else-if="section.id === 'periodes'">
               <p>Une période KadoKadéo se déroule sur deux semaines, soit <strong>14 jours</strong>. Le Kalendrier affiché en haut à droite du site indique la période actuelle ainsi que le jour actuel.</p>
-              <p>Quand une période se termine, les classements sont remis à zéro : les meilleurs joueurs de chaque niveau montent au niveau supérieur et remportent des points Kado, et le tournoi des clans recommence.</p>
+              <p>Quand une période se termine, les classements sont remis à zéro : les meilleurs joueurs de chaque niveau montent au niveau supérieur et remportent des points Kado<template v-if="clanStore.enabled">, et le tournoi des clans recommence</template>.</p>
             </template>
 
             <template v-else-if="section.id === 'etoiles'">
