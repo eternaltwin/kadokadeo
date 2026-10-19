@@ -1,4 +1,5 @@
 <script setup>
+import KadoPoints from '@svg/k.svg'
 // "Classement" of the clans of the period, and the creation of a clan
 const route = useRoute()
 const router = useRouter()
@@ -70,7 +71,10 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
       <RouterLink :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }" class="font-bold">{{ clanStore.clan.name }}</RouterLink>
     </p>
     <p v-else class="mx-0">
-      Vous ne faites partie d'aucun clan. Un clan est un groupe de 1 à 50 joueurs qui combattent ensemble contre les
+      <!-- the maximum set in the admin (ClanSettings::$max_members) -->
+      Vous ne faites partie d'aucun clan. Un clan est un groupe
+      <template v-if="clanStore.rules?.max_members">de 1 à {{ clanStore.rules.max_members }}</template><template v-else>de</template>
+      joueurs qui combattent ensemble contre les
       autres clans : rejoignez un clan existant en envoyant votre candidature depuis sa page, ou
       <RouterLink :to="{ name: 'clans.index', query: { tab: 'create' } }">créez votre propre clan</RouterLink>.
     </p>
@@ -84,7 +88,7 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
 
     <template v-if="tab === 'create'">
       <MessageError v-if="clanStore.clan">Vous faites déjà partie d'un clan.</MessageError>
-      <form v-else class="max-w-lg" @submit.prevent="submit">
+      <form v-else class="max-w-lg space-y-2" @submit.prevent="submit">
         <div>
           <label for="clanName">Nom du clan</label>
           <FormInput id="clanName"
@@ -103,14 +107,12 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                         rows="6"
                         maxlength="5000" />
         </div>
-        <p v-if="creationPrice" class="mx-0 text-xs text-kado-cyan-900">
-          Créer un clan coûte <strong>{{ formatScore(creationPrice) }} points Kado</strong>. Vos candidatures en attente seront retirées et remboursées.
-        </p>
         <MessageError v-if="createError">{{ createError }}</MessageError>
         <FormButton type="submit"
                     size="lg"
                     :disabled="isCreating || !canPayCreation"
                     :title="canPayCreation ? '' : 'Vous n\'avez pas assez de points Kado'">
+          <template v-if="!isCreating"><Number :value="creationPrice" color="green" /> <KadoPoints class="inline size-5" /></template>
           {{ isCreating ? 'Création en cours ...' : 'Créer le clan' }}
         </FormButton>
       </form>

@@ -41,18 +41,41 @@ const markdownClasses = [
 
     <template v-if="clan.history.length">
       <h2>Historique</h2>
-      <ul class="list-inside list-image-[url(/gfx/puce.jpg)] ml-4 space-y-1">
-        <li v-for="h in clan.history" :key="h.period_id">
-          Période {{ h.period_id }} :
-          <template v-if="h.war_rank">TOP {{ h.war_rank }} au classement des attaques ({{ h.war_score }})</template>
-          <template v-if="h.war_rank && h.mission_rank">, </template>
-          <template v-if="h.mission_rank">TOP {{ h.mission_rank }} au classement des missions ({{ h.mission_score }})</template>
-          <template v-if="!h.war_rank && !h.mission_rank">non classé</template>
-          <template v-if="h.reward > 0">
-            — <Number :value="h.reward" color="green" /> <KadoPoints class="inline size-[17px]" />
-          </template>
-        </li>
-      </ul>
+      <!-- the closed periods: the rank and the score in each ranking (— when not ranked), the Kado points won -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm [&_td]:px-2 [&_td]:py-1">
+          <thead>
+            <tr class="uppercase text-2xs">
+              <th class="text-left!">Période</th>
+              <th title="Classement des attaques">
+                <img src="/assets/img/gfx/icons/atk.gif" alt="attaques" class="inline h-5" />
+                <img src="/assets/img/gfx/icons/def.gif" alt="défenses" class="inline h-5" />
+              </th>
+              <th title="Classement des missions">
+                <img src="/assets/img/gfx/icons/sgame.gif" alt="missions" class="inline h-5" />
+              </th>
+              <th class="text-right!">Gains</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(h, index) in clan.history" :key="h.period_id" :class="index % 2 ? 'bg-white' : 'bg-kado-cyan-200'">
+              <td class="text-left font-bold whitespace-nowrap">Période {{ h.period_id }}</td>
+              <td class="whitespace-nowrap">
+                <template v-if="h.war_rank">TOP {{ h.war_rank }} (<Number :value="h.war_score" color="orange" />)</template>
+                <template v-else>—</template>
+              </td>
+              <td class="whitespace-nowrap">
+                <template v-if="h.mission_rank">TOP {{ h.mission_rank }} (<Number :value="h.mission_score" color="violet" />)</template>
+                <template v-else>—</template>
+              </td>
+              <td class="text-right whitespace-nowrap">
+                <template v-if="h.reward > 0"><Number :value="h.reward" color="green" /> <KadoPoints class="inline size-[17px]" /></template>
+                <template v-else>—</template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </template>
   </div>
 </template>

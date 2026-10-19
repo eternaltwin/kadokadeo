@@ -1,4 +1,5 @@
 <script setup>
+import KadoPoints from '@svg/k.svg'
 // the page of a clan: Présentation, Statut, Mission, Membres, Gestion, Parties de clan, Historique, and the choice of the game of an
 // attack
 const route = useRoute()
@@ -125,7 +126,7 @@ const updated = () => {
 
       <ClanUnfinishedActions v-if="viewer.is_member" :actions="viewer.unfinished_actions ?? []" @updated="load" />
 
-      <form v-if="showApplyForm && !viewer.application_id" class="mb-4" @submit.prevent="apply">
+      <form v-if="showApplyForm && !viewer.application_id" class="mb-4 space-y-2" @submit.prevent="apply">
         <div>
           <label for="applicationMessage">Votre message au chef de clan (facultatif)</label>
           <FormTextarea id="applicationMessage"
@@ -133,13 +134,11 @@ const updated = () => {
                         rows="3"
                         maxlength="500" />
         </div>
-        <p v-if="applicationPrice" class="mx-0 text-xs text-kado-cyan-900">
-          Une candidature coûte <strong>{{ formatScore(applicationPrice) }} points Kado</strong>. Ils vous sont rendus si le clan la refuse, si vous la retirez ou si un autre clan vous accepte.
-        </p>
         <FormButton type="submit"
                     size="lg"
                     :disabled="applying || !canPayApplication"
                     :title="canPayApplication ? '' : 'Vous n\'avez pas assez de points Kado'">
+          <template v-if="!applying"><Number :value="applicationPrice" color="green" /> <KadoPoints class="inline size-5" /></template>
           {{ applying ? 'Envoi en cours ...' : 'Envoyer votre candidature' }}
         </FormButton>
       </form>
