@@ -5,6 +5,7 @@
 use App\Console\Commands\KeepGameBuilds;
 use App\Console\Commands\PrepareDailyGame;
 use App\Console\Commands\PrepareNewPeriod;
+use App\Console\Commands\ReapVerifierBrowsers;
 use App\Console\Commands\ResetDailyGames;
 use App\Console\Commands\ResolveClanAttacks;
 use App\Models\ReplayVerification;
@@ -20,3 +21,5 @@ Schedule::command(ResolveClanAttacks::class)->everyFiveMinutes();
 Schedule::command(KeepGameBuilds::class)->daily();
 // the verifications of replays that went well, after 30 days (App\Models\ReplayVerification)
 Schedule::command('model:prune', ['--model' => [ReplayVerification::class]])->daily();
+// the browsers of the replay verifier left running by a script killed (each one takes a CPU)
+Schedule::command(ReapVerifierBrowsers::class)->everyFiveMinutes();
