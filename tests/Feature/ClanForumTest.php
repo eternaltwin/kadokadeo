@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class ClanForumTest extends TestCase
 {
-    use RefreshDatabase, EnablesClans;
+    use EnablesClans, RefreshDatabase;
 
     private User $leader;
 

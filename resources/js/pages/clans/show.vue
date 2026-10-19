@@ -4,6 +4,7 @@
 const route = useRoute()
 const router = useRouter()
 const clanStore = useClanStore()
+const authStore = useAuthStore()
 const { fetchClan, isLoading, error } = useClans()
 // (their own errors)
 const actions = useClans()
@@ -21,30 +22,42 @@ const load = () =>
 watch(clanId, load, { immediate: true })
 
 const viewer = computed(() => clan.value?.viewer ?? {})
-// a single application at a time: the one sent to another clan
-const applicationElsewhere = computed(() => clanStore.applications.find((a) => a.clan.id !== clan.value?.id) ?? null)
 const applicationMessage = ref('')
 const showApplyForm = ref(false)
+// an application costs Kado points (ClanSettings::$application_price), given back if the clan refuses it
+const applicationPrice = computed(() => clanStore.rules?.application_price ?? 0)
+const canPayApplication = computed(() => (authStore.user?.kado_points ?? 0) >= applicationPrice.value)
+// sent and not yet shown on the page: the button stays disabled, a click more would not send it again
+const applying = ref(false)
 // the confirmation of the last action of the player on the page
 const notice = ref(null)
 watch(clanId, () => {
   notice.value = null
 })
 
-const apply = () =>
+const apply = () => {
+  if (applying.value) {
+    return
+  }
+  applying.value = true
   actions.apply(clan.value.id, applicationMessage.value || null).then(() => {
     showApplyForm.value = false
     applicationMessage.value = ''
     notice.value = `Votre candidature a bien été envoyée au chef du clan ${clan.value.name}. Vous serez membre du clan dès qu'il l'aura acceptée.`
+    authStore.fetchUser()
     clanStore.reload()
-    load()
+    return load()
+  }).catch(() => {}).finally(() => {
+    applying.value = false
   })
+}
 const cancelApplication = () => {
   if (!confirm('Retirer votre candidature à ce clan ?')) {
     return
   }
   actions.cancelApplication(viewer.value.application_id).then(() => {
-    notice.value = 'Votre candidature a été retirée.'
+    notice.value = applicationPrice.value ? 'Votre candidature a été retirée : vos points Kado vous ont été rendus.' : 'Votre candidature a été retirée.'
+    authStore.fetchUser()
     clanStore.reload()
     load()
   })
@@ -99,7 +112,7 @@ const updated = () => {
                         :title="viewer.at_war ? 'Ne plus faire de ce clan une cible de votre clan' : 'Indiquer ce clan comme cible à votre clan jusqu\'à la fin de la période (3 clans au maximum)'"
                         @click="toggleWar">{{ viewer.at_war ? 'Faire la paix' : 'Déclarer la guerre' }}</ClanMenuAction>
         <ClanMenuAction v-if="!viewer.has_clan && viewer.application_id" title="Annuler ma candidature" @click="cancelApplication">Retirer ma demande</ClanMenuAction>
-        <ClanMenuAction v-else-if="!viewer.has_clan && clan.is_recruiting && !applicationElsewhere" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</ClanMenuAction>
+        <ClanMenuAction v-else-if="!viewer.has_clan && clan.is_recruiting && !applying" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</ClanMenuAction>
         <ClanMenuAction v-if="viewer.is_member" @click="leave" :class="{'grayscale cursor-not-allowed': viewer.is_new_member}">Quitter le clan</ClanMenuAction>
         <ClanMenuAction v-if="clanStore.clan && clanStore.clan.id !== clan.id" :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }">Mon clan</ClanMenuAction>
       </template>
@@ -109,15 +122,10 @@ const updated = () => {
       <p v-else-if="!viewer.has_clan && viewer.application_id" class="mx-0 mb-4 border-2 border-l-[10px] border-kado-orange bg-[#fff4dc] px-3 py-2 font-bold text-[#c25e00]">
         Votre candidature à ce clan est en attente de la réponse du chef de clan.
       </p>
-      <p v-else-if="!viewer.has_clan && applicationElsewhere" class="mx-0 mb-4 border-2 border-l-[10px] border-kado-orange bg-[#fff4dc] px-3 py-2 font-bold text-[#c25e00]">
-        Vous avez déjà une candidature en attente pour le clan
-        <RouterLink :to="{ name: 'clans.show', params: { id: applicationElsewhere.clan.id } }">{{ applicationElsewhere.clan.name }}</RouterLink>.
-        Retirez-la avant de postuler dans un autre clan.
-      </p>
 
       <ClanUnfinishedActions v-if="viewer.is_member" :actions="viewer.unfinished_actions ?? []" @updated="load" />
 
-      <form v-if="showApplyForm" class="mb-4" @submit.prevent="apply">
+      <form v-if="showApplyForm && !viewer.application_id" class="mb-4" @submit.prevent="apply">
         <div>
           <label for="applicationMessage">Votre message au chef de clan (facultatif)</label>
           <FormTextarea id="applicationMessage"
@@ -125,7 +133,15 @@ const updated = () => {
                         rows="3"
                         maxlength="500" />
         </div>
-        <FormButton type="submit" size="lg">Envoyer votre candidature</FormButton>
+        <p v-if="applicationPrice" class="mx-0 text-xs text-kado-cyan-900">
+          Une candidature coûte <strong>{{ formatScore(applicationPrice) }} points Kado</strong>. Ils vous sont rendus si le clan la refuse, si vous la retirez ou si un autre clan vous accepte.
+        </p>
+        <FormButton type="submit"
+                    size="lg"
+                    :disabled="applying || !canPayApplication"
+                    :title="canPayApplication ? '' : 'Vous n\'avez pas assez de points Kado'">
+          {{ applying ? 'Envoi en cours ...' : 'Envoyer votre candidature' }}
+        </FormButton>
       </form>
 
       <ClanPresentation v-if="tab === 'show'" :clan="clan" :tournament="tournament" />

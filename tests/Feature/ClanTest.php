@@ -10,6 +10,7 @@ use App\Exceptions\ClanException;
 use App\Filament\Pages\ManageClanSettings;
 use App\Models\Clan;
 use App\Models\ClanAction;
+use App\Models\ClanApplication;
 use App\Models\ClanAttack;
 use App\Models\ClanBonus;
 use App\Models\ClanMemberStat;
@@ -20,6 +21,7 @@ use App\Models\Game;
 use App\Models\Period;
 use App\Models\Run;
 use App\Models\User;
+use App\Models\UserPoint;
 use App\Services\ClanMissionService;
 use App\Services\ClanPeriodService;
 use App\Services\ClanRunService;
@@ -34,7 +36,7 @@ use Tests\TestCase;
 
 class ClanTest extends TestCase
 {
-    use RefreshDatabase, EnablesClans;
+    use EnablesClans, RefreshDatabase;
 
     // day 2 of the period
     private function period(): Period
@@ -55,19 +57,31 @@ class ClanTest extends TestCase
     public function test_a_player_creates_a_clan_and_accepts_an_application(): void
     {
         $this->period();
-        $leader = User::factory()->create();
-        $player = User::factory()->create();
+        $leader = User::factory()->create(['kado_points' => 6000]);
+        $player = User::factory()->create(['kado_points' => 1000]);
 
         Sanctum::actingAs($leader);
         $clanId = $this->postJson('/api/clans', ['name' => 'Boule de neige'])->assertCreated()->json('data.id');
+        // ClanSettings::$creation_price
+        $this->assertSame(1000, $leader->fresh()->kado_points);
+        $this->assertDatabaseHas('user_points', ['user_id' => $leader->id, 'delta' => -5000, 'reason' => 'clan creation', 'source_id' => $clanId]);
 
         Sanctum::actingAs($player);
         $applicationId = $this->postJson("/api/clans/{$clanId}/applications", ['message' => 'Salut !'])->assertCreated()->json('data.id');
-        $this->postJson("/api/clans/{$clanId}/applications")->assertStatus(422);
-        // a single application at a time
+        $this->postJson("/api/clans/{$clanId}/applications")->assertStatus(422)
+            ->assertJsonPath('message', 'Vous avez déjà envoyé votre candidature à ce clan.');
+        // several clans at once, ClanSettings::$application_price each
         $other = Clan::factory()->withLeader()->create();
-        $this->postJson("/api/clans/{$other->id}/applications")->assertStatus(422)
-            ->assertJsonPath('message', "Vous avez déjà une candidature en attente pour le clan Boule de neige. Retirez-la avant d'en envoyer une autre.");
+        $refusing = Clan::factory()->withLeader()->create();
+        $otherId = $this->postJson("/api/clans/{$other->id}/applications")->assertCreated()->json('data.id');
+        $refusedId = $this->postJson("/api/clans/{$refusing->id}/applications")->assertCreated()->json('data.id');
+        $this->assertSame(700, $player->fresh()->kado_points);
+
+        // refused: paid back
+        Sanctum::actingAs($refusing->leader);
+        $this->postJson("/api/clan-applications/{$refusedId}/refuse")->assertNoContent();
+        $this->postJson("/api/clan-applications/{$refusedId}/refuse")->assertStatus(422);
+        $this->assertSame(800, $player->fresh()->kado_points);
 
         Sanctum::actingAs($leader);
         $this->getJson("/api/clans/{$clanId}/applications")->assertOk()->assertJsonPath('data.0.message', 'Salut !');
@@ -77,6 +91,60 @@ class ClanTest extends TestCase
         $this->getJson("/api/clans/{$clanId}")->assertOk()
             ->assertJsonPath('data.members_count', 2)
             ->assertJsonPath('data.viewer.is_leader', true);
+        // accepted: the other applications are cancelled and paid back, the accepted one is kept
+        $this->assertSame(ClanApplication::CANCELLED, ClanApplication::query()->find($otherId)->status);
+        $this->assertSame(900, $player->fresh()->kado_points);
+        $this->assertSame(2, UserPoint::query()->where('user_id', $player->id)->where('reason', 'clan application refund')->count());
+    }
+
+    public function test_a_clan_and_an_application_need_enough_kado_points(): void
+    {
+        $this->period();
+        $clan = Clan::factory()->withLeader()->create();
+        $player = User::factory()->create(['kado_points' => 4999]);
+        Sanctum::actingAs($player);
+
+        $this->postJson('/api/clans', ['name' => 'Boule de neige'])->assertStatus(422)
+            ->assertJsonPath('message', 'Il vous faut 5.000 points Kado pour créer un clan.');
+        $player->update(['kado_points' => 99]);
+        $this->postJson("/api/clans/{$clan->id}/applications")->assertStatus(422)
+            ->assertJsonPath('message', 'Il vous faut 100 points Kado pour envoyer une candidature.');
+        $this->assertSame(0, Clan::query()->where('name', 'Boule de neige')->count());
+        $this->assertSame(0, ClanApplication::count());
+        $this->assertSame(99, $player->fresh()->kado_points);
+
+        // free when the prices are 0
+        ClanSettings::fake(['creation_price' => 0, 'application_price' => 0]);
+        $this->postJson("/api/clans/{$clan->id}/applications")->assertCreated();
+        $this->assertSame(99, $player->fresh()->kado_points);
+    }
+
+    // withdrawn, the clan created or disbanded: the applications waiting are paid back, once
+    public function test_the_applications_are_paid_back_when_they_are_closed(): void
+    {
+        $this->period();
+        $player = User::factory()->create(['kado_points' => 5300]);
+        [$first, $second, $third] = Clan::factory()->count(3)->withLeader()->create();
+        Sanctum::actingAs($player);
+        $firstId = $this->postJson("/api/clans/{$first->id}/applications")->assertCreated()->json('data.id');
+        $this->postJson("/api/clans/{$second->id}/applications")->assertCreated();
+        $this->postJson("/api/clans/{$third->id}/applications")->assertCreated();
+        $this->assertSame(5000, $player->fresh()->kado_points);
+
+        $this->deleteJson("/api/clan-applications/{$firstId}")->assertNoContent();
+        $this->deleteJson("/api/clan-applications/{$firstId}")->assertNotFound();
+        $this->assertSame(5100, $player->fresh()->kado_points);
+
+        Sanctum::actingAs($second->leader);
+        $this->deleteJson("/api/clans/{$second->id}")->assertNoContent();
+        $this->assertSame(5200, $player->fresh()->kado_points);
+
+        // the last one with the creation of his clan
+        Sanctum::actingAs($player);
+        $this->postJson('/api/clans', ['name' => 'Boule de neige'])->assertCreated();
+        $this->assertSame(300, $player->fresh()->kado_points);
+        $this->assertSame(ClanApplication::CANCELLED, ClanApplication::query()->where('clan_id', $third->id)->sole()->status);
+        $this->assertSame(3, UserPoint::query()->where('user_id', $player->id)->where('reason', 'clan application refund')->count());
     }
 
     // only the characters of the letters of the clan pages, at least a letter, unique whatever the case
@@ -84,7 +152,7 @@ class ClanTest extends TestCase
     {
         $this->period();
         Clan::factory()->withLeader()->create(['name' => 'Les Pirates']);
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(['kado_points' => 5000]));
 
         foreach (['Les_Pirates', 'Kado & Co', 'Clan 🦊', '<b>Clan</b>'] as $name) {
             $this->postJson('/api/clans', ['name' => $name])->assertStatus(422)
@@ -895,7 +963,7 @@ class ClanTest extends TestCase
     {
         $period = $this->period();
         $leader = User::factory()->create();
-        $player = User::factory()->create();
+        $player = User::factory()->create(['kado_points' => 100]);
         $clan = Clan::factory()->withLeader($leader)->create();
 
         Sanctum::actingAs($player);
@@ -1070,7 +1138,7 @@ class ClanTest extends TestCase
         $leader = User::factory()->create();
         $rightHand = User::factory()->create();
         $member = User::factory()->create();
-        $player = User::factory()->create();
+        $player = User::factory()->create(['kado_points' => 100]);
         $clan = Clan::factory()->withLeader($leader)->create();
         $clan->members()->create(['user_id' => $rightHand->id]);
         $clan->members()->create(['user_id' => $member->id]);

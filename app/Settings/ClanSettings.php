@@ -15,6 +15,12 @@ class ClanSettings extends Settings
 
     public int $max_members;
 
+    // Kado points: to create a clan, for each application (several clans at once; given back when the clan refuses it,
+    // when it is cancelled, or when another clan accepts the player)
+    public int $creation_price;
+
+    public int $application_price;
+
     // ---------------------------------------------------------------- attacks and defenses
 
     // the free games of the attacks and defenses given to every player each day (users.clan_attack_games); then the paid

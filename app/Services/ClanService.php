@@ -106,103 +106,192 @@ class ClanService
 
     // ---------------------------------------------------------------- membership
 
+    // a clan costs ClanSettings::$creation_price Kado points; the applications of its leader are cancelled and paid back
     public function create(User $user, string $name, ?string $description): Clan
     {
-        if ($this->clanOf($user)) {
-            throw new ClanException('Vous faites déjà partie d\'un clan.');
-        }
-
         return DB::transaction(function () use ($user, $name, $description) {
+            // the player locked: one payment at a time
+            $user = User::query()->lockForUpdate()->findOrFail($user->id);
+            if ($this->clanOf($user)) {
+                throw new ClanException('Vous faites déjà partie d\'un clan.');
+            }
+            $price = app(ClanSettings::class)->creation_price;
+            if ($user->kado_points < $price) {
+                throw new ClanException('Il vous faut '.number_format($price, 0, ',', '.').' points Kado pour créer un clan.');
+            }
+
             $clan = Clan::query()->create([
                 'name' => $name,
                 'description' => $description,
                 'leader_id' => $user->id,
             ]);
             $clan->members()->create(['user_id' => $user->id]);
-            ClanApplication::query()
-                ->where('user_id', $user->id)
-                ->where('status', ClanApplication::PENDING)
-                ->update(['status' => ClanApplication::REFUSED]);
+            $this->spend($user, $price, 'clan creation', Clan::class, $clan->id);
+            $this->closeApplications(ClanApplication::query()->where('user_id', $user->id), ClanApplication::CANCELLED);
 
             return $clan;
         });
     }
 
+    // an application costs ClanSettings::$application_price Kado points; several clans can be asked at once, each once
     public function apply(User $user, Clan $clan, ?string $message): ClanApplication
     {
-        if ($this->clanOf($user)) {
-            throw new ClanException('Vous faites déjà partie d\'un clan.');
-        }
-        if (!$clan->is_recruiting) {
-            throw new ClanException('Ce clan ne recrute pas pour le moment.');
-        }
-        if ($clan->members()->count() >= app(ClanSettings::class)->max_members) {
-            throw new ClanException('Ce clan est complet.');
-        }
-        // a single application at a time
-        $pending = ClanApplication::query()->with('clan')->where('user_id', $user->id)->where('status', ClanApplication::PENDING)->first();
-        if ($pending) {
-            throw new ClanException($pending->clan_id === $clan->id
-                ? 'Vous avez déjà envoyé votre candidature à ce clan.'
-                : "Vous avez déjà une candidature en attente pour le clan {$pending->clan->name}. Retirez-la avant d'en envoyer une autre.");
-        }
+        return DB::transaction(function () use ($user, $clan, $message) {
+            // the player locked: the clicks sent together wait for each other, and the next ones find the application
+            $user = User::query()->lockForUpdate()->findOrFail($user->id);
+            if ($this->clanOf($user)) {
+                throw new ClanException('Vous faites déjà partie d\'un clan.');
+            }
+            if (!$clan->is_recruiting) {
+                throw new ClanException('Ce clan ne recrute pas pour le moment.');
+            }
+            if ($clan->members()->count() >= app(ClanSettings::class)->max_members) {
+                throw new ClanException('Ce clan est complet.');
+            }
+            $pending = ClanApplication::query()
+                ->where('clan_id', $clan->id)
+                ->where('user_id', $user->id)
+                ->where('status', ClanApplication::PENDING)
+                ->exists();
+            if ($pending) {
+                throw new ClanException('Vous avez déjà envoyé votre candidature à ce clan.');
+            }
+            $price = app(ClanSettings::class)->application_price;
+            if ($user->kado_points < $price) {
+                throw new ClanException('Il vous faut '.number_format($price, 0, ',', '.').' points Kado pour envoyer une candidature.');
+            }
 
-        return $clan->applications()->create([
-            'user_id' => $user->id,
-            'message' => $message,
-            'status' => ClanApplication::PENDING,
-        ]);
+            $application = $clan->applications()->create([
+                'user_id' => $user->id,
+                'message' => $message,
+                'status' => ClanApplication::PENDING,
+                'cost' => $price,
+            ]);
+            $this->spend($user, $price, 'clan application', ClanApplication::class, $application->id);
+
+            return $application;
+        });
     }
 
+    // withdrawn by the player: paid back
     public function cancelApplication(User $user, ClanApplication $application): void
     {
-        if ($application->user_id !== $user->id || $application->status !== ClanApplication::PENDING) {
-            throw new ClanException('Cette candidature ne peut pas être annulée.');
-        }
+        DB::transaction(function () use ($user, $application) {
+            $application = ClanApplication::query()->lockForUpdate()->findOrFail($application->id);
+            if ($application->user_id !== $user->id || $application->status !== ClanApplication::PENDING) {
+                throw new ClanException('Cette candidature ne peut pas être annulée.');
+            }
 
-        $application->delete();
+            $this->refund($application);
+            $application->delete();
+        });
     }
 
+    // the player joins the clan: his other applications are cancelled and paid back
     public function acceptApplication(User $manager, ClanApplication $application): void
     {
         $clan = $application->clan;
         $this->assertManager($manager, $clan);
 
-        if ($application->status !== ClanApplication::PENDING) {
-            throw new ClanException('Cette candidature a déjà été traitée.');
-        }
-
-        DB::transaction(function () use ($clan, $application) {
-            // the clan is locked (PostgreSQL does not lock an aggregate): one acceptation at a time
+        $alreadyInClan = DB::transaction(function () use ($clan, $application) {
+            // the clan is locked (PostgreSQL does not lock an aggregate): one acceptation at a time; then the player: two
+            // clans accepting him together
             Clan::query()->lockForUpdate()->find($clan->id);
+            User::query()->lockForUpdate()->find($application->user_id);
+            $application = ClanApplication::query()->lockForUpdate()->findOrFail($application->id);
+            if ($application->status !== ClanApplication::PENDING) {
+                throw new ClanException('Cette candidature a déjà été traitée.');
+            }
             if ($clan->members()->count() >= app(ClanSettings::class)->max_members) {
                 throw new ClanException('Ce clan est complet.');
             }
             if (ClanMember::query()->where('user_id', $application->user_id)->exists()) {
-                $application->update(['status' => ClanApplication::REFUSED]);
+                $this->closeApplication($application, ClanApplication::REFUSED);
 
-                throw new ClanException('Ce joueur fait déjà partie d\'un clan.');
+                return true;
             }
 
             // he can't leave nor be excluded during this period
             $clan->members()->create(['user_id' => $application->user_id, 'joined_period_id' => $this->currentPeriod()?->id]);
             $application->update(['status' => ClanApplication::ACCEPTED]);
-            // his other applications are no longer needed
-            ClanApplication::query()
-                ->where('user_id', $application->user_id)
-                ->where('status', ClanApplication::PENDING)
-                ->update(['status' => ClanApplication::REFUSED]);
+            $this->closeApplications(ClanApplication::query()->where('user_id', $application->user_id), ClanApplication::CANCELLED);
+
+            return false;
         });
+
+        if ($alreadyInClan) {
+            throw new ClanException('Ce joueur fait déjà partie d\'un clan.');
+        }
     }
 
+    // paid back
     public function refuseApplication(User $manager, ClanApplication $application): void
     {
         $this->assertManager($manager, $application->clan);
-        if ($application->status !== ClanApplication::PENDING) {
-            throw new ClanException('Cette candidature a déjà été traitée.');
+
+        DB::transaction(function () use ($application) {
+            $application = ClanApplication::query()->lockForUpdate()->findOrFail($application->id);
+            if ($application->status !== ClanApplication::PENDING) {
+                throw new ClanException('Cette candidature a déjà été traitée.');
+            }
+
+            $this->closeApplication($application, ClanApplication::REFUSED);
+        });
+    }
+
+    // the clan is disbanded (Clan::booted)
+    public function cancelApplicationsOf(Clan $clan): void
+    {
+        DB::transaction(fn () => $this->closeApplications(ClanApplication::query()->where('clan_id', $clan->id), ClanApplication::CANCELLED));
+    }
+
+    // the pending applications of the query, closed with this status and paid back
+    private function closeApplications(Builder $query, string $status): void
+    {
+        $applications = $query->where('status', ClanApplication::PENDING)->lockForUpdate()->get();
+        foreach ($applications as $application) {
+            $this->closeApplication($application, $status);
+        }
+    }
+
+    private function closeApplication(ClanApplication $application, string $status): void
+    {
+        $this->refund($application);
+        $application->update(['status' => $status]);
+    }
+
+    // the Kado points of an application given back, once
+    private function refund(ClanApplication $application): void
+    {
+        if ($application->cost <= 0 || $application->refunded_at) {
+            return;
         }
 
-        $application->update(['status' => ClanApplication::REFUSED]);
+        $user = User::query()->findOrFail($application->user_id);
+        $user->increment('kado_points', $application->cost);
+        $user->userPoints()->create([
+            'delta' => $application->cost,
+            'reason' => 'clan application refund',
+            'source_type' => ClanApplication::class,
+            'source_id' => $application->id,
+        ]);
+        $application->update(['refunded_at' => now()]);
+    }
+
+    // Kado points taken from a player locked by the caller
+    private function spend(User $user, int $price, string $reason, string $sourceType, int $sourceId): void
+    {
+        if ($price <= 0) {
+            return;
+        }
+
+        $user->decrement('kado_points', $price);
+        $user->userPoints()->create([
+            'delta' => -$price,
+            'reason' => $reason,
+            'source_type' => $sourceType,
+            'source_id' => $sourceId,
+        ]);
     }
 
     // the last member leaving disbands the clan; the leader must give the leadership to someone else first

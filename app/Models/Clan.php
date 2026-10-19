@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ClanService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,6 +17,13 @@ class Clan extends Model
         // the paid clan games given by the members, to distribute (App\Services\ClanGameService)
         'clan_games' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        // disbanded (by its leader, its last member leaving or the admin): the applications waiting are paid back before
+        // they go with it
+        static::deleting(fn (Clan $clan) => app(ClanService::class)->cancelApplicationsOf($clan));
+    }
 
     public function leader()
     {

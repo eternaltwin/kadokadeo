@@ -16,7 +16,7 @@ use Tests\TestCase;
 // the production it can be played again (0fe63e9c, the staging).
 class DailyGameOnceTest extends TestCase
 {
-    use RefreshDatabase, EnablesClans;
+    use EnablesClans, RefreshDatabase;
 
     private Game $game;
 

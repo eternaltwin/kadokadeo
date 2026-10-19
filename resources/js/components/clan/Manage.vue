@@ -37,12 +37,22 @@ const save = () =>
     saved.value = true
     emit('updated')
   })
-const accept = (application) => acceptApplication(application.id).then(() => {
-  loadApplications()
+// the application being accepted or refused: its buttons disabled until the list is loaded again
+const deciding = ref(null)
+const decide = (application, request) => {
+  if (deciding.value) {
+    return Promise.resolve()
+  }
+  deciding.value = application.id
+  return request(application.id).then(loadApplications).catch(() => {}).finally(() => {
+    deciding.value = null
+  })
+}
+const accept = (application) => decide(application, acceptApplication).then(() => {
   loadMembers()
   emit('updated')
 })
-const refuse = (application) => refuseApplication(application.id).then(loadApplications)
+const refuse = (application) => decide(application, refuseApplication)
 const doKick = (member) => {
   if (confirm(`Exclure ${member.user.display_name} du clan ?`)) {
     kick(props.clan.id, member.user.etwin_id).then(() => {
@@ -86,8 +96,11 @@ const doDissolve = () => {
               <div v-if="application.message" class="text-sm italic whitespace-pre-line">{{ application.message }}</div>
             </td>
             <td class="whitespace-nowrap">
-              <FormButton @click="accept(application)">Accepter</FormButton>
-              <FormButton variant="pink" class="ml-1" @click="refuse(application)">Refuser</FormButton>
+              <FormButton :disabled="deciding !== null" @click="accept(application)">Accepter</FormButton>
+              <FormButton variant="pink"
+                          class="ml-1"
+                          :disabled="deciding !== null"
+                          @click="refuse(application)">Refuser</FormButton>
             </td>
           </tr>
         </tbody>

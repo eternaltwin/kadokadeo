@@ -16,7 +16,7 @@ use Tests\TestCase;
 
 class DebugClanTest extends TestCase
 {
-    use RefreshDatabase, EnablesClans;
+    use EnablesClans, RefreshDatabase;
 
     public function test_the_debug_tools_are_off_without_kado_debug_tools(): void
     {

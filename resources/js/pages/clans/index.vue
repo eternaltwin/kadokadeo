@@ -3,9 +3,10 @@
 const route = useRoute()
 const router = useRouter()
 const clanStore = useClanStore()
+const authStore = useAuthStore()
 const { fetchRanking, isLoading, error } = useClans()
 // (its own error)
-const { createClan, error: createError } = useClans()
+const { createClan, isLoading: isCreating, error: createError } = useClans()
 
 const tab = computed(() => ['war', 'missions', 'create'].includes(route.query.tab) ? route.query.tab : 'war')
 const search = ref(route.query.q ?? '')
@@ -31,11 +32,19 @@ const doSearch = () => router.push({ query: { ...route.query, q: search.value ||
 
 const name = ref('')
 const description = ref('')
-const submit = () =>
+// a clan costs Kado points (ClanSettings::$creation_price)
+const creationPrice = computed(() => clanStore.rules?.creation_price ?? 0)
+const canPayCreation = computed(() => (authStore.user?.kado_points ?? 0) >= creationPrice.value)
+const submit = () => {
+  if (isCreating.value) {
+    return
+  }
   createClan({ name: name.value, description: description.value || null }).then((data) => {
+    authStore.fetchUser()
     clanStore.reload()
     router.push({ name: 'clans.show', params: { id: data.data.id } })
-  })
+  }).catch(() => {})
+}
 
 const tabs = [
   { label: 'Classement', value: 'war', route: { name: 'clans.index' } },
@@ -94,8 +103,16 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                         rows="6"
                         maxlength="5000" />
         </div>
+        <p v-if="creationPrice" class="mx-0 text-xs text-kado-cyan-900">
+          Créer un clan coûte <strong>{{ formatScore(creationPrice) }} points Kado</strong>. Vos candidatures en attente seront retirées et remboursées.
+        </p>
         <MessageError v-if="createError">{{ createError }}</MessageError>
-        <FormButton type="submit" size="lg">Créer le clan</FormButton>
+        <FormButton type="submit"
+                    size="lg"
+                    :disabled="isCreating || !canPayCreation"
+                    :title="canPayCreation ? '' : 'Vous n\'avez pas assez de points Kado'">
+          {{ isCreating ? 'Création en cours ...' : 'Créer le clan' }}
+        </FormButton>
       </form>
     </template>
 

@@ -42,6 +42,10 @@ class ManageClanSettings extends SettingsPage
                             ->label('Activer les clans')
                             ->helperText('Désactivés, les pages des clans sont fermées aux joueurs (« Prochainement disponible ») et leurs routes refusées. L\'administration des clans reste accessible.'),
                         $this->integer('max_members', 'Nombre maximum de membres', min: 1),
+                        $this->integer('creation_price', 'Prix de création d\'un clan (points Kado)')
+                            ->helperText('0 : gratuit.'),
+                        $this->integer('application_price', 'Prix d\'une candidature (points Kado)')
+                            ->helperText('Payé à chaque candidature (un joueur peut postuler dans plusieurs clans à la fois). Remboursé si le clan la refuse, si le joueur la retire, ou quand un autre clan l\'accepte.'),
                     ]),
 
                 Section::make('Attaques et défenses')

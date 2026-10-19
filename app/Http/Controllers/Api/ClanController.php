@@ -369,6 +369,9 @@ class ClanController extends Controller implements HasMiddleware
 
         return [
             'max_members' => $settings->max_members,
+            // Kado points
+            'creation_price' => $settings->creation_price,
+            'application_price' => $settings->application_price,
             'attack_games_per_day' => $settings->attack_games_per_day,
             'attack_hours' => $settings->attack_hours,
             'attack_max_points' => $settings->attack_max_points,

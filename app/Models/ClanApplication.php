@@ -12,7 +12,16 @@ class ClanApplication extends Model
 
     public const REFUSED = 'refused';
 
-    protected $fillable = ['clan_id', 'user_id', 'message', 'status'];
+    // closed without a decision of the clan: the player joined or created another clan, or the clan was disbanded
+    public const CANCELLED = 'cancelled';
+
+    // cost: the Kado points paid for it, refunded_at: when they were given back (App\Services\ClanService::closeApplication)
+    protected $fillable = ['clan_id', 'user_id', 'message', 'status', 'cost', 'refunded_at'];
+
+    protected $casts = [
+        'cost' => 'integer',
+        'refunded_at' => 'datetime',
+    ];
 
     public function clan()
     {
