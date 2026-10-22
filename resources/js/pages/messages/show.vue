@@ -36,6 +36,7 @@ const date = (iso) => new Date(iso).toLocaleString('fr-FR', { weekday: 'long', d
       { label: 'Reçus', value: 'inbox', route: { name: 'messages.inbox' } },
       { label: 'Envoyés', value: 'sent', route: { name: 'messages.sent' } },
       { label: 'Écrire', value: 'new', route: { name: 'messages.new' } },
+      { label: messagesStore.notificationsUnread ? `Notifications (${messagesStore.notificationsUnread})` : 'Notifications', value: 'notifications', route: { name: 'messages.notifications' } },
     ]"
     :selected-index="received ? 0 : 1"
   />

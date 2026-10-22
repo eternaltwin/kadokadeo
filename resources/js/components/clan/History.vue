@@ -14,6 +14,8 @@ const load = (page = 1) =>
     meta.value = data.meta
   })
 watch(() => props.clan.id, () => load(), { immediate: true })
+// a new line: the first page again
+onClanUpdated(() => props.clan.id, ['history'], () => load())
 
 const hasNextPage = computed(() => meta.value && meta.value.current_page < meta.value.last_page)
 const formatDate = (date) => (date ? dayjs(date).format('DD/MM/YYYY HH:mm') : '—')

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 
 import { client } from '@/composables/useApi'
+import { onRealtimeReconnect, refetchSoon, useChannel, userChannel } from '@/composables/useRealtime'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
@@ -129,6 +130,20 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     window.Kado.token = null
   }
+
+  // his Kado points and games (App\Events\UserCountersChanged), read again when his stars or the period changed
+  // (App\Events\UserRefresh, PeriodStarted: on the channel of the site, not all the players at once)
+  const refreshSoon = refetchSoon(() => user.value && fetchUser().catch(() => {}), { delay: 0, jitter: 10000 })
+  useChannel(() => userChannel(user.value?.id), {
+    'user.counters': (counters) => {
+      if (user.value) {
+        Object.assign(user.value, counters)
+      }
+    },
+    'user.refresh': refetchSoon(() => fetchUser().catch(() => {}), { delay: 500 }),
+  })
+  useChannel('site', { 'user.refresh': refreshSoon, 'period.started': refreshSoon }, { isPrivate: false })
+  onRealtimeReconnect(() => user.value && fetchUser().catch(() => {}))
 
   return {
     user,

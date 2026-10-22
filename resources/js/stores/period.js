@@ -4,6 +4,7 @@ import { computed,ref } from 'vue'
 
 import { updateAtMidnight } from '@/composables/helpers'
 import { useApi } from '@/composables/useApi'
+import { onRealtimeReconnect, refetchSoon, useChannel } from '@/composables/useRealtime'
 
 export const usePeriodStore = defineStore('period', () => {
   const period = ref(null)
@@ -11,14 +12,21 @@ export const usePeriodStore = defineStore('period', () => {
 
   const { get } = useApi()
 
-  const reload = () => {
+  const fetchPeriod = () => {
     currentTime.value = Date.now()
-    get('/period/current').then((response) => {
+    return get('/period/current').then((response) => {
       period.value = response.data.data
     })
+  }
+  // (the day of the period changes at midnight)
+  const reload = () => {
+    fetchPeriod()
     updateAtMidnight().then(() => reload())
   }
   reload()
+  // a new period (App\Events\PeriodStarted), not all the players at once
+  useChannel('site', { 'period.started': refetchSoon(fetchPeriod, { delay: 0, jitter: 10000 }) }, { isPrivate: false })
+  onRealtimeReconnect(fetchPeriod)
 
   const dayCount = computed(() => {
     if (!period.value) {

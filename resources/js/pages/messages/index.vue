@@ -1,6 +1,9 @@
 <script setup>
-// the private messages: received, sent, and the form to write one
+import { useChannel, userChannel } from '@/composables/useRealtime'
+
+// the private messages: received, sent, the form to write one, and the notifications of the player
 const route = useRoute()
+const authStore = useAuthStore()
 const router = useRouter()
 const messagesStore = useMessagesStore()
 const { get, isLoading, error } = useApi()
@@ -12,7 +15,7 @@ const messages = ref([])
 const meta = ref(null)
 
 const load = (page = 1) => {
-  if (box.value === 'new') {
+  if (box.value === 'new' || box.value === 'notifications') {
     return
   }
   get('/messages', { params: { box: box.value, page } }).then((response) => {
@@ -22,6 +25,11 @@ const load = (page = 1) => {
   })
 }
 watch(box, () => load(), { immediate: true })
+// received or sent meanwhile (in another tab too): the first page again
+useChannel(() => userChannel(authStore.user?.id), {
+  'message.received': () => box.value === 'inbox' && load(),
+  'message.sent': () => box.value === 'sent' && load(),
+})
 const hasNextPage = computed(() => meta.value && meta.value.current_page < meta.value.last_page)
 
 // writing: the recipient and the subject can come from a profile or an answer
@@ -38,12 +46,13 @@ const send = () =>
     router.push({ name: 'messages.sent', query: { sent: 1 } })
   })
 
-const tabs = [
-  { label: 'Reçus', value: 'inbox', route: { name: 'messages.inbox' } },
+const tabs = computed(() => [
+  { label: messagesStore.unread ? `Reçus (${messagesStore.unread})` : 'Reçus', value: 'inbox', route: { name: 'messages.inbox' } },
   { label: 'Envoyés', value: 'sent', route: { name: 'messages.sent' } },
   { label: 'Écrire', value: 'new', route: { name: 'messages.new' } },
-]
-const selectedIndex = computed(() => tabs.findIndex((t) => t.value === box.value))
+  { label: messagesStore.notificationsUnread ? `Notifications (${messagesStore.notificationsUnread})` : 'Notifications', value: 'notifications', route: { name: 'messages.notifications' } },
+])
+const selectedIndex = computed(() => tabs.value.findIndex((t) => t.value === box.value))
 const date = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
 </script>
 
@@ -51,9 +60,11 @@ const date = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', mo
   <NavTabs :items="tabs" :selected-index="selectedIndex" />
 
   <div class="relative px-2 space-y-4">
-    <KadoPageTitle>Messages</KadoPageTitle>
+    <KadoPageTitle>{{ box === 'notifications' ? 'Notifications' : 'Messages' }}</KadoPageTitle>
 
-    <template v-if="box === 'new'">
+    <NotificationsList v-if="box === 'notifications'" />
+
+    <template v-else-if="box === 'new'">
       <form class="max-w-xl space-y-3" @submit.prevent="send">
         <div>
           <label for="messageTo" class="block font-bold">Destinataire (nom du joueur)</label>

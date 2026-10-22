@@ -5,7 +5,10 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\BanReason;
+use App\Enums\UserPreference;
+use App\Events\UserCountersChanged;
 use App\Settings\SiteSettings;
+use App\Support\Realtime;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,10 +47,22 @@ class User extends Authenticatable implements FilamentUser
             'banned_at' => 'datetime',
             'ban_reason' => BanReason::class,
             'unlocked_themes' => 'array',
+            // App\Enums\UserPreference => bool (missing: its default)
+            'preferences' => 'array',
             // the access token of Eternaltwin (its forum is called as the player) and what it allows
             'etwin_access_token' => 'encrypted',
             'etwin_scopes' => 'array',
         ];
+    }
+
+    // his Kado points and games changed through the model: his menus at once (the writes by query call Realtime themselves)
+    protected static function booted(): void
+    {
+        static::updated(function (User $user) {
+            if ($user->wasChanged(UserCountersChanged::COUNTERS)) {
+                Realtime::send(new UserCountersChanged($user->id));
+            }
+        });
     }
 
     // the token of Eternaltwin may write in its forum (scope forum:write, App\Http\Controllers\Api\EtwinForumController)
@@ -110,6 +125,25 @@ class User extends Authenticatable implements FilamentUser
     public function hasTheme(string $theme): bool
     {
         return app(SiteSettings::class)->themePrice($theme) === 0 || in_array($theme, $this->unlocked_themes ?? [], true);
+    }
+
+    public function prefers(UserPreference $preference): bool
+    {
+        /** @var array<string, bool> $preferences */
+        $preferences = $this->preferences ?? [];
+
+        return (bool) ($preferences[$preference->value] ?? $preference->default());
+    }
+
+    /** @return array<string, bool> every preference, set or not */
+    public function preferenceValues(): array
+    {
+        $values = [];
+        foreach (UserPreference::cases() as $preference) {
+            $values[$preference->value] = $this->prefers($preference);
+        }
+
+        return $values;
     }
 
     //

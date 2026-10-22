@@ -14,6 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    // the SPA is authenticated by a Sanctum token (not a session): /api/broadcasting/auth, banned users refused (api group)
+    ->withBroadcasting(__DIR__.'/../routes/channels.php', ['prefix' => 'api', 'middleware' => ['api', 'auth:sanctum']])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->api(append: [
             EnsureUserIsNotBanned::class,

@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Enums\ClanActionType;
 use App\Enums\ClanAttackStatus;
 use App\Enums\ClanCombatRole;
+use App\Events\ClanToast;
+use App\Events\ClanUpdated;
 use App\Exceptions\ClanException;
 use App\Models\Clan;
 use App\Models\ClanAction;
@@ -16,11 +18,13 @@ use App\Models\Period;
 use App\Models\Run;
 use App\Models\User;
 use App\Settings\ClanSettings;
+use App\Support\Realtime;
 use Illuminate\Support\Facades\DB;
 
 // the attacks and defenses of the clans: the score of an attack must be beaten by the attacked clan within
 // ClanSettings::$attack_hours, otherwise the attacker wins points and the defender loses as many. A repelled attack costs
-// nothing to the attacker. One attack at a time by player (two for an "Attaquant"), as many received as can be.
+// nothing to the attacker. One attack at a time by player (two for an "Attaquant"), as many received as can be. Both
+// clans see the changes at once (App\Events\ClanUpdated), the defenders a toast for a defense won (App\Events\ClanToast).
 class ClanWarService
 {
     // a clan run asked but not begun after this time is forgotten
@@ -57,11 +61,14 @@ class ClanWarService
                 throw new ClanException('Votre clan est déjà en guerre contre '.self::MAX_WARS.' clans : faites la paix avec l\'un d\'eux d\'abord.');
             }
 
-            return ClanWar::query()->create([
+            $war = ClanWar::query()->create([
                 'clan_id' => $clan->id,
                 'target_clan_id' => $target->id,
                 'declared_by_user_id' => $user->id,
             ]);
+            ClanUpdated::send([$clan->id, $target->id], [ClanUpdated::STATUS]);
+
+            return $war;
         });
     }
 
@@ -74,7 +81,9 @@ class ClanWarService
         }
         $this->clanService->assertManager($user, $clan);
 
-        ClanWar::query()->where('clan_id', $clan->id)->where('target_clan_id', $target->id)->delete();
+        if (ClanWar::query()->where('clan_id', $clan->id)->where('target_clan_id', $target->id)->delete() > 0) {
+            ClanUpdated::send([$clan->id, $target->id], [ClanUpdated::STATUS]);
+        }
     }
 
     // the wars declared by the clan and against it, the newest first
@@ -208,6 +217,7 @@ class ClanWarService
         $attack->update($attack->reserved_by_user_id === $user->id
             ? ['reserved_by_user_id' => null, 'reserved_at' => null]
             : ['reserved_by_user_id' => $user->id, 'reserved_at' => now()]);
+        ClanUpdated::send([$attack->defender_clan_id], [ClanUpdated::STATUS]);
     }
 
     public function cancelAttack(User $user, ClanAttack $attack): void
@@ -223,6 +233,7 @@ class ClanWarService
             }
 
             $attack->update(['status' => ClanAttackStatus::CANCELLED, 'resolved_at' => now()]);
+            $this->attackChanged($attack);
         });
     }
 
@@ -240,7 +251,7 @@ class ClanWarService
         }
 
         DB::transaction(function () use ($action, $run, $period) {
-            ClanAttack::query()->create([
+            $attack = ClanAttack::query()->create([
                 'period_id' => $period->id,
                 'game_id' => $run->game_id,
                 'attacker_clan_id' => $action->clan_id,
@@ -252,6 +263,7 @@ class ClanWarService
                 'expires_at' => now()->addHours(app(ClanSettings::class)->attack_hours),
             ]);
             $this->clanService->memberStat($action->clan_id, $action->user_id, $period->id)->increment('attacks');
+            $this->attackChanged($attack);
         });
 
         return 'launched';
@@ -274,6 +286,7 @@ class ClanWarService
                 'run_id' => $run->id,
                 'expires_at' => now()->addHours(app(ClanSettings::class)->attack_hours),
             ]);
+            $this->attackChanged($attack);
 
             return 'improved';
         });
@@ -312,6 +325,11 @@ class ClanWarService
             $stat = $this->clanService->memberStat($action->clan_id, $action->user_id, $period->id);
             $stat->increment('defenses_won');
             $stat->increment('performance', $saved);
+            $this->attackChanged($attack);
+            $defender = User::query()->find($action->user_id);
+            if ($defender && $attack->game) {
+                Realtime::send(ClanToast::defenseRepelled($action->clan_id, $defender, $attack->game, (int) $score));
+            }
 
             return 'repelled';
         });
@@ -323,10 +341,11 @@ class ClanWarService
     public function revertCheatedRun(Run $run): void
     {
         DB::transaction(function () use ($run) {
+            $cancelled = ClanAttack::query()->where('run_id', $run->id)->where('status', ClanAttackStatus::ACTIVE)->get();
             ClanAttack::query()
-                ->where('run_id', $run->id)
-                ->where('status', ClanAttackStatus::ACTIVE)
+                ->whereKey($cancelled->modelKeys())
                 ->update(['status' => ClanAttackStatus::CANCELLED, 'resolved_at' => now()]);
+            $cancelled->each(fn (ClanAttack $attack) => $this->attackChanged($attack));
 
             $defended = ClanAttack::query()
                 ->where('defense_run_id', $run->id)
@@ -345,6 +364,7 @@ class ClanWarService
                     'points' => 0,
                     'resolved_at' => null,
                 ]);
+                $this->attackChanged($attack);
             }
         });
     }
@@ -404,11 +424,18 @@ class ClanWarService
                 $stat = $this->clanService->memberStat($attack->attacker_clan_id, $attack->attacker_user_id, $period->id);
                 $stat->increment('attacks_won');
                 $stat->increment('performance', $points);
+                $this->attackChanged($attack);
                 $count++;
             });
         }
 
         return $count;
+    }
+
+    // the attacker and the defender see it (their status, their history)
+    private function attackChanged(ClanAttack $attack): void
+    {
+        ClanUpdated::send([$attack->attacker_clan_id, $attack->defender_clan_id], [ClanUpdated::STATUS, ClanUpdated::HISTORY]);
     }
 
     // his attacks waiting for a defense, and the new attack runs he is playing: whatever their length, until they end or he

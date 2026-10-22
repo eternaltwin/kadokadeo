@@ -4,6 +4,7 @@ import { ref } from 'vue'
 
 import { updateAtMidnight } from '@/composables/helpers'
 import { useApi } from '@/composables/useApi'
+import { refetchSoon, useChannel } from '@/composables/useRealtime'
 
 export const useDailyGameStore = defineStore('dailyGame', () => {
   const dailyGame = ref(null)
@@ -55,6 +56,17 @@ export const useDailyGameStore = defineStore('dailyGame', () => {
     updateAtMidnight().then(() => reload())
   }
   reload()
+  // the game of today chosen (App\Events\DailyGameStarted: maybe after the midnight of this page), not all the players
+  // at once
+  useChannel('site', {
+    'daily.started': refetchSoon(() => {
+      localStorage.removeItem('dailyGame')
+      dailyGame.value = null
+      game.value = null
+      fetchDailyGameIfNecessary()
+      fetchScores()
+    }, { delay: 0, jitter: 10000 }),
+  }, { isPrivate: false })
 
   return {
     dailyGame,

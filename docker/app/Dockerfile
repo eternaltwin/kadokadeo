@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Reverb (reverb:start, run by kado:worker) handles its signals with pcntl
+RUN docker-php-ext-install pcntl
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # the replay verifier (resources/js/replay-verifier/verify.mjs, App\Jobs\VerifyRunReplay): Node 22+ and Chromium
@@ -55,6 +58,7 @@ COPY ["docker/app/conf/php.ini", "$PHP_INI_DIR/app.ini"]
 COPY ["docker/app/conf/crontab", "/etc/cron.d/kadokadeo"]
 COPY ["docker/app/conf/supervisord.conf", "/etc/supervisor/conf.d/supervisord.conf"]
 
-EXPOSE 9000
+# php-fpm, Reverb (kado:worker)
+EXPOSE 9000 8080
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

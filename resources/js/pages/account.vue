@@ -1,6 +1,13 @@
 <script setup>
-// "Mon compte": the theme of the site, bought with Kado points (App\Http\Controllers\Api\ThemeController)
+// "Mon compte": the theme of the site, bought with Kado points (App\Http\Controllers\Api\ThemeController); the preferences
+// of the player (components/account/Preferences.vue)
+const route = useRoute()
 const authStore = useAuthStore()
+const tab = computed(() => route.meta.tab ?? 'account')
+const tabs = [
+  { label: 'Mon compte', value: 'account', route: { name: 'account' } },
+  { label: 'Préférences', value: 'preferences', route: { name: 'account.preferences' } },
+]
 const { get, post, put, isLoading, error } = useApi()
 
 const themes = ref([])
@@ -34,9 +41,14 @@ const use = (theme) => {
 </script>
 
 <template>
-  <NavTabs :items="[{ label: 'Mon compte', value: 'account' }]" />
+  <NavTabs :items="tabs" :selected-index="tabs.findIndex((t) => t.value === tab)" />
 
   <div class="relative px-2 space-y-4">
+    <div v-if="tab === 'preferences'" class="relative px-2 space-y-4">
+      <KadoPageTitle>Préférences</KadoPageTitle>
+      <AccountPreferences />
+    </div>
+
     <KadoPageTitle>Mon compte</KadoPageTitle>
 
     <KadoSectionTitle>Thème du site</KadoSectionTitle>

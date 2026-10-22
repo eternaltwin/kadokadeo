@@ -51,6 +51,7 @@ const sidebarOpen = ref(false)
     </main>
 
     <KadoAchievementNotifications v-if="achievementsEnabled && authStore.isAuthenticated" />
+    <KadoToasts v-if="authStore.isAuthenticated" />
 
     <div v-if="authStore.isAuthenticated" class="border-t-2 border-kado-blue-50 bg-[url(/gfx/bgHeader.png)] bg-top bg-repeat-x">
       <Navbar class="md:hidden">

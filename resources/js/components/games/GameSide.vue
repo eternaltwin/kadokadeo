@@ -12,7 +12,6 @@ const authStore = useAuthStore()
 const periodStore = usePeriodStore()
 const leagueStore = useLeagueStore()
 const achievementStore = useAchievementStore()
-let intervalId = null
 
 const scores = ref([])
 const personalBestForPeriod = ref(null)
@@ -77,14 +76,27 @@ const updateCurrentScore = (evt) => {
   }
 }
 
+// a run in the top 10 of the league of the player, a record of the game, a run taken out (App\Events\GameScoresChanged): the
+// leaderboard again, a bit later (the players watching the game do not all ask at once). Polled only without the realtime
+const refreshSoon = refetchSoon(refreshScores, { delay: 1000, jitter: 3000 })
+useChannel(() => `games.${props.game.id}`, {
+  'scores.changed': (e) => {
+    const samePeriod = !e.period_id || !periodStore.period || e.period_id === periodStore.period.id
+    if (samePeriod && (!e.league_id || e.league_id === league.value?.id || e.world_best)) {
+      refreshSoon()
+    }
+  },
+})
+useChannel('site', { 'period.started': refetchSoon(refreshScores, { delay: 2000, jitter: 10000 }) }, { isPrivate: false })
+onRealtimeReconnect(refreshScores)
+usePolling(refreshScores, 1200000)
+
 onMounted(() => {
-  intervalId = setInterval(refreshScores, 1200000)
-  window.evts.addEventListener('gameFinished', refreshScores)
+  // window.evts.addEventListener('gameFinished', refreshScores)
   window.evts.addEventListener('score', updateCurrentScore)
 })
 onUnmounted(() => {
-  clearInterval(intervalId)
-  window.evts.removeEventListener('gameFinished', refreshScores)
+  // window.evts.removeEventListener('gameFinished', refreshScores)
   window.evts.removeEventListener('score', updateCurrentScore)
 })
 
