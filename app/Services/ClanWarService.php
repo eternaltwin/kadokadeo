@@ -27,7 +27,8 @@ use Illuminate\Support\Facades\DB;
 // clans see the changes at once (App\Events\ClanUpdated), the defenders a toast for a defense won (App\Events\ClanToast).
 class ClanWarService
 {
-    // a clan run asked but not begun after this time is forgotten
+    // a clan run asked but not begun after this time is forgotten by the runs begun elsewhere than on its page
+    // (ClanRunService::pendingAction, pageAction)
     public const ACTION_TTL_MINUTES = 15;
 
     // the wars a clan can declare at the same time
