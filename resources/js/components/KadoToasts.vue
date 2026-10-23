@@ -20,7 +20,7 @@ const open = (toast) => {
                      leave-to-class="translate-x-full opacity-0">
       <div v-for="toast in toastStore.toasts"
            :key="toast.id"
-           class="pointer-events-auto flex cursor-pointer items-start gap-2 border-2 border-solid border-kado-cyan-800 bg-kado-cyan-200 p-2 text-sm shadow-lg"
+           class="pointer-events-auto flex cursor-pointer items-start gap-2 border-2 border-solid border-kado-teal-500 bg-kado-blue-100 p-2 text-sm shadow-lg"
            role="status"
            @click="open(toast)">
         <img v-if="toast.icon"
@@ -28,11 +28,11 @@ const open = (toast) => {
              alt=""
              class="mt-0.5 shrink-0" />
         <div class="min-w-0 flex-1">
-          <p v-if="toast.title" class="m-0 font-bold text-kado-cyan-800">{{ toast.title }}</p>
+          <p v-if="toast.title" class="m-0 font-bold text-kado-teal-500">{{ toast.title }}</p>
           <p class="m-0 break-words">{{ toast.text }}</p>
         </div>
         <button type="button"
-                class="shrink-0 cursor-pointer border-0 bg-transparent px-1 font-bold text-kado-cyan-800"
+                class="shrink-0 cursor-pointer border-0 bg-transparent px-1 font-bold text-kado-teal-500"
                 aria-label="Fermer"
                 @click.stop="toastStore.dismiss(toast.id)">
           ×

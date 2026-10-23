@@ -8,7 +8,7 @@ const props = defineProps({
   args: { type: Object, default: () => ({}) },
 })
 
-const { isLoading: isFavoriteLoading, error: favoriteError, put } = useApi()
+const { isLoading: isFavoriteLoading, error: favoriteError, setFavorite } = useGames()
 // the game itself: « Changer de partie » (GameScript.vue)
 const gameScript = ref(null)
 const isArkadeo = computed(() => props.game.is_arkadeo ?? false)
@@ -44,9 +44,9 @@ watch(() => props.game.is_favorite, (value) => {
 function toggleFavorite() {
   if (isFavoriteLoading.value) return
 
-  put(`/games/${props.game.id}/favorite`, { is_favorite: !isFavorite.value })
-    .then((response) => {
-      isFavorite.value = response.data.is_favorite
+  setFavorite(props.game.id, !isFavorite.value)
+    .then((data) => {
+      isFavorite.value = data.is_favorite
     })
     .catch(() => null)
 }

@@ -8,7 +8,7 @@ const tabs = [
   { label: 'Mon compte', value: 'account', route: { name: 'account' } },
   { label: 'Préférences', value: 'preferences', route: { name: 'account.preferences' } },
 ]
-const { get, post, put, isLoading, error } = useApi()
+const { fetchThemes, buyTheme, chooseTheme, isLoading, error } = useAccount()
 
 const themes = ref([])
 const notice = ref(null)
@@ -18,9 +18,9 @@ const previews = {
   karbon: { pattern: '/gfx/themes/karbon/patternBG.jpg', title: '/gfx/themes/karbon/greyh2_bg.jpg', panel: 'bg-kado-slate-50' },
 }
 
-const load = () => get('/themes').then((response) => {
-  themes.value = response.data.data
-})
+const load = () => fetchThemes().then((data) => {
+  themes.value = data
+}).catch(() => {}) // (shown by error)
 load()
 
 const refresh = (message) => {
@@ -31,12 +31,12 @@ const refresh = (message) => {
 const buy = (theme) => {
   if (confirm(`Acheter le thème ${theme.name} pour ${formatScore(theme.price)} points Kado ?`)) {
     notice.value = null
-    post(`/themes/${theme.key}/buy`).then(() => refresh(`Le thème ${theme.name} est à vous ! Il est maintenant utilisé sur le site.`))
+    buyTheme(theme.key).then(() => refresh(`Le thème ${theme.name} est à vous ! Il est maintenant utilisé sur le site.`))
   }
 }
 const use = (theme) => {
   notice.value = null
-  put('/user/theme', { theme: theme.key }).then(() => refresh(`Le thème ${theme.name} est maintenant utilisé sur le site.`))
+  chooseTheme(theme.key).then(() => refresh(`Le thème ${theme.name} est maintenant utilisé sur le site.`))
 }
 </script>
 

@@ -7,7 +7,7 @@ const props = defineProps({
   // more paliers: [{ score, img, alt }] (a clan defense, a mission step...)
   goals: { type: Array, default: () => [] },
 })
-const { isLoading, get } = useApi()
+const { isLoading, fetchScores } = useGames()
 const authStore = useAuthStore()
 const periodStore = usePeriodStore()
 const leagueStore = useLeagueStore()
@@ -60,13 +60,13 @@ const nextPallierIndex = computed(() => {
 const notZoomedHiddenState = computed(() => (props.isZoomed ? '' : 'hidden'))
 
 const refreshScores = () => {
-  return get(`/games/${props.game.id}/scores`).then((data) => {
-    scores.value = data.data.scores
-    worldsBest.value = data.data.worlds_best
-    personalBest.value = data.data.personal_best
-    personalBestForPeriod.value = data.data.personal_best_for_period
-    league.value = data.data.league ?? null
-    leaguesScores.value = data.data.leagues_scores ?? {}
+  return fetchScores(props.game.id).then((data) => {
+    scores.value = data.scores
+    worldsBest.value = data.worlds_best
+    personalBest.value = data.personal_best
+    personalBestForPeriod.value = data.personal_best_for_period
+    league.value = data.league ?? null
+    leaguesScores.value = data.leagues_scores ?? {}
   })
 }
 

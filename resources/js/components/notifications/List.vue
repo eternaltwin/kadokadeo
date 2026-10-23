@@ -6,28 +6,21 @@ import { useChannel, userChannel } from '@/composables/useRealtime'
 // stay highlighted while it is open), deleted one by one or all
 const authStore = useAuthStore()
 const messagesStore = useMessagesStore()
-const { get, post, del, isLoading, error } = useApi()
-
-const notifications = ref([])
-const meta = ref(null)
+const actions = useNotificationActions()
 // the ids of the ones not read when they were shown
 const fresh = ref(new Set())
 
-const markRead = () => post('/notifications/read').then((response) => messagesStore.setCounts(response.data.data)).catch(() => {})
+const markRead = () => actions.markRead().then((counts) => messagesStore.setCounts(counts)).catch(() => {})
 
-const load = (page = 1) =>
-  get('/notifications', { params: { page } }).then((response) => {
-    const list = response.data.data
-    list.filter((n) => !n.read).forEach((n) => fresh.value.add(n.id))
-    notifications.value = page === 1 ? list : [...notifications.value, ...list]
-    meta.value = response.data.meta
-    messagesStore.setCounts(response.data.unread)
-    if (list.some((n) => !n.read)) {
+const { items: notifications, meta, hasNextPage, loadMore, isLoading, error } = useNotificationList({
+  onPage: (data) => {
+    data.data.filter((n) => !n.read).forEach((n) => fresh.value.add(n.id))
+    messagesStore.setCounts(data.unread)
+    if (data.data.some((n) => !n.read)) {
       markRead()
     }
-  })
-load()
-const hasNextPage = computed(() => meta.value && meta.value.current_page < meta.value.last_page)
+  },
+})
 
 // a new one (or the likes of a comment again): on top, read since the tab is open
 useChannel(() => userChannel(authStore.user?.id), {
@@ -39,12 +32,12 @@ useChannel(() => userChannel(authStore.user?.id), {
 })
 
 const remove = (notification) =>
-  del(`/notifications/${notification.id}`).then(() => {
+  actions.remove(notification.id).then(() => {
     notifications.value = notifications.value.filter((n) => n.id !== notification.id)
   })
 const removeAll = () => {
   if (confirm('Supprimer toutes vos notifications ?')) {
-    del('/notifications').then(() => {
+    actions.removeAll().then(() => {
       notifications.value = []
       meta.value = null
     })
@@ -60,16 +53,16 @@ const date = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', mo
     <Loader v-if="isLoading && !notifications.length" />
     <table class="w-full">
       <tbody>
-        <tr v-if="!notifications.length && !isLoading" class="bg-kado-cyan-200">
+        <tr v-if="!notifications.length && !isLoading" class="bg-kado-blue-100">
           <td class="py-4 italic">Vous n'avez aucune notification.</td>
         </tr>
         <tr v-for="(notification, index) in notifications"
             :key="notification.id"
-            :class="[index % 2 ? 'bg-white' : 'bg-kado-cyan-200', { 'font-bold': fresh.has(notification.id) }]">
+            :class="[index % 2 ? 'bg-white' : 'bg-kado-blue-100', { 'font-bold': fresh.has(notification.id) }]">
           <td class="text-left">
             <RouterLink v-if="notificationLink(notification)" :to="notificationLink(notification)">{{ notificationText(notification) }}</RouterLink>
             <template v-else>{{ notificationText(notification) }}</template>
-            <span v-if="notification.comment?.excerpt" class="block text-xs font-normal italic text-kado-cyan-800">« {{ notification.comment.excerpt }} »</span>
+            <span v-if="notification.comment?.excerpt" class="block text-xs font-normal italic text-kado-teal-500">« {{ notification.comment.excerpt }} »</span>
           </td>
           <td class="whitespace-nowrap text-xs font-normal">{{ date(notification.updated_at) }}</td>
           <td class="w-6">
@@ -89,7 +82,7 @@ const date = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', mo
     <FormButton v-if="hasNextPage"
                 size="lg"
                 :disabled="isLoading"
-                @click="load(meta.current_page + 1)">Plus anciennes</FormButton>
+                @click="loadMore()">Plus anciennes</FormButton>
     <FormButton v-if="notifications.length"
                 variant="pink"
                 size="lg"

@@ -1,5 +1,8 @@
 import { formatScore } from '@/composables/helpers'
 
+import { useApi } from './useApi'
+import { usePaginatedList } from './usePaginatedList'
+
 // the text and the link of a notification of the player (App\Http\Resources\UserNotificationResource), in the tab
 // « Notifications » and in the toasts
 export function notificationText(notification) {
@@ -57,5 +60,25 @@ export function clanToast(event) {
       return { title: 'Clan', text: 'Nouvelle mission disponible', to: { name: 'clans.missions', params: { id: event.clan_id } } }
     default:
       return null
+  }
+}
+
+// the notifications of the player, page by page (App\Http\Controllers\Api\NotificationController); onPage: what comes
+// with a page (its unread counts)
+export function useNotificationList({ onPage = null } = {}) {
+  return usePaginatedList('/notifications', { onPage })
+}
+
+// what the player does with their notifications: read them all, delete one or all
+export function useNotificationActions() {
+  const { isLoading, error, post, del } = useApi()
+
+  return {
+    isLoading,
+    error,
+    // their unread counts after
+    markRead: () => post('/notifications/read').then((response) => response.data.data),
+    remove: (id) => del(`/notifications/${id}`),
+    removeAll: () => del('/notifications'),
   }
 }

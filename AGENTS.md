@@ -36,6 +36,7 @@
 ## Backend/API Conventions That Matter
 
 - API auth is enforced per-controller with `HasMiddleware`/`Middleware` (not one global auth group in `routes/api.php`).
+- Front: the pages and the components call the API through the composables of `resources/js/composables` (one by domain: `useGames`, `useClans`, `useMessages`, `useCompetition`, `useAccount`, `useProfile`...), never `useApi()` themselves (ESLint refuses it); a list with « Charger plus »: `usePaginatedList(url, { params, onPage })` (first page again when its url or params change, late answers dropped).
 - The SPA and the games are authenticated by the session cookie of the site (Sanctum `statefulApi()`, guard `web`, HttpOnly; « remember me » set by `LoginController::loginCallback`), the CSRF token comes from the cookie `XSRF-TOKEN` (axios `withXSRFToken`, `kado.Api` in Haxe): no token in the browser (`localStorage`, `window.Kado`). Bearer tokens are only for other origins and the tests (`withToken`); tests of the session: `actingAs($user, 'web')` with a `Referer` of `APP_URL`.
 - Run submission crypto depends on RSA key files from `config/kado.php` (`KADO_RSA_PRIVATE_KEY_PATH`, `KADO_RSA_PUBLIC_KEY_PATH`).
 - Public RSA key is injected into `window.Kado.public_key` in `resources/views/layouts/default.blade.php`; game clients use it to encrypt run payloads.

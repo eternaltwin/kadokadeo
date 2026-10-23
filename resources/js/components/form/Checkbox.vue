@@ -11,7 +11,7 @@ defineProps({
     <input v-model="model"
            type="checkbox"
            :disabled="disabled"
-           class="mt-0.5 size-4 shrink-0 cursor-pointer accent-kado-cyan-800 disabled:cursor-not-allowed" />
+           class="mt-0.5 size-4 shrink-0 cursor-pointer accent-kado-teal-500 disabled:cursor-not-allowed" />
     <span><slot /></span>
   </label>
 </template>

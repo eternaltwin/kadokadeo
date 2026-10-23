@@ -1,7 +1,7 @@
 <script setup>
 // the preferences of the player (App\Enums\UserPreference): saved as soon as one changes
 const authStore = useAuthStore()
-const { put, isLoading, error } = useApi()
+const { savePreferences, isLoading, error } = useAccount()
 
 const groups = [
   {
@@ -23,9 +23,9 @@ const saved = ref(false)
 const save = (key, value) => {
   saved.value = false
   values.value[key] = value
-  put('/user/preferences', { [key]: value }).then((response) => {
-    values.value = response.data.data
-    authStore.user.preferences = response.data.data
+  savePreferences({ [key]: value }).then((preferences) => {
+    values.value = preferences
+    authStore.user.preferences = preferences
     saved.value = true
   }).catch(() => {
     values.value[key] = !value

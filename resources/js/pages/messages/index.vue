@@ -6,31 +6,20 @@ const route = useRoute()
 const authStore = useAuthStore()
 const router = useRouter()
 const messagesStore = useMessagesStore()
-const { get, isLoading, error } = useApi()
 // (its own error)
-const { post, isLoading: isSending, error: sendError } = useApi()
+const { sendMessage, isLoading: isSending, error: sendError } = useMessages()
 
 const box = computed(() => route.meta.box)
-const messages = ref([])
-const meta = ref(null)
-
-const load = (page = 1) => {
-  if (box.value === 'new' || box.value === 'notifications') {
-    return
-  }
-  get('/messages', { params: { box: box.value, page } }).then((response) => {
-    messages.value = page === 1 ? response.data.data : [...messages.value, ...response.data.data]
-    meta.value = response.data.meta
-    messagesStore.unread = response.data.unread
-  })
-}
-watch(box, () => load(), { immediate: true })
+const { items: messages, hasNextPage, loadMore, reload, isLoading, error } = useMessageBox(box, {
+  onPage: (data) => {
+    messagesStore.unread = data.unread
+  },
+})
 // received or sent meanwhile (in another tab too): the first page again
 useChannel(() => userChannel(authStore.user?.id), {
-  'message.received': () => box.value === 'inbox' && load(),
-  'message.sent': () => box.value === 'sent' && load(),
+  'message.received': () => box.value === 'inbox' && reload(),
+  'message.sent': () => box.value === 'sent' && reload(),
 })
-const hasNextPage = computed(() => meta.value && meta.value.current_page < meta.value.last_page)
 
 // writing: the recipient and the subject can come from a profile or an answer
 const to = ref(route.query.to ?? '')
@@ -41,7 +30,7 @@ watch(() => route.query, (query) => {
   subject.value = query.subject ?? subject.value
 })
 const send = () =>
-  post('/messages', { to: to.value, subject: subject.value, body: body.value }).then(() => {
+  sendMessage({ to: to.value, subject: subject.value, body: body.value }).then(() => {
     body.value = ''
     router.push({ name: 'messages.sent', query: { sent: 1 } })
   })
@@ -138,7 +127,7 @@ const date = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', mo
         </KadoTable>
       </div>
       <div v-if="hasNextPage" class="text-center">
-        <FormButton size="lg" :disabled="isLoading" @click="load(meta.current_page + 1)">Messages précédents</FormButton>
+        <FormButton size="lg" :disabled="isLoading" @click="loadMore()">Messages précédents</FormButton>
       </div>
     </template>
   </div>
