@@ -15,8 +15,8 @@ const SKIP = [join(JS, 'games'), join(JS, 'replay-verifier')]
 const CSS = join(ROOT, 'resources/css/app.css')
 
 // the colours and the shadows of the @theme of app.css
-const THEME_TOKENS = new Set([...readFileSync(CSS, 'utf8').matchAll(/--(?:color|shadow)-((?:kado|twinoid)-[a-z0-9-]+)\s*:/g)].map((m) => m[1]))
-const TOKEN_USE = /(?:^|[\s"'`:])(?:text|bg|border(?:-[trblxyse])?|fill|stroke|from|via|to|outline|ring|decoration|shadow|divide|accent|caret|placeholder)-((?:kado|twinoid)-[a-z0-9-]+?)(?:\/\d+)?(?=$|[\s"'`\]])/g
+const THEME_TOKENS = new Set([...readFileSync(CSS, 'utf8').matchAll(/--(?:color|shadow)-((?:kado|twinoid|etwin)-[a-z0-9-]+)\s*:/g)].map((m) => m[1]))
+const TOKEN_USE = /(?:^|[\s"'`:])(?:text|bg|border(?:-[trblxyse])?|fill|stroke|from|via|to|outline|ring|decoration|shadow|divide|accent|caret|placeholder)-((?:kado|twinoid|etwin)-[a-z0-9-]+?)(?:\/\d+)?(?=$|[\s"'`\]])/g
 
 const errors = []
 const report = (file, line, message) => errors.push(`${relative(ROOT, file)}:${line}  ${message}`)
