@@ -14,6 +14,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser
@@ -104,6 +105,22 @@ class User extends Authenticatable implements FilamentUser
     public function poidsPlumeResults()
     {
         return $this->hasMany(PoidsPlumeResult::class);
+    }
+
+    // the sessions of the site where the player is logged in (their browsers)
+    public function sessions()
+    {
+        return $this->hasMany(Session::class);
+    }
+
+    // logs the player out of all their browsers: the sessions, the cookie « remember me » (one token for all the browsers:
+    // a new one), the tokens of the pages opened before the session cookies
+    public function logOutEverywhere(): void
+    {
+        $this->sessions()->delete();
+        $this->setRememberToken(Str::random(60));
+        $this->save();
+        $this->tokens()->delete();
     }
 
     public function achievementProgress()

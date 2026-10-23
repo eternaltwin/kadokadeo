@@ -6,8 +6,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Gate;
 
-// the channels of the realtime (App\Support\Realtime), authorized by /api/broadcasting/auth (Sanctum token, banned users
-// refused by the api group). "site" is public.
+// the channels of the realtime (App\Support\Realtime), authorized by /api/broadcasting/auth (the session of the site, banned
+// users refused by the api group). "site" is public.
 
 Broadcast::channel('App.Models.User.{id}', fn (User $user, $id) => (int) $user->id === (int) $id);
 

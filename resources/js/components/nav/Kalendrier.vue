@@ -16,8 +16,9 @@ const mailTitle = computed(() => {
   return parts.length ? parts.join(', ') : 'Messages'
 })
 
-const logout = () => {
-  authStore.logout()
+// the login page once the session is closed
+const logout = async() => {
+  await authStore.logout().catch(() => {})
   router.push('/login')
 }
 // the round buttons of the kalendrier
@@ -39,7 +40,10 @@ const bottomButton = `${button} mr-1.25`
       <p class="absolute top-[87px] left-[54px] h-3 w-[103px] text-center text-[0.8em] text-kado-slate-400">Période {{ periodStore.period?.id }} - Jour {{ periodStore.dayCount+1 }}</p>
     </aside>
     <ul class="absolute top-1.5 left-[166px] flex flex-col">
-      <li><RouterLink :class="rightButton" to="/" @click="logout"><img src="/gfx/kalendarPreviousDay.gif" alt="logout"></RouterLink></li>
+      <li><a href="/login"
+             :class="rightButton"
+             title="Déconnexion"
+             @click.prevent="logout"><img src="/gfx/kalendarPreviousDay.gif" alt="Déconnexion"></a></li>
       <!-- the yellow mail of KadoKado when a message is unread -->
       <li class="relative">
         <RouterLink :class="rightButton" :to="{ name: !messagesStore.unread && messagesStore.notificationsUnread ? 'messages.notifications' : 'messages.inbox' }" :title="mailTitle">
