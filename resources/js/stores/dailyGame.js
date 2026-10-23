@@ -15,18 +15,33 @@ export const useDailyGameStore = defineStore('dailyGame', () => {
   const { get, isLoading } = useApi()
   const { get: getScores, isLoading: isScoresLoading } = useApi()
 
+  // the game of the day (UTC) of today, not the one of yesterday still on a page open at midnight
+  const isToday = (dg) => dg?.day?.substr(0, 10) === dayjs().utc().format('YYYY-MM-DD')
+
+  // the one kept in the browser (null: none, or not readable)
+  const stored = () => {
+    try {
+      return JSON.parse(localStorage.getItem('dailyGame'))
+    } catch {
+      localStorage.removeItem('dailyGame')
+      return null
+    }
+  }
+
   const fetchDailyGameIfNecessary = () => {
-    const dgLocal = localStorage.getItem('dailyGame')
-    if (dgLocal) {
-      const tmp = JSON.parse(dgLocal)
-      if (tmp) {
-        if (tmp.date) {
-          localStorage.removeItem('dailyGame')
-        }
-        if (tmp.day?.substr(0, 10) === dayjs().utc().format('YYYY-MM-DD')) {
-          dailyGame.value = tmp
-          game.value = tmp.game
-        }
+    if (!isToday(dailyGame.value)) {
+      dailyGame.value = null
+      game.value = null
+    }
+
+    const tmp = dailyGame.value ? null : stored()
+    if (tmp) {
+      if (tmp.date) {
+        localStorage.removeItem('dailyGame')
+      }
+      if (isToday(tmp)) {
+        dailyGame.value = tmp
+        game.value = tmp.game
       }
     }
 

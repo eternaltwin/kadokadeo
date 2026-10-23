@@ -9,7 +9,7 @@
 ## Repo Shape
 
 - Main app is Laravel + Vue in this root.
-- `resources/hx/` = Haxe game sources; `resources/js/games/*.js` = Haxe-generated JS intermediates (tracked); `public/gamesdata/*` = bundled runtime artifacts + `manifest.json`.
+- `resources/hx/` = Haxe game sources; `resources/js/games/*.js` = Haxe-generated JS intermediates; `public/gamesdata/*` = bundled runtime artifacts + `manifest.json`. Neither is tracked by git (their `.gitignore`): rebuilt by `make compile-games` / `npm run build`, never committed.
 - `eternaltwin/` is a separate local service package used by Docker (`yarn etwin`). Treat it as its own boundary.
 
 ## Build and Verification Commands
