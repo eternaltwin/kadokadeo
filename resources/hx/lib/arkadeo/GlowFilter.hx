@@ -35,7 +35,8 @@ class GlowFilter extends BitmapFilter {
 
 	override public function toPixi():Dynamic {
 		return switch (style) {
-			case FLASH: new FlashGlow(blurX, blurY, strength, color, alpha);
+			// (FlashGlow draws the outer glow only: an inner glow by the sampled shader)
+			case FLASH: inner ? new SampledGlow(color, alpha, blurX, blurY, strength, quality, true) : new FlashGlow(blurX, blurY, strength, color, alpha);
 			case SAMPLED: new SampledGlow(color, alpha, blurX, blurY, strength, quality, inner);
 		}
 	}
