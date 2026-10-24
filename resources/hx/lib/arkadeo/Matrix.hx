@@ -65,11 +65,12 @@ class Matrix {
 		ty = tx0 * m.b + ty0 * m.d + m.ty;
 	}
 
-	// the box of a gradient: the gradient square of Flash (-819.2 to 819.2) scaled to width x height, turned, placed at (tx, ty)
+	// the box of a gradient: the gradient square of Flash (-819.2 to 819.2) turned, scaled to width x height (a gradient
+	// turned by 90 degrees still fills the box), placed at (tx, ty)
 	public function createGradientBox(width:Float, height:Float, rotation:Float = 0, tx:Float = 0, ty:Float = 0) {
 		identity();
-		scale(width / 1638.4, height / 1638.4);
 		rotate(rotation);
+		scale(width / 1638.4, height / 1638.4);
 		translate(tx + width / 2, ty + height / 2);
 	}
 

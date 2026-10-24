@@ -17,8 +17,7 @@ class SampledGlow extends pixi.core.renderers.webgl.filters.Filter {
 		frag = StringTools.replace(frag, "__ANGLE_STEP_SIZE__", floatStr(angleStep));
 
 		super(null, frag, {
-			// (Flash: an inner glow has no outer halo)
-			outerStrength: inner ? 0.0 : strength * alpha,
+			outerStrength: strength * alpha,
 			innerStrength: inner ? strength * alpha : 0.0,
 			glowColor: [((color >> 16) & 0xFF) / 255, ((color >> 8) & 0xFF) / 255, (color & 0xFF) / 255, 1.0]
 		});

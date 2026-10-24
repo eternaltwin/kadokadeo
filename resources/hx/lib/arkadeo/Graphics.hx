@@ -34,10 +34,12 @@ class Graphics extends pixi.core.graphics.Graphics {
 		return untyped beginTextureFill({texture: t, matrix: matrix != null ? matrix.toPixi() : null});
 	}
 
-	// Flash beginGradientFill (LINEAR / RADIAL, pad spread): the gradient drawn in a texture of its square (-819.2 to 819.2
-	// of the gradient space), placed by the matrix of the gradient box
+	// Flash beginGradientFill (LINEAR / RADIAL, pad spread): the gradient drawn in a texture, placed by the matrix of the
+	// gradient box. PIXI repeats the texture of any fill (GraphicsGeometry): the texture spans K gradient squares each
+	// way (-K x 819.2 to K x 819.2 of the gradient space), the square in its middle and the pad colour around it
 	public function beginGradientFill(type:String, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, ?matrix:Matrix):pixi.core.graphics.Graphics {
-		var N = 256;
+		var N = 512, K = 4;
+		var r = N / (2 * K);
 		// (one texture by gradient: a game that draws the same gradient again does not make a new texture)
 		var key = type + colors.join(",") + "/" + alphas.join(",") + "/" + ratios.join(",");
 		var t:Dynamic = gradients.get(key);
@@ -45,17 +47,17 @@ class Graphics extends pixi.core.graphics.Graphics {
 			var canvas:Dynamic = js.Browser.document.createElement("canvas");
 			canvas.width = canvas.height = N;
 			var ctx:Dynamic = canvas.getContext("2d");
-			var g:Dynamic = type == "radial" ? ctx.createRadialGradient(N / 2, N / 2, 0, N / 2, N / 2, N / 2) : ctx.createLinearGradient(0, 0, N, 0);
+			var g:Dynamic = type == "radial" ? ctx.createRadialGradient(N / 2, N / 2, 0, N / 2, N / 2, r) : ctx.createLinearGradient(N / 2 - r, 0, N / 2 + r, 0);
 			for (i in 0...colors.length) {
 				var c = colors[i];
 				g.addColorStop(ratios[i] / 255, "rgba(" + ((c >> 16) & 0xFF) + "," + ((c >> 8) & 0xFF) + "," + (c & 0xFF) + "," + alphas[i] + ")");
 			}
 			ctx.fillStyle = g;
 			ctx.fillRect(0, 0, N, N);
-			t = js.Syntax.code("new PIXI.Texture(new PIXI.BaseTexture({0}))", canvas);
+			t = js.Syntax.code("new PIXI.Texture(new PIXI.BaseTexture({0}, {scaleMode: PIXI.SCALE_MODES.LINEAR}))", canvas);
 			gradients.set(key, t);
 		}
-		var m = new Matrix(1638.4 / N, 0, 0, 1638.4 / N, -819.2, -819.2);
+		var m = new Matrix(K * 1638.4 / N, 0, 0, K * 1638.4 / N, -K * 819.2, -K * 819.2);
 		if (matrix != null)
 			m.concat(matrix);
 		return untyped beginTextureFill({texture: t, matrix: m.toPixi()});

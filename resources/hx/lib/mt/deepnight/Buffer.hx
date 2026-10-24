@@ -369,6 +369,9 @@ class Buffer {
 		container = new arkadeo.Sprite();
 		container.scaleX = up;
 		container.scaleY = up / pixelRatio;
+		// (Flash filtered the scene in the BitmapData of the buffer: the filters of its objects are drawn x upscale)
+		untyped container.node.flashStageScale = up;
+		arkadeo.FlashGlow.maxStageScale = Math.max(arkadeo.FlashGlow.maxStageScale, up);
 		render.addChild(container);
 		dm = new arkadeo.DepthManager(container);
 	}

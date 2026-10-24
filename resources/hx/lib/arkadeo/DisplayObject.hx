@@ -115,6 +115,9 @@ class DisplayObject {
 		return vvis;
 
 	function set_visible(v:Bool) {
+		// (shown again: drawn at its new place, no sliding from where it was hidden)
+		if (v && !vvis)
+			snap();
 		vvis = v;
 		node.visible = v;
 		return v;

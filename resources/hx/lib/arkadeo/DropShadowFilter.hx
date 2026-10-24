@@ -1,7 +1,7 @@
 package arkadeo;
 
-// flash.filters.DropShadowFilter, drawn by the DropShadowFilter of pixi-filters (outer shadow: inner and knockout are not
-// drawn; the box blur of Flash as a gaussian blur of the same size)
+// flash.filters.DropShadowFilter, drawn by FlashGlow: the blurred alpha moved by `distance` toward `angle` (degrees),
+// under the object or inside it (inner); knockout and hideObject are not drawn
 class DropShadowFilter extends BitmapFilter {
 	public var distance:Float;
 	public var angle:Float;
@@ -31,15 +31,8 @@ class DropShadowFilter extends BitmapFilter {
 	}
 
 	override public function toPixi():Dynamic {
-		return new common_haxe_avm1.pixi.DropShadowFilter({
-			distance: distance,
-			rotation: angle,
-			color: color,
-			alpha: Math.min(1, alpha * strength),
-			shadowOnly: hideObject,
-			blur: Math.max(blurX, blurY) / 4,
-			quality: quality,
-		});
+		var a = angle * Math.PI / 180;
+		return new FlashGlow(blurX, blurY, strength, color, alpha, inner, distance * Math.cos(a), distance * Math.sin(a));
 	}
 
 	override public function clone():BitmapFilter {
