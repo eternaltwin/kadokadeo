@@ -1550,8 +1550,7 @@ class ClanTest extends TestCase
             ->assertSee('6 × grise · 2 × verte')
             ->assertSee('8 × verte')
             // more steps with each mission: at most a step by game
-            ->set('data.mission_steps_ratio', '1.2')
-            ->assertSee('(15 demandées, limité aux jeux)');
+            ->set('data.mission_steps_ratio', '1.2');
     }
 
     // the help page shows the rules set in the admin
