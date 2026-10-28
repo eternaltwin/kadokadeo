@@ -64,7 +64,8 @@ watchEffect((onInvalidate) => {
 
 <template>
   <MessageError v-if="favoriteError">{{ favoriteError }}</MessageError>
-  <div :class="{'w-full h-full fixed z-20 inset-0 bg-black/75': isZoomed}">
+  <!-- zoomed: above the bar of Eternaltwin (z-40), under the toasts (z-50) -->
+  <div :class="{'w-full h-full fixed z-45 inset-0 bg-black/75': isZoomed}">
     <div :class="isZoomed ? 'fixed w-screen h-dvh flex flex-col overflow-hidden' : 'relative w-full mt-[30px] mb-[50px] mx-auto'" :style="gameInterfaceStyle">
       <div v-if="isZoomed" class="w-full text-center tracking-widest">
         <div class="text-white p-1 cursor-pointer bg-black/75 border border-solid border-black hover:bg-black hover:border-white" @click.prevent="isZoomed = false">
