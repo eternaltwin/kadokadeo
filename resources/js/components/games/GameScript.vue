@@ -198,12 +198,10 @@ onBeforeUnmount(() => {
         />
       </div>
     </KadoNotice>
-    <canvas
-      ref="canvas"
-      :width="game.is_arkadeo ? 600 : 900"
-      :height="game.is_arkadeo ? 500 : 960"
-      class="w-full touch-none select-none [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none]"
-      :style="props.canvasStyle"
+    <!-- the parent of the canvas only: the touch controls (kado.TouchControlsOverlay) put their canvas in it, over the game,
+         and the gestures they receive are blocked here too -->
+    <div
+      class="relative"
       @touchstart="blockNativeGesture"
       @touchend="blockNativeGesture"
       @dblclick="blockNativeGesture"
@@ -212,10 +210,18 @@ onBeforeUnmount(() => {
       @dragstart="blockNativeGesture"
       @gesturestart="blockNativeGesture"
     >
-      <p>
-        Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin
-        de jouer.
-      </p>
-    </canvas>
+      <canvas
+        ref="canvas"
+        :width="game.is_arkadeo ? 600 : 900"
+        :height="game.is_arkadeo ? 500 : 960"
+        class="w-full touch-none select-none [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none]"
+        :style="props.canvasStyle"
+      >
+        <p>
+          Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin
+          de jouer.
+        </p>
+      </canvas>
+    </div>
   </div>
 </template>
