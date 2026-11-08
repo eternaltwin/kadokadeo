@@ -24,4 +24,22 @@ class I18n {
 	static function variable():EReg {
 		return ~/\{([A-Za-z_][A-Za-z0-9_]*)\}/g;
 	}
+
+	#if js
+	// window.Kado.i18n is filled before the bundle is imported: a text read by a static is translated too
+	public static function translated(catalogName:String, key:String, french:Null<String>):Null<String> {
+		var translation:Dynamic = js.Syntax.code("globalThis.Kado?.i18n?.[{0}]?.[{1}]", catalogName, key);
+		return Std.isOfType(translation, String) && translation != "" ? translation : french;
+	}
+
+	public static function plural(catalogName:String, key:String, count:Int, frenchOne:Null<String>, frenchOther:String):String {
+		var singular = isSingular(count) ? translated(catalogName, '${key}.one', frenchOne) : null;
+		var text = singular != null ? singular : translated(catalogName, '${key}.other', frenchOther);
+		return format(text, {count: count});
+	}
+
+	static function isSingular(count:Int):Bool {
+		return js.Syntax.code("new Intl.PluralRules(globalThis.Kado?.locale ?? 'fr').select({0}) === 'one'", count);
+	}
+	#end
 }
