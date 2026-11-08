@@ -70,6 +70,14 @@ class ServerLanguageTest extends TestCase
         $this->withHeader('Accept-Language', 'en')->get('/test-language-web')->assertJsonPath('hello', 'Bonjour Mel');
     }
 
+    public function test_the_admin_panel_stays_in_french_for_an_english_admin(): void
+    {
+        $this->languagesOn();
+        $this->actingAs(User::factory()->create(['is_admin' => true, 'locale' => LocalePreference::EN]), 'web');
+
+        $this->withHeader('Accept-Language', 'en')->get('/admin')->assertOk()->assertSee('<html', false)->assertSee('lang="fr"', false);
+    }
+
     public function test_a_rule_without_its_own_message_is_readable_in_french(): void
     {
         $this->getJson('/api/test-language')->assertJsonPath('validation', 'Le champ nom est obligatoire.');
