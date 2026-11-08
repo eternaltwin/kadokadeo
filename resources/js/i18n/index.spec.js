@@ -1,0 +1,56 @@
+/** @spec i18n.site::missing-translation-falls-back-to-french */
+import { render } from '@testing-library/vue'
+import { expect, test } from 'vitest'
+import { h } from 'vue'
+
+import { createAppI18n } from './index'
+
+const PLAYERS = { players: 'Un joueur | {n} joueurs' }
+const ENGLISH_PLAYERS = { players: 'One player | {n} players' }
+
+const inEnglish = (french, english) => createAppI18n('en', { fr: french, en: english }).global
+const inFrench = (french) => createAppI18n('fr', { fr: french }).global
+
+test('a key without a translation shows the French text', () => {
+  expect(inEnglish({ hello: 'Bonjour' }, {}).t('hello')).toBe('Bonjour')
+})
+
+test('an empty translation shows the French text', () => {
+  expect(inEnglish({ hello: 'Bonjour' }, { hello: '' }).t('hello')).toBe('Bonjour')
+  expect(inEnglish({ login: { hello: 'Bonjour' } }, { login: { hello: '' } }).t('login.hello')).toBe('Bonjour')
+})
+
+test('a translated key shows its translation', () => {
+  expect(inEnglish({ hello: 'Bonjour' }, { hello: 'Hello' }).t('hello')).toBe('Hello')
+})
+
+/** @spec i18n.site::interpolates-variables */
+test('a variable shows its value, zero included', () => {
+  expect(inFrench({ score: 'Score : {points}' }).t('score', { points: 0 })).toBe('Score : 0')
+})
+
+test('the name of a player stays a text in the page', () => {
+  const i18n = inFrench({ hello: 'Bonjour {name}' })
+
+  const { container } = render({ render: () => h('p', i18n.t('hello', { name: '<b>Pirate</b>' })) })
+
+  expect(container.textContent).toBe('Bonjour <b>Pirate</b>')
+  expect(container.querySelector('b')).toBeNull()
+})
+
+/** @spec i18n.site::plural-follows-language */
+test.each([
+  [0, 'Un joueur'],
+  [1, 'Un joueur'],
+  [2, '2 joueurs'],
+])('in French, %i gives "%s"', (count, expected) => {
+  expect(inFrench(PLAYERS).t('players', { n: count }, count)).toBe(expected)
+})
+
+test.each([
+  [0, '0 players'],
+  [1, 'One player'],
+  [2, '2 players'],
+])('in English, %i gives "%s"', (count, expected) => {
+  expect(inEnglish(PLAYERS, ENGLISH_PLAYERS).t('players', { n: count }, count)).toBe(expected)
+})

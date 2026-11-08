@@ -110,6 +110,10 @@ export default defineConfig({
   },
   define: {
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(version),
+    // the options of vue-i18n for a bundler: the composition API only, out of its bundle
+    __VUE_I18N_FULL_INSTALL__: true,
+    __VUE_I18N_LEGACY_API__: false,
+    __INTLIFY_PROD_DEVTOOLS__: false,
   },
   publicDir: 'public',
   // *.spec.js: the tests that need Vue; the *.test.mjs stay under node --test
