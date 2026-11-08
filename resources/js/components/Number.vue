@@ -16,7 +16,8 @@ const props = defineProps({
 const height = computed(() => props.size ?? (props.color.startsWith('big') ? 20 : 15))
 
 // the images of the characters that are not digits (scripts/typo-svg.py)
-const charFiles = { '.': 'dot', '+': 'plus', '-': 'minus', '\u2212': 'minus' }
+// (no image for a comma, the separator of thousands in English: the dot, like the space in French)
+const charFiles = { '.': 'dot', ',': 'dot', '+': 'plus', '-': 'minus', '\u2212': 'minus' }
 
 const charUrls = computed(() => {
   const chars =
