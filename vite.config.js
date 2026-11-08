@@ -37,16 +37,19 @@ const serviceWorker = {
   },
 }
 
+// Vitest shares the auto-imports of the site: what only serves the browser or the build stays out of its runs
+const isVitest = Boolean(process.env.VITEST)
+
 export default defineConfig({
   plugins: [
-    serviceWorker,
-    laravel({
+    !isVitest && serviceWorker,
+    !isVitest && laravel({
       input: ['resources/css/app.css', 'resources/js/main.js', 'resources/js/replay-player.js', 'resources/js/admin/marktwin.js'],
       refresh: true,
     }),
-    tailwindcss(),
+    !isVitest && tailwindcss(),
     vue(),
-    vueDevTools(),
+    !isVitest && vueDevTools(),
     svgLoader({
       svgo: false,
     }),
@@ -109,6 +112,13 @@ export default defineConfig({
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(version),
   },
   publicDir: 'public',
+  // *.spec.js: the tests that need Vue; the *.test.mjs stay under node --test
+  test: {
+    environment: 'jsdom',
+    // Testing Library unmounts between two tests through the global afterEach
+    globals: true,
+    include: ['resources/js/**/*.spec.js'],
+  },
   server: {
     origin: 'http://kadokadeo.localhost/vite',
     cors: true,
