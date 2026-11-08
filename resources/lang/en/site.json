@@ -1,0 +1,17 @@
+{
+  "login": {
+    "welcome": "Welcome",
+    "games_title": "Games",
+    "games_text": "More than 70 exclusive games to unlock!",
+    "friends_title": "Lots of friends",
+    "friends_text": "... and rivals, in a cheerful community of players!",
+    "play": "Play",
+    "play_title": "Log in / sign up"
+  },
+  "language": {
+    "title": "Language",
+    "auto": "Automatic",
+    "fr": "Français",
+    "en": "English (beta)"
+  }
+}
