@@ -15,7 +15,6 @@ class EndScene extends Container {
 	var piouWalk:AnimatedSprite;
 	var piouFloat:AnimatedSprite;
 
-	var text:Array<String>;
 
 	var fieldBest:pixi.core.text.Text;
 
@@ -59,101 +58,6 @@ class EndScene extends Container {
 		super();
 		this.kkm = kkm;
 		this.details = details;
-		var textFr = [
-			"VOUS ETES QUALIFIE !",
-			"VOUS N\'ETES PAS QUALIFIE",
-			"Attention a ne pas perdre votre place!",
-			"CONTRAT REUSSI !",
-			"DEFENSE REUSSIE !",
-			"DEFENSE RATEE !",
-			"ATTAQUE LANCEE !",
-			"SCORE BATTU",
-			"POINTS",
-			"ETOILE",
-			"NOUVELLE ETOILE",
-			"VOTRE SCORE",
-			"NOUVEAU RECORD",
-			"RECORD DE LA PERIODE",
-			"Cliquez pour rejouer",
-			"Cliquez pour défendre à nouveau",
-			"Cliquez pour retenter une attaque",
-			"ETAPE MISSION OK !",
-			"ETAPE MISSION RATEE !",
-			"VOUS ETES PREMIER !",
-			""
-		];
-		var textEn = [
-			"YOU ARE QUALIFIED!",
-			"YOU ARE NOT QUALIFIED",
-			"Pay attention and do not lose your position!",
-			"CONTRACT SUCCESS!",
-			"DEFENSE SUCCESS!",
-			"DEFENSE FAILED!",
-			"ATTACK LAUNCHED!",
-			"SCORE BEATEN",
-			"POINTS",
-			"STAR",
-			"NEW STAR",
-			"YOUR SCORE",
-			"NEW RECORD",
-			"PERIOD RECORD",
-			"Click here to play again",
-			"Click here to defend again",
-			"Click here to relaunch your attack",
-			"MISSION STEP OK!",
-			"MISSION STEP FAILED!"
-		];
-		var textEs = [
-			"¡ESTÁS CLASIFICADO!",
-			"NO TE HAS CLASIFICADO",
-			"¡Presta atención y no pierdas tu posición!",
-			"¡CONTRATO CUMPLIDO!",
-			"¡DEFENSA CONSEGUIDA!",
-			"¡DEFENSA FRACASADA!",
-			"¡DESAFÍO LANZADO!",
-			"PTS. SUPERADOS",
-			"PTS.",
-			"ESTRELLA",
-			"NUEVA ESTRELLA",
-			"TU PUNTUACIÓN",
-			"NUEVO RÉCORD",
-			"RÉCORD DEL PERIODO",
-			"Haz clic aquí para jugar de nuevo",
-			"Haz clic aquí para defender de nuevo",
-			"Haz clic aquí para reintentar el desafío",
-			"¡ETAPA DE MISIÓN SUPERADA CON ÉXITO!",
-			"¡ETAPA DE MISIÓN FRACASADA!"
-		];
-		var textDe = [
-			"DU BIST QUALIFIZIERT!",
-			"DU BIST NICHT QUALIFIZIERT\t",
-			"Pass auf und halte deinen Platz in der Rangliste!",
-			"AUFGABE ERFÜLLT!",
-			"VERTEIDIGUNG ERFOLGREICH!",
-			"VERTEIDIGUNG FEHLGESCHLAGEN!",
-			"ANGRIFF GESTARTET!",
-			"REKORD GESCHLAGEN",
-			"PUNKTE",
-			"STERN",
-			"NEUER STERN",
-			"DEINE PUNKTE",
-			"NEUER REKORD",
-			"SAISONREKORD",
-			"Klick hier, um nochmal zu spielen",
-			"Klick hier, um nochmal zu verteidigen",
-			"Klick hier, um nochmal anzugreifen",
-			"MISSIONSSCHRITT OK!",
-			"MISSIONSSCHRITT FEHLGESCHLAGEN!"
-		];
-
-		text = switch (kkm.lang) {
-			case "fr": textFr;
-			case "en": textEn;
-			case "es": textEs;
-			case "de": textDe;
-			default: textFr;
-		};
-
 		var back = this.addChild(Sprite.from("gameover_back.png"));
 		back.width = kkm.screen.width;
 		back.height = kkm.screen.height;
@@ -189,7 +93,7 @@ class EndScene extends Container {
 		cont.height = KadoKadeoManager.I(68);
 		cont.x = (kkm.screen.width - cont.width) / 2;
 		cont.y = KadoKadeoManager.I(150);
-		var fieldTitle = cont.addChild(new pixi.core.text.Text(text[11], {
+		var fieldTitle = cont.addChild(new pixi.core.text.Text(Texts.your_score, {
 			fontFamily: 'Fredoka Bold',
 			fontSize: 40,
 			fill: 0x056a83,
@@ -215,7 +119,7 @@ class EndScene extends Container {
 			color: 0xb8dee5,
 		}));
 
-		fieldBest = cont.addChild(new pixi.core.text.Text(text[13], {
+		fieldBest = cont.addChild(new pixi.core.text.Text(Texts.period_record, {
 			fontFamily: 'Junegull-Regular',
 			fontSize: 24,
 			fill: 0xff6a2b,
@@ -306,7 +210,7 @@ class EndScene extends Container {
 		});
 		tweenAppear.start();
 
-		var textQualField = cont.addChild(new pixi.core.text.Text(text[19], {
+		var textQualField = cont.addChild(new pixi.core.text.Text(Texts.first_place, {
 			fontFamily: 'Junegull-Regular',
 			fontSize: 24,
 			fill: 0x056a83,
@@ -316,7 +220,7 @@ class EndScene extends Container {
 		textQualField.y = KadoKadeoManager.I(50);
 		textQualField.alpha = details.people_to_beat == 0 ? 1 : 0;
 
-		var textQual = cont.addChild(new pixi.core.text.Text(txtPlayersToOvertake(details.people_to_beat), {
+		var textQual = cont.addChild(new pixi.core.text.Text(Texts.players_to_overtake(details.people_to_beat), {
 			// fontFamily: 'Junegull-Regular',
 			fontSize: 24,
 			fill: 0x056a83,
@@ -381,7 +285,7 @@ class EndScene extends Container {
 
 	private function clickToReplay():Container {
 		var cont = new Container();
-		var field = cont.addChild(new pixi.core.text.Text(text[14], {
+		var field = cont.addChild(new pixi.core.text.Text(Texts.click_to_replay, {
 			fontFamily: 'Verdana',
 			fontSize: 20,
 			fill: 0x056a83,
@@ -401,19 +305,6 @@ class EndScene extends Container {
 		tweenBlink.from({alpha: 1}).to({alpha: 0}).start();
 
 		return cont;
-	}
-
-	private function txtPlayersToOvertake(n:Int):String {
-		if (kkm.lang == "en") {
-			return "You still have " + n + " players to overtake!";
-		}
-		if (kkm.lang == "es") {
-			return "¡Todavía tienes que superar a " + n + " jugadores!";
-		}
-		if (kkm.lang == "de") {
-			return "Du hast noch " + n + " Spieler vor dir!";
-		}
-		return "Il y a encore " + n + " joueurs à dépasser !";
 	}
 
 	public override function destroy(?options:Null<haxe.extern.EitherType<Bool, pixi.core.display.DisplayObject.DestroyOptions>>) {

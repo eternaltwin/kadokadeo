@@ -29,7 +29,6 @@ class KadoKadeoManager extends Application {
 	var game:GameInterface = null;
 	var ff:FixedFramerate;
 
-	public var lang = "fr";
 
 	public var replay:ReplayManager;
 
