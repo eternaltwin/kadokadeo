@@ -57,6 +57,15 @@ jobs:
       - name: CSS rules
         run: node scripts/lint-css.mjs
 
+      - name: Component tests
+        run: yarn vitest run
+
+      # the catalogs of lang/ against the code (docs/specs/i18n-site-texts.md)
+      - name: Translation catalogs
+        run: |
+          node --test scripts/lint-i18n.test.mjs
+          node scripts/lint-i18n.mjs
+
   tests:
     runs-on: ubuntu-latest
     steps:
