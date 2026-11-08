@@ -88,18 +88,6 @@ class LocalePreferenceTest extends TestCase
         $this->assertStringNotContainsString('public', (string) $cacheControl);
     }
 
-    public function test_an_english_player_keeps_the_messages_of_the_api(): void
-    {
-        $this->setSettings(SiteSettings::class, ['i18n_enabled' => true]);
-        $this->actingAs($this->player(LocalePreference::FR), 'web');
-        $messageForAFrenchPlayer = $this->saveLocale('klingon')->json('message');
-        $this->actingAs($this->player(LocalePreference::EN), 'web');
-
-        $messageForAnEnglishPlayer = $this->withHeader('Accept-Language', 'en')->saveLocale('klingon')->json('message');
-
-        $this->assertSame($messageForAFrenchPlayer, $messageForAnEnglishPlayer);
-    }
-
     public function test_a_player_saves_a_language(): void
     {
         $player = $this->player();

@@ -8,8 +8,8 @@ use App\Settings\SiteSettings;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\AcceptHeader;
 
-// The language of a page: the choice of the account, then the browser. Only the page follows it:
-// the API and the admin panel never change their language, so app()->setLocale() is not called.
+// The language of a page and of the API: the choice of the account, then the browser.
+// The admin panel stays in French: only App\Http\Middleware\UseLanguageOfThePlayer changes the language, on the API.
 final class LocaleResolver
 {
     // the texts are written in French: the language of the site when the languages are off

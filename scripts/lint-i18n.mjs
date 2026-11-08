@@ -9,6 +9,7 @@ import { baseCompile } from '@intlify/message-compiler'
 const ROOT = join(import.meta.dirname, '..')
 const LANG = join(ROOT, 'resources/lang')
 const JS = join(ROOT, 'resources/js')
+const APP = join(ROOT, 'app')
 const SOURCE_LANGUAGE = 'fr'
 // generated or not part of the site: the games (Haxe), the replay verifier (Node)
 const NOT_THE_SITE = [join(JS, 'games'), join(JS, 'replay-verifier')]
@@ -77,6 +78,40 @@ export const findGameCatalogProblems = (french, translations) => [
     pluralsWithoutOther(language, messages),
   ),
 ]
+
+// a server text is shown as it is, by the site or a game: only its :name is read (not the 30 of 12:30)
+const serverVariablesOf = (message) =>
+  [...new Set([...message.matchAll(/(?<![\w:]):([A-Za-z_]\w*)/g)].map((match) => match[1]))].sort().join(', ')
+
+export function findServerCatalogProblems(french, translations) {
+  const frenchMessages = new Map(flatten(french))
+  const problems = [...frenchMessages].flatMap(([key, message]) => gameMessageProblems(SOURCE_LANGUAGE, key, message))
+  for (const [language, messages] of Object.entries(translations)) {
+    for (const [key, message] of flatten(messages)) {
+      problems.push(...gameMessageProblems(language, key, message))
+      const source = frenchMessages.get(key)
+      const isComparable = typeof source === 'string' && typeof message === 'string' && message !== ''
+      if (isComparable && serverVariablesOf(source) !== serverVariablesOf(message)) {
+        problems.push(`${language}: ${key} has the variables [${serverVariablesOf(message)}], the French text [${serverVariablesOf(source)}]`)
+      }
+    }
+  }
+  return problems
+}
+
+const SERVER_KEY = /^(['"])server\.([^'"$]+)\1$/
+const OTHER_LITERAL_KEY = /^(['"])[^'"$]+\1$/
+
+export function findServerUsageProblems(code, frenchKeys, file) {
+  const readable = withoutComments(code)
+  return [...readable.matchAll(/\b__\(\s*([^\s,)]*)/g)].flatMap(([, argument]) => {
+    const serverKey = argument.match(SERVER_KEY)?.[2]
+    if (serverKey !== undefined) {
+      return frenchKeys.has(serverKey) ? [] : [`${file}: the key server.${serverKey} is not in resources/lang/fr/server.json`]
+    }
+    return OTHER_LITERAL_KEY.test(argument) ? [] : [`${file}: the key ${argument || '(none)'} is not a literal`]
+  })
+}
 
 export function findMissingTranslations(french, translations) {
   const frenchKeys = flatten(french).map(([key]) => key)
@@ -154,9 +189,20 @@ function siteFiles(directory) {
   })
 }
 
+function phpFiles(directory) {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name)
+    if (entry.isDirectory()) return phpFiles(path)
+    return entry.name.endsWith('.php') ? [path] : []
+  })
+}
+
 function findAllProblems() {
   const frenchKeys = new Set(flatten(siteCatalogOf(SOURCE_LANGUAGE).messages).map(([key]) => key))
+  const frenchServerKeys = new Set(flatten(catalogOf(SOURCE_LANGUAGE, 'server').messages).map(([key]) => key))
   return [
+    ...problemsOfCatalog('server', findServerCatalogProblems),
+    ...phpFiles(APP).flatMap((file) => findServerUsageProblems(readFileSync(file, 'utf8'), frenchServerKeys, relative(ROOT, file))),
     ...problemsOfCatalog('site', findCatalogProblems),
     ...gameCatalogNames().flatMap((name) => problemsOfCatalog(name, findGameCatalogProblems)),
     ...siteFiles(JS).flatMap((file) => findUsageProblems(readFileSync(file, 'utf8'), frenchKeys, relative(ROOT, file))),

@@ -6,6 +6,8 @@ import {
   findCatalogProblems,
   findGameCatalogProblems,
   findMissingTranslations,
+  findServerCatalogProblems,
+  findServerUsageProblems,
   findUsageProblems,
   parseCatalog,
   siteCatalogOf,
@@ -61,6 +63,58 @@ test('a game text that is not a text is rejected', () => {
 
 test('a game translation can be missing', () => {
   gameCatalogsAreAccepted({ combo: 'Combo +1' }, {})
+})
+
+const serverCatalogsAreRejected = (french, english) =>
+  assert.notDeepEqual(findServerCatalogProblems(french, { en: english }), [], 'these catalogs should be rejected')
+const serverCatalogsAreAccepted = (french, english) =>
+  assert.deepEqual(findServerCatalogProblems(french, { en: english }), [])
+
+test('a server translation with other variables is rejected', () => {
+  serverCatalogsAreRejected({ clan: { full: 'Le clan :name est plein' } }, { clan: { full: 'The clan is full' } })
+})
+
+test('a server translation can hold the characters of vue-i18n', () => {
+  serverCatalogsAreAccepted({ mail: 'kado@site.fr | {x} <b>' }, { mail: 'kado@site.com | {x} <b>' })
+})
+
+test('a time in a server text is not a variable', () => {
+  serverCatalogsAreAccepted({ start: 'À 12:30' }, { start: 'At 12:30' })
+})
+
+test('a server text that is not a text is rejected', () => {
+  serverCatalogsAreRejected({ count: 3 }, {})
+})
+
+test('a server translation can be missing', () => {
+  serverCatalogsAreAccepted({ full: 'Plein' }, {})
+})
+
+const serverCodeIsRejected = (code, frenchKeys = []) =>
+  assert.notDeepEqual(findServerUsageProblems(code, new Set(frenchKeys), 'A.php'), [], `this code should be rejected: ${code}`)
+const serverCodeIsAccepted = (code, frenchKeys = []) =>
+  assert.deepEqual(findServerUsageProblems(code, new Set(frenchKeys), 'A.php'), [])
+
+test('a server key missing in French is rejected', () => {
+  serverCodeIsRejected("__('server.clan.full')")
+})
+
+test('a server key known in French is accepted', () => {
+  serverCodeIsAccepted("__('server.clan.full', ['name' => $name])", ['clan.full'])
+  serverCodeIsAccepted('__("server.clan.full")', ['clan.full'])
+})
+
+test('a server key that is not a literal is rejected', () => {
+  serverCodeIsRejected('__($key)')
+  serverCodeIsRejected('__("server.clan.{$key}")')
+})
+
+test('the keys of the framework are not the catalog of the server', () => {
+  serverCodeIsAccepted("__('validation.required')")
+})
+
+test('a server key in a comment is ignored', () => {
+  serverCodeIsAccepted("// __('server.clan.full')")
 })
 
 test('a supported language must translate every key', () => {
