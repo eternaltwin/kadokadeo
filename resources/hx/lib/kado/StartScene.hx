@@ -49,7 +49,7 @@ class StartScene extends Container {
 		bb.y = kkm.screen.height - KadoKadeoManager.I(23);
 		this.addChild(bb);
 
-		this.clicToStartText = new pixi.core.text.Text("CLIQUER POUR COMMENCER", {
+		this.clicToStartText = new pixi.core.text.Text(Texts.click_to_start, {
 			fontFamily: 'Fredoka Bold',
 			fontSize: 35,
 			fill: 0xFF6400,
@@ -79,19 +79,19 @@ class StartScene extends Container {
 		this.interactive = false;
 		overlay.visible = true;
 		panel.visible = true;
-		showMessage("", 'CONNEXION AU\nSERVEUR EN COURS...');
+		showMessage("", Texts.connecting);
 	}
 
 	// the run could not begin: the message of the server (no games left, the daily game already played...)
 	public function showError(error:Dto.ApiError):Void {
 		var message = switch (error.status) {
-			case 0: "LE SERVEUR N'A PAS PU ÊTRE JOINT.";
-			case status if (status >= 500): "ERREUR DU SERVEUR.";
+			case 0: Texts.server_unreachable;
+			case status if (status >= 500): Texts.server_error;
 			case _: error.message.toUpperCase();
 		}
 		// (refused by the server: asking again would be refused too)
 		var refused = error.status == 403 || error.status == 422;
-		showMessage("ERREUR", message, refused ? null : "CLIQUER POUR RÉESSAYER");
+		showMessage(Texts.error_title, message, refused ? null : Texts.click_to_retry);
 	}
 
 	function showMessage(title:String, message:String, ?hint:String):Void {
@@ -103,9 +103,9 @@ class StartScene extends Container {
 	public function showContract(contract:Dto.RunDTO):Void {
 		panel.height = KadoKadeoManager.I(83);
 		panel.y = (kkm.screen.height - panel.height) / 2;
-		panel.setTitle("CONTRAT");
+		panel.setTitle(Texts.contract_title);
 		panel.clearContent();
-		var scoreToBeat = new pixi.core.text.Text('SCORE À BATTRE', {
+		var scoreToBeat = new pixi.core.text.Text(Texts.score_to_beat, {
 			fontFamily: 'Fredoka Bold',
 			fontSize: 30,
 			fill: 0x78c8c8,
@@ -115,7 +115,7 @@ class StartScene extends Container {
 		scoreToBeat.x = KadoKadeoManager.I(10);
 		scoreToBeat.y = KadoKadeoManager.I(23);
 
-		var contractPoints = new pixi.core.text.Text('POINTS', {
+		var contractPoints = new pixi.core.text.Text(Texts.points, {
 			fontFamily: 'Fredoka Bold',
 			fontSize: 30,
 			fill: 0x78c8c8,

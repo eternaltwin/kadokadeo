@@ -4,5 +4,18 @@
   "click_to_replay": "Click here to play again",
   "players_to_overtake.one": "You still have {count} player to overtake!",
   "players_to_overtake.other": "You still have {count} players to overtake!",
-  "first_place": "YOU ARE FIRST!"
+  "first_place": "YOU ARE FIRST!",
+  "click_to_start": "CLICK TO START",
+  "connecting": "CONNECTING TO\nTHE SERVER...",
+  "server_unreachable": "THE SERVER COULD NOT BE REACHED.",
+  "server_error": "SERVER ERROR.",
+  "error_title": "ERROR",
+  "click_to_retry": "CLICK TO TRY AGAIN",
+  "contract_title": "CONTRACT",
+  "score_to_beat": "SCORE TO BEAT",
+  "points": "POINTS",
+  "sending": "SENDING TO\nTHE SERVER...",
+  "run_not_sent": "THE GAME COULD NOT\nBE SENT.",
+  "run_not_sent_stored": "THE GAME COULD NOT\nBE SENT.\nIT WILL BE SENT AGAIN\nLATER.",
+  "click_to_continue": "CLICK TO CONTINUE"
 }

@@ -4,5 +4,18 @@
   "click_to_replay": "Cliquez pour rejouer",
   "first_place": "VOUS ETES PREMIER !",
   "players_to_overtake.one": "Il y a encore {count} joueur à dépasser !",
-  "players_to_overtake.other": "Il y a encore {count} joueurs à dépasser !"
+  "players_to_overtake.other": "Il y a encore {count} joueurs à dépasser !",
+  "click_to_start": "CLIQUER POUR COMMENCER",
+  "connecting": "CONNEXION AU\nSERVEUR EN COURS...",
+  "server_unreachable": "LE SERVEUR N'A PAS PU ÊTRE JOINT.",
+  "server_error": "ERREUR DU SERVEUR.",
+  "error_title": "ERREUR",
+  "click_to_retry": "CLIQUER POUR RÉESSAYER",
+  "contract_title": "CONTRAT",
+  "score_to_beat": "SCORE À BATTRE",
+  "points": "POINTS",
+  "sending": "ENVOI AU\nSERVEUR EN COURS...",
+  "run_not_sent": "LA PARTIE N'A PAS PU\nÊTRE ENVOYÉE.",
+  "run_not_sent_stored": "LA PARTIE N'A PAS PU\nÊTRE ENVOYÉE.\nELLE SERA RENVOYÉE\nPLUS TARD.",
+  "click_to_continue": "CLIQUER POUR CONTINUER"
 }

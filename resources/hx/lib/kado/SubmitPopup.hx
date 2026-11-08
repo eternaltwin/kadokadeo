@@ -25,14 +25,14 @@ class SubmitPopup extends Container {
 	}
 
 	public function showSending():Void {
-		show("", 'ENVOI AU\nSERVEUR EN COURS...');
+		show("", Texts.sending);
 	}
 
 	public function showFailure(stored:Bool):Void {
 		if (stored) {
-			show("ERREUR", "LA PARTIE N'A PAS PU\nÊTRE ENVOYÉE.\nELLE SERA RENVOYÉE\nPLUS TARD.", "CLIQUER POUR CONTINUER");
+			show(Texts.error_title, Texts.run_not_sent_stored, Texts.click_to_continue);
 		} else {
-			show("ERREUR", "LA PARTIE N'A PAS PU\nÊTRE ENVOYÉE.", "CLIQUER POUR CONTINUER");
+			show(Texts.error_title, Texts.run_not_sent, Texts.click_to_continue);
 		}
 	}
 
