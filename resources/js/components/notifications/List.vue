@@ -1,6 +1,7 @@
 <script setup>
 import { notificationLink, notificationText } from '@/composables/useNotifications'
 import { useChannel, userChannel } from '@/composables/useRealtime'
+import { intlLocale } from '@/i18n/locale'
 
 // the notifications of the player (the tab « Notifications » of the messages): read when the tab is opened (the new ones
 // stay highlighted while it is open), deleted one by one or all
@@ -44,7 +45,7 @@ const removeAll = () => {
   }
 }
 
-const date = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
+const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
 </script>
 
 <template>

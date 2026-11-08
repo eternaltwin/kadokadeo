@@ -1,4 +1,5 @@
 <script setup>
+import { formatDate } from '@/i18n/dates'
 // "Historique": the finished attacks (A) and defenses (D) of the clan, without the cancelled attacks
 const props = defineProps({
   clan: { type: Object, required: true },
@@ -7,7 +8,7 @@ const props = defineProps({
 const { items: rows, meta, hasNextPage, loadMore, reload, isLoading, error } = useClanHistory(() => props.clan.id)
 // a new line: the first page again
 onClanUpdated(() => props.clan.id, ['history'], reload)
-const formatDate = (date) => (date ? dayjs(date).format('DD/MM/YYYY HH:mm') : '—')
+const shownDate = (date) => (date ? formatDate(date, 'dateTime') : '—')
 </script>
 
 <template>
@@ -34,7 +35,7 @@ const formatDate = (date) => (date ? dayjs(date).format('DD/MM/YYYY HH:mm') : '�
             <td colspan="8" class="py-4 italic text-kado-blue-700">Aucune attaque ni défense terminée pour le moment.</td>
           </tr>
           <tr v-for="(row, index) in rows" :key="row.id" :class="index % 2 ? 'bg-white' : 'bg-kado-blue-100'">
-            <td class="text-left whitespace-nowrap">{{ formatDate(row.date) }}</td>
+            <td class="text-left whitespace-nowrap">{{ shownDate(row.date) }}</td>
             <td class="font-bold">
               <img :src="row.type === 'attack' ? '/gfx/clan/atksmall.gif' : '/gfx/clan/defsmall.gif'"
                    :alt="row.type === 'attack' ? 'Attaque' : 'Défense'"

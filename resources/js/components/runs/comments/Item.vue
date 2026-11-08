@@ -1,4 +1,5 @@
 <script setup>
+import { formatDate } from '@/i18n/dates'
 // a comment of a replay (or an answer), compact as the forum of the clans: its moment (a click goes there in the
 // replay), its author, its text, then the likes, answer, report, edit, delete
 const props = defineProps({
@@ -59,7 +60,7 @@ const sendReport = () => report(props.comment.id, { reason: reason.value, detail
   reported.value = true
 })
 
-const formatDate = (date) => dayjs(date).format('DD/MM/YY à HH:mm')
+const shownDate = (date) => formatDate(date, 'shortDateAt')
 </script>
 
 <template>
@@ -79,7 +80,7 @@ const formatDate = (date) => dayjs(date).format('DD/MM/YY à HH:mm')
         {{ comment.author.display_name }}
       </RouterLink>
       <span v-else class="text-xs italic">Ancien joueur</span>
-      <time :datetime="comment.created_at" class="ml-auto">{{ formatDate(comment.created_at) }}</time>
+      <time :datetime="comment.created_at" class="ml-auto">{{ shownDate(comment.created_at) }}</time>
     </div>
 
     <div class="bg-[url(/assets/img/gfx/gui/base/greyh2_bg.jpg)] bg-[position:-150px_-40px] bg-no-repeat px-2 py-1">

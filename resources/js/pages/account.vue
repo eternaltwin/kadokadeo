@@ -47,6 +47,7 @@ const use = (theme) => {
     <div v-if="tab === 'preferences'" class="relative px-2 space-y-4">
       <KadoPageTitle>Préférences</KadoPageTitle>
       <AccountPreferences />
+      <AccountLanguageSelector />
     </div>
 
     <KadoPageTitle>Mon compte</KadoPageTitle>

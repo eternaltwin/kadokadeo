@@ -1,4 +1,5 @@
 <script setup>
+import { formatDate } from '@/i18n/dates'
 // a message of the forum of a clan, as on the old forum: its author on the left (his role in the clan, the date), the
 // message on the right. Its author edits it, the leader and the right hands edit, delete and restore it (a deleted
 // message stays, its content shown to the moderators only).
@@ -29,7 +30,7 @@ const remove = () => {
 }
 const restore = () => restoreMessage(props.clanId, props.message.id).then(() => emit('updated'))
 
-const formatDate = (date) => dayjs(date).format('DD/MM/YY à HH:mm')
+const shownDate = (date) => formatDate(date, 'shortDateAt')
 </script>
 
 <template>
@@ -46,7 +47,7 @@ const formatDate = (date) => dayjs(date).format('DD/MM/YY à HH:mm')
       </span>
       <span v-else-if="message.author_role === 'right_hand'">{{ message.author_role_label }}</span>
       <span v-else-if="message.author && !message.author_role" class="italic">A quitté le clan</span>
-      <time :datetime="message.created_at" class="sm:mt-1">{{ formatDate(message.created_at) }}</time>
+      <time :datetime="message.created_at" class="sm:mt-1">{{ shownDate(message.created_at) }}</time>
     </div>
 
     <div class="min-w-0 flex-1 bg-white bg-[url(/assets/img/gfx/gui/base/greyh2_bg.jpg)] bg-[position:-150px_-40px] bg-no-repeat p-2 pl-3">
@@ -66,7 +67,7 @@ const formatDate = (date) => dayjs(date).format('DD/MM/YY à HH:mm')
       <MarktwinContent v-else :text="message.content" />
 
       <div class="mt-3 flex flex-wrap items-center justify-end gap-2 text-2xs text-kado-slate-400">
-        <span v-if="message.edited_at" class="mr-auto italic">Modifié le {{ formatDate(message.edited_at) }}</span>
+        <span v-if="message.edited_at" class="mr-auto italic">Modifié le {{ shownDate(message.edited_at) }}</span>
         <FormButton v-if="message.can_edit && !editing" size="sm" @click="startEditing">Éditer</FormButton>
         <FormButton v-if="canModerate && !message.is_deleted"
                     size="sm"

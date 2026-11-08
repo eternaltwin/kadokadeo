@@ -1,4 +1,5 @@
 <script setup>
+import { intlLocale } from '@/i18n/locale'
 // the bar of the games of Eternaltwin, the one of its other games (DinoRPG: ed-ui/src/components/toolBar/TopBar.vue):
 // the other games (their icon, their name and their description when hovered, in another order at each visit), the
 // time of the server (UTC: the daily game and the periods change at midnight UTC) and the version of the site,
@@ -38,7 +39,7 @@ const version = import.meta.env.VITE_APP_VERSION
 
 const time = ref('')
 const tick = () => {
-  time.value = new Date().toLocaleTimeString('fr-FR', { timeZone: 'UTC' })
+  time.value = new Date().toLocaleTimeString(intlLocale(), { timeZone: 'UTC' })
 }
 let clock = null
 onMounted(() => {

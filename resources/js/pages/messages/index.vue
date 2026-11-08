@@ -1,5 +1,6 @@
 <script setup>
 import { useChannel, userChannel } from '@/composables/useRealtime'
+import { intlLocale } from '@/i18n/locale'
 import { messageDraft } from '@/messages/draft'
 
 // the private messages: received, sent, the form to write one, and the notifications of the player
@@ -46,7 +47,7 @@ const tabs = computed(() => [
   { label: messagesStore.notificationsUnread ? `Notifications (${messagesStore.notificationsUnread})` : 'Notifications', value: 'notifications', route: { name: 'messages.notifications' } },
 ])
 const selectedIndex = computed(() => tabs.value.findIndex((t) => t.value === box.value))
-const date = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
+const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
 </script>
 
 <template>

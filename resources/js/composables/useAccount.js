@@ -12,6 +12,7 @@ export function useAccount() {
     buyTheme: (key) => post(`/themes/${key}/buy`),
     chooseTheme: (key) => put('/user/theme', { theme: key }),
     // their preferences after
+    saveLocale: (locale) => put('/user/locale', { locale }),
     savePreferences: (preferences) => put('/user/preferences', preferences).then((response) => response.data.data),
   }
 }

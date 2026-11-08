@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 
 import Error from '@/components/message/Error.vue'
 import { formatScore } from '@/composables/helpers'
+import { intlLocale } from '@/i18n/locale'
 import { useAuthStore } from '@/stores/auth'
 import { usePendingRunsStore } from '@/stores/pendingRuns'
 
@@ -11,7 +12,7 @@ const pendingRunsStore = usePendingRunsStore()
 const { runs, isSending } = storeToRefs(pendingRunsStore)
 const showDetails = ref(false)
 
-const formatDate = (iso) => (iso ? new Date(iso).toLocaleString('fr-FR') : '?')
+const formatDate = (iso) => (iso ? new Date(iso).toLocaleString(intlLocale()) : '?')
 
 function discard(run) {
   if (confirm(`Supprimer définitivement la partie de ${run.game_name} (${formatScore(run.request?.score ?? 0)} points) ?`)) {

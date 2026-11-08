@@ -1,4 +1,5 @@
 <script setup>
+import { formatDate } from '@/i18n/dates'
 const route = useRoute()
 const authStore = useAuthStore()
 const { isLoading, fetchRun } = useRuns()
@@ -164,7 +165,7 @@ watch(clock.frame, (frame, previous) => {
     <KadoSectionTitle>Vous regardez {{ run.user?.display_name }}</KadoSectionTitle>
     <KadoSectionTitle>Score: {{ run.score }}</KadoSectionTitle>
     <KadoSectionTitle>Jeu: {{ run.game.name }}</KadoSectionTitle>
-    <KadoSectionTitle>Date: {{ dayjs(run.completed_at).format('DD/MM/YYYY HH:mm') }}</KadoSectionTitle>
+    <KadoSectionTitle>Date: {{ formatDate(run.completed_at, 'dateTime') }}</KadoSectionTitle>
     <KadoSectionTitle>Temps: {{ formatTime(run.play_time_seconds) }}</KadoSectionTitle>
     <KadoSectionTitle>Vues: {{ run.views_count }} · Commentaires: {{ run.comments_count }}</KadoSectionTitle>
     <p class="mt-2 text-center">

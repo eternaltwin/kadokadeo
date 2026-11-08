@@ -1,4 +1,5 @@
 <script setup>
+import { intlLocale } from '@/i18n/locale'
 // the clan runs begun by the player and never ended (the page closed during the run...): "Annuler la partie" when it can
 // really not be finished
 const props = defineProps({
@@ -20,7 +21,7 @@ const cancel = (action) => {
     <MessageError v-if="error">{{ error }}</MessageError>
     <div v-for="action in props.actions" :key="action.id" class="flex flex-wrap items-center gap-2">
       <strong>{{ action.label }}</strong>
-      <span>{{ action.game.name }}<template v-if="action.target"> ({{ action.target }})</template>, commencée le {{ new Date(action.started_at).toLocaleString('fr-FR') }}</span>
+      <span>{{ action.game.name }}<template v-if="action.target"> ({{ action.target }})</template>, commencée le {{ new Date(action.started_at).toLocaleString(intlLocale()) }}</span>
       <FormButton variant="pink" size="sm" @click="cancel(action)">Annuler la partie</FormButton>
       <span v-if="action.blocks" class="w-full text-xs">Tant qu'elle n'est pas terminée ou annulée, vous ne pouvez ni lancer une autre attaque ni défendre.</span>
     </div>

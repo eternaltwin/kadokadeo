@@ -1,4 +1,5 @@
 <script setup>
+import { intlLocale } from '@/i18n/locale'
 // a private message: read (marked as read), answer, delete
 const route = useRoute()
 const router = useRouter()
@@ -30,7 +31,7 @@ const remove = () => {
     deleteMessage(message.value.id).then(() => router.push({ name: received.value ? 'messages.inbox' : 'messages.sent' }))
   }
 }
-const date = (iso) => new Date(iso).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
 </script>
 
 <template>

@@ -4,6 +4,8 @@ import KadoPoints from '@svg/k.svg'
 import OrangeStar from '@svg/orangeStar.svg'
 import RedStar from '@svg/redStar.svg'
 
+import { formatDate } from '@/i18n/dates'
+
 // the last finished period of a player, as on KadoKado: the Kado points it brought at its close, the promotions in the
 // leagues, the rankings; the buttons go through the older finished periods (App\Services\PeriodSummaryService)
 const props = defineProps({
@@ -46,7 +48,7 @@ const stars = computed(() => [
 const rankings = computed(() => [...(summary.value?.rankings ?? [])].sort((a, b) => a.game.name.localeCompare(b.game.name)))
 const ordinal = (rank) => (rank === 1 ? 'er' : 'e')
 // (the periods are in UTC: they end at 23:59:59 UTC)
-const formatDate = (date) => dayjs.utc(date).format('DD/MM/YYYY')
+const shownDate = (date) => formatDate(dayjs.utc(date))
 
 // the tables of the summary: thin uppercase headers, cells without borders
 const thinTitles = '[&_th]:px-2 [&_th]:text-xs [&_th]:font-normal [&_th]:uppercase [&_td]:border-0 [&_td]:px-2'
@@ -64,7 +66,7 @@ const thinTitles = '[&_th]:px-2 [&_th]:text-xs [&_th]:font-normal [&_th]:upperca
 
     <KadoSectionTitle>Résumé de {{ words.yours }} points Kado</KadoSectionTitle>
     <p class="mx-2.5 mt-2 text-center text-sm">
-      Du {{ formatDate(summary.period.start_at) }} au {{ formatDate(summary.period.end_at) }}
+      Du {{ shownDate(summary.period.start_at) }} au {{ shownDate(summary.period.end_at) }}
     </p>
     <ul class="mt-4 mb-6 ml-10 list-inside list-kado space-y-1">
       <li v-if="summary.clan?.reward">

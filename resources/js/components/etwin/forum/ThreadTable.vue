@@ -1,11 +1,13 @@
 <script setup>
+import { formatDate } from '@/i18n/dates'
+import { intlLocale } from '@/i18n/locale'
 // the threads of a section of the forum, as on the forum of Twinoid: the pinned ones ("Post-It") first, then the others
 // grouped by the day of their last message; an unread thread in bold, a read one in italic
 const props = defineProps({
   threads: { type: Array, required: true },
 })
 
-const day = (iso) => new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+const day = (iso) => new Date(iso).toLocaleDateString(intlLocale(), { day: 'numeric', month: 'long', year: 'numeric' })
 const rows = computed(() => {
   const rows = []
   let group = null
@@ -66,7 +68,7 @@ const cellClasses = (thread, align = 'text-left') => [
           <td :class="cellClasses(row.thread, 'text-center')" class="text-base font-bold opacity-80">{{ Math.max(0, (row.thread.posts?.count ?? 1) - 1) || '' }}</td>
           <td :class="cellClasses(row.thread)" class="text-2xs leading-3 opacity-80">
             {{ etwinActorName(row.thread.last_post?.author) }}<br />
-            <span class="opacity-75">{{ dayjs(row.thread.last_post?.ctime).format('DD/MM HH:mm') }}</span>
+            <span class="opacity-75">{{ formatDate(row.thread.last_post?.ctime, 'dayTime') }}</span>
           </td>
         </tr>
       </template>

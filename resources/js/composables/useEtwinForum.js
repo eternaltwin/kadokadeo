@@ -1,3 +1,5 @@
+import { formatDate } from '@/i18n/dates'
+
 import { useApi } from './useApi'
 
 // the sizes of the pages of the forum of Eternaltwin (GET /api/v1/config: forum.threads_per_page, posts_per_page)
@@ -39,4 +41,4 @@ export function useEtwinForum() {
 export const etwinActorName = (actor) => actor?.user?.display_name?.current?.value ?? '?'
 
 // a date of the forum, as on the site: "le 10/06/2010 à 22:02"
-export const etwinForumDate = (iso) => (iso ? `le ${dayjs(iso).format('DD/MM/YYYY à HH:mm')}` : '')
+export const etwinForumDate = (iso) => (iso ? `le ${formatDate(iso, 'dateAt')}` : '')

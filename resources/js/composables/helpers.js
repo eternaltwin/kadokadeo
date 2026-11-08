@@ -1,7 +1,8 @@
+import { intlLocale } from '@/i18n/locale'
 // import pako from 'pako'
 
 export function formatScore(score) {
-  return Number(score).toLocaleString('fr-FR').replaceAll(/\u202f/g, ' ')
+  return Number(score).toLocaleString(intlLocale()).replaceAll(/\u202f/g, ' ')
 }
 
 export function formatTime(seconds) {

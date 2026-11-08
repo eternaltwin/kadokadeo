@@ -1,4 +1,5 @@
 <script setup>
+import { formatDate, weekdayOf } from '@/i18n/dates'
 // the topics of the forum of a clan, as on the old forum: the "Post-it" first, then the topics grouped by the day of
 // their last message (pink rows); a title green when unread, blue when read; the last message and the links to the
 // pages of the topic in "Réponses"
@@ -7,8 +8,7 @@ const props = defineProps({
   topics: { type: Array, required: true },
 })
 
-const DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
-const dayLabel = (date) => `${DAYS[dayjs(date).day()]} ${dayjs(date).format('DD/MM/YYYY')}`
+const dayLabel = (date) => `${weekdayOf(date)} ${formatDate(date)}`
 
 const rows = computed(() => {
   const rows = []
@@ -40,7 +40,7 @@ const topicRoute = (topic, page = 1) => ({
   query: page > 1 ? { page } : {},
 })
 // the day is given by the pink row, except for the "Post-it"
-const lastMessageTime = (topic) => dayjs(topic.last_message_at).format(topic.is_pinned ? 'DD/MM à HH:mm' : 'HH:mm')
+const lastMessageTime = (topic) => (topic.is_pinned ? formatDate(topic.last_message_at, 'dayAt') : dayjs(topic.last_message_at).format('HH:mm'))
 
 const headerClasses = 'border border-solid border-kado-green-600 bg-kado-green-500 bg-[url(/assets/img/gfx/gui/base/greenh2_bg.jpg)] bg-[position:-25px_-5px] bg-no-repeat px-2 text-left text-sm font-normal tracking-widest text-kado-green-600'
 const greyCellClasses = 'border border-t-0 border-solid border-kado-teal-400 bg-white bg-[url(/assets/img/gfx/gui/base/greyh2_bg.jpg)] bg-[position:top_right] bg-no-repeat px-2 pb-1 text-kado-slate-700'
