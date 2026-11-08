@@ -20,7 +20,6 @@ const authStore = useAuthStore()
           {{ `>> ${$t('login.play')} <<` }}
         </a>
       </p>
-      <AccountLanguageSelector class="mt-4 text-center" />
     </section>
   </div>
 </template>

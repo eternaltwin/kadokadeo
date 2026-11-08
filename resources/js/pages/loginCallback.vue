@@ -1,11 +1,19 @@
 <script setup>
+import { languageChangedByLogin } from '@/i18n/locale'
+
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const error = ref(null)
 
 authStore.login(route.query?.code, route.query?.state).then(() => {
-  router.push(authStore.takeAfterLogin() ?? '/')
+  const nextPage = authStore.takeAfterLogin() ?? '/'
+  // the language of a page comes with its load
+  if (languageChangedByLogin(authStore.user)) {
+    window.location.assign(router.resolve(nextPage).href)
+    return
+  }
+  router.push(nextPage)
 }).catch((e) => {
   error.value = e.response?.data?.message || e.message
 })

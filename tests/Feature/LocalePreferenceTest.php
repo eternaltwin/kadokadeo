@@ -6,7 +6,6 @@ use App\Enums\LocalePreference;
 use App\Filament\Pages\ManageSiteSettings;
 use App\Models\User;
 use App\Settings\SiteSettings;
-use App\Support\LocaleResolver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -73,20 +72,12 @@ class LocalePreferenceTest extends TestCase
             ->assertSee('i18n_enabled: true', false);
     }
 
-    public function test_the_cookie_of_the_language_is_read_as_the_page_wrote_it(): void
-    {
-        $this->setSettings(SiteSettings::class, ['i18n_enabled' => true]);
-
-        $this->withUnencryptedCookie(LocaleResolver::COOKIE, 'en')->withHeader('Accept-Language', 'fr')->get('/games')
-            ->assertSee('<html lang="en">', false);
-    }
-
     public function test_the_account_of_the_player_wins_in_the_page(): void
     {
         $this->setSettings(SiteSettings::class, ['i18n_enabled' => true]);
         $this->actingAs($this->player(LocalePreference::FR), 'web');
 
-        $this->withUnencryptedCookie(LocaleResolver::COOKIE, 'en')->withHeader('Accept-Language', 'en')->get('/games')
+        $this->withHeader('Accept-Language', 'en')->get('/games')
             ->assertSee('<html lang="fr">', false);
     }
 

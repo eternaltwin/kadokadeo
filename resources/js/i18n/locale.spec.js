@@ -1,21 +1,14 @@
 import { beforeEach, expect, test, vi } from 'vitest'
 
-import { chooseLocale, intlLocale, pageLocale, savedChoice } from './locale'
-
-const COOKIE = 'kado_locale'
-
-function clearCookie() {
-  document.cookie = `${COOKIE}=; path=/; max-age=0`
-}
+import { chooseLocale, intlLocale, languageChangedByLogin, pageLocale } from './locale'
 
 beforeEach(() => {
-  clearCookie()
   delete window.Kado
 })
 
-function aChoice(locale, { isLoggedIn = true, save = vi.fn().mockResolvedValue() } = {}) {
+function aChoice(locale, { save = vi.fn().mockResolvedValue() } = {}) {
   const reload = vi.fn()
-  return { save, reload, choose: () => chooseLocale(locale, { isLoggedIn, save, reload }) }
+  return { save, reload, choose: () => chooseLocale(locale, { save, reload }) }
 }
 
 test('a page without a language is French', () => {
@@ -30,58 +23,43 @@ test('the page gives its language', () => {
   expect(intlLocale()).toBe('en')
 })
 
-test('a logged in player saves the language on the account and in the cookie, then the page reloads', async() => {
+test('a player saves the language on the account, then the page reloads', async() => {
   const { save, reload, choose } = aChoice('en')
 
   await choose()
 
   expect(save).toHaveBeenCalledWith('en')
-  expect(document.cookie).toContain(`${COOKIE}=en`)
   expect(reload).toHaveBeenCalledOnce()
 })
 
-test('a visitor only has the cookie', async() => {
-  const { save, reload, choose } = aChoice('en', { isLoggedIn: false })
-
-  await choose()
-
-  expect(save).not.toHaveBeenCalled()
-  expect(document.cookie).toContain(`${COOKIE}=en`)
-  expect(reload).toHaveBeenCalledOnce()
-})
-
-test('the automatic choice removes the cookie, so that the browser really decides', async() => {
-  document.cookie = `${COOKIE}=en; path=/`
-  const { save, reload, choose } = aChoice('auto')
-
-  await choose()
-
-  expect(save).toHaveBeenCalledWith('auto')
-  expect(document.cookie).not.toContain(COOKIE)
-  expect(reload).toHaveBeenCalledOnce()
-})
-
-test('a choice the server refused changes nothing', async() => {
+test('a choice the server refused keeps the page as it is', async() => {
   const { reload, choose } = aChoice('en', { save: vi.fn().mockRejectedValue(new Error('down')) })
 
   await expect(choose()).rejects.toThrow('down')
 
-  expect(document.cookie).not.toContain(COOKIE)
   expect(reload).not.toHaveBeenCalled()
 })
 
-test('the choice shown is the one of the account, then the cookie', () => {
-  document.cookie = `${COOKIE}=en; path=/`
+test('the login changes the language when the account chose another one', () => {
+  window.Kado = { locale: 'fr', i18n_enabled: true }
 
-  expect(savedChoice({ locale: 'fr' })).toBe('fr')
-  expect(savedChoice({ locale: 'auto' })).toBe('en')
-  expect(savedChoice(null)).toBe('en')
+  expect(languageChangedByLogin({ locale: 'en' })).toBe(true)
 })
 
-test('without a valid cookie the choice shown is automatic', () => {
-  expect(savedChoice(null)).toBe('auto')
+test('the login keeps the language when the account chose the same one', () => {
+  window.Kado = { locale: 'en', i18n_enabled: true }
 
-  document.cookie = `${COOKIE}=klingon; path=/`
+  expect(languageChangedByLogin({ locale: 'en' })).toBe(false)
+})
 
-  expect(savedChoice(null)).toBe('auto')
+test('an automatic account keeps the language of the browser', () => {
+  window.Kado = { locale: 'en', i18n_enabled: true }
+
+  expect(languageChangedByLogin({ locale: 'auto' })).toBe(false)
+})
+
+test('with the languages off, the login changes nothing', () => {
+  window.Kado = { locale: 'fr', i18n_enabled: false }
+
+  expect(languageChangedByLogin({ locale: 'en' })).toBe(false)
 })

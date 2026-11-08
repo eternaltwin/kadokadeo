@@ -6,7 +6,6 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Settings\ClanSettings;
 use App\Settings\SiteSettings;
-use App\Support\LocaleResolver;
 use Eternaltwin\Client\Auth as EtwinAuth;
 use Eternaltwin\Client\HttpEtwinClient;
 use Eternaltwin\OauthClient\RfcOauthClient;
@@ -142,11 +141,6 @@ class LoginController extends Controller implements HasMiddleware
             $dbUser->kado_games = app(SiteSettings::class)->games_per_day;
             $dbUser->clan_attack_games = app(ClanSettings::class)->attack_games_per_day;
         }
-        $dbUser->locale = LocaleResolver::preferenceAtLogin(
-            app(SiteSettings::class)->i18n_enabled,
-            $dbUser->locale,
-            $request->cookie(LocaleResolver::COOKIE),
-        );
         $dbUser->save();
         Auth::login($dbUser, true);
         // (a new id for the session of a logged in player, and a new CSRF token: against the fixation of the session)
