@@ -1,6 +1,9 @@
 // haxe tests/hx/i18n.hxml
 import kado.I18n;
 
+@:build(kado.I18nMacro.build("tests/hx/fixtures/texts.json"))
+class CompiledTexts {}
+
 class I18nTest {
 	static var failures = 0;
 
@@ -20,6 +23,10 @@ class I18nTest {
 		check("list separators stay", I18n.format("a|b,c {n}", {n: 1}), "a|b,c 1");
 		check("an empty text stays empty", I18n.format("", {n: 1}), "");
 		check("a value is not read again", I18n.format("{a} {b}", {a: "{b}", b: "x"}), "{b} x");
+
+		check("a text without a variable is a field", CompiledTexts.combo, "Combo +1");
+		check("a text with a variable is a function", CompiledTexts.unicombo({_c: 3}), "UniCombo +3");
+		check("a text can have several variables", CompiledTexts.duel({winner: "A", loser: "B"}), "A bat B");
 
 		if (failures > 0) {
 			js.Syntax.code("process.exit(1)");
