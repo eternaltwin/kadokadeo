@@ -113,7 +113,7 @@ export default defineConfig([
       'no-restricted-syntax': ['error', NO_USE_API, ...NO_ACCENTED_TEXT],
       'vue/no-restricted-syntax': ['error', ...NO_ACCENTED_TEXT],
       'vue/no-bare-strings-in-template': ['error', {
-        allowlist: ['(', ')', ',', '.', '&', '+', '-', '=', '*', '/', '#', '%', '!', '?', ':', '[', ']', '{', '}', '<', '>', '•', '·', '—', ' ', '|'],
+        allowlist: ['/^[0-9]+$/', '(', ')', ',', '.', '&', '+', '-', '=', '*', '/', '#', '%', '!', '?', ':', '[', ']', '{', '}', '<', '>', '•', '·', '—', ' ', '|'],
         attributes: {
           '/.+/': ['title', 'label', 'placeholder', 'aria-label', 'aria-placeholder', 'aria-roledescription', 'aria-valuetext'],
           img: ['alt'],
