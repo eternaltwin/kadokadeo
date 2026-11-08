@@ -9,10 +9,11 @@ import haxe.macro.ExprTools;
 // a field by text, a function when the text has variables. A key missing from the catalog does not compile.
 // A game only names its catalog: where the catalogs are and their format stay here.
 class I18nMacro {
-	static inline var CATALOGS = "resources/lang/fr";
+	// the other languages are not compiled: they are read at run time, French being what a missing text falls back to
+	static inline var FRENCH_CATALOGS = "resources/lang/fr";
 
 	public static function build(catalogName:String):Array<Field> {
-		var file = '${CATALOGS}/${catalogName}.json';
+		var file = '${FRENCH_CATALOGS}/${catalogName}.json';
 		return withTexts(readCatalog(file, Context.currentPos()), file);
 	}
 
