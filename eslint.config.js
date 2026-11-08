@@ -9,6 +9,23 @@ import globals from 'globals'
 
 import autoImportGlobals from './.eslintrc-auto-import.mjs'
 
+// the pages and the components call the API through the composables of resources/js/composables
+const NO_USE_API = {
+  selector: 'CallExpression[callee.name=\'useApi\']',
+  message: 'Call the API through a composable of resources/js/composables (a new one if needed), not useApi() in a page or a component.',
+}
+
+// A text goes through t() and the catalogs of resources/lang. The files already migrated are refused any text written in
+// the code: this list grows until it covers the whole site.
+const FILES_WITH_TRANSLATED_TEXTS = [
+  'resources/js/pages/login.vue',
+  'resources/js/components/account/LanguageSelector.vue',
+]
+const NO_ACCENTED_TEXT = [
+  { selector: 'Literal[value=/[À-ÿ]/]', message: 'A text goes through t() and resources/lang.' },
+  { selector: 'TemplateElement[value.raw=/[À-ÿ]/]', message: 'A text goes through t() and resources/lang.' },
+]
+
 export default defineConfig([
   globalIgnores(['**/dist/**', '**/coverage/**', 'resources/js/games/**']),
 
@@ -85,9 +102,22 @@ export default defineConfig([
   {
     files: ['resources/js/pages/**/*.vue', 'resources/js/components/**/*.vue', 'resources/js/layouts/**/*.vue'],
     rules: {
-      'no-restricted-syntax': ['error', {
-        selector: "CallExpression[callee.name='useApi']",
-        message: 'Call the API through a composable of resources/js/composables (a new one if needed), not useApi() in a page or a component.',
+      'no-restricted-syntax': ['error', NO_USE_API],
+    },
+  },
+
+  // (a block replaces the options of a rule: NO_USE_API has to stay here)
+  {
+    files: FILES_WITH_TRANSLATED_TEXTS,
+    rules: {
+      'no-restricted-syntax': ['error', NO_USE_API, ...NO_ACCENTED_TEXT],
+      'vue/no-restricted-syntax': ['error', ...NO_ACCENTED_TEXT],
+      'vue/no-bare-strings-in-template': ['error', {
+        allowlist: ['(', ')', ',', '.', '&', '+', '-', '=', '*', '/', '#', '%', '!', '?', ':', '[', ']', '{', '}', '<', '>', '•', '·', '—', ' ', '|'],
+        attributes: {
+          '/.+/': ['title', 'label', 'placeholder', 'aria-label', 'aria-placeholder', 'aria-roledescription', 'aria-valuetext'],
+          img: ['alt'],
+        },
       }],
     },
   },

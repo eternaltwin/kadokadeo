@@ -63,7 +63,7 @@ jobs:
       # the catalogs of lang/ against the code
       - name: Translation catalogs
         run: |
-          node --test scripts/lint-i18n.test.mjs
+          node --test scripts/lint-i18n.test.mjs scripts/eslint-i18n.test.mjs
           node scripts/lint-i18n.mjs
 
   tests:

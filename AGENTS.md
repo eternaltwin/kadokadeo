@@ -58,6 +58,13 @@
 - Clans on/off: `ClanSettings::$enabled` (admin « Paramètres > Clans », off by default). New clan API routes go inside the `EnsureClansAreEnabled` group of `routes/api.php`, new clan pages get the `clans` router middleware; the front reads `window.Kado.clans_enabled` (`useClanStore().enabled`). The admin manages the clans either way; tests of the clans use `Tests\Concerns\EnablesClans`.
 - Clan forum (`App\Services\ClanForumService`, `/api/clans/{clan}/forum`) and private messages (`App\Services\MessageService`): texts are stored as raw Marktwin and rendered client-side only (`resources/js/marktwin/render.js`: `useMarktwin` on the site, `<kado-marktwin text>` in the admin via `resources/js/admin/marktwin.js` loaded by a Filament render hook; grammar in `resources/js/marktwin/grammar.js`). Admin « Modération > Messages privés »: every message, and the system messages (signed KadoKado) to a player or to all. The `@eternaltwin/marktwin` 0.6.0 WASM panics (and corrupts its memory) on non-ASCII input: `useMarktwin` sends it ASCII only (entities put back after). It is loaded through `vite-plugin-wasm`, whose dev helper `/__vite-plugin-wasm-helper` must be proxied to Vite (`docker/app/conf/kadokadeo.conf`).
 
+## Translations (i18n)
+
+- Site: a text goes through `t()` / `$t()`, with a named key in `resources/lang/fr/site.json`; not at the top level of a module (it would stay in French); never in `v-html`, and no `<` in a catalog (a link in a sentence: `<i18n-t>`). A text written in the code is refused in the files of `FILES_WITH_TRANSLATED_TEXTS` (`eslint.config.js`).
+- Games: a game names its catalog, `@:build(kado.I18nMacro.build("games/<game>"))` on its `Text` class, French in `resources/lang/fr/games/<game>.json`; shared texts in `kado.json` (`kado.Texts`). A plural: `<key>.one` / `<key>.other` with `{count}`. The logic of a game never reads a text: `kado:replays:compare <game> --baseline`, then `kado:replays:compare <game> --pseudo` (a run needs a build without `-debug`). A word in an image stays as it is.
+- Languages: `App\Support\LocaleResolver` (the account, then the browser), behind `SiteSettings::$i18n_enabled`. French is compiled in, the others are loaded on demand and a missing text shows French. Translating a text only changes `resources/lang/<language>/`.
+- Checks: `node scripts/lint-i18n.mjs`. In development, `/games/<id>?pseudo` shows the texts of a game that cannot be translated.
+
 ## Front-end Styles
 
 - Colours, fonts, shadows, animations: the `@theme` of `resources/css/app.css` only (the palette `kado-*`, from `public/assets/original_style.css`; a colour that is not in it says where it comes from). No hex in the classes, no default palette of Tailwind (`text-gray-500`...).
