@@ -1,4 +1,4 @@
-// The translation catalogs of lang/ against each other and against the code, checked in the CI
+// The translation catalogs of resources/lang/ against each other and against the code, checked in the CI
 // (docs/specs/i18n-site-texts.md):
 //   node scripts/lint-i18n.mjs
 // A missing translation is not a problem: the site shows the French text.
@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
 import { baseCompile } from '@intlify/message-compiler'
 
 const ROOT = join(import.meta.dirname, '..')
-const LANG = join(ROOT, 'lang')
+const LANG = join(ROOT, 'resources/lang')
 const JS = join(ROOT, 'resources/js')
 const SOURCE_LANGUAGE = 'fr'
 // generated or not part of the site: the games (Haxe), the replay verifier (Node)
@@ -81,7 +81,7 @@ export function findUsageProblems(code, frenchKeys, file) {
     if (key === undefined) {
       return [`${file}: the key ${argument || '(none)'} is not a literal: use a table of literal keys`]
     }
-    return frenchKeys.has(key) ? [] : [`${file}: the key ${key} is not in lang/${SOURCE_LANGUAGE}/site.json`]
+    return frenchKeys.has(key) ? [] : [`${file}: the key ${key} is not in resources/lang/${SOURCE_LANGUAGE}/site.json`]
   })
 }
 

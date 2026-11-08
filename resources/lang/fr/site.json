@@ -1,0 +1,11 @@
+{
+  "login": {
+    "welcome": "Bienvenue",
+    "games_title": "Des jeux",
+    "games_text": "Plus de 70 jeux exclusifs à débloquer !",
+    "friends_title": "Plein d'amis",
+    "friends_text": "... et d'adversaires dans une communauté de joueurs pleine de bonne humeur !",
+    "play": "Jouer",
+    "play_title": "S'identifier / s'inscrire"
+  }
+}

@@ -7,7 +7,7 @@ import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import VueLazyload from 'vue-lazyload'
 
-import french from '../../lang/fr/site.json'
+import french from '../lang/fr/site.json'
 import App from './App.vue'
 import { registerPwa } from './composables/usePwa'
 import { createAppI18n } from './i18n'

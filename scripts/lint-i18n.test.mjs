@@ -97,14 +97,14 @@ test('a link is not taken for a comment', () => {
 })
 
 test('an unreadable catalog names its file', () => {
-  const { problems } = parseCatalog('{ not json', 'lang/en/site.json')
+  const { problems } = parseCatalog('{ not json', 'resources/lang/en/site.json')
 
   assert.equal(problems.length, 1)
   assert.match(problems[0], /lang\/en\/site\.json/)
 })
 
 test('a readable catalog gives its messages', () => {
-  assert.deepEqual(parseCatalog('{"hello":"Bonjour"}', 'lang/fr/site.json'), {
+  assert.deepEqual(parseCatalog('{"hello":"Bonjour"}', 'resources/lang/fr/site.json'), {
     messages: { hello: 'Bonjour' },
     problems: [],
   })
