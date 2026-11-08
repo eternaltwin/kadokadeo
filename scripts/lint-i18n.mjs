@@ -10,9 +10,6 @@ const ROOT = join(import.meta.dirname, '..')
 const LANG = join(ROOT, 'resources/lang')
 const JS = join(ROOT, 'resources/js')
 const SOURCE_LANGUAGE = 'fr'
-// A language joins this list once it is complete: from then on, a new text comes with its translation.
-// A language still being translated stays out of it, and shows the French text where it has none.
-const SUPPORTED_TRANSLATIONS = []
 // generated or not part of the site: the games (Haxe), the replay verifier (Node)
 const NOT_THE_SITE = [join(JS, 'games'), join(JS, 'replay-verifier')]
 
@@ -99,7 +96,7 @@ export function parseCatalog(text, file) {
   }
 }
 
-function siteCatalogOf(language) {
+export function siteCatalogOf(language) {
   const path = join(LANG, language, 'site.json')
   return parseCatalog(readFileSync(path, 'utf8'), relative(ROOT, path))
 }
@@ -126,10 +123,6 @@ function findAllProblems() {
     ...findCatalogProblems(
       french.messages,
       Object.fromEntries(translations.map(([language, catalog]) => [language, catalog.messages])),
-    ),
-    ...findMissingTranslations(
-      french.messages,
-      Object.fromEntries(SUPPORTED_TRANSLATIONS.map((language) => [language, siteCatalogOf(language).messages])),
     ),
     ...siteFiles(JS).flatMap((file) => findUsageProblems(readFileSync(file, 'utf8'), frenchKeys, relative(ROOT, file))),
   ]

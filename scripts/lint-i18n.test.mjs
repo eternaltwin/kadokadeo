@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { findCatalogProblems, findMissingTranslations, findUsageProblems, parseCatalog } from './lint-i18n.mjs'
+import { findCatalogProblems, findMissingTranslations, findUsageProblems, parseCatalog, siteCatalogOf } from './lint-i18n.mjs'
 
 const catalogsAreRejected = (french, english) =>
   assert.notDeepEqual(findCatalogProblems(french, { en: english }), [], 'these catalogs should be rejected')
@@ -13,6 +13,14 @@ const codeIsRejected = (code, frenchKeys = []) =>
   assert.notDeepEqual(findUsageProblems(code, new Set(frenchKeys), 'page.vue'), [], `this code should be rejected: ${code}`)
 const codeIsAccepted = (code, frenchKeys = []) =>
   assert.deepEqual(findUsageProblems(code, new Set(frenchKeys), 'page.vue'), [])
+
+// remove the skip once English is complete: from then on, a new text comes with its translation
+test('English translates every key of the site', { skip: 'English not implemented yet' }, () => {
+  const french = siteCatalogOf('fr').messages
+  const english = siteCatalogOf('en').messages
+
+  assert.deepEqual(findMissingTranslations(french, { en: english }), [])
+})
 
 test('a supported language must translate every key', () => {
   assert.deepEqual(findMissingTranslations({ hello: 'Bonjour', bye: 'Salut' }, { en: { hello: 'Hello' } }), [
