@@ -2,7 +2,14 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { findCatalogProblems, findMissingTranslations, findUsageProblems, parseCatalog, siteCatalogOf } from './lint-i18n.mjs'
+import {
+  findCatalogProblems,
+  findGameCatalogProblems,
+  findMissingTranslations,
+  findUsageProblems,
+  parseCatalog,
+  siteCatalogOf,
+} from './lint-i18n.mjs'
 
 const catalogsAreRejected = (french, english) =>
   assert.notDeepEqual(findCatalogProblems(french, { en: english }), [], 'these catalogs should be rejected')
@@ -20,6 +27,40 @@ test('English translates every key of the site', { skip: 'English not implemente
   const english = siteCatalogOf('en').messages
 
   assert.deepEqual(findMissingTranslations(french, { en: english }), [])
+})
+
+const gameCatalogsAreRejected = (french, english) =>
+  assert.notDeepEqual(findGameCatalogProblems(french, { en: english }), [], 'these catalogs should be rejected')
+const gameCatalogsAreAccepted = (french, english) =>
+  assert.deepEqual(findGameCatalogProblems(french, { en: english }), [])
+
+test('a game translation with other variables is rejected', () => {
+  gameCatalogsAreRejected({ unicombo: 'UniCombo +{_c}' }, { unicombo: 'Same colour' })
+})
+
+test('a game text can hold the characters of vue-i18n', () => {
+  gameCatalogsAreAccepted({ sms: 'a|b', mail: 'kado@site.fr', tag: '<3' }, { sms: 'c|d', mail: 'kado@site.com', tag: '<3' })
+})
+
+test('a game plural needs its .other, in French as in a translation', () => {
+  gameCatalogsAreRejected({ 'players.one': 'Un joueur' }, {})
+  gameCatalogsAreRejected({ 'players.one': 'Un joueur', 'players.other': '{count} joueurs' }, { 'players.one': 'One player' })
+})
+
+test('a game plural can have its .other alone', () => {
+  gameCatalogsAreAccepted({ 'stars.other': '{count} etoiles' }, {})
+  gameCatalogsAreAccepted(
+    { 'players.one': 'Un joueur', 'players.other': '{count} joueurs' },
+    { 'players.other': '{count} players' },
+  )
+})
+
+test('a game text that is not a text is rejected', () => {
+  gameCatalogsAreRejected({ combo: 3 }, {})
+})
+
+test('a game translation can be missing', () => {
+  gameCatalogsAreAccepted({ combo: 'Combo +1' }, {})
 })
 
 test('a supported language must translate every key', () => {

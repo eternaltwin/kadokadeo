@@ -1,6 +1,6 @@
 // The translation catalogs of resources/lang/ against each other and against the code, checked in the CI:
 //   node scripts/lint-i18n.mjs
-import { readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -30,7 +30,7 @@ function syntaxErrorsOf(message) {
   return errors
 }
 
-function messageProblems(language, key, message) {
+function siteMessageProblems(language, key, message) {
   if (typeof message !== 'string') {
     return [`${language}: ${key} is not a text`]
   }
@@ -40,7 +40,11 @@ function messageProblems(language, key, message) {
   ]
 }
 
-export function findCatalogProblems(french, translations) {
+// a game shows its texts on a canvas, without vue-i18n: | < and @ are plain characters
+const gameMessageProblems = (language, key, message) =>
+  typeof message === 'string' ? [] : [`${language}: ${key} is not a text`]
+
+function problemsAgainstFrench(french, translations, messageProblems) {
   const frenchEntries = flatten(french)
   const frenchMessages = new Map(frenchEntries)
   const problems = frenchEntries.flatMap(([key, message]) => messageProblems(SOURCE_LANGUAGE, key, message))
@@ -57,6 +61,22 @@ export function findCatalogProblems(french, translations) {
   }
   return problems
 }
+
+export const findCatalogProblems = (french, translations) => problemsAgainstFrench(french, translations, siteMessageProblems)
+
+function pluralsWithoutOther(language, messages) {
+  const keys = new Set(flatten(messages).map(([key]) => key))
+  return [...keys]
+    .filter((key) => key.endsWith('.one') && !keys.has(key.replace(/\.one$/, '.other')))
+    .map((key) => `${language}: ${key} has no .other`)
+}
+
+export const findGameCatalogProblems = (french, translations) => [
+  ...problemsAgainstFrench(french, translations, gameMessageProblems),
+  ...Object.entries({ [SOURCE_LANGUAGE]: french, ...translations }).flatMap(([language, messages]) =>
+    pluralsWithoutOther(language, messages),
+  ),
+]
 
 export function findMissingTranslations(french, translations) {
   const frenchKeys = flatten(french).map(([key]) => key)
@@ -96,9 +116,32 @@ export function parseCatalog(text, file) {
   }
 }
 
-export function siteCatalogOf(language) {
-  const path = join(LANG, language, 'site.json')
+function catalogOf(language, name) {
+  const path = join(LANG, language, `${name}.json`)
   return parseCatalog(readFileSync(path, 'utf8'), relative(ROOT, path))
+}
+
+export const siteCatalogOf = (language) => catalogOf(language, 'site')
+
+function translationsOf(name) {
+  return readdirSync(LANG)
+    .filter((language) => language !== SOURCE_LANGUAGE && existsSync(join(LANG, language, `${name}.json`)))
+    .map((language) => [language, catalogOf(language, name)])
+}
+
+function gameCatalogNames() {
+  const games = readdirSync(join(LANG, SOURCE_LANGUAGE, 'games'))
+  return ['kado', ...games.map((file) => `games/${file.replace(/\.json$/, '')}`)]
+}
+
+function problemsOfCatalog(name, findProblems) {
+  const french = catalogOf(SOURCE_LANGUAGE, name)
+  const translations = translationsOf(name)
+  return [
+    ...french.problems,
+    ...translations.flatMap(([, catalog]) => catalog.problems),
+    ...findProblems(french.messages, Object.fromEntries(translations.map(([language, catalog]) => [language, catalog.messages]))),
+  ]
 }
 
 function siteFiles(directory) {
@@ -112,18 +155,10 @@ function siteFiles(directory) {
 }
 
 function findAllProblems() {
-  const french = siteCatalogOf(SOURCE_LANGUAGE)
-  const languages = readdirSync(LANG).filter((language) => language !== SOURCE_LANGUAGE)
-  const translations = languages.map((language) => [language, siteCatalogOf(language)])
-  const frenchKeys = new Set(flatten(french.messages).map(([key]) => key))
-
+  const frenchKeys = new Set(flatten(siteCatalogOf(SOURCE_LANGUAGE).messages).map(([key]) => key))
   return [
-    ...french.problems,
-    ...translations.flatMap(([, catalog]) => catalog.problems),
-    ...findCatalogProblems(
-      french.messages,
-      Object.fromEntries(translations.map(([language, catalog]) => [language, catalog.messages])),
-    ),
+    ...problemsOfCatalog('site', findCatalogProblems),
+    ...gameCatalogNames().flatMap((name) => problemsOfCatalog(name, findGameCatalogProblems)),
     ...siteFiles(JS).flatMap((file) => findUsageProblems(readFileSync(file, 'utf8'), frenchKeys, relative(ROOT, file))),
   ]
 }
