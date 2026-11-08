@@ -4,17 +4,26 @@ package kado;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 
-// Generates the texts of a class from a JSON catalog, French compiled in the bundle:
+// Generates the texts of a class from its catalog, French compiled in the bundle:
 // a field by text, a function when the text has variables. A key missing from the catalog does not compile.
+// A game only names its catalog: where the catalogs are and their format stay here.
 class I18nMacro {
-	public static function build(file:String):Array<Field> {
+	static inline var DEFAULT_CATALOGS = "resources/lang/fr";
+
+	public static function build(catalogName:String):Array<Field> {
 		var position = Context.currentPos();
 		var fields = Context.getBuildFields();
+		var file = fileOf(catalogName);
 		var catalog = readCatalog(file, position);
 		for (key in Reflect.fields(catalog)) {
 			fields.push(textField(key, Reflect.field(catalog, key), file, position));
 		}
 		return fields;
+	}
+
+	static function fileOf(catalogName:String):String {
+		var catalogs = Context.definedValue("kado_i18n_catalogs");
+		return '${catalogs != null ? catalogs : DEFAULT_CATALOGS}/${catalogName}.json';
 	}
 
 	static function readCatalog(file:String, position:Position):Dynamic {

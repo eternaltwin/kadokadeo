@@ -1,7 +1,7 @@
 // haxe tests/hx/i18n.hxml
 import kado.I18n;
 
-@:build(kado.I18nMacro.build("tests/hx/fixtures/texts.json"))
+@:build(kado.I18nMacro.build("texts"))
 class CompiledTexts {}
 
 class I18nTest {
