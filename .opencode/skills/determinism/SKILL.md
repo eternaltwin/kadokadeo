@@ -66,3 +66,7 @@ Dans une partie live (bundle du site), `kac.Integrity` gèle les prototypes des 
 - ne pas affecter une méthode avec un nom calculé (`Reflect.setField(o, nom, f)` avec `nom` variable) : `TypeError` en live ;
 - ne jamais modifier un prototype pendant la partie ;
 - un test du harness qui patche `proto.update` le fait avant `new KadoKadeo` (le gel a lieu dans son constructeur). En cas d'urgence : define Haxe `-D kado_no_freeze`.
+
+## Textes traduits
+
+La logique d'un jeu ne lit jamais un texte du catalogue : un replay doit donner le même score dans toutes les langues. Pour le vérifier, enregistrer la référence avec `kado:replays:compare <game> --baseline`, puis lancer `kado:replays:compare <game> --pseudo`. Une différence veut dire que la logique lit un texte. Le replay doit passer par les textes migrés, et il doit venir d'un jeu compilé sans `-debug`, sinon la partie n'est pas enregistrée.

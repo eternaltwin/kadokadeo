@@ -23,7 +23,7 @@ class CompareReplays extends Command
      *
      * @var string
      */
-    protected $signature = 'kado:replays:compare {game : game_key of the game (xianxiang...)} {--baseline : record the reference, before changing the game} {--limit=1000 : number of runs of the reference (the latest)} {--parallel=4 : replays played at once} {--shard= : (internal) ids of the runs to play, one by line}';
+    protected $signature = 'kado:replays:compare {game : game_key of the game (xianxiang...)} {--baseline : record the reference, before changing the game} {--pseudo : play with the pseudo language: a replay that changes reads a text in its logic} {--limit=1000 : number of runs of the reference (the latest)} {--parallel=4 : replays played at once} {--shard= : (internal) ids of the runs to play, one by line}';
 
     /**
      * The console command description.
@@ -46,6 +46,12 @@ class CompareReplays extends Command
         $game = Game::all()->first(fn (Game $g) => $g->game_key === $key);
         if (!$game) {
             $this->error("No game {$key}.");
+
+            return self::FAILURE;
+        }
+
+        if ($this->option('baseline') && $this->option('pseudo')) {
+            $this->error('La référence se fait en français : --baseline sans --pseudo.');
 
             return self::FAILURE;
         }
@@ -168,7 +174,7 @@ class CompareReplays extends Command
             foreach (array_chunk($ids, (int) ceil(count($ids) / $parallel)) as $i => $shard) {
                 File::put("{$dir}/{$i}", implode("\n", $shard));
                 // no timeout: each replay has the timeout of the verifier
-                $processes[] = $process = new Process([PHP_BINARY, base_path('artisan'), $this->getName(), $key, "--shard={$dir}/{$i}"], base_path(), null, null, null);
+                $processes[] = $process = new Process([PHP_BINARY, base_path('artisan'), $this->getName(), $key, "--shard={$dir}/{$i}", ...($this->option('pseudo') ? ['--pseudo'] : [])], base_path(), null, null, null);
                 $process->start();
             }
             $read = function () use ($dir) {
@@ -205,7 +211,9 @@ class CompareReplays extends Command
             return ['ok' => false, 'error' => 'partie introuvable'];
         }
 
-        return $verifier->verify($run, ['stats' => true, 'analysis' => null], currentBundle: true);
+        $input = ['stats' => true, 'analysis' => null];
+
+        return $verifier->verify($run, $this->option('pseudo') ? $input + ['pseudoLanguage' => true] : $input, currentBundle: true);
     }
 
     private function baselineFile(Game $game): string

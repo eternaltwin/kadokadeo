@@ -1,7 +1,7 @@
 import { ref, toValue } from 'vue'
 
 import { natives } from '../anticheat/natives'
-import { loadGameTexts } from '../i18n/catalogs'
+import { loadGameTexts, loadPseudoGameTexts } from '../i18n/catalogs'
 import { pageLocale } from '../i18n/locale'
 
 const scriptRegistry = {}
@@ -10,6 +10,12 @@ const GAME_CATALOGS = import.meta.glob(
   ['/resources/lang/*/kado.json', '/resources/lang/*/games/*.json', '!/resources/lang/fr/**'],
   { import: 'default' },
 )
+
+// /games/46?pseudo in development: a text that stays normal on the screen cannot be translated. Not in a build
+const FRENCH_GAME_CATALOGS = import.meta.env.DEV
+  ? import.meta.glob(['/resources/lang/fr/kado.json', '/resources/lang/fr/games/*.json'], { import: 'default' })
+  : {}
+const usesPseudoLanguage = () => import.meta.env.DEV && new URLSearchParams(window.location.search).has('pseudo')
 
 // ANTI CHEAT: a game bundle is an ES module that doesn't put its classes on window (resources/js/games/builds/
 // bundle.mjs): its default export gives them once. It is imported with a random fragment: a module of its own (its
@@ -162,7 +168,9 @@ export function useGame(game) {
       .replaceAll(/\W/g, '')
 
     // before the bundle: its statics read their texts when it is imported. Always replaced: a game never reads those of another
-    const texts = await loadGameTexts(pageLocale(), gameKey, GAME_CATALOGS)
+    const texts = await (usesPseudoLanguage()
+      ? loadPseudoGameTexts(gameKey, FRENCH_GAME_CATALOGS)
+      : loadGameTexts(pageLocale(), gameKey, GAME_CATALOGS))
     if (token != loadToken) {
       return
     }

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
-import { loadGameTexts, loadLocale } from './catalogs'
+import { loadGameTexts, loadLocale, loadPseudoGameTexts } from './catalogs'
 import { createAppI18n } from './index'
 
 const SITE = '/resources/lang/en/site.json'
@@ -17,6 +17,16 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers()
+})
+
+test('the pseudo language transforms the French catalogs of a game', async() => {
+  const texts = await loadPseudoGameTexts('mel', {
+    '/resources/lang/fr/kado.json': async() => ({ score: 'SCORE' }),
+    '/resources/lang/fr/games/mel.json': async() => ({ jump: 'SAUTE' }),
+    '/resources/lang/fr/games/trigo.json': async() => ({ combo: 'never read' }),
+  })
+
+  expect(texts).toEqual({ kado: { score: 'XXSCOREXX' }, 'games/mel': { jump: 'XXSAUTEXX' } })
 })
 
 test('French downloads nothing on the site', async() => {

@@ -6,6 +6,7 @@
 //            module?: the bundle is an ES module (resources/js/games/builds/bundle.mjs), not a classic script,
 //            analysis?: config of the analyzer of the game (analyzers/<gameName>.mjs, see analyzers/README.md), null: none,
 //            gameOverAtFrame?: tests only, the replays of the test harness (rc.mjs) end with a game over forced there,
+//            pseudoLanguage?: the texts of the pseudo language instead of French (kado:replays:compare --pseudo),
 //            stats?: also gives what the game sends to the server at its game over (kado:replays:compare) }
 //   output (stdout, one JSON line): { ok: true, score, frames, analysis?, stats? } or { ok: false, error }
 //            analysis: { analyzer, version, metrics, suspicious, reasons } or { analyzer, error } (never fails the run)
@@ -19,6 +20,7 @@ import { createServer } from 'node:http'
 import { basename, dirname, extname, join, normalize, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { pseudoCatalog } from '../i18n/pseudoLocale.js'
 import { findBrowser } from './browser.mjs'
 import { deadline, launch, output } from './cdp.mjs'
 
@@ -38,6 +40,13 @@ const STEP_MS = 1000 / 32
 // during which points can still be won (the score sent is the one at the end of the fade)
 const EXTRA_FRAMES = 32 * 60
 const TYPES = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.ttf': 'font/ttf', '.otf': 'font/otf', '.woff': 'font/woff', '.woff2': 'font/woff2', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.fnt': 'text/xml', '.xml': 'text/xml' }
+
+// the texts a game reads, under the names of kado.I18nMacro
+async function pseudoTexts(gameName) {
+  const names = ['kado', `games/${gameName}`].filter((name) => existsSync(join(ROOT, `resources/lang/fr/${name}.json`)))
+  const catalogs = await Promise.all(names.map((name) => readFile(join(ROOT, `resources/lang/fr/${name}.json`), 'utf8')))
+  return Object.fromEntries(names.map((name, index) => [name, pseudoCatalog(JSON.parse(catalogs[index]))]))
+}
 
 async function page(input) {
   // the fonts of the site: some games measure their texts
@@ -59,6 +68,7 @@ async function page(input) {
     ...(input.assetBase ? { assetBase: input.assetBase } : {}),
   }
   const json = (v) => JSON.stringify(v).replace(/</g, '\\u003c')
+  const pageData = { public_key: '', ...(input.pseudoLanguage ? { i18n: await pseudoTexts(input.gameName) } : {}) }
   // the classes of the game: the default export of an ES module (imported after pixi-tween, part of the bundle of the
   // site), or put on window by a classic script (the versions built before the ES modules)
   const legacyLoader = `<script src="/__bundle.js"></script>
@@ -69,7 +79,7 @@ async function page(input) {
   return `<!doctype html>
 <html><head><meta charset="utf-8"><style>${fontFaces} body { margin: 0 }</style>
 <script>
-  window.Kado = { public_key: '' }
+  window.Kado = ${json(pageData)}
   window.evts = new EventTarget()
   window.__crash = null
   evts.addEventListener('gameCrash', (e) => { window.__crash = e.detail })

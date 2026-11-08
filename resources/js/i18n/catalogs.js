@@ -1,6 +1,7 @@
 // The catalogs of the other languages, downloaded on demand: French is in the bundles.
 // A catalog that fails or does not answer never blocks the site or a game: their texts stay in French.
 import { withoutEmptyTexts } from './index'
+import { pseudoCatalog } from './pseudoLocale'
 
 const SOURCE_LANGUAGE = 'fr'
 const CATALOG_DELAY_MS = 3000
@@ -35,7 +36,17 @@ export async function loadGameTexts(locale, gameKey, loaders) {
   if (locale === SOURCE_LANGUAGE) {
     return {}
   }
+  return gameCatalogs(locale, gameKey, loaders)
+}
+
+async function gameCatalogs(locale, gameKey, loaders) {
   const names = ['kado', `games/${gameKey}`]
   const catalogs = await Promise.all(names.map((name) => loadCatalog(loaders[catalogPath(locale, name)])))
   return Object.fromEntries(names.map((name, index) => [name, catalogs[index]]).filter(([, catalog]) => catalog))
+}
+
+// development only: to see on the screen the texts of a game that cannot be translated
+export async function loadPseudoGameTexts(gameKey, loaders) {
+  const catalogs = await gameCatalogs(SOURCE_LANGUAGE, gameKey, loaders)
+  return Object.fromEntries(Object.entries(catalogs).map(([name, catalog]) => [name, pseudoCatalog(catalog)]))
 }

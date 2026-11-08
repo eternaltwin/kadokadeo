@@ -151,4 +151,33 @@ class CompareReplaysTest extends TestCase
     {
         $this->artisan('kado:replays:compare', ['game' => 'nope'])->assertFailed();
     }
+
+    public function test_a_replay_can_be_played_again_with_the_pseudo_language(): void
+    {
+        $this->finishedRun();
+        $this->compare(['--baseline' => true])->assertSuccessful();
+        $this->calls = [];
+
+        $this->compare(['--pseudo' => true])->assertSuccessful();
+
+        $this->assertTrue($this->calls[0][0]['pseudoLanguage']);
+    }
+
+    public function test_a_comparison_is_in_french_by_default(): void
+    {
+        $this->finishedRun();
+
+        $this->compare(['--baseline' => true])->assertSuccessful();
+
+        $this->assertArrayNotHasKey('pseudoLanguage', $this->calls[0][0]);
+    }
+
+    public function test_the_reference_is_never_in_the_pseudo_language(): void
+    {
+        $this->finishedRun();
+
+        $this->compare(['--baseline' => true, '--pseudo' => true])->assertFailed();
+
+        $this->assertSame([], $this->calls);
+    }
 }
