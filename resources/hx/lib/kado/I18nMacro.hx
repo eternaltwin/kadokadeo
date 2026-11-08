@@ -3,27 +3,31 @@ package kado;
 #if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
+import haxe.macro.ExprTools;
 
 // Generates the texts of a class from its catalog, French compiled in the bundle:
 // a field by text, a function when the text has variables. A key missing from the catalog does not compile.
 // A game only names its catalog: where the catalogs are and their format stay here.
 class I18nMacro {
-	static inline var DEFAULT_CATALOGS = "resources/lang/fr";
+	static inline var CATALOGS = "resources/lang/fr";
 
 	public static function build(catalogName:String):Array<Field> {
-		var position = Context.currentPos();
-		var fields = Context.getBuildFields();
-		var file = fileOf(catalogName);
-		var catalog = readCatalog(file, position);
-		for (key in Reflect.fields(catalog)) {
-			fields.push(textField(key, Reflect.field(catalog, key), file, position));
-		}
-		return fields;
+		var file = '${CATALOGS}/${catalogName}.json';
+		return withTexts(readCatalog(file, Context.currentPos()), file);
 	}
 
-	static function fileOf(catalogName:String):String {
-		var catalogs = Context.definedValue("kado_i18n_catalogs");
-		return '${catalogs != null ? catalogs : DEFAULT_CATALOGS}/${catalogName}.json';
+	// texts written in the class itself: what a test needs
+	public static function fromTexts(texts:Expr):Array<Field> {
+		return withTexts(ExprTools.getValue(texts), "the texts of the class");
+	}
+
+	static function withTexts(texts:Dynamic, source:String):Array<Field> {
+		var position = Context.currentPos();
+		var fields = Context.getBuildFields();
+		for (key in Reflect.fields(texts)) {
+			fields.push(textField(key, Reflect.field(texts, key), source, position));
+		}
+		return fields;
 	}
 
 	static function readCatalog(file:String, position:Position):Dynamic {
@@ -38,12 +42,12 @@ class I18nMacro {
 		}
 	}
 
-	static function textField(key:String, text:Dynamic, file:String, position:Position):Field {
+	static function textField(key:String, text:Dynamic, source:String, position:Position):Field {
 		if (!~/^[A-Za-z_][A-Za-z0-9_]*$/.match(key)) {
-			Context.fatalError('${file}: the key ${key} cannot be a field', position);
+			Context.fatalError('${source}: the key ${key} cannot be a field', position);
 		}
 		if (!Std.isOfType(text, String)) {
-			Context.fatalError('${file}: the key ${key} is not a text', position);
+			Context.fatalError('${source}: the key ${key} is not a text', position);
 		}
 		var variables = I18n.variablesOf(text);
 		return {

@@ -1,7 +1,7 @@
 // haxe tests/hx/i18n.hxml
 import kado.I18n;
 
-@:build(kado.I18nMacro.build("texts"))
+@:build(kado.I18nMacro.fromTexts({combo: "Combo +1", unicombo: "UniCombo +{_c}", duel: "{winner} bat {loser}"}))
 class CompiledTexts {}
 
 class I18nTest {
