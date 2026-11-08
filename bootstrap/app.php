@@ -3,6 +3,7 @@
 use App\Http\Controllers\LoginController;
 use App\Http\Middleware\EnsureUserIsNotBanned;
 use App\Http\Middleware\RecordVisit;
+use App\Support\LocaleResolver;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -27,7 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             RecordVisit::class,
         ]);
         // set by the login page (web), read by the API at the end of the login: a random value, compared as it is
-        $middleware->encryptCookies(except: [LoginController::OAUTH_STATE_COOKIE]);
+        $middleware->encryptCookies(except: [LoginController::OAUTH_STATE_COOKIE, LocaleResolver::COOKIE]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->dontReportDuplicates();

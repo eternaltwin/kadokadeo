@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\LocalePreference;
 use App\Enums\UserPreference;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Validation\Rule;
 
 // the preferences of the player (App\Enums\UserPreference), on his account page
 class UserPreferenceController extends Controller implements HasMiddleware
@@ -33,5 +35,16 @@ class UserPreferenceController extends Controller implements HasMiddleware
         $user->save();
 
         return ['data' => $user->preferenceValues()];
+    }
+
+    public function updateLocale(Request $request)
+    {
+        $validated = $request->validate(['locale' => ['required', 'string', Rule::enum(LocalePreference::class)]]);
+
+        $user = $request->user();
+        $user->locale = LocalePreference::from($validated['locale']);
+        $user->save();
+
+        return ['data' => ['locale' => $user->locale->value]];
     }
 }

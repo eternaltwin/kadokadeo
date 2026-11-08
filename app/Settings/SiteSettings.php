@@ -42,6 +42,9 @@ class SiteSettings extends Settings
     // the price in Kado points of the themes of config kado.themes: [key => price] ("base" is free)
     public array $theme_prices;
 
+    // off: the whole site is in French and the choice of the language is hidden
+    public bool $i18n_enabled;
+
     public static function group(): string
     {
         return 'site';

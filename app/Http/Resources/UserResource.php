@@ -30,6 +30,8 @@ class UserResource extends JsonResource
             // admin panel in the Kalendrier
             'is_admin' => $this->when($request->user()?->is($this->resource), fn () => (bool) $this->is_admin),
             // (the user themself too) App\Enums\UserPreference => bool, set on his account page
+            // (the user themself too) App\Enums\LocalePreference
+            'locale' => $this->when($request->user()?->is($this->resource), fn () => $this->resource->locale->value),
             'preferences' => $this->when($request->user()?->is($this->resource), fn () => $this->resource->preferenceValues()),
             'stars' => $this->whenLoaded('stars', fn () => UserStarResource::make($this->stars->first())),
             'achievement_progress' => $this->whenLoaded('achievementProgress', fn () => UserAchievementProgressResource::collection($this->achievementProgress)),

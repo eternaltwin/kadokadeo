@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ App\Support\LocaleResolver::forRequest(request()) }}">
 
 <head>
     <meta charset="utf-8" />
@@ -18,6 +18,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script type="text/javascript">
         window.Kado = {
+            // the language of the page (App\Support\LocaleResolver); the choice of it is shown when the languages are on
+            locale: @json(App\Support\LocaleResolver::forRequest(request())),
+            i18n_enabled: @json(app(App\Settings\SiteSettings::class)->i18n_enabled),
             public_key: '{{ str_replace("\n", "\\n", app(App\Services\RunService::class)->getPublicKey()) }}',
             achievements_enabled: @json(app(App\Settings\SiteSettings::class)->achievements_enabled),
             // the clans are open (App\Settings\ClanSettings::$enabled), else their pages say "Prochainement disponible"

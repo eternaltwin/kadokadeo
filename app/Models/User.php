@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\BanReason;
+use App\Enums\LocalePreference;
 use App\Enums\UserPreference;
 use App\Events\UserCountersChanged;
 use App\Settings\SiteSettings;
@@ -18,6 +19,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
+/** @property LocalePreference $locale */
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
@@ -30,6 +32,10 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'etwin_access_token',
         'etwin_scopes',
+    ];
+
+    protected $attributes = [
+        'locale' => 'auto',
     ];
 
     protected $guarded = [
@@ -51,6 +57,7 @@ class User extends Authenticatable implements FilamentUser
             'unlocked_themes' => 'array',
             // App\Enums\UserPreference => bool (missing: its default)
             'preferences' => 'array',
+            'locale' => LocalePreference::class,
             // the access token of Eternaltwin (its forum is called as the player) and what it allows
             'etwin_access_token' => 'encrypted',
             'etwin_scopes' => 'array',

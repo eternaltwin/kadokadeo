@@ -77,6 +77,7 @@ Route::post('/notifications/read', [NotificationController::class, 'read']);
 Route::delete('/notifications', [NotificationController::class, 'destroyAll']);
 Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
 Route::put('/user/preferences', [UserPreferenceController::class, 'update']);
+Route::put('/user/locale', [UserPreferenceController::class, 'updateLocale']);
 
 // the forum of Eternaltwin, called as the player (Eternaltwin sends no CORS headers)
 Route::prefix('/etwin-forum')->group(function () {
