@@ -2,4 +2,4 @@
 -cp ./tests/hx
 --main I18nTest
 --js /tmp/kado-i18n-test.js
---cmd node /tmp/kado-i18n-test.js
+--cmd node -e "globalThis.Kado = { i18n: { test: { combo: 'Read at load' } } }; require('/tmp/kado-i18n-test.js')"

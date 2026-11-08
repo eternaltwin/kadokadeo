@@ -14,6 +14,8 @@ class CompiledTexts {}
 
 class I18nTest {
 	static var failures = 0;
+	// like the lists of Mel: read when the bundle is loaded
+	static var textReadAtLoad = CompiledTexts.combo;
 
 	static function check(name:String, actual:String, expected:String) {
 		if (actual == expected) {
@@ -43,6 +45,8 @@ class I18nTest {
 		check("list separators stay", I18n.format("a|b,c {n}", {n: 1}), "a|b,c 1");
 		check("an empty text stays empty", I18n.format("", {n: 1}), "");
 		check("a value is not read again", I18n.format("{a} {b}", {a: "{b}", b: "x"}), "{b} x");
+
+		check("a static reads the catalog already there", textReadAtLoad, "Read at load");
 
 		givenNoPageData();
 		check("without page data, a text is French", CompiledTexts.combo, "Combo +1");

@@ -11,6 +11,8 @@ import french from '../lang/fr/site.json'
 import App from './App.vue'
 import { registerPwa } from './composables/usePwa'
 import { createAppI18n } from './i18n'
+import { loadLocale } from './i18n/catalogs'
+import { pageLocale } from './i18n/locale'
 import router from './router'
 
 import('./pixi-tween')
@@ -21,7 +23,9 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
-app.use(createAppI18n('fr', { fr: french }))
+const locale = pageLocale()
+const i18n = createAppI18n(locale, { fr: french })
+app.use(i18n)
 app.use(VueLazyload, {
   error: '/gfx/achievements/error.png',
   loading: '/gfx/achievements/loading.png',
@@ -32,4 +36,7 @@ app.use(VueLazyload, {
 
 registerPwa(router)
 
-app.mount('#app')
+// the other languages are downloaded on demand, before the first render
+loadLocale(i18n, locale, import.meta.glob(['/resources/lang/*/site.json', '!/resources/lang/fr/**'], { import: 'default' })).then(() => {
+  app.mount('#app')
+})

@@ -1,8 +1,15 @@
 import { ref, toValue } from 'vue'
 
 import { natives } from '../anticheat/natives'
+import { loadGameTexts } from '../i18n/catalogs'
+import { pageLocale } from '../i18n/locale'
 
 const scriptRegistry = {}
+
+const GAME_CATALOGS = import.meta.glob(
+  ['/resources/lang/*/kado.json', '/resources/lang/*/games/*.json', '!/resources/lang/fr/**'],
+  { import: 'default' },
+)
 
 // ANTI CHEAT: a game bundle is an ES module that doesn't put its classes on window (resources/js/games/builds/
 // bundle.mjs): its default export gives them once. It is imported with a random fragment: a module of its own (its
@@ -147,6 +154,20 @@ export function useGame(game) {
       return
     }
 
+    // the key of the game on the server (Game::getGameKeyAttribute): accents dropped first ("Chakré Bouddha" -> chakrebouddha)
+    const gameKey = currentGame.name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replaceAll(/\W/g, '')
+
+    // before the bundle: its statics read their texts when it is imported. Always replaced: a game never reads those of another
+    const texts = await loadGameTexts(pageLocale(), gameKey, GAME_CATALOGS)
+    if (token != loadToken) {
+      return
+    }
+    window.Kado.i18n = texts
+
     let KadoKadeo, gameClass
     if (config.module) {
       const exports = await loadModule(config.src)
@@ -175,12 +196,7 @@ export function useGame(game) {
     activeScript = config
     gameInstance = new KadoKadeo(canvas, gameClass, {
       ...args,
-      // the game key of the server (Game::getGameKeyAttribute): accents dropped first ("Chakré Bouddha" -> chakrebouddha)
-      name: currentGame.name
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .replaceAll(/\W/g, ''),
+      name: gameKey,
       gameId: currentGame.id,
       // version of the bundle: sent with the run, its replay is played with the same version
       build: currentGame?.gamedata?.hash ?? null,

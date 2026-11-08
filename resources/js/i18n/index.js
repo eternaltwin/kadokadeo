@@ -4,7 +4,7 @@ import { createI18n } from 'vue-i18n'
 const SOURCE_LANGUAGE = 'fr'
 
 // a platform of translation can export a text not translated yet as an empty one
-const withoutEmptyTexts = (messages) =>
+export const withoutEmptyTexts = (messages) =>
   Object.fromEntries(
     Object.entries(messages)
       .filter(([, value]) => value !== '')
