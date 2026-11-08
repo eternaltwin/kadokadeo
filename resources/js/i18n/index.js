@@ -1,4 +1,4 @@
-// The translations of the site (docs/specs/i18n-site-texts.md): the catalogs of lang/, French when a text has none
+// The translations of the site: the catalogs of resources/lang/, French when a text has none
 import { createI18n } from 'vue-i18n'
 
 const SOURCE_LANGUAGE = 'fr'

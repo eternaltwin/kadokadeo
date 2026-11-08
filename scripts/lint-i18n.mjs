@@ -1,8 +1,5 @@
-// The translation catalogs of resources/lang/ against each other and against the code, checked in the CI
-// (docs/specs/i18n-site-texts.md):
+// The translation catalogs of resources/lang/ against each other and against the code, checked in the CI:
 //   node scripts/lint-i18n.mjs
-// A missing translation is not a problem: the site shows the French text.
-/** @spec i18n.site::ci-rejects-inconsistent-catalogs */
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -13,6 +10,9 @@ const ROOT = join(import.meta.dirname, '..')
 const LANG = join(ROOT, 'resources/lang')
 const JS = join(ROOT, 'resources/js')
 const SOURCE_LANGUAGE = 'fr'
+// A language joins this list once it is complete: from then on, a new text comes with its translation.
+// A language still being translated stays out of it, and shows the French text where it has none.
+const SUPPORTED_TRANSLATIONS = []
 // generated or not part of the site: the games (Haxe), the replay verifier (Node)
 const NOT_THE_SITE = [join(JS, 'games'), join(JS, 'replay-verifier')]
 
@@ -38,7 +38,6 @@ function messageProblems(language, key, message) {
     return [`${language}: ${key} is not a text`]
   }
   return [
-    /** @spec i18n.site::translations-are-not-html */
     ...(message.includes('<') ? [`${language}: ${key} holds "<": a tag stays in the component (<i18n-t>)`] : []),
     ...syntaxErrorsOf(message).map((error) => `${language}: ${key}: ${error}`),
   ]
@@ -62,13 +61,20 @@ export function findCatalogProblems(french, translations) {
   return problems
 }
 
+export function findMissingTranslations(french, translations) {
+  const frenchKeys = flatten(french).map(([key]) => key)
+  return Object.entries(translations).flatMap(([language, messages]) => {
+    const translatedKeys = new Set(flatten(messages).filter(([, message]) => message !== '').map(([key]) => key))
+    return frenchKeys.filter((key) => !translatedKeys.has(key)).map((key) => `${language}: ${key} has no translation`)
+  })
+}
+
 const withoutComments = (code) =>
   code
     .replaceAll(/<!--[\s\S]*?-->/g, '')
     .replaceAll(/\/\*[\s\S]*?\*\//g, '')
     .replaceAll(/(^|\s)\/\/.*$/gm, '')
 
-/** @spec i18n.site::never-shows-raw-key */
 export function findUsageProblems(code, frenchKeys, file) {
   const readable = withoutComments(code)
   const quotedArguments = [
@@ -121,6 +127,10 @@ function findAllProblems() {
       french.messages,
       Object.fromEntries(translations.map(([language, catalog]) => [language, catalog.messages])),
     ),
+    ...findMissingTranslations(
+      french.messages,
+      Object.fromEntries(SUPPORTED_TRANSLATIONS.map((language) => [language, siteCatalogOf(language).messages])),
+    ),
     ...siteFiles(JS).flatMap((file) => findUsageProblems(readFileSync(file, 'utf8'), frenchKeys, relative(ROOT, file))),
   ]
 }
@@ -129,7 +139,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const problems = findAllProblems()
   if (problems.length) {
     console.error(problems.join('\n'))
-    console.error(`\n${problems.length} problem(s) in the translations: docs/specs/i18n-site-texts.md`)
+    console.error(`\n${problems.length} problem(s) in the translations`)
     process.exit(1)
   }
   console.log('Translation catalogs: OK')

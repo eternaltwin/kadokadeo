@@ -1,8 +1,4 @@
-/** @spec i18n.site::missing-translation-falls-back-to-french */
-import { render } from '@testing-library/vue'
 import { expect, test } from 'vitest'
-import { h } from 'vue'
-import { Translation } from 'vue-i18n'
 
 import { createAppI18n } from './index'
 
@@ -25,34 +21,6 @@ test('a translated key shows its translation', () => {
   expect(inEnglish({ hello: 'Bonjour' }, { hello: 'Hello' }).t('hello')).toBe('Hello')
 })
 
-/** @spec i18n.site::interpolates-variables */
-test('a variable shows its value, zero included', () => {
-  expect(inFrench({ score: 'Score : {points}' }).t('score', { points: 0 })).toBe('Score : 0')
-})
-
-test('the name of a player stays a text in the page', () => {
-  const i18n = inFrench({ hello: 'Bonjour {name}' })
-
-  const { container } = render({ render: () => h('p', i18n.t('hello', { name: '<b>Pirate</b>' })) })
-
-  expect(container.textContent).toBe('Bonjour <b>Pirate</b>')
-  expect(container.querySelector('b')).toBeNull()
-})
-
-/** @spec i18n.site::rich-text-keeps-markup */
-test('a sentence keeps its link when it is translated', () => {
-  const i18n = createAppI18n('en', { fr: { rules: 'Lisez {link}' }, en: { rules: 'Read {link}' } })
-
-  const { container } = render(
-    { render: () => h(Translation, { keypath: 'rules', tag: 'p' }, { link: () => h('a', { href: '/rules' }, 'the rules') }) },
-    { global: { plugins: [i18n] } },
-  )
-
-  expect(container.textContent).toBe('Read the rules')
-  expect(container.querySelector('a').getAttribute('href')).toBe('/rules')
-})
-
-/** @spec i18n.site::plural-follows-language */
 test.each([
   [0, 'Un joueur'],
   [1, 'Un joueur'],

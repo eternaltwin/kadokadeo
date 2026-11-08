@@ -60,7 +60,7 @@ jobs:
       - name: Component tests
         run: yarn vitest run
 
-      # the catalogs of lang/ against the code (docs/specs/i18n-site-texts.md)
+      # the catalogs of lang/ against the code
       - name: Translation catalogs
         run: |
           node --test scripts/lint-i18n.test.mjs
