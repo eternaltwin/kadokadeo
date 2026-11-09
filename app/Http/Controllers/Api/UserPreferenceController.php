@@ -28,7 +28,7 @@ class UserPreferenceController extends Controller implements HasMiddleware
         $rules = array_fill_keys($keys, ['sometimes', 'boolean']);
         $validated = $request->validate($rules);
         $unknown = array_diff(array_keys($request->all()), $keys);
-        abort_if($unknown !== [], 422, 'Préférence inconnue : '.implode(', ', $unknown).'.');
+        abort_if($unknown !== [], 422, __('server.account.unknown_preferences', ['keys' => implode(', ', $unknown)]));
 
         $user = $request->user();
         $user->preferences = [...($user->preferences ?? []), ...array_map(fn ($value) => (bool) $value, $validated)];
