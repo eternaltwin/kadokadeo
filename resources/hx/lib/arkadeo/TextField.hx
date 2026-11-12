@@ -11,7 +11,11 @@ typedef FontDef = {
 	adv:Array<Float>,
 	ascent:Float,
 	descent:Float,
-	leading:Float
+	leading:Float,
+	// a glow of the original fields drawn once into pictures (the anim `o`, one per glyph, laid under every glyph):
+	// GlowFilter(glow.color, glow.alpha, glow.blurX, glow.blurY, glow.strength) given as the only filter of a field
+	?o:String,
+	?glow:{color:Int, alpha:Float, blurX:Float, blurY:Float, strength:Float}
 }
 
 /**
@@ -22,12 +26,16 @@ typedef FontDef = {
  * of the original field baked in), laid out like Flash: 2 px gutter, first baseline at 2 + ascent,
  * advances of the font, lines of ascent + descent + leading. A character the font does not have is not drawn.
  * The fonts of the game: TextField.init(() -> {<name>: FontDef}) (Mel: Art.meta().fonts, measured in its SWF).
+ * A font may bring the pictures of a glow of its fields (FontDef.o / glow: Green Witch's black outline of every text):
+ * that glow set as the filters of a field is drawn by them under the glyphs, without a filter pass.
  */
 class TextField extends DisplayObject {
 	static var fontSource:Void->Dynamic = null;
-	static var fonts:Map<String, {def:FontDef, idx:Map<String, Int>, tex:Array<Texture>}> = new Map();
+	static var fonts:Map<String, {def:FontDef, idx:Map<String, Int>, tex:Array<Texture>, otex:Array<Texture>}> = new Map();
 
-	var font:{def:FontDef, idx:Map<String, Int>, tex:Array<Texture>};
+	var font:{def:FontDef, idx:Map<String, Int>, tex:Array<Texture>, otex:Array<Texture>};
+	// the glow of the font given as the filters of the field: drawn by the pictures of the font (FontDef.o)
+	var outlined:Bool = false;
 	var str:String = "";
 	var lines:Array<String> = [];
 
@@ -116,7 +124,7 @@ class TextField extends DisplayObject {
 			var idx = new Map();
 			for (i in 0...d.chars.length)
 				idx.set(d.chars.charAt(i), i);
-			f = {def: d, idx: idx, tex: Tex.get(d.a)};
+			f = {def: d, idx: idx, tex: Tex.get(d.a), otex: d.o != null ? Tex.get(d.o) : null};
 			fonts.set(n, f);
 		}
 		return f;
@@ -240,12 +248,65 @@ class TextField extends DisplayObject {
 
 	function lineWidth(l:String):Float {
 		var w = 0.0;
+		var ls = letterSpacing();
 		for (i in 0...l.length) {
 			var j = font.idx.get(l.charAt(i));
 			if (j != null)
-				w += font.def.adv[j];
+				w += font.def.adv[j] + ls;
 		}
 		return w;
+	}
+
+	// TextFormat.letterSpacing: px added after each glyph (Charlotte's Quest: 1)
+	inline function letterSpacing():Float {
+		return defaultTextFormat != null && defaultTextFormat.letterSpacing != null ? defaultTextFormat.letterSpacing : 0;
+	}
+
+	// the colour of a glyph through the multipliers of the colour transform of the field (an embedded font: Trigo's combo
+	// number darkened by the timeline of its box, arkadeo.Clip.attach); with colour offsets the colour matrix of
+	// DisplayObject draws the whole transform
+	function tintOf(c:Int):Int {
+		if (ct == null || ct.redOffset != 0 || ct.greenOffset != 0 || ct.blueOffset != 0)
+			return c;
+		var m = ct.tint();
+		var r = Math.round(((c >> 16) & 0xFF) * ((m >> 16) & 0xFF) / 255);
+		var g = Math.round(((c >> 8) & 0xFF) * ((m >> 8) & 0xFF) / 255);
+		var b = Math.round((c & 0xFF) * (m & 0xFF) / 255);
+		return (r << 16) | (g << 8) | b;
+	}
+
+	override function applyColour() {
+		super.applyColour();
+		if (pixiText == null)
+			layout();
+	}
+
+	// (the glow of the font: no PIXI filter, the pictures of the outline)
+	override function set_filters(f:Array<BitmapFilter>) {
+		var was = outlined;
+		outlined = font != null && font.otex != null && f != null && f.length == 1 && isFontGlow(f[0]);
+		super.set_filters(f);
+		if (outlined != was)
+			layout();
+		return f;
+	}
+
+	override function pixiFilters() {
+		if (!outlined) {
+			super.pixiFilters();
+			return;
+		}
+		var saved = flts;
+		flts = [];
+		super.pixiFilters();
+		flts = saved;
+	}
+
+	function isFontGlow(f:BitmapFilter):Bool {
+		var g = Std.downcast(f, GlowFilter);
+		var d = font.def.glow;
+		return g != null && d != null && !g.inner && !g.knockout && g.color == d.color && g.alpha == d.alpha && g.blurX == d.blurX && g.blurY == d.blurY
+			&& g.strength == d.strength;
 	}
 
 	function layout() {
@@ -257,8 +318,19 @@ class TextField extends DisplayObject {
 			tw = Math.max(tw, lineWidth(l));
 		var lh = d.ascent + d.descent + d.leading;
 		th = lines.length * lh - d.leading;
+		if (outlined)
+			placeGlyphs(lh, true);
+		placeGlyphs(lh, false);
+	}
+
+	// the glyphs of the lines, or the pictures of their outline (under all the glyphs)
+	function placeGlyphs(lh:Float, outline:Bool) {
+		var d = font.def;
 		var y = 2 + d.ascent;
 		var ci = 0;
+		var ls = letterSpacing();
+		// (added in one call: the anti-cheat of KadoKadeo reads a stack trace by addChild of raw PIXI objects)
+		var glyphs:Array<Dynamic> = [];
 		for (l in lines) {
 			var w = lineWidth(l);
 			var x = 2.0;
@@ -271,16 +343,20 @@ class TextField extends DisplayObject {
 				var rc = runs != null ? runs[ci + i] : null;
 				if (j == null)
 					continue;
-				var s = new PixiSprite(font.tex[j]);
-				s.tint = rc != null ? rc : color;
-				s.anchor.copyFrom(font.tex[j].defaultAnchor);
+				var t = outline ? font.otex[j] : font.tex[j];
+				var s = new PixiSprite(t);
+				if (!outline)
+					s.tint = tintOf(rc != null ? rc : color);
+				s.anchor.copyFrom(t.defaultAnchor);
 				s.x = x;
 				s.y = y;
-				node.addChild(s);
-				x += d.adv[j];
+				glyphs.push(s);
+				x += d.adv[j] + ls;
 			}
 			ci += l.length + 1;
 			y += lh;
 		}
+		if (glyphs.length > 0)
+			untyped node.addChild.apply(node, glyphs);
 	}
 }
