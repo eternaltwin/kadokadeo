@@ -31,13 +31,13 @@ Promise.all([fetchStatus(), fetchSections()]).then(([status, listing]) => {
                       class="flex items-center justify-between bg-kado-slate-500 px-3 py-2 text-white no-underline hover:bg-kado-slate-700 hover:text-white hover:no-underline">
             <span class="font-bold">{{ section.display_name }}</span>
             <span class="text-2xs opacity-80">
-              {{ section.threads?.count ?? 0 }} sujet(s)
-              <strong v-if="section.self?.unread_threads" class="ml-1 text-kado-orange-500">{{ section.self.unread_threads }} non lu(s)</strong>
+              {{ $t('forum.topics', { count: section.threads?.count ?? 0 }) }}
+              <strong v-if="section.self?.unread_threads" class="ml-1 text-kado-orange-500">{{ $t('forum.unread', { count: section.self.unread_threads }) }}</strong>
             </span>
           </RouterLink>
         </li>
       </ul>
     </template>
-    <p v-else-if="!isLoading && !error" class="mx-2.5 my-4 italic">Le forum n'est pas encore ouvert.</p>
+    <p v-else-if="!isLoading && !error" class="mx-2.5 my-4 italic">{{ $t('forum.not_open') }}</p>
   </div>
 </template>

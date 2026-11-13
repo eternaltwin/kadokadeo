@@ -289,7 +289,7 @@ class Game implements kado.GameInterface {
 		bg.filters = [terreFilter];
 		stats.d += dy;
 		stats.l++;
-		meter.field.text = ((diff == 0) ? "0" : ("-" + diff)) + "M";
+		meter.field.text = Lang.depth({depth: (diff == 0) ? "0" : ("-" + diff)});
 		// meter.field.text = "-100m";
 		tmps = new Array();
 		others = new Array();

@@ -1,3 +1,4 @@
+import { t } from '@/i18n'
 import { formatDate } from '@/i18n/dates'
 
 import { useApi } from './useApi'
@@ -41,4 +42,4 @@ export function useEtwinForum() {
 export const etwinActorName = (actor) => actor?.user?.display_name?.current?.value ?? '?'
 
 // a date of the forum, as on the site: "le 10/06/2010 à 22:02"
-export const etwinForumDate = (iso) => (iso ? `le ${formatDate(iso, 'dateAt')}` : '')
+export const etwinForumDate = (iso) => (iso ? t('etwin_forum.on_date', { date: formatDate(iso, 'dateAt') }) : '')

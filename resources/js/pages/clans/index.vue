@@ -1,5 +1,8 @@
 <script setup>
 import KadoPoints from '@svg/k.svg'
+
+import { t } from '@/i18n'
+
 // "Classement" of the clans of the period, and the creation of a clan
 const route = useRoute()
 const router = useRouter()
@@ -34,39 +37,46 @@ const submit = () => {
   }).catch(() => {})
 }
 
-const tabs = [
-  { label: 'Classement', value: 'war', route: { name: 'clans.index' } },
-  { label: 'Missions', value: 'missions', route: { name: 'clans.index', query: { tab: 'missions' } } },
-  { label: 'Créer un clan', value: 'create', route: { name: 'clans.index', query: { tab: 'create' } } },
-]
-const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value))
+const tabs = computed(() => [
+  { label: t('common.ranking'), value: 'war', route: { name: 'clans.index' } },
+  { label: t('clans_index.missions'), value: 'missions', route: { name: 'clans.index', query: { tab: 'missions' } } },
+  { label: t('clans_index.create_tab'), value: 'create', route: { name: 'clans.index', query: { tab: 'create' } } },
+])
+const selectedIndex = computed(() => tabs.value.findIndex((item) => item.value === tab.value))
 </script>
 
 <template>
   <NavTabs :items="tabs" :selected-index="selectedIndex" />
 
   <div class="px-2 space-y-4">
-    <KadoPageTitle>Les clans</KadoPageTitle>
+    <KadoPageTitle>{{ $t('clans_index.title') }}</KadoPageTitle>
     <ClanPeriodBanner :tournament="tournament ?? clanStore.tournament" />
     <p v-if="clanStore.debug" class="text-right text-xs">
-      <RouterLink :to="{ name: 'clans.debug' }">🔧 Outils de test des clans</RouterLink>
+      <RouterLink :to="{ name: 'clans.debug' }">{{ $t('clans_index.debug_tools') }}</RouterLink>
     </p>
 
     <p v-if="clanStore.clan">
       <img src="/assets/img/gfx/icons/clan.gif" alt="" />
-      Votre clan :
-      <RouterLink :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }" class="font-bold">{{ clanStore.clan.name }}</RouterLink>
+      <i18n-t keypath="clans_index.your_clan">
+        <template #clan>
+          <RouterLink :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }" class="font-bold">{{ clanStore.clan.name }}</RouterLink>
+        </template>
+      </i18n-t>
     </p>
-    <p v-else>
-      <!-- the maximum set in the admin (ClanSettings::$max_members) -->
-      Vous ne faites partie d'aucun clan. Un clan est un groupe
-      <template v-if="clanStore.rules?.max_members">de 1 à {{ clanStore.rules.max_members }}</template><template v-else>de</template>
-      joueurs qui combattent ensemble contre les
-      autres clans : rejoignez un clan existant en envoyant votre candidature depuis sa page, ou
-      <RouterLink :to="{ name: 'clans.index', query: { tab: 'create' } }">créez votre propre clan</RouterLink>.
-    </p>
+    <!-- the maximum set in the admin (ClanSettings::$max_members) -->
+    <i18n-t v-else-if="clanStore.rules?.max_members" keypath="clans_index.no_clan_with_max" tag="p">
+      <template #max>{{ clanStore.rules.max_members }}</template>
+      <template #create>
+        <RouterLink :to="{ name: 'clans.index', query: { tab: 'create' } }">{{ $t('clans_index.create_link') }}</RouterLink>
+      </template>
+    </i18n-t>
+    <i18n-t v-else keypath="clans_index.no_clan" tag="p">
+      <template #create>
+        <RouterLink :to="{ name: 'clans.index', query: { tab: 'create' } }">{{ $t('clans_index.create_link') }}</RouterLink>
+      </template>
+    </i18n-t>
     <p v-if="clanStore.applications.length" class="text-sm">
-      Candidature(s) en attente :
+      {{ $t('clans_index.pending_applications') }}
       <template v-for="(a, i) in clanStore.applications" :key="a.id">
         <template v-if="i">, </template>
         <RouterLink :to="{ name: 'clans.show', params: { id: a.clan.id } }">{{ a.clan.name }}</RouterLink>
@@ -74,10 +84,10 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
     </p>
 
     <template v-if="tab === 'create'">
-      <MessageError v-if="clanStore.clan">Vous faites déjà partie d'un clan.</MessageError>
+      <MessageError v-if="clanStore.clan">{{ $t('clans_index.already_member') }}</MessageError>
       <form v-else class="max-w-lg space-y-2" @submit.prevent="submit">
         <div>
-          <label for="clanName" class="font-bold">Nom du clan</label>
+          <label for="clanName" class="font-bold">{{ $t('clans_index.name_label') }}</label>
           <FormInput id="clanName"
                      v-model="name"
                      type="text"
@@ -85,10 +95,10 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
                      maxlength="32"
                      required
                      class="w-full" />
-          <p class="m-0 text-xs text-kado-blue-800">De 3 à 32 caractères : lettres, chiffres, espaces et - ' . ! ? Il ne pourra plus être changé.</p>
+          <p class="m-0 text-xs text-kado-blue-800">{{ $t('clans_index.name_help') }}</p>
         </div>
         <div>
-          <label for="clanDescription" class="font-bold">Présentation (vous pourrez la modifier plus tard)</label>
+          <label for="clanDescription" class="font-bold">{{ $t('clans_index.description_label') }}</label>
           <FormTextarea id="clanDescription"
                         v-model="description"
                         rows="6"
@@ -98,17 +108,17 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
         <FormButton type="submit"
                     size="lg"
                     :disabled="isCreating || !canPayCreation"
-                    :title="canPayCreation ? '' : 'Vous n\'avez pas assez de points Kado'">
+                    :title="canPayCreation ? '' : $t('account.not_enough_points')">
           <template v-if="!isCreating"><Number :value="creationPrice" color="green" /> <KadoPoints class="inline size-5" /></template>
-          {{ isCreating ? 'Création en cours ...' : 'Créer le clan' }}
+          {{ isCreating ? $t('clans_index.creating') : $t('clans_index.create') }}
         </FormButton>
       </form>
     </template>
 
     <template v-else>
       <form class="flex items-center gap-2" @submit.prevent="doSearch">
-        <FormInput v-model="search" type="search" placeholder="Rechercher un clan" />
-        <FormButton type="submit" size="lg">Rechercher</FormButton>
+        <FormInput v-model="search" type="search" :placeholder="$t('clans_index.search_placeholder')" />
+        <FormButton type="submit" size="lg">{{ $t('clans_index.search') }}</FormButton>
       </form>
 
       <MessageError v-if="error">{{ error }}</MessageError>
@@ -117,30 +127,30 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
         <KadoTable class="w-full">
           <thead>
             <tr class="text-[10px] uppercase">
-              <th>Position</th>
-              <th class="min-w-28">Clan</th>
-              <th>Membres</th>
+              <th>{{ $t('common.position') }}</th>
+              <th class="min-w-28">{{ $t('clans_index.clan') }}</th>
+              <th>{{ $t('clans_index.members') }}</th>
               <template v-if="tab === 'war'">
                 <th><img src="/assets/img/gfx/icons/clan_points.gif"
-                         alt="score"
-                         title="Score d'attaque"
+                         :alt="$t('clans_index.score_alt')"
+                         :title="$t('clans_index.attack_score')"
                          class="h-5" /></th>
                 <th><img src="/assets/img/gfx/icons/atk.gif"
-                         alt="attaques"
-                         title="Attaques réussies"
+                         :alt="$t('clans_index.attacks_alt')"
+                         :title="$t('clans_index.attacks_won')"
                          class="h-5" /></th>
                 <th><img src="/assets/img/gfx/icons/def.gif"
-                         alt="défenses"
-                         title="Défenses réussies"
+                         :alt="$t('clans_index.defenses_alt')"
+                         :title="$t('clans_index.defenses_won')"
                          class="h-5" /></th>
               </template>
               <template v-else>
                 <th><img src="/gfx/clan/clan_mission_points.png"
-                         alt="score"
-                         title="Score de mission"
+                         :alt="$t('clans_index.score_alt')"
+                         :title="$t('clans_index.mission_score')"
                          class="h-5" /></th>
-                <th title="Missions réussies pendant la période">Missions</th>
-                <th title="Étapes réussies de la mission en cours, sur son nombre d'étapes">Étapes</th>
+                <th :title="$t('clans_index.missions_won')">{{ $t('clans_index.missions') }}</th>
+                <th :title="$t('clans_index.steps_title')">{{ $t('clans_index.steps') }}</th>
               </template>
             </tr>
           </thead>
@@ -161,20 +171,20 @@ const selectedIndex = computed(() => tabs.findIndex((t) => t.value === tab.value
               <template v-else>
                 <td class="text-right"><Number :value="clan.mission_score" color="violet" /></td>
                 <td class="text-right">{{ clan.missions_completed }}</td>
-                <td class="text-right whitespace-nowrap" :title="clan.mission ? `Mission ${clan.mission.number}` : ''">
+                <td class="text-right whitespace-nowrap" :title="clan.mission ? $t('clans_index.mission_number', { number: clan.mission.number }) : ''">
                   <template v-if="clan.mission">{{ clan.mission.steps_done }} / {{ clan.mission.steps }}</template>
                   <template v-else>-</template>
                 </td>
               </template>
             </tr>
             <tr v-if="!isLoading && !clans.length">
-              <td colspan="6" class="italic">Aucun clan pour le moment.</td>
+              <td colspan="6" class="italic">{{ $t('clans_index.empty') }}</td>
             </tr>
           </tbody>
         </KadoTable>
       </div>
       <p v-if="hasNextPage" class="mx-2.5 my-4 text-center">
-        <FormButton size="lg" @click="loadMore()">Charger plus de clans</FormButton>
+        <FormButton size="lg" @click="loadMore()">{{ $t('clans_index.load_more') }}</FormButton>
       </p>
     </template>
   </div>

@@ -35,7 +35,7 @@ class GamePolicy
             ->first();
 
         if (!$dailyGame) {
-            return $this->deny('Ce jeu n\'est pas la partie du jour.');
+            return $this->deny(__('server.daily.not_today'));
         }
 
         $alreadyPlayed = $dailyGame->runs()
@@ -43,7 +43,7 @@ class GamePolicy
             ->exists();
 
         if ($alreadyPlayed) {
-            return $this->deny('Vous avez déjà joué la partie du jour : revenez demain !', self::DAILY_ALREADY_PLAYED);
+            return $this->deny(__('server.daily.already_played'), self::DAILY_ALREADY_PLAYED);
         }
 
         return $this->allow();

@@ -10,7 +10,7 @@ class RunAlreadyCompletedException extends RuntimeException
 {
     public function __construct()
     {
-        parent::__construct('Partie déjà terminée.');
+        parent::__construct(__('server.runs.already_completed'));
     }
 
     // not an error to log

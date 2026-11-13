@@ -1,5 +1,8 @@
 <script setup>
 import KadoPoints from '@svg/k.svg'
+
+import { t } from '@/i18n'
+
 // the page of a clan: Présentation, Statut, Mission, Membres, Gestion, Parties de clan, Historique, and the choice of the game of an
 // attack
 const route = useRoute()
@@ -54,7 +57,7 @@ const apply = () => {
   actions.apply(clan.value.id, applicationMessage.value || null).then(() => {
     showApplyForm.value = false
     applicationMessage.value = ''
-    notice.value = `Votre candidature a bien été envoyée au chef du clan ${clan.value.name}. Vous serez membre du clan dès qu'il l'aura acceptée.`
+    notice.value = t('clan_show.applied', { clan: clan.value.name })
     authStore.fetchUser()
     clanStore.reload()
     return load()
@@ -63,11 +66,11 @@ const apply = () => {
   })
 }
 const cancelApplication = () => {
-  if (!confirm('Retirer votre candidature à ce clan ?')) {
+  if (!confirm(t('clan_show.confirm_cancel_application'))) {
     return
   }
   actions.cancelApplication(viewer.value.application_id).then(() => {
-    notice.value = applicationPrice.value ? 'Votre candidature a été retirée : vos points Kado vous ont été rendus.' : 'Votre candidature a été retirée.'
+    notice.value = applicationPrice.value ? t('clan_show.application_cancelled_refunded') : t('clan_show.application_cancelled')
     authStore.fetchUser()
     clanStore.reload()
     load()
@@ -75,10 +78,10 @@ const cancelApplication = () => {
 }
 const leave = () => {
   if (viewer.value.is_new_member) {
-    alert('Vous ne pourrez quitter le clan qu\'après la fin de cette période.')
+    alert(t('clan_show.new_member_cannot_leave'))
     return
   }
-  if (confirm('Quitter ce clan ?')) {
+  if (confirm(t('clan_show.confirm_leave'))) {
     actions.leave().then(() => {
       clanStore.reload()
       router.push({ name: 'clans.index' })
@@ -89,13 +92,13 @@ const leave = () => {
 // in "Statut"
 const toggleWar = () => {
   const atWar = viewer.value.at_war
-  if (!confirm(atWar ? `Faire la paix avec le clan ${clan.value.name} ?` : `Déclarer la guerre au clan ${clan.value.name} ?`)) {
+  if (!confirm(atWar ? t('clan_show.confirm_peace', { clan: clan.value.name }) : t('clan_show.confirm_war', { clan: clan.value.name }))) {
     return
   }
   ;(atWar ? actions.endWar(clan.value.id) : actions.declareWar(clan.value.id)).then(() => {
     notice.value = atWar
-      ? `Votre clan a fait la paix avec le clan ${clan.value.name}.`
-      : `Votre clan a déclaré la guerre au clan ${clan.value.name} jusqu'à la fin de la période : elle apparaît maintenant dans le statut des deux clans.`
+      ? t('clan_show.peace_made', { clan: clan.value.name })
+      : t('clan_show.war_declared', { clan: clan.value.name })
     load()
   })
 }
@@ -107,25 +110,25 @@ const updated = () => {
 
 <template>
   <div class="relative min-h-48">
-    <Loader v-if="isLoading && !clan">Chargement ...</Loader>
-    <MessageError v-else-if="!clan">Clan introuvable. ({{ error }})</MessageError>
+    <Loader v-if="isLoading && !clan">{{ $t('clan_show.loading') }}</Loader>
+    <MessageError v-else-if="!clan">{{ $t('clan_show.not_found', { error }) }}</MessageError>
 
     <ClanLayout v-else :clan="clan" :tab="tab">
       <template #actions>
-        <ClanMenuAction v-if="viewer.can_manage" :to="{ name: 'clans.manage', params: { id: clan.id } }">Gérer le clan</ClanMenuAction>
-        <ClanMenuAction v-if="viewer.is_member" :to="{ name: 'clans.games', params: { id: clan.id } }">Parties de clan</ClanMenuAction>
-        <ClanMenuAction v-if="viewer.is_member" :to="{ name: 'clans.forum', params: { id: clan.id } }">Forum</ClanMenuAction>
-        <ClanMenuAction :to="{ name: 'clans.history', params: { id: clan.id } }">Historique</ClanMenuAction>
+        <ClanMenuAction v-if="viewer.can_manage" :to="{ name: 'clans.manage', params: { id: clan.id } }">{{ $t('clan_show.manage') }}</ClanMenuAction>
+        <ClanMenuAction v-if="viewer.is_member" :to="{ name: 'clans.games', params: { id: clan.id } }">{{ $t('clan_show.games') }}</ClanMenuAction>
+        <ClanMenuAction v-if="viewer.is_member" :to="{ name: 'clans.forum', params: { id: clan.id } }">{{ $t('titles.forum') }}</ClanMenuAction>
+        <ClanMenuAction :to="{ name: 'clans.history', params: { id: clan.id } }">{{ $t('common.history') }}</ClanMenuAction>
         <ClanMenuAction v-if="!viewer.is_member && viewer.has_clan"
                         :to="{ name: 'clans.attack', params: { id: clan.id } }"
-                        :title="viewer.attack_blocked ?? 'Attaquer ce clan'">Attaquer ce clan</ClanMenuAction>
+                        :title="viewer.attack_blocked ?? $t('clan_show.attack')">{{ $t('clan_show.attack') }}</ClanMenuAction>
         <ClanMenuAction v-if="viewer.can_declare_war"
-                        :title="viewer.at_war ? 'Ne plus faire de ce clan une cible de votre clan' : 'Indiquer ce clan comme cible à votre clan jusqu\'à la fin de la période (3 clans au maximum)'"
-                        @click="toggleWar">{{ viewer.at_war ? 'Faire la paix' : 'Déclarer la guerre' }}</ClanMenuAction>
-        <ClanMenuAction v-if="!viewer.has_clan && viewer.application_id" title="Annuler ma candidature" @click="cancelApplication">Retirer ma demande</ClanMenuAction>
-        <ClanMenuAction v-else-if="!viewer.has_clan && clan.is_recruiting && !applying" title="Envoyer ma candidature" @click="showApplyForm = !showApplyForm">Postuler</ClanMenuAction>
-        <ClanMenuAction v-if="viewer.is_member" @click="leave" :class="{'grayscale cursor-not-allowed': viewer.is_new_member}">Quitter le clan</ClanMenuAction>
-        <ClanMenuAction v-if="clanStore.clan && clanStore.clan.id !== clan.id" :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }">Mon clan</ClanMenuAction>
+                        :title="viewer.at_war ? $t('clan_show.stop_war_title') : $t('clan_show.declare_war_title')"
+                        @click="toggleWar">{{ viewer.at_war ? $t('clan_show.make_peace') : $t('clan_show.declare_war') }}</ClanMenuAction>
+        <ClanMenuAction v-if="!viewer.has_clan && viewer.application_id" :title="$t('clan_show.cancel_application_title')" @click="cancelApplication">{{ $t('clan_show.cancel_application') }}</ClanMenuAction>
+        <ClanMenuAction v-else-if="!viewer.has_clan && clan.is_recruiting && !applying" :title="$t('clan_show.apply_title')" @click="showApplyForm = !showApplyForm">{{ $t('clan_show.apply') }}</ClanMenuAction>
+        <ClanMenuAction v-if="viewer.is_member" @click="leave" :class="{'grayscale cursor-not-allowed': viewer.is_new_member}">{{ $t('clan_show.leave') }}</ClanMenuAction>
+        <ClanMenuAction v-if="clanStore.clan && clanStore.clan.id !== clan.id" :to="{ name: 'clans.show', params: { id: clanStore.clan.id } }">{{ $t('clan_show.my_clan') }}</ClanMenuAction>
       </template>
 
       <MessageError v-if="actions.error.value">{{ actions.error.value }}</MessageError>
@@ -134,14 +137,14 @@ const updated = () => {
                   variant="warning"
                   as="p"
                   class="my-4 font-bold text-kado-orange-700">
-        Votre candidature à ce clan est en attente de la réponse du chef de clan.
+        {{ $t('clan_show.pending_application') }}
       </KadoNotice>
 
       <ClanUnfinishedActions v-if="viewer.is_member" :actions="viewer.unfinished_actions ?? []" @updated="load" />
 
       <form v-if="showApplyForm && !viewer.application_id" class="mb-4 space-y-2" @submit.prevent="apply">
         <div>
-          <label for="applicationMessage" class="font-bold">Votre message au chef de clan (facultatif)</label>
+          <label for="applicationMessage" class="font-bold">{{ $t('clan_show.message_label') }}</label>
           <FormTextarea id="applicationMessage"
                         v-model="applicationMessage"
                         rows="3"
@@ -150,9 +153,9 @@ const updated = () => {
         <FormButton type="submit"
                     size="lg"
                     :disabled="applying || !canPayApplication"
-                    :title="canPayApplication ? '' : 'Vous n\'avez pas assez de points Kado'">
+                    :title="canPayApplication ? '' : $t('account.not_enough_points')">
           <template v-if="!applying"><Number :value="applicationPrice" color="green" /> <KadoPoints class="inline size-5" /></template>
-          {{ applying ? 'Envoi en cours ...' : 'Envoyer votre candidature' }}
+          {{ applying ? $t('clan_show.sending') : $t('clan_show.send_application') }}
         </FormButton>
       </form>
 

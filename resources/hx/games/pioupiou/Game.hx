@@ -99,7 +99,7 @@ class Game implements kado.GameInterface {
 	}
 
 	public function setMeter(n:Int):Void {
-		txt.text = n + "M";
+		txt.text = Lang.distance({distance: n});
 	}
 
 	public function update(delta:Float):Void {

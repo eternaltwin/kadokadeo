@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 
 import Error from '@/components/message/Error.vue'
 import { formatScore } from '@/composables/helpers'
+import { t } from '@/i18n'
 import { intlLocale } from '@/i18n/locale'
 import { useAuthStore } from '@/stores/auth'
 import { usePendingRunsStore } from '@/stores/pendingRuns'
@@ -15,7 +16,7 @@ const showDetails = ref(false)
 const formatDate = (iso) => (iso ? new Date(iso).toLocaleString(intlLocale()) : '?')
 
 function discard(run) {
-  if (confirm(`Supprimer définitivement la partie de ${run.game_name} (${formatScore(run.request?.score ?? 0)} points) ?`)) {
+  if (confirm(t('pending_runs.confirm_delete', { game: run.game_name, score: formatScore(run.request?.score ?? 0) }))) {
     pendingRunsStore.discard(run.run_id)
   }
 }
@@ -35,8 +36,7 @@ watch(
 <template>
   <Error v-if="authStore.isAuthenticated && runs.length">
     <span class="text-xs">
-      {{ runs.length > 1 ? `${runs.length} parties n'ont pas pu être envoyées` : "Une partie n'a pas pu être envoyée" }}
-      au serveur.
+      {{ $t('pending_runs.not_sent', { count: runs.length }, runs.length) }}
     </span>
     <span class="mt-2 flex flex-wrap gap-2">
       <button
@@ -45,23 +45,23 @@ watch(
         :disabled="isSending"
         @click="pendingRunsStore.retryAll()"
       >
-        {{ isSending ? 'Envoi en cours...' : 'Réessayer' }}
+        {{ isSending ? $t('pending_runs.sending') : $t('pending_runs.retry') }}
       </button>
       <button
         type="button"
         class="cursor-pointer border border-kado-pink-400 bg-white px-2.5 py-1.5 text-xs leading-none font-bold text-kado-pink-600"
         @click="showDetails = !showDetails"
       >
-        {{ showDetails ? 'Masquer les détails' : 'Voir les détails' }}
+        {{ showDetails ? $t('pending_runs.hide_details') : $t('pending_runs.show_details') }}
       </button>
     </span>
     <span v-if="showDetails" class="mt-2 block text-xs">
       <span v-for="run in runs" :key="run.run_id" class="mt-1 flex items-center gap-2">
         <span class="flex-1">
-          <b>{{ run.game_name }}</b> : {{ formatScore(run.request?.score ?? 0) }} points, le {{ formatDate(run.saved_at) }}
+          <b>{{ run.game_name }}</b>{{ $t('pending_runs.detail', { score: formatScore(run.request?.score ?? 0), date: formatDate(run.saved_at) })  }}
           <br>
-          Erreur : {{ run.error?.status === 0 ? 'serveur injoignable' : `${run.error?.status} ${run.error?.message ?? ''}` }}
-          ({{ run.attempts ?? 1 }} essai{{ (run.attempts ?? 1) > 1 ? 's' : '' }})
+          {{ $t('pending_runs.error', { error: run.error?.status === 0 ? $t('pending_runs.unreachable') : `${run.error?.status} ${run.error?.message ?? ''}` }) }}
+          {{ $t('pending_runs.attempts', { count: run.attempts ?? 1 }, run.attempts ?? 1) }}
         </span>
         <button
           type="button"
@@ -69,7 +69,7 @@ watch(
           :disabled="isSending"
           @click="discard(run)"
         >
-          Supprimer
+          {{ $t('common.delete') }}
         </button>
       </span>
     </span>

@@ -33,21 +33,21 @@ const pageRoute = (page) => ({ query: { ...route.query, page } })
 
     <div class="space-y-3 px-2 pb-2">
       <div class="flex flex-wrap gap-2">
-        <FormButton @click="showSearch = !showSearch">Rechercher</FormButton>
-        <FormButton @click="router.push({ name: 'clans.forum.new', params: { id: clanId } })">Créer un nouveau sujet</FormButton>
+        <FormButton @click="showSearch = !showSearch">{{ $t('clan_forum.search') }}</FormButton>
+        <FormButton @click="router.push({ name: 'clans.forum.new', params: { id: clanId } })">{{ $t('clan_forum.new_topic') }}</FormButton>
       </div>
 
       <form v-if="showSearch" class="flex flex-wrap items-center gap-2" @submit.prevent="submitSearch">
         <FormInput v-model="search"
                    type="search"
                    maxlength="100"
-                   placeholder="Un mot du titre ou des messages"
+                   :placeholder="$t('clan_forum.search_placeholder')"
                    class="w-64 max-w-full" />
-        <FormButton type="submit">Chercher</FormButton>
+        <FormButton type="submit">{{ $t('clan_forum.find') }}</FormButton>
       </form>
       <p v-if="query" class="m-0 text-sm">
-        Sujets contenant « {{ query }} »
-        <button type="button" class="cursor-pointer border-0 bg-transparent p-0 font-bold text-kado-orange-500 underline" @click="clearSearch">tous les sujets</button>
+        {{ $t('clan_forum.search_results', { query }) }}
+        <button type="button" class="cursor-pointer border-0 bg-transparent p-0 font-bold text-kado-orange-500 underline" @click="clearSearch">{{ $t('clan_forum.all_topics') }}</button>
       </p>
 
       <MessageError v-if="error">{{ error }}</MessageError>

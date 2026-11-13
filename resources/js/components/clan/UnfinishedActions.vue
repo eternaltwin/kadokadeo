@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '@/i18n'
 import { intlLocale } from '@/i18n/locale'
 // the clan runs begun by the player and never ended (the page closed during the run...): "Annuler la partie" when it can
 // really not be finished
@@ -10,7 +11,7 @@ const emit = defineEmits(['updated'])
 const { cancelAction, error } = useClans()
 
 const cancel = (action) => {
-  if (confirm(`Annuler cette partie sur ${action.game.name} ? Si elle est encore ouverte quelque part, elle ne comptera plus pour votre clan.`)) {
+  if (confirm(t('clan_unfinished_actions.confirm_cancel', { game: action.game.name }))) {
     cancelAction(action.id).then(() => emit('updated'))
   }
 }
@@ -21,10 +22,11 @@ const cancel = (action) => {
     <MessageError v-if="error">{{ error }}</MessageError>
     <div v-for="action in props.actions" :key="action.id" class="flex flex-wrap items-center gap-2">
       <strong>{{ action.label }}</strong>
-      <span>{{ action.game.name }}<template v-if="action.target"> ({{ action.target }})</template>, commencée le {{ new Date(action.started_at).toLocaleString(intlLocale()) }}</span>
-      <FormButton variant="pink" size="sm" @click="cancel(action)">Annuler la partie</FormButton>
-      <span v-if="action.blocks" class="w-full text-xs">Tant qu'elle n'est pas terminée ou annulée, vous ne pouvez ni lancer une autre attaque ni défendre.</span>
+      <span v-if="action.target">{{ $t('clan_unfinished_actions.started_with_target', { game: action.game.name, target: action.target, date: new Date(action.started_at).toLocaleString(intlLocale()) }) }}</span>
+      <span v-else>{{ $t('clan_unfinished_actions.started', { game: action.game.name, date: new Date(action.started_at).toLocaleString(intlLocale()) }) }}</span>
+      <FormButton variant="pink" size="sm" @click="cancel(action)">{{ $t('clan_unfinished_actions.cancel') }}</FormButton>
+      <span v-if="action.blocks" class="w-full text-xs">{{ $t('clan_unfinished_actions.blocks') }}</span>
     </div>
-    <p class="text-xs">Une partie de clan qui n'a pas été terminée (page fermée pendant la partie...) reste en cours. Annulez-la seulement si vous ne pouvez vraiment plus la terminer.</p>
+    <p class="text-xs">{{ $t('clan_unfinished_actions.help') }}</p>
   </KadoNotice>
 </template>

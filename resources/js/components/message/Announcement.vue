@@ -5,6 +5,7 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import Error from '@/components/message/Error.vue'
 import Success from '@/components/message/Success.vue'
 import { onRealtimeReconnect, usePolling } from '@/composables/useRealtime'
+import { inPageLanguage } from '@/i18n/locale'
 import { useAnnouncementStore } from '@/stores/announcement'
 
 const REFRESH_INTERVAL = 5 * 60 * 1000
@@ -37,6 +38,6 @@ onUnmounted(() => {
 <template>
   <component :is="messageComponent" v-if="announcement">
     <!-- Sanitized server-side (inline markdown, raw HTML stripped) -->
-    <span v-html="announcement.html" />
+    <span v-html="inPageLanguage(announcement.html)" />
   </component>
 </template>

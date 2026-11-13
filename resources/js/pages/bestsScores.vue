@@ -12,17 +12,17 @@ fetchSiteRecords()
 
 <template>
   <div>
-    <KadoPageTitle class="mb-5">Records du site</KadoPageTitle>
+    <KadoPageTitle class="mb-5">{{ $t('site_records.title') }}</KadoPageTitle>
 
-    <Loader v-if="isLoading">Chargement des records...</Loader>
-    <MessageError v-else-if="error">Error: {{ error }}</MessageError>
+    <Loader v-if="isLoading">{{ $t('site_records.loading') }}</Loader>
+    <MessageError v-else-if="error">{{ $t('common.error_with', { error }) }}</MessageError>
     <div v-else class="px-8 sm:px-16">
       <KadoTable class="w-full">
         <thead>
           <tr class="text-kado-orange-500 uppercase text-sm *:px-2 *:text-center">
-            <th>Nom du jeu</th>
-            <th>Record du site</th>
-            <th>Joueur</th>
+            <th>{{ $t('site_records.game') }}</th>
+            <th>{{ $t('site_records.record') }}</th>
+            <th>{{ $t('site_records.player') }}</th>
           </tr>
         </thead>
         <tbody>

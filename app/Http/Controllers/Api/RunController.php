@@ -22,7 +22,6 @@ use App\Models\Period;
 use App\Models\Run;
 use App\Models\User;
 use App\Policies\GamePolicy;
-use App\Policies\RunPolicy;
 use App\Services\AchievementService;
 use App\Services\ClanRunService;
 use App\Services\DailyRankingService;
@@ -123,7 +122,7 @@ class RunController extends Controller implements HasMiddleware
             throw new RunAlreadyCompletedException();
         }
         if ($run->daily_game_id !== null) {
-            abort(403, 'Impossible de changer la partie du jour.');
+            abort(403, __('server.daily.cannot_reroll'));
         }
         Gate::authorize('view', $run->game);
 
@@ -164,9 +163,9 @@ class RunController extends Controller implements HasMiddleware
             Gate::forUser($user)->authorize('create', Run::class);
             // (checked on the player loaded by the auth: taken in one query, two runs begun at once can't both take the
             // last game)
-            abort_unless($this->useGame($user), 403, RunPolicy::NO_GAMES_LEFT);
+            abort_unless($this->useGame($user), 403, __('server.runs.no_games_left'));
         } elseif ($cost === ClanRunService::COST_CLAN && !$clanRunService->useClanGame($user)) {
-            abort(403, 'Vous n\'avez plus de parties de clan. Vous pouvez en acheter avec vos points Kado.');
+            abort(403, __('server.runs.no_clan_games_left'));
         }
     }
 

@@ -400,7 +400,7 @@ class Fx {
 	public function xp(x:Float,y:Float, v:Int) {
 		var p = new Particle(x,y-10);
 		
-		var tf = game.createField(v+" xp", true);
+		var tf = game.createField(Lang.Xp({_n: v}), true);
 		tf.textColor = v>0 ? 0x01A6FE : 0xFF0000;
 		popText_(p, tf);
 		

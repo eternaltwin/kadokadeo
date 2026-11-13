@@ -28,45 +28,45 @@ const markdownClasses = [
          id="clanPresentation"
          :class="markdownClasses"
          v-html="clan.description_html" />
-    <p v-else class="mx-2.5 italic text-kado-blue-800">Bienvenue sur la page du clan {{ clan.name }}.</p>
+    <p v-else class="mx-2.5 italic text-kado-blue-800">{{ $t('clan_presentation.welcome', { name: clan.name }) }}</p>
 
     <ul class="list-inside list-kado ml-4 space-y-1">
       <li v-if="clan.leader">
-        Chef de clan :
-        <img src="/gfx/clan/clanleader.gif" alt="Chef de Clan" title="Chef de Clan" />
+        {{ $t('clan_presentation.leader') }}
+        <img src="/gfx/clan/clanleader.gif" :alt="$t('clan_presentation.leader_alt')" :title="$t('clan_presentation.leader_alt')" />
         <RouterLink :to="{ name: 'profile.show', params: { id: clan.leader.etwin_id } }">{{ clan.leader.display_name }}</RouterLink>
       </li>
-      <li>Ce clan comporte {{ clan.members_count }} joueur(s) sur {{ clan.max_members }}.</li>
-      <li>{{ clan.is_recruiting ? 'Ce clan recrute de nouveaux membres.' : 'Ce clan ne recrute pas pour le moment.' }}</li>
+      <li>{{ $t('clan_presentation.members', { count: clan.members_count, max: clan.max_members }) }}</li>
+      <li>{{ clan.is_recruiting ? $t('clan_presentation.recruiting') : $t('clan_presentation.not_recruiting') }}</li>
     </ul>
 
     <template v-if="clan.history.length">
-      <KadoSectionTitle>Historique</KadoSectionTitle>
+      <KadoSectionTitle>{{ $t('common.history') }}</KadoSectionTitle>
       <!-- the closed periods: the rank and the score in each ranking (— when not ranked), the Kado points won -->
       <div class="overflow-x-auto">
         <KadoTable class="w-full text-sm [&_td]:px-2 [&_td]:py-1">
           <thead>
             <tr class="uppercase text-2xs">
-              <th class="text-left">Période</th>
-              <th title="Classement des attaques">
-                <img src="/assets/img/gfx/icons/atk.gif" alt="attaques" class="inline h-5" />
-                <img src="/assets/img/gfx/icons/def.gif" alt="défenses" class="inline h-5" />
+              <th class="text-left">{{ $t('clan_presentation.period_column') }}</th>
+              <th :title="$t('clan_presentation.war_ranking')">
+                <img src="/assets/img/gfx/icons/atk.gif" :alt="$t('clan_presentation.attacks')" class="inline h-5" />
+                <img src="/assets/img/gfx/icons/def.gif" :alt="$t('clan_presentation.defenses')" class="inline h-5" />
               </th>
-              <th title="Classement des missions">
-                <img src="/assets/img/gfx/icons/sgame.gif" alt="missions" class="inline h-5" />
+              <th :title="$t('clan_presentation.mission_ranking')">
+                <img src="/assets/img/gfx/icons/sgame.gif" :alt="$t('clan_presentation.missions')" class="inline h-5" />
               </th>
-              <th class="text-right">Gains</th>
+              <th class="text-right">{{ $t('clan_presentation.rewards') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(h, index) in clan.history" :key="h.period_id" :class="index % 2 ? 'bg-white' : 'bg-kado-blue-100'">
-              <td class="text-left font-bold whitespace-nowrap">Période {{ h.period_id }}</td>
+              <td class="text-left font-bold whitespace-nowrap">{{ $t('clan_presentation.period', { period: h.period_id }) }}</td>
               <td class="whitespace-nowrap">
-                <template v-if="h.war_rank">TOP {{ h.war_rank }} (<Number :value="h.war_score" color="orange" />)</template>
+                <template v-if="h.war_rank">{{ $t('clan_presentation.top', { rank: h.war_rank }) }} (<Number :value="h.war_score" color="orange" />)</template>
                 <template v-else>—</template>
               </td>
               <td class="whitespace-nowrap">
-                <template v-if="h.mission_rank">TOP {{ h.mission_rank }} (<Number :value="h.mission_score" color="violet" />)</template>
+                <template v-if="h.mission_rank">{{ $t('clan_presentation.top', { rank: h.mission_rank }) }} (<Number :value="h.mission_score" color="violet" />)</template>
                 <template v-else>—</template>
               </td>
               <td class="text-right whitespace-nowrap">

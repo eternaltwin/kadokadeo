@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 import { useApi } from '@/composables/useApi'
 import { notificationLink, notificationText } from '@/composables/useNotifications'
 import { onRealtimeReconnect, refetchSoon, useChannel, usePolling, userChannel } from '@/composables/useRealtime'
+import { t } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useClanStore } from '@/stores/clan'
 import { useToastStore } from '@/stores/toast'
@@ -39,15 +40,15 @@ export const useMessagesStore = defineStore('messages', () => {
     'message.received': (e) => {
       setCounts(e.unread)
       toastStore.show({
-        title: 'Nouveau message',
-        text: `${e.message.sender?.display_name ?? 'KadoKadéo'} : ${e.message.subject}`,
+        title: t('messages.new_message_toast'),
+        text: `${e.message.sender?.display_name ?? t('common.site_name')} : ${e.message.subject}`,
         icon: '/assets/img/gfx/icons/newMail.gif',
         to: { name: 'messages.show', params: { id: e.message.id } },
       })
     },
     'notification.received': (e) => {
       setCounts(e.unread)
-      toastStore.show({ title: 'Notification', text: notificationText(e.notification), to: notificationLink(e.notification) ?? { name: 'messages.notifications' } })
+      toastStore.show({ title: t('notifications.toast_title'), text: notificationText(e.notification), to: notificationLink(e.notification) ?? { name: 'messages.notifications' } })
       // his application answered: the menus show his clan, or no longer his application
       if (e.notification.type === 'clan_accepted' || e.notification.type === 'clan_refused') {
         useClanStore().reload()

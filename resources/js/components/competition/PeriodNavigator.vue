@@ -14,7 +14,7 @@ const emit = defineEmits(['previous', 'next'])
     <FormButton size="lg"
                 variant="pink"
                 :disabled="!canGoPrevious || disabled"
-                @click="emit('previous')">Période précédente</FormButton>
+                @click="emit('previous')">{{ $t('competition.previous_period') }}</FormButton>
 
     <span class="font-bold">{{ label }}</span>
 
@@ -22,6 +22,6 @@ const emit = defineEmits(['previous', 'next'])
                 size="lg"
                 class="ml-4"
                 :disabled="disabled"
-                @click="emit('next')">Période suivante</FormButton>
+                @click="emit('next')">{{ $t('competition.next_period') }}</FormButton>
   </div>
 </template>

@@ -10,15 +10,13 @@ class RunPolicy
 {
     use HandlesAuthorization;
 
-    public const NO_GAMES_LEFT = 'Vous n\'avez plus de parties aujourd\'hui : revenez demain !';
-
     /**
      * Create a new policy instance.
      */
     public function create(User $user)
     {
         if (app(SiteSettings::class)->games_per_day > 0 && $user->kado_games <= 0) {
-            return $this->deny(self::NO_GAMES_LEFT);
+            return $this->deny(__('server.runs.no_games_left'));
         }
 
         return $this->allow();

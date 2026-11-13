@@ -28,16 +28,6 @@ class EtwinForumController extends Controller implements HasMiddleware
     // what the writes may send (the bodies of https://eternaltwin.org/docs/app/etwin-forum)
     private const BODY_FIELDS = ['title', 'body', 'up_to_post', 'last_revision_id', 'content', 'comment'];
 
-    // the refusals of Eternaltwin (its "error" is in English): what the player is told
-    private const MESSAGES = [
-        400 => 'Le message n\'a pas pu être lu par le forum (Marktwin invalide) ou cette section ne reçoit pas de sujets.',
-        401 => 'Votre autorisation Eternaltwin n\'est plus valide : reconnectez-vous.',
-        403 => 'Le forum d\'Eternaltwin a refusé cette action.',
-        404 => 'Ce sujet ou cette section n\'existe pas.',
-        409 => 'C\'est déjà fait : rechargez la page.',
-        422 => 'La requête n\'est pas cohérente.',
-    ];
-
     public static function middleware()
     {
         return [
@@ -84,7 +74,7 @@ class EtwinForumController extends Controller implements HasMiddleware
         $this->assertPath($method, $path);
         if (!$request->user()->canWriteEtwinForum()) {
             return response()->json([
-                'message' => 'Pour écrire sur le forum, reconnectez-vous et autorisez Kadokadéo à poster pour vous.',
+                'message' => __('server.forum.login_to_write'),
                 'needs_login' => true,
             ], 403);
         }
@@ -118,7 +108,7 @@ class EtwinForumController extends Controller implements HasMiddleware
         try {
             $response = $method === 'GET' ? $client->get($path, $data) : $client->send($method, $path, ['json' => $data]);
         } catch (ConnectionException) {
-            return response()->json(['message' => 'Le forum d\'Eternaltwin ne répond pas, réessayez plus tard.'], 502);
+            return response()->json(['message' => __('server.forum.no_answer')], 502);
         }
 
         $body = $response->json() ?? [];
@@ -129,11 +119,25 @@ class EtwinForumController extends Controller implements HasMiddleware
             }
             $body = [
                 'error' => $body['error'] ?? null,
-                'message' => self::MESSAGES[$response->status()] ?? 'Le forum d\'Eternaltwin a renvoyé une erreur.',
+                'message' => $this->refusalMessage($response->status()),
                 'needs_login' => $response->status() === 401,
             ];
         }
 
         return response()->json($body, $response->status() === 401 ? 403 : $response->status());
+    }
+
+    // the refusals of Eternaltwin (its "error" is in English): what the player is told
+    private function refusalMessage(int $status): string
+    {
+        return match ($status) {
+            400 => __('server.forum.refusals.bad_request'),
+            401 => __('server.forum.refusals.unauthorized'),
+            403 => __('server.forum.refusals.forbidden'),
+            404 => __('server.forum.refusals.not_found'),
+            409 => __('server.forum.refusals.conflict'),
+            422 => __('server.forum.refusals.unprocessable'),
+            default => __('server.forum.error'),
+        };
     }
 }

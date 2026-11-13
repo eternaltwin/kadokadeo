@@ -30,7 +30,7 @@ onUnmounted(() => {
     <GamesDailyGameBlock class="mt-4" />
 
     <div v-if="dailyGameStore.isDailyGameLoading || !game" class="relative min-h-48">
-      <Loader>Chargement ...</Loader>
+      <Loader>{{ $t('games.loading') }}</Loader>
     </div>
     <div v-else class="relative">
       <KadoSectionTitle>{{ game.name }}</KadoSectionTitle>

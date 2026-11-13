@@ -5,6 +5,8 @@
 
 <template>
   <KadoNotice variant="warning" as="p" class="mb-3 text-sm">
-    Pour écrire sur le forum, <a href="/login" class="font-bold">reconnectez-vous</a> et autorisez Kadokadéo à poster en votre nom sur le forum d'Eternaltwin.
+    <i18n-t keypath="etwin_forum.login_notice" tag="span">
+      <template #link><a href="/login" class="font-bold">{{ $t('etwin_forum.login_link') }}</a></template>
+    </i18n-t>
   </KadoNotice>
 </template>

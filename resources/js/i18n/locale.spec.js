@@ -1,6 +1,6 @@
 import { beforeEach, expect, test, vi } from 'vitest'
 
-import { chooseLocale, intlLocale, languageChangedByLogin, pageLocale } from './locale'
+import { chooseLocale, inPageLanguage, intlLocale, languageChangedByLogin, pageLocale } from './locale'
 
 beforeEach(() => {
   delete window.Kado
@@ -62,4 +62,16 @@ test('with the languages off, the login changes nothing', () => {
   window.Kado = { locale: 'fr', i18n_enabled: false }
 
   expect(languageChangedByLogin({ locale: 'en' })).toBe(false)
+})
+
+test('a text written in each language shows the one of the page', () => {
+  window.Kado = { locale: 'en' }
+
+  expect(inPageLanguage({ fr: 'Bonjour', en: 'Hello' })).toBe('Hello')
+})
+
+test('a text not written in the language of the page shows the French one', () => {
+  window.Kado = { locale: 'en' }
+
+  expect(inPageLanguage({ fr: 'Bonjour' })).toBe('Bonjour')
 })

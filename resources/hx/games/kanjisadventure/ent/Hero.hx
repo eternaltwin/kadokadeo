@@ -122,7 +122,7 @@ class Hero extends Ent {
 			n = d;
 		life += n;
 		Game.me.displayLife();
-		Game.me.log("Vous guérissez " + n + " blessure(s).");
+		Game.me.log(Lang.you_heal({count: n}));
 	}
 
 	public function setFuturAction(ac:Action) {

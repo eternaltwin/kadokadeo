@@ -375,12 +375,7 @@ class Game implements kado.GameInterface {
 		flMove = false;
 		if (event == null) {
 			if (food == 0) {
-				log([
-					"Vous avez tres faim !",
-					"Il faut trouver de la nourriture !",
-					"Vous avez besoin de manger !",
-					"La faim vous terrasse"
-				][Seed.randomVfx(4)]);
+				log(Lang.resolve("hunger_" + Seed.randomVfx(4)));
 				hero.hurt(1);
 			}
 			if (hero.life <= 0)
@@ -453,7 +448,7 @@ class Game implements kado.GameInterface {
 				Filt.glow(ev.shot, 8, 2, 0xFFCC00);
 			}
 		} else {
-			log("Aucun monstre a portée de tir !");
+			log(Lang.no_monster_in_range);
 		}
 	}
 
@@ -600,7 +595,7 @@ class Game implements kado.GameInterface {
 				if (sq.isHeroFree()) {
 					new EvFloor(1);
 				} else {
-					log("Vous ne parvenez pas a accrocher votre grappin !");
+					log(Lang.grapple_fails);
 					return;
 				}
 
@@ -610,10 +605,10 @@ class Game implements kado.GameInterface {
 					if (bad.flUndead)
 						list.push(bad);
 				if (list.length == 0) {
-					log("Il n'y a aucun mort-vivant dans cette zone.");
+					log(Lang.no_undead);
 					return;
 				} else {
-					log("Vous utilisez votre talisman contre les mort-vivants.");
+					log(Lang.talisman_used);
 					fxFlash(0xFFFFFF);
 					for (b in list) {
 						b.bhMove = BCoward;
@@ -622,21 +617,21 @@ class Game implements kado.GameInterface {
 				}
 
 			case 18:
-				log("il augmente d'un point vos dégats.");
+				log(Lang.ruby_amulet);
 				return;
 			case 19:
-				log("il augmente vos chance d'esquive");
+				log(Lang.emerald_amulet);
 				return;
 			case 20:
-				log("il augmente votre agilité.");
+				log(Lang.sapphire_amulet);
 				return;
 			case 24:
-				log("C'est une patte d'ours blanc porte-bonheur");
+				log(Lang.lucky_paw);
 				return;
 			case 25: // SCROLL FIRE
 				var list = hero.getNearBads(1);
 				if (list.length == 0) {
-					log("Il n'y a aucun ennemis proches de vous.");
+					log(Lang.no_enemy_near);
 					return;
 				} else {
 					for (ent in list) {
@@ -648,7 +643,7 @@ class Game implements kado.GameInterface {
 			case 26: // SCROLL ICE
 				var trg = hero.getNearestBad(1, 7);
 				if (trg == null) {
-					log("Il n'y a aucun ennemis proches de vous.");
+					log(Lang.no_enemy_near);
 					return;
 				} else {
 					var ev = new EvShoot(hero, trg, 0);
@@ -661,9 +656,9 @@ class Game implements kado.GameInterface {
 
 			case 28: // OREILLER
 				if (hero.life >= hero.lifeMax)
-					log("Vous êtes déja en pleine forme !!");
+					log(Lang.already_healthy);
 				else if (food < 15)
-					log("Vous avez trop faim pour dormir...");
+					log(Lang.too_hungry_to_sleep);
 				else {
 					var flOk = true;
 					var ray = 7;
@@ -676,10 +671,10 @@ class Game implements kado.GameInterface {
 						}
 					}
 					if (!flOk) {
-						log("Trop de monstres : c'est pas le moment de dormir !");
+						log(Lang.too_many_monsters_to_sleep);
 					} else {
 						hero.sq.fxSleep();
-						log("Vous vous endormez pendant une heure...");
+						log(Lang.you_fall_asleep);
 						incFood(-10);
 						hero.incLife(1);
 					}
@@ -696,7 +691,7 @@ class Game implements kado.GameInterface {
 					for (b in list)
 						b.setChaos();
 				} else {
-					log("Il n'y a aucun ennemis proches dans les environs.");
+					log(Lang.no_enemy_around);
 					return;
 				}
 
@@ -706,7 +701,7 @@ class Game implements kado.GameInterface {
 					var sq = list[Seed.random(list.length)];
 					invoke(20, sq);
 				} else {
-					log("Il n'y a pas assez d'espace autour de vous !");
+					log(Lang.no_room_around);
 					return;
 				}
 			case 32: // DOG
@@ -715,19 +710,19 @@ class Game implements kado.GameInterface {
 					var sq = list[Seed.random(list.length)];
 					invoke(21, sq);
 				} else {
-					log("Il n'y a pas assez d'espace autour de vous !");
+					log(Lang.no_room_around);
 					return;
 				}
 
 			case 33: // BRACELET
-				log("Ce bracelet multiplie votre force par deux !");
+				log(Lang.bracelet);
 				return;
 
 			case 34: // ZIPPO
-				log("Il permet d'enflammer vos shuriken !");
+				log(Lang.zippo);
 
 			default:
-				log("sans effets...");
+				log(Lang.no_effect);
 				return;
 		}
 
@@ -759,10 +754,8 @@ class Game implements kado.GameInterface {
 	}
 
 	function incGold(inc:Int) {
-		if (inc == 1)
-			log("Vous rammassez 1 pièce d'or !");
-		if (inc > 1)
-			log("Vous rammassez " + inc + " pièces d'or !");
+		if (inc > 0)
+			log(Lang.gold_picked(inc));
 		gold += inc;
 		displayGold();
 	}
@@ -776,7 +769,7 @@ class Game implements kado.GameInterface {
 
 	function incShuriken(inc:Int) {
 		if (inc > 0)
-			log("Vous rammassez " + inc + " shurikens !");
+			log(Lang.shurikens_picked({count: inc}));
 		shuriken += inc;
 		displayShuriken();
 	}
@@ -902,7 +895,7 @@ class Game implements kado.GameInterface {
 		step = GameOver;
 		endStep = 0;
 		coef = 0;
-		log("Vous êtes mort !");
+		log(Lang.you_are_dead);
 	}
 
 	public function updateGameOver() {
@@ -913,7 +906,7 @@ class Game implements kado.GameInterface {
 					endStep++;
 					if (gold > 0) {
 						var a = Cs.SCORE_GOLD;
-						log("Bonus Or " + gold + " x" + a + " = " + (a * gold) + "pts");
+						log(Lang.gold_bonus({gold: gold, factor: a, points: a * gold}));
 					}
 				}
 			case 1:
@@ -924,7 +917,7 @@ class Game implements kado.GameInterface {
 					endStep++;
 					if (food > 0) {
 						var a = Cs.SCORE_FOOD;
-						log("Bonus Nourriture " + food + " x" + a + " = " + (a * food) + "pts");
+						log(Lang.food_bonus({food: food, factor: a, points: a * food}));
 					}
 				}
 			case 2:

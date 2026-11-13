@@ -407,7 +407,7 @@ class Game implements kado.GameInterface {
 		timer = 100;
 		lvl += 1;
 		genFish();
-		mcBar.fieldLevel.text = "NIVEAU " + lvl.get();
+		mcBar.fieldLevel.text = Lang.level({level: lvl.get()});
 	}
 
 	// INTERFACE

@@ -1,6 +1,8 @@
 <script setup>
 import KadoPoints from '@svg/k.svg'
 
+import { t } from '@/i18n'
+
 const props = defineProps({
   game: { type: Object, required: true },
   isZoomed: { type: Boolean, default: false },
@@ -26,21 +28,21 @@ const palliers = computed(() => {
   const s = []
   if (props.game.stars?.length > 2) {
     if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[0]) {
-      s.push({ score: props.game.stars[0], points: 0, img: '/gfx/iconGreenStar.gif', alt: 'Etoile verte' })
+      s.push({ score: props.game.stars[0], points: 0, img: '/gfx/iconGreenStar.gif', alt: t('games.star_green') })
     }
     if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[1]) {
-      s.push({ score: props.game.stars[1], points: 0, img: '/gfx/iconOrangeStar.gif', alt: 'Etoile orange' })
+      s.push({ score: props.game.stars[1], points: 0, img: '/gfx/iconOrangeStar.gif', alt: t('games.star_orange') })
     }
     if (!personalBestForPeriod.value || personalBestForPeriod.value.score < props.game.stars[2]) {
-      s.push({ score: props.game.stars[2], points: 0, img: '/gfx/iconRedStar.gif', alt: 'Etoile rouge' })
+      s.push({ score: props.game.stars[2], points: 0, img: '/gfx/iconRedStar.gif', alt: t('games.star_red') })
     }
   }
   if (personalBestForPeriod.value) {
-    s.push({ score: personalBestForPeriod.value.score, points: null, img: '/gfx/iconBlueArrow.gif', alt: 'Record période' })
+    s.push({ score: personalBestForPeriod.value.score, points: null, img: '/gfx/iconBlueArrow.gif', alt: t('games.period_record') })
   }
   const bestScore = scores.value?.[0]
   if (bestScore && bestScore.user?.etwin_id !== authStore.user?.etwin_id && league.value?.level === leagueStore.paradiseLeagueId) {
-    s.push({ score: bestScore.score + 1, points: null, img: '/gfx/iconFeather.gif', alt: 'Plume de Piou' })
+    s.push({ score: bestScore.score + 1, points: null, img: '/gfx/iconFeather.gif', alt: t('common.feather') })
   }
   // keyed by league id; shown before the first run of the period too
   const leagueScore = league.value ? leaguesScores.value[league.value.id] : null
@@ -49,10 +51,10 @@ const palliers = computed(() => {
     // the promotion also asks for a minimum star
     const minStarScore = props.game.stars?.[league.value.promotion_min_stars] ?? 0
     const score = Math.max((leagueScore.required_score ?? -1) + 1, minStarScore)
-    s.push({ score, points: null, img: `/gfx/leagues/${league.value.level + 1}s.svg`, alt: 'Ligue supérieure', className: 'w-[18px] h-auto' })
+    s.push({ score, points: null, img: `/gfx/leagues/${league.value.level + 1}s.svg`, alt: t('games.next_league'), className: 'w-[18px] h-auto' })
   }
   s.push(...props.goals.map((goal) => ({ points: null, ...goal })))
-  s.push({ score: 0, points: 0, img: '/gfx/iconContract.png', alt: 'Contrat' })
+  s.push({ score: 0, points: 0, img: '/gfx/iconContract.png', alt: t('games.contract') })
   s.sort((a, b) => b.score - a.score)
   return s
 })
@@ -116,10 +118,10 @@ refreshScores()
 const selectedTab = ref(props.initialTab)
 
 const menus = [
-  { id: 'gameRules', label: 'Règles', icon: '/gfx/iconGameRules.png' },
-  { id: 'gameStars', label: 'Paliers', icon: '/gfx/iconGameStars.png' },
-  { id: 'gameRanking', label: 'Classement', icon: '/gfx/iconGameRanking.png' },
-  ...(achievementStore.enabled ? [{ id: 'achievements', label: 'Succès', icon: '/gfx/iconAchievements.png' }] : []),
+  { id: 'gameRules', label: t('games.rules'), icon: '/gfx/iconGameRules.png' },
+  { id: 'gameStars', label: t('games.steps'), icon: '/gfx/iconGameStars.png' },
+  { id: 'gameRanking', label: t('common.ranking'), icon: '/gfx/iconGameRanking.png' },
+  ...(achievementStore.enabled ? [{ id: 'achievements', label: t('common.achievements'), icon: '/gfx/iconAchievements.png' }] : []),
 ]
 </script>
 
@@ -135,17 +137,17 @@ const menus = [
     </GamesGameSideTabs>
 
     <div>
-      <GamesGameSideHeading v-if="isZoomed" class="my-2 text-center">Règles</GamesGameSideHeading>
+      <GamesGameSideHeading v-if="isZoomed" class="my-2 text-center">{{ $t('games.rules') }}</GamesGameSideHeading>
 
       <article id="gameRules" class="m-2" :class="selectedTab === 'gameRules' ? '' : notZoomedHiddenState">
-        <p class="my-2">{{ game.description ?? '[WIP description]' }}</p>
+        <p class="my-2">{{ game.description ?? $t('games.no_description') }}</p>
         <hr class="mx-auto my-2 w-[200px] border-t border-kado-blue-700" />
         <GamesGameControls :game="game" />
       </article>
     </div>
 
     <div>
-      <GamesGameSideHeading v-if="isZoomed" class="my-2 flex justify-center">Paliers
+      <GamesGameSideHeading v-if="isZoomed" class="my-2 flex justify-center">{{ $t('games.steps') }}
         <img  v-if="league"
               :src="`/gfx/leagues/${league.level}s.svg`"
               :alt="league.name"
@@ -159,9 +161,9 @@ const menus = [
                    class="w-full">
           <thead>
             <tr>
-              <th scope="col">Record période</th>
-              <th scope="col">Mon record</th>
-              <th scope="col">Record du monde</th>
+              <th scope="col">{{ $t('games.period_record') }}</th>
+              <th scope="col">{{ $t('games.my_record') }}</th>
+              <th scope="col">{{ $t('games.world_record') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -173,19 +175,19 @@ const menus = [
           </tbody>
         </KadoTable>
 
-        <GamesGameSideHeading class="my-2 text-right">Objectifs</GamesGameSideHeading>
+        <GamesGameSideHeading class="my-2 text-right">{{ $t('games.goals') }}</GamesGameSideHeading>
         <KadoTable borderless plain-header class="w-full">
           <thead>
             <tr>
               <th scope="col" class="w-7.5"></th>
-              <th scope="col" class="text-left">Paliers</th>
-              <th scope="col" class="text-right">Valeur</th>
+              <th scope="col" class="text-left">{{ $t('games.steps') }}</th>
+              <th scope="col" class="text-right">{{ $t('games.value') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(pallier, index) in palliers" :key="index" :class="{'opacity-35': nextPallierIndex < index}">
               <td>
-                <img v-if="nextPallierIndex === index" src="/gfx/iconOrangeArrow.gif" alt="Prochain palier" />
+                <img v-if="nextPallierIndex === index" src="/gfx/iconOrangeArrow.gif" :alt="$t('games.next_step')" />
               </td>
               <td class="text-left">
                 <img :src="pallier.img"
@@ -208,24 +210,24 @@ const menus = [
     </div>
 
     <div>
-      <GamesGameSideHeading v-if="isZoomed" class="my-2 text-center">Classement</GamesGameSideHeading>
+      <GamesGameSideHeading v-if="isZoomed" class="my-2 text-center">{{ $t('common.ranking') }}</GamesGameSideHeading>
 
       <article id="gameRanking" class="m-2" :class="selectedTab === 'gameRanking' ? '' : notZoomedHiddenState">
-        <Loader v-if="isLoading">Chargement des scores...</Loader>
+        <Loader v-if="isLoading">{{ $t('games.loading_scores') }}</Loader>
         <GamesGameScoreTable v-else :scores="scores" class="mx-auto" />
         <p class="my-2 text-center font-bold">
           <RouterLink :to="{ name: 'games.ranking', params: { id: game.id }, query: { period: periodStore.period?.id, league: league?.id } }">
-            Classement de ce jeu
+            {{ $t('games.game_ranking') }}
           </RouterLink>
         </p>
       </article>
     </div>
 
     <div v-if="achievementStore.enabled">
-      <GamesGameSideHeading v-if="isZoomed" class="my-2 text-center">Succès</GamesGameSideHeading>
+      <GamesGameSideHeading v-if="isZoomed" class="my-2 text-center">{{ $t('common.achievements') }}</GamesGameSideHeading>
 
       <article id="achievements" class="m-2" :class="selectedTab === 'achievements' ? '' : notZoomedHiddenState">
-        <Loader v-if="achievementStore.isLoading">Chargement des succès...</Loader>
+        <Loader v-if="achievementStore.isLoading">{{ $t('games.loading_achievements') }}</Loader>
         <template v-else>
           <GamesGameAchievements :game="game" />
         </template>

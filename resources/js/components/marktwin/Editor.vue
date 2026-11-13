@@ -44,7 +44,7 @@ const insertSmiley = (smiley) => {
                            :text="model"
                            :grammar="grammar"
                            :icon-url="iconUrl" />
-          <p v-else class="m-0 italic text-kado-slate-400">Rien à prévisualiser.</p>
+          <p v-else class="m-0 italic text-kado-slate-400">{{ $t('editor.nothing_to_preview') }}</p>
         </div>
         <FormTextarea v-else
                       :id="id"
@@ -65,8 +65,8 @@ const insertSmiley = (smiley) => {
       </ul>
     </div>
     <div class="flex flex-wrap items-center justify-between gap-2 text-2xs text-kado-slate-400">
-      <span>**gras** _italique_ __souligné__ ~~barré~~ ||spoiler|| [lien](https://…) [quote=pseudo]…[/quote]</span>
-      <FormButton size="sm" @click="preview = !preview">{{ preview ? 'Modifier' : 'Aperçu' }}</FormButton>
+      <span>{{ $t('editor.syntax') }}</span>
+      <FormButton size="sm" @click="preview = !preview">{{ preview ? $t('editor.edit') : $t('editor.preview') }}</FormButton>
     </div>
   </div>
 </template>

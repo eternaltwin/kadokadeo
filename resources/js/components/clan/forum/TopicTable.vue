@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '@/i18n'
 import { formatDate, weekdayOf } from '@/i18n/dates'
 // the topics of the forum of a clan, as on the old forum: the "Post-it" first, then the topics grouped by the day of
 // their last message (pink rows); a title green when unread, blue when read; the last message and the links to the
@@ -14,7 +15,7 @@ const rows = computed(() => {
   const rows = []
   let group = null
   for (const topic of props.topics) {
-    const label = topic.is_pinned ? 'Post-it' : dayLabel(topic.last_message_at)
+    const label = topic.is_pinned ? t('clan_forum.pinned') : dayLabel(topic.last_message_at)
     if (label !== group) {
       rows.push({ key: `group-${label}`, separator: label })
       group = label
@@ -51,15 +52,15 @@ const greyCellClasses = 'border border-t-0 border-solid border-kado-teal-400 bg-
     <KadoTable class="w-full text-xs">
       <thead>
         <tr>
-          <th :class="headerClasses">Sujet</th>
-          <th :class="headerClasses" class="hidden w-32 sm:table-cell">Auteur</th>
-          <th :class="headerClasses" class="w-10">Msg</th>
-          <th :class="headerClasses" class="w-32">Réponses</th>
+          <th :class="headerClasses">{{ $t('clan_forum.topic') }}</th>
+          <th :class="headerClasses" class="hidden w-32 sm:table-cell">{{ $t('clan_forum.author') }}</th>
+          <th :class="headerClasses" class="w-10">{{ $t('clan_forum.messages_short') }}</th>
+          <th :class="headerClasses" class="w-32">{{ $t('clan_forum.replies') }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="!topics.length">
-          <td colspan="4" :class="greyCellClasses" class="py-4 text-center italic">Aucun sujet pour le moment.</td>
+          <td colspan="4" :class="greyCellClasses" class="py-4 text-center italic">{{ $t('clan_forum.no_topic') }}</td>
         </tr>
         <template v-for="row in rows" :key="row.key">
           <tr v-if="row.separator">
@@ -72,23 +73,23 @@ const greyCellClasses = 'border border-t-0 border-solid border-kado-teal-400 bg-
               <RouterLink :to="topicRoute(row.topic)"
                           class="block min-h-6 bg-white bg-[position:top_right] bg-no-repeat py-1 pr-2.5 pl-2 font-bold hover:bg-[url(/assets/img/gfx/gui/base/greyh2_bg.jpg)] hover:no-underline"
                           :class="row.topic.is_unread ? 'bg-[url(/assets/img/gfx/gui/base/greenh2_bg.jpg)]' : 'bg-[url(/assets/img/gfx/gui/base/blueh2_bg.jpg)]'"
-                          :title="row.topic.is_unread ? 'Nouveaux messages' : null">
-                <span v-if="row.topic.is_locked" title="Sujet verrouillé">🔒 </span>{{ row.topic.title }}
+                          :title="row.topic.is_unread ? $t('clan_forum.new_messages') : null">
+                <span v-if="row.topic.is_locked" :title="$t('forum.locked_title')">🔒 </span>{{ row.topic.title }}
               </RouterLink>
             </td>
             <td :class="greyCellClasses" class="hidden text-left text-sm sm:table-cell">
               <RouterLink v-if="row.topic.author" :to="{ name: 'profile.show', params: { id: row.topic.author.etwin_id } }" class="font-bold">
                 {{ row.topic.author.display_name }}
               </RouterLink>
-              <span v-else class="italic">Ancien joueur</span>
+              <span v-else class="italic">{{ $t('common.former_player') }}</span>
             </td>
             <td :class="greyCellClasses" class="text-right text-2xs">{{ row.topic.replies_count }}</td>
             <td :class="greyCellClasses" class="text-right text-2xs leading-3">
               <template v-if="row.topic.last_message_user">
                 <RouterLink :to="{ name: 'profile.show', params: { id: row.topic.last_message_user.etwin_id } }" class="font-bold">{{ row.topic.last_message_user.display_name }}</RouterLink>
               </template>
-              <span v-else class="italic">Ancien joueur</span>
-              à {{ lastMessageTime(row.topic) }}
+              <span v-else class="italic">{{ $t('common.former_player') }}</span>
+              {{ $t('clan_forum.at', { time: lastMessageTime(row.topic) }) }}
               <div v-if="row.topic.pages > 1">
                 <template v-for="(page, index) in pageLinks(row.topic.pages)" :key="`${page}-${index}`">
                   <template v-if="index > 0">-</template>

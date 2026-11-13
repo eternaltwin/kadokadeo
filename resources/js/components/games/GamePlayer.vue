@@ -75,7 +75,7 @@ watchEffect((onInvalidate) => {
     <div :class="isZoomed ? 'fixed w-screen h-dvh flex flex-col overflow-hidden' : 'relative w-full mt-[30px] mb-[50px] mx-auto'" :style="gameInterfaceStyle">
       <div v-if="isZoomed" class="w-full text-center tracking-widest">
         <div class="text-white p-1 cursor-pointer bg-black/75 border border-solid border-black hover:bg-black hover:border-white" @click.prevent="isZoomed = false">
-          Désactiver le zoom <span>❌</span>
+          {{ $t('games.zoom_off') }} <span>❌</span>
         </div>
       </div>
 
@@ -88,13 +88,13 @@ watchEffect((onInvalidate) => {
                   <button
                     type="button"
                     class="w-full h-full pt-1 font-bold text-center hover:text-kado-orange-500 cursor-pointer disabled:cursor-wait"
-                    :title="isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+                    :title="isFavorite ? $t('games.favorite_remove') : $t('games.favorite_add')"
                     :aria-pressed="isFavorite"
                     :disabled="isFavoriteLoading"
                     @click="toggleFavorite"
                   >
                     <img :src="isFavorite ? '/gfx/iconGameLiked.gif' : '/gfx/iconGameDisliked.gif'" alt="" class="size-4" />
-                    Favori
+                    {{ $t('games.favorite') }}
                   </button>
                 </li>
                 <li v-if="!daily" class="game-interface-button h-5 hover:h-[18px] hover:mt-0.5">
@@ -103,8 +103,8 @@ watchEffect((onInvalidate) => {
                     class="w-full h-full pt-1 font-bold text-center hover:text-kado-orange-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-inherit"
                     :class="{ 'text-kado-orange-500': gameScript?.confirmingChangeRun }"
                     :title="gameScript?.confirmingChangeRun
-                      ? `Cliquez à nouveau pour abandonner cette partie et tirer un nouveau contrat (${gameScript.CHANGE_RUN_SHORTCUT})`
-                      : `Changer de partie (${gameScript?.CHANGE_RUN_SHORTCUT})`"
+                      ? $t('games.change_run_confirm_title', { shortcut: gameScript.CHANGE_RUN_SHORTCUT })
+                      : $t('games.change_run_title', { shortcut: gameScript?.CHANGE_RUN_SHORTCUT })"
                     :disabled="!gameScript?.canChangeRun"
                     @click="gameScript?.askChangeRun()"
                   >
@@ -120,15 +120,15 @@ watchEffect((onInvalidate) => {
                       <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" />
                       <path d="M13.5 2v3.5H10" stroke-linejoin="round" />
                     </svg>
-                    {{ gameScript?.confirmingChangeRun ? 'Confirmer ?' : 'Changer' }}
+                    {{ gameScript?.confirmingChangeRun ? $t('games.change_run_confirm') : $t('games.change_run') }}
                   </button>
                 </li>
                 <li v-if="!isArkadeo" class="game-interface-button h-5 hover:h-[18px] hover:mt-0.5">
                   <div class="pt-1 font-bold text-center hover:text-kado-orange-500 cursor-pointer"
-                       title="Zoom / dézoom"
+                       :title="$t('games.zoom_toggle')"
                        @click.prevent="isZoomed = !isZoomed">
-                    <img src="/gfx/iconGameZoom.gif" alt="zoom" class="size-4" />
-                    Zoom
+                    <img src="/gfx/iconGameZoom.gif" :alt="$t('games.zoom_alt')" class="size-4" />
+                    {{ $t('games.zoom') }}
                   </div>
                 </li>
               </ul>

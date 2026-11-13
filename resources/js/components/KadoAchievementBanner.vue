@@ -6,8 +6,8 @@ import RedStar from '@svg/redStar.svg'
 
 const props = defineProps({
   visible: { type: Boolean, default: true },
-  title: { type: String, default: 'Interwheel étoile verte' },
-  description: { type: String, default: 'Obtenez l\'étoile verte dans Interwheel.' },
+  title: { type: String, default: '' },
+  description: { type: String, default: '' },
   complete: { type: Boolean, default: false },
   level: { type: Number, default: 2 },
   maxLevel: { type: Number, default: 3 },
@@ -101,13 +101,13 @@ const achievementImages = computed(() => {
         <div class="hidden min-w-[155px] shrink-0 border-l-2 border-kado-blue-300/70 pl-4 sm:block">
           <template v-if="isComplete">
             <div class="flex items-center justify-center gap-3 text-kado-green-500">
-              <span class="text-sm font-black uppercase tracking-wide"> Succès obtenu ! </span>
+              <span class="text-sm font-black uppercase tracking-wide">{{ $t('achievement_banner.unlocked') }}</span>
             </div>
           </template>
 
           <template v-else>
             <div class="text-center text-[15px] font-black text-kado-green-600">
-              Niveau {{ level }}<span class="text-kado-slate-400">/{{ maxLevel }}</span>
+              {{ $t('achievement_banner.level', { level }) }}<span class="text-kado-slate-400">/{{ maxLevel }}</span>
             </div>
 
             <div class="mt-2 flex justify-center gap-1 text-2xl leading-none">

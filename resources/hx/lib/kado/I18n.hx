@@ -38,8 +38,13 @@ class I18n {
 		return format(text, {count: count});
 	}
 
+	// the language of the page (fr while the languages are off)
+	public static function locale():String {
+		return js.Syntax.code("globalThis.Kado?.locale ?? 'fr'");
+	}
+
 	static function isSingular(count:Int):Bool {
-		return js.Syntax.code("new Intl.PluralRules(globalThis.Kado?.locale ?? 'fr').select({0}) === 'one'", count);
+		return js.Syntax.code("new Intl.PluralRules({0}).select({1}) === 'one'", locale(), count);
 	}
 	#end
 }

@@ -1,6 +1,7 @@
 <script setup>
 import { notificationLink, notificationText } from '@/composables/useNotifications'
 import { useChannel, userChannel } from '@/composables/useRealtime'
+import { t } from '@/i18n'
 import { intlLocale } from '@/i18n/locale'
 
 // the notifications of the player (the tab « Notifications » of the messages): read when the tab is opened (the new ones
@@ -37,7 +38,7 @@ const remove = (notification) =>
     notifications.value = notifications.value.filter((n) => n.id !== notification.id)
   })
 const removeAll = () => {
-  if (confirm('Supprimer toutes vos notifications ?')) {
+  if (confirm(t('notifications.confirm_delete_all'))) {
     actions.removeAll().then(() => {
       notifications.value = []
       meta.value = null
@@ -55,7 +56,7 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit
     <table class="w-full">
       <tbody>
         <tr v-if="!notifications.length && !isLoading" class="bg-kado-blue-100">
-          <td class="py-4 italic">Vous n'avez aucune notification.</td>
+          <td class="py-4 italic">{{ $t('notifications.none') }}</td>
         </tr>
         <tr v-for="(notification, index) in notifications"
             :key="notification.id"
@@ -63,14 +64,14 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit
           <td class="text-left">
             <RouterLink v-if="notificationLink(notification)" :to="notificationLink(notification)">{{ notificationText(notification) }}</RouterLink>
             <template v-else>{{ notificationText(notification) }}</template>
-            <span v-if="notification.comment?.excerpt" class="block text-xs font-normal italic text-kado-teal-500">« {{ notification.comment.excerpt }} »</span>
+            <span v-if="notification.comment?.excerpt" class="block text-xs font-normal italic text-kado-teal-500">{{ $t('notifications.excerpt', { excerpt: notification.comment.excerpt }) }}</span>
           </td>
           <td class="whitespace-nowrap text-xs font-normal">{{ date(notification.updated_at) }}</td>
           <td class="w-6">
             <button type="button"
                     class="cursor-pointer border-0 bg-transparent px-1 font-bold text-kado-pink-600"
-                    title="Supprimer"
-                    aria-label="Supprimer"
+                    :title="$t('common.delete')"
+                    :aria-label="$t('common.delete')"
                     @click="remove(notification)">
               ×
             </button>
@@ -83,11 +84,11 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit
     <FormButton v-if="hasNextPage"
                 size="lg"
                 :disabled="isLoading"
-                @click="loadMore()">Plus anciennes</FormButton>
+                @click="loadMore()">{{ $t('notifications.older') }}</FormButton>
     <FormButton v-if="notifications.length"
                 variant="pink"
                 size="lg"
-                @click="removeAll">Tout supprimer</FormButton>
+                @click="removeAll">{{ $t('notifications.delete_all') }}</FormButton>
   </div>
-  <p class="text-center text-xs italic">Les notifications sont supprimées automatiquement après deux mois.</p>
+  <p class="text-center text-xs italic">{{ $t('notifications.retention') }}</p>
 </template>

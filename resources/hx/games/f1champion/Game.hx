@@ -188,7 +188,7 @@ class Game implements kado.GameInterface {
 			.drawRect(0, 0, life._width * lifepts / Cs.MAXLIFE, life._height)
 			.endFill();
 		var speedValue = Std.int(Math.pow(level.cur_speed / KadoKadeoManager.I(1), 0.75) * 30);
-		speed.text = speedValue + " KM/H";
+		speed.text = Lang.speed({speed: speedValue});
 		if (speedValue >= 230 && is_inbounds) {
 			speed_over_230_kmh += 1;
 		} else {

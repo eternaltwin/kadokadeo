@@ -12,9 +12,9 @@ enum ClanActionType: string
     public function label(): string
     {
         return match ($this) {
-            self::ATTACK => 'Attaque',
-            self::DEFENSE => 'Défense',
-            self::MISSION => 'Étape de mission',
+            self::ATTACK => __('server.clans.action_types.attack'),
+            self::DEFENSE => __('server.clans.action_types.defense'),
+            self::MISSION => __('server.clans.action_types.mission'),
         };
     }
 }

@@ -93,6 +93,21 @@ class SettingsPagesTest extends TestCase
             ->assertHasErrors();
     }
 
+    public function test_the_admin_writes_the_announcement_in_every_language_of_the_site(): void
+    {
+        $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+        Livewire::test(ManageSiteSettings::class)
+            ->assertFormFieldExists('announcement_contents.fr')
+            ->assertFormFieldExists('announcement_contents.en')
+            ->set('data.announcement_contents.fr', 'Bonjour')
+            ->set('data.announcement_contents.en', 'Hello')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertSame(['fr' => 'Bonjour', 'en' => 'Hello'], app(SiteSettings::class)->refresh()->announcement_contents);
+    }
+
     public function test_the_admin_sets_the_games_of_the_site(): void
     {
         $this->actingAs(User::factory()->create(['is_admin' => true]));

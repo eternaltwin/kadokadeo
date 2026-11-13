@@ -16,10 +16,10 @@ enum ReportReason: string implements HasColor, HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::SPAM => 'Spam ou publicité',
-            self::ABUSE => 'Insulte ou harcèlement',
-            self::INAPPROPRIATE => 'Contenu inapproprié',
-            self::OTHER => 'Autre',
+            self::SPAM => __('server.reports.reasons.spam'),
+            self::ABUSE => __('server.reports.reasons.abuse'),
+            self::INAPPROPRIATE => __('server.reports.reasons.inappropriate'),
+            self::OTHER => __('server.reports.reasons.other'),
         };
     }
 

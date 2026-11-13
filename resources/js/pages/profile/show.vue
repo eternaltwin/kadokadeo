@@ -128,18 +128,18 @@ const gameAchievements = computed(() => {
 <template>
   <NavTabs
     :items="[
-      { label: 'moi', value: 'me' },
-      { label: 'dernière période', value: 'last' },
-      { label: 'stats', value: 'stats' },
+      { label: $t('profile.tab_me'), value: 'me' },
+      { label: $t('profile.tab_last'), value: 'last' },
+      { label: $t('profile.tab_stats'), value: 'stats' },
     ]"
   >
     <template #panel="{ item }">
       <div>
-        <div v-if="isLoading">Loading...</div>
-        <MessageError v-else-if="error">Error: {{ error }}</MessageError>
+        <div v-if="isLoading">{{ $t('profile.loading') }}</div>
+        <MessageError v-else-if="error">{{ $t('common.error_with', { error }) }}</MessageError>
         <div v-else-if="profile">
           <div v-if="item.value === 'me'" class="space-y-4">
-            <KadoPageTitle>Profil de {{ profile.data.display_name }}</KadoPageTitle>
+            <KadoPageTitle>{{ $t('profile.title', { player: profile.data.display_name }) }}</KadoPageTitle>
             <div v-if="profile.clan || !isMe" class="mx-2.5 space-y-1">
               <p v-if="profile.clan" class="flex items-center justify-center gap-1">
                 <img src="/assets/img/gfx/icons/clan.gif" alt="" />
@@ -150,7 +150,7 @@ const gameAchievements = computed(() => {
               </p>
               <p v-if="!isMe" class="text-center">
                 <RouterLink :to="{ name: 'messages.new', query: { to: profile.data.display_name } }">
-                  <img src="/assets/img/gfx/icons/readedMail.gif" alt="" class="mr-1" />Envoyer un message à {{ profile.data.display_name }}
+                  <img src="/assets/img/gfx/icons/readedMail.gif" alt="" class="mr-1" />{{ $t('profile.send_message', { player: profile.data.display_name }) }}
                 </RouterLink>
               </p>
             </div>
@@ -158,10 +158,10 @@ const gameAchievements = computed(() => {
               <img v-for="i in feathersCount"
                    :key="i"
                    src="/gfx/iconFeather.gif"
-                   alt="Plume de Piou"
+                   :alt="$t('common.feather')"
                    class="inline-block" />
             </div>
-            <KadoSectionTitle>Statut</KadoSectionTitle>
+            <KadoSectionTitle>{{ $t('profile.status') }}</KadoSectionTitle>
 
             <div class="grid md:grid-cols-2">
               <div class="grid grid-cols-3 justify-items-center">
@@ -205,7 +205,7 @@ const gameAchievements = computed(() => {
 
               <div class="md:col-span-2 flex">
                 <div class="mx-auto relative">
-                  <img src="/gfx/maxiuser_bar_bg_disabled.gif" alt="Barre de progression du profil" class="w-[355px] h-[18px]" />
+                  <img src="/gfx/maxiuser_bar_bg_disabled.gif" :alt="$t('profile.progress_bar_alt')" class="w-[355px] h-[18px]" />
                   <div class="absolute top-0.5 h-[18px] overflow-hidden" :style="{ width: barWidth + 'px' }">
                     <div class="w-[355px] h-[18px] contrast-200 bg-gradient-to-r from-kado-gauge-violet via-kado-gauge-orange to-kado-gauge-green mask-[url('/gfx/maxiuser_bar_mask.png')]"></div>
                   </div>
@@ -214,29 +214,29 @@ const gameAchievements = computed(() => {
               </div>
             </div>
 
-            <KadoSectionTitle>Classements</KadoSectionTitle>
+            <KadoSectionTitle>{{ $t('profile.rankings') }}</KadoSectionTitle>
             <div class="px-2">
               <KadoTable class="w-full">
                 <thead>
                   <tr class="text-kado-orange-500 uppercase text-sm *:px-2 *:text-right">
                     <th :aria-sort="rankingSort.key === 'level' ? (rankingSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'">
                       <button type="button" class="inline-flex items-center gap-1 cursor-pointer" @click="sortRankingsBy('level')">
-                        Niveau <span aria-hidden="true">{{ rankingSort.key === 'level' ? (rankingSort.direction === 'asc' ? '▲' : '▼') : '' }}</span>
+                        {{ $t('common.level') }} <span aria-hidden="true">{{ rankingSort.key === 'level' ? (rankingSort.direction === 'asc' ? '▲' : '▼') : '' }}</span>
                       </button>
                     </th>
                     <th :aria-sort="rankingSort.key === 'position' ? (rankingSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'">
                       <button type="button" class="inline-flex items-center gap-1 cursor-pointer" @click="sortRankingsBy('position')">
-                        Position <span aria-hidden="true">{{ rankingSort.key === 'position' ? (rankingSort.direction === 'asc' ? '▲' : '▼') : '' }}</span>
+                        {{ $t('common.position') }} <span aria-hidden="true">{{ rankingSort.key === 'position' ? (rankingSort.direction === 'asc' ? '▲' : '▼') : '' }}</span>
                       </button>
                     </th>
                     <th :aria-sort="rankingSort.key === 'game' ? (rankingSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'">
                       <button type="button" class="inline-flex items-center gap-1 cursor-pointer" @click="sortRankingsBy('game')">
-                        Jeu <span aria-hidden="true">{{ rankingSort.key === 'game' ? (rankingSort.direction === 'asc' ? '▲' : '▼') : '' }}</span>
+                        {{ $t('common.game') }} <span aria-hidden="true">{{ rankingSort.key === 'game' ? (rankingSort.direction === 'asc' ? '▲' : '▼') : '' }}</span>
                       </button>
                     </th>
                     <th :aria-sort="rankingSort.key === 'score' ? (rankingSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'">
                       <button type="button" class="inline-flex items-center gap-1 cursor-pointer" @click="sortRankingsBy('score')">
-                        Score <span aria-hidden="true">{{ rankingSort.key === 'score' ? (rankingSort.direction === 'asc' ? '▲' : '▼') : '' }}</span>
+                        {{ $t('common.score') }} <span aria-hidden="true">{{ rankingSort.key === 'score' ? (rankingSort.direction === 'asc' ? '▲' : '▼') : '' }}</span>
                       </button>
                     </th>
                   </tr>
@@ -248,8 +248,8 @@ const gameAchievements = computed(() => {
                         <img v-if="run.league_id" :src="`/gfx/leagues/${run.league_id}s.svg`" class="w-6 h-auto" />
                         <img v-if="profile.promotion_game_ids?.includes(run.game.id)"
                              src="/gfx/greenArrowUp.png"
-                             alt="Qualifié pour la promotion"
-                             title="Qualifié pour la ligue supérieure" />
+                             :alt="$t('profile.qualified_alt')"
+                             :title="$t('common.promotion_qualified')" />
                       </div>
                     </td>
                     <td class="text-right">
@@ -272,7 +272,7 @@ const gameAchievements = computed(() => {
             </div>
 
             <template v-if="achievementStore.enabled">
-              <KadoSectionTitle>Succès</KadoSectionTitle>
+              <KadoSectionTitle>{{ $t('common.achievements') }}</KadoSectionTitle>
               <div class="px-4" v-lazy-container="{ selector: 'img', attempt: 1 }">
                 <div v-for="(gameAs, game) in gameAchievements" :key="game">
                   <h3 class="text-2xl font-semibold text-kado-blue-800">{{ game }}</h3>
@@ -299,7 +299,7 @@ const gameAchievements = computed(() => {
               </div>
             </template>
 
-            <KadoSectionTitle>Historique</KadoSectionTitle>
+            <KadoSectionTitle>{{ $t('common.history') }}</KadoSectionTitle>
             <GamesGameScoreTable :show-pos="false"
                                  :show-player="false"
                                  show-game
@@ -310,7 +310,7 @@ const gameAchievements = computed(() => {
                 :disabled="isHistoryLoading"
                 class="py-2 text-kado-orange-500 underline cursor-pointer hover:text-kado-orange-700"
               >
-                Charger plus de résultats
+                {{ $t('common.load_more_results') }}
               </button>
               <Loader v-if="isHistoryLoading" />
               <MessageError v-else-if="historyError">{{ historyError }}</MessageError>
@@ -320,17 +320,17 @@ const gameAchievements = computed(() => {
             <ProfileLastPeriod :player-id="profile.data.etwin_id" :player-name="profile.data.display_name" :is-me="isMe" />
           </div>
           <div v-else-if="item.value === 'stats'">
-            <KadoPageTitle class="mb-5">Records de {{ profile.data.display_name }}</KadoPageTitle>
-            <Loader v-if="isRecordsLoading">Chargement des records...</Loader>
-            <MessageError v-else-if="recordsError">Error: {{ recordsError }}</MessageError>
+            <KadoPageTitle class="mb-5">{{ $t('profile.records_title', { player: profile.data.display_name }) }}</KadoPageTitle>
+            <Loader v-if="isRecordsLoading">{{ $t('site_records.loading') }}</Loader>
+            <MessageError v-else-if="recordsError">{{ $t('common.error_with', { error: recordsError }) }}</MessageError>
             <div v-else class="px-8 sm:px-16">
               <KadoTable class="w-full">
                 <thead>
                   <tr class="text-kado-orange-500 uppercase text-sm *:px-2 *:text-center">
-                    <th>Jeu</th>
-                    <th>Score actuel</th>
-                    <th>Record</th>
-                    <th>Progression</th>
+                    <th>{{ $t('common.game') }}</th>
+                    <th>{{ $t('profile.current_score') }}</th>
+                    <th>{{ $t('profile.record') }}</th>
+                    <th>{{ $t('profile.progress') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -365,12 +365,12 @@ const gameAchievements = computed(() => {
                            100 px long at 100 % -->
                       <div v-if="record.current_score !== null && record.score !== null"
                            role="progressbar"
-                           :aria-label="`Progression du score de ${record.game.name}`"
+                           :aria-label="$t('profile.score_progress', { game: record.game.name })"
                            aria-valuemin="0"
                            aria-valuemax="100"
                            :aria-valuenow="getProgressPercent(record)"
                            class="relative inline-block h-5 w-[106px] overflow-hidden bg-[url(/assets/img/gfx/gui/base/progress_bg.gif)] bg-no-repeat align-middle">
-                        <span class="absolute top-0.5 right-3 text-[10px] leading-2.5">{{ getProgressPercent(record) }} %</span>
+                        <span class="absolute top-0.5 right-3 text-[10px] leading-2.5">{{ $t('profile.percent', { percent: getProgressPercent(record) }) }}</span>
                         <div class="absolute bottom-0.5 left-0.5 h-[5px] bg-[url(/assets/img/gfx/gui/base/progress.gif)] bg-no-repeat transition-[width]" :style="{ width: `${getProgressPercent(record)}px` }"></div>
                       </div>
                     </td>

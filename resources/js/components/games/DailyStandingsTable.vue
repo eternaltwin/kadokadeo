@@ -11,9 +11,9 @@ const authStore = useAuthStore()
   <KadoTable borderless class="w-full">
     <thead>
       <tr>
-        <th scope="col">Pos</th>
-        <th scope="col">Joueur</th>
-        <th scope="col">Points</th>
+        <th scope="col">{{ $t('common.pos') }}</th>
+        <th scope="col">{{ $t('common.player') }}</th>
+        <th scope="col">{{ $t('games.points') }}</th>
       </tr>
     </thead>
     <tbody>

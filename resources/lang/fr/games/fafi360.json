@@ -1,0 +1,14 @@
+{
+  "Score": "{_player} - {_opponent}",
+  "LostBall": "Ballon perdu",
+  "ScoreGoal": "BUUUUUUT !!",
+  "ConcedeGoal": "ARRRGH !",
+  "ConcedeGoalYourself": "Contre son camp !",
+  "TimeOut": "Temps écoulé !",
+  "Pass": "{_n} passe",
+  "Passes": "{_n} passes",
+  "PickTime": "+{_n} secondes",
+  "StatScore": "Score final",
+  "StatPass": "Passes réussies",
+  "StatControl": "Contrôle du ballon"
+}

@@ -18,10 +18,10 @@ enum ClanAttackStatus: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::ACTIVE => 'En cours',
-            self::REPELLED => 'Repoussée',
-            self::WON => 'Réussie',
-            self::CANCELLED => 'Annulée',
+            self::ACTIVE => __('server.clans.attack_status.active'),
+            self::REPELLED => __('server.clans.attack_status.repelled'),
+            self::WON => __('server.clans.attack_status.won'),
+            self::CANCELLED => __('server.clans.attack_status.cancelled'),
         };
     }
 }

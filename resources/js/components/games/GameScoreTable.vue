@@ -12,11 +12,11 @@ defineProps({
     <thead>
       <tr>
         <!-- <th scope="col">Période</th> -->
-        <th v-if="showPos" scope="col">Pos</th>
-        <th v-if="showPlayer" scope="col">Joueur</th>
-        <th v-if="showGame" scope="col">Jeu</th>
-        <th scope="col">Score</th>
-        <th scope="col">Temps</th>
+        <th v-if="showPos" scope="col">{{ $t('common.pos') }}</th>
+        <th v-if="showPlayer" scope="col">{{ $t('common.player') }}</th>
+        <th v-if="showGame" scope="col">{{ $t('common.game') }}</th>
+        <th scope="col">{{ $t('common.score') }}</th>
+        <th scope="col">{{ $t('games.time') }}</th>
       </tr>
     </thead>
     <tbody>

@@ -138,10 +138,10 @@ class ClanMissionService
         $mission = $step->mission;
         $this->clanService->assertMember($user, $mission->clan);
         if ($mission->status !== ClanMission::ACTIVE || $mission->expires_at->isPast()) {
-            throw new ClanException('Cette mission est terminée.');
+            throw new ClanException(__('server.clans.missions.over'));
         }
         if ($step->isDone()) {
-            throw new ClanException('Cette étape a déjà été réussie.');
+            throw new ClanException(__('server.clans.missions.step_done'));
         }
 
         $this->clanService->forgetUnplayedActions($user);
@@ -162,10 +162,10 @@ class ClanMissionService
         $mission = $step->mission;
         $this->clanService->assertMember($user, $mission->clan);
         if ($mission->status !== ClanMission::ACTIVE || $mission->expires_at->isPast()) {
-            throw new ClanException('Cette mission est terminée.');
+            throw new ClanException(__('server.clans.missions.over'));
         }
         if ($step->isDone()) {
-            throw new ClanException('Cette étape a déjà été réussie.');
+            throw new ClanException(__('server.clans.missions.step_done'));
         }
 
         $step->update($step->reserved_by_user_id === $user->id
@@ -320,7 +320,7 @@ class ClanMissionService
             // the game added to the "Jeux caca" or the "Jeux cool"
             $gameId = null;
             if (!$mission && in_array($bonus->type, [ClanBonusType::MORE_TIME, ClanBonusType::SKIP_STEP], true)) {
-                throw new ClanException('Aucune mission en cours.');
+                throw new ClanException(__('server.clans.missions.none'));
             }
 
             switch ($bonus->type) {
@@ -344,7 +344,7 @@ class ClanMissionService
                     $step = $mission->steps()->whereKey($params['step_id'] ?? 0)->lockForUpdate()->first();
                     $mission = $this->lockActiveMission($mission);
                     if (!$step || $step->isDone()) {
-                        throw new ClanException('Choisissez une étape de la mission en cours qui n\'est pas encore réussie.');
+                        throw new ClanException(__('server.clans.missions.choose_step'));
                     }
                     $step->update(['skipped' => true]);
                     $this->completeMissionIfDone($mission);
@@ -352,7 +352,7 @@ class ClanMissionService
                 case ClanBonusType::DOUBLE_POINTS:
                     // for the next mission, one at a time
                     if (ClanBonus::query()->pendingDoublePoints($clan->id, $period->id)->exists()) {
-                        throw new ClanException('La prochaine mission rapportera déjà deux fois plus de points.');
+                        throw new ClanException(__('server.clans.missions.double_already'));
                     }
                     break;
             }
@@ -397,12 +397,12 @@ class ClanMissionService
         [$same, $opposite] = $isBan ? [$lists['banned'], $lists['forced']] : [$lists['forced'], $lists['banned']];
 
         if ($same->contains($game->id)) {
-            throw new ClanException($isBan ? 'Ce jeu est déjà un jeu caca du clan.' : 'Ce jeu est déjà un jeu cool du clan.');
+            throw new ClanException($isBan ? __('server.clans.missions.already_banned') : __('server.clans.missions.already_forced'));
         }
         if ($opposite->contains($game->id)) {
             throw new ClanException($isBan
-                ? 'Ce jeu est un jeu cool du clan : il ne peut pas être aussi un jeu caca.'
-                : 'Ce jeu est un jeu caca du clan : il ne peut pas être aussi un jeu cool.');
+                ? __('server.clans.missions.forced_cannot_ban')
+                : __('server.clans.missions.banned_cannot_force'));
         }
 
         return $game->id;
@@ -413,7 +413,7 @@ class ClanMissionService
     {
         $mission = ClanMission::query()->lockForUpdate()->find($mission->id);
         if (!$mission || $mission->status !== ClanMission::ACTIVE || $mission->expires_at->isPast()) {
-            throw new ClanException('Aucune mission en cours.');
+            throw new ClanException(__('server.clans.missions.none'));
         }
 
         return $mission;
@@ -466,10 +466,10 @@ class ClanMissionService
     private function assertUsable(ClanBonus $bonus): void
     {
         if ($bonus->used_at !== null) {
-            throw new ClanException('Cette option a déjà été utilisée.');
+            throw new ClanException(__('server.clans.missions.option_used'));
         }
         if ($bonus->period_id !== $this->clanService->currentPeriod()?->id) {
-            throw new ClanException('Les options sont remises à zéro à la fin du tournoi des clans.');
+            throw new ClanException(__('server.clans.missions.options_reset'));
         }
     }
 
@@ -477,7 +477,7 @@ class ClanMissionService
     {
         $game = $gameId ? Game::query()->where('is_active', true)->find($gameId) : null;
         if (!$game) {
-            throw new ClanException('Choisissez un jeu.');
+            throw new ClanException(__('server.clans.missions.choose_game'));
         }
 
         return $game;

@@ -11,7 +11,7 @@ class DailyRunClosedException extends RuntimeException
 {
     public function __construct()
     {
-        parent::__construct('La période de ce jeu du jour est terminée.');
+        parent::__construct(__('server.daily.period_over'));
     }
 
     // not an error to log

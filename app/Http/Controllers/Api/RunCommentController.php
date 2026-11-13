@@ -110,9 +110,9 @@ class RunCommentController extends Controller implements HasMiddleware
             'reason' => ['required', Rule::enum(ReportReason::class)],
             'details' => ['nullable', 'string', 'max:500'],
         ], [
-            'reason.required' => 'Choisissez un motif.',
-            'reason.enum' => 'Choisissez un motif.',
-            'details.max' => 'Les précisions ne doivent pas dépasser 500 caractères.',
+            'reason.required' => __('server.reports.reason_required'),
+            'reason.enum' => __('server.reports.reason_required'),
+            'details.max' => __('server.reports.details_too_long'),
         ]);
         $reports->report($request->user(), $comment, ReportReason::from($validated['reason']), $validated['details'] ?? null);
 
@@ -131,9 +131,9 @@ class RunCommentController extends Controller implements HasMiddleware
     private function messages(): array
     {
         return [
-            'content.required' => 'Le commentaire est vide.',
-            'content.max' => 'Le commentaire ne doit pas dépasser '.$this->comments->maxLength().' caractères.',
-            'frame.required' => 'Le moment du replay est manquant.',
+            'content.required' => __('server.comments.empty'),
+            'content.max' => __('server.comments.too_long', ['max' => $this->comments->maxLength()]),
+            'frame.required' => __('server.comments.frame_missing'),
         ];
     }
 }

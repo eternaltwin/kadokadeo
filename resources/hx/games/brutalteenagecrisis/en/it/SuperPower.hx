@@ -12,7 +12,7 @@ class SuperPower extends brutalteenagecrisis.en.Item {
 	override function onPick() {
 		super.onPick();
 		mode.hero.cd.set("superPower", 30*15);
-		fx.pop(xx, yy, "Super power!!");
+		fx.pop(xx, yy, Lang.super_power);
 		fx.flashBang(0x00FFFF, 0.5);
 	}
 }

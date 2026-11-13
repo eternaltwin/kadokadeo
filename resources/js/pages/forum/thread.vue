@@ -63,8 +63,8 @@ const reply = () =>
         <EtwinForumButton icon="back" :to="{ name: 'forum.section', params: { section: thread.section.key ?? thread.section.id } }" />
         <img v-if="thread.is_locked"
              src="/gfx/forum/twinoid/lock.png"
-             alt="Verrouillé"
-             title="Sujet verrouillé" />
+             :alt="$t('forum.locked_short')"
+             :title="$t('forum.locked_title')" />
         <div class="ml-auto"><EtwinForumPagination :current-page="page" :last-page="lastPage" :to="pageRoute" /></div>
       </EtwinForumBar>
 
@@ -82,9 +82,9 @@ const reply = () =>
                         :grammar="grammar"
                         :icons="etwinIcons(grammar?.icons)"
                         :icon-url="etwinIconUrl" />
-        <FormButton type="submit" size="lg" :disabled="answer.isLoading.value || !draft.trim()">Répondre</FormButton>
+        <FormButton type="submit" size="lg" :disabled="answer.isLoading.value || !draft.trim()">{{ $t('forum.reply') }}</FormButton>
       </form>
-      <p v-else-if="thread.is_locked" class="mx-2.5 my-4 text-center italic">Ce sujet est verrouillé.</p>
+      <p v-else-if="thread.is_locked" class="mx-2.5 my-4 text-center italic">{{ $t('forum.locked') }}</p>
     </template>
   </div>
 </template>

@@ -41,7 +41,7 @@ watch(() => route.fullPath, () => {
             <div class="flex justify-end pt-2">
               <button type="button"
                       class="text-2xl leading-none text-kado-teal-500 cursor-pointer"
-                      title="Fermer"
+                      :title="$t('common.close')"
                       @click="open = false">
                 &times;
               </button>

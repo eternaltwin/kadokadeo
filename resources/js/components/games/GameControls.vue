@@ -1,24 +1,26 @@
 <script setup>
+import { t } from '@/i18n'
+
 defineProps({
   game: { type: Object, required: true },
 })
 
 const keyMap = {
-  mouse: { image: '/gfx/controls/mouseMove.gif', title: 'Souris' },
-  mouse1: { image: '/gfx/controls/mouseLeftClic.gif', title: 'Clic gauche' },
-  mouse2: { image: '', title: 'Clic droit' },
-  space: { image: '/gfx/controls/keySpace.gif', title: 'Espace' },
-  enter: { image: '/gfx/controls/key.gif', title: 'Entrée' },
-  arrows: { image: '/gfx/controls/keyarrow.gif', title: '4 flèches' },
-  arrowup: { image: '/gfx/controls/keyUpArrow.gif', title: 'Flèche haut' },
-  arrowdown: { image: '/gfx/controls/keyDownArrow.gif', title: 'Flèche bas' },
-  arrowleft: { image: '/gfx/controls/keyLeftArrow.gif', title: 'Flèche gauche' },
-  arrowright: { image: '/gfx/controls/keyRightArrow.gif', title: 'Flèche droite' },
-  shift: { image: '/gfx/controls/keyshift.gif', title: 'Shift' },
-  ctrl: { image: '/gfx/controls/keyctrl.gif', title: 'Ctrl' },
-  control: { image: '/gfx/controls/keyctrl.gif', title: 'Ctrl' },
-  esc: { image: '/gfx/controls/keyesc.gif', title: 'Echap' },
-  escape: { image: '/gfx/controls/keyesc.gif', title: 'Echap' },
+  mouse: { image: '/gfx/controls/mouseMove.gif', title: t('games.key_mouse') },
+  mouse1: { image: '/gfx/controls/mouseLeftClic.gif', title: t('games.key_left_click') },
+  mouse2: { image: '', title: t('games.key_right_click') },
+  space: { image: '/gfx/controls/keySpace.gif', title: t('games.key_space') },
+  enter: { image: '/gfx/controls/key.gif', title: t('games.key_enter') },
+  arrows: { image: '/gfx/controls/keyarrow.gif', title: t('games.key_arrows') },
+  arrowup: { image: '/gfx/controls/keyUpArrow.gif', title: t('games.key_up') },
+  arrowdown: { image: '/gfx/controls/keyDownArrow.gif', title: t('games.key_down') },
+  arrowleft: { image: '/gfx/controls/keyLeftArrow.gif', title: t('games.key_left') },
+  arrowright: { image: '/gfx/controls/keyRightArrow.gif', title: t('games.key_right') },
+  shift: { image: '/gfx/controls/keyshift.gif', title: t('games.key_shift') },
+  ctrl: { image: '/gfx/controls/keyctrl.gif', title: t('games.key_ctrl') },
+  control: { image: '/gfx/controls/keyctrl.gif', title: t('games.key_ctrl') },
+  esc: { image: '/gfx/controls/keyesc.gif', title: t('games.key_esc') },
+  escape: { image: '/gfx/controls/keyesc.gif', title: t('games.key_esc') },
   p: { image: '/gfx/controls/keyp.gif', title: 'P' },
 }
 
@@ -47,8 +49,8 @@ function getKeyView(key) {
              class="mx-auto my-2 w-71">
     <thead>
       <tr>
-        <th scope="col" class="w-17.5">Commande</th>
-        <th scope="col">Fonction</th>
+        <th scope="col" class="w-17.5">{{ $t('games.command') }}</th>
+        <th scope="col">{{ $t('games.function') }}</th>
       </tr>
     </thead>
     <tbody>

@@ -26,11 +26,11 @@ class ReportService
     public function report(User $reporter, Model&Reportable $content, ReportReason $reason, ?string $details = null): Report
     {
         if (in_array(SoftDeletes::class, class_uses_recursive($content)) && $content->trashed()) {
-            throw new RunCommentException('Ce contenu a déjà été supprimé.');
+            throw new RunCommentException(__('server.reports.already_deleted'));
         }
         $author = $content->reportAuthor();
         if ($author?->id === $reporter->id) {
-            throw new RunCommentException('Vous ne pouvez pas signaler votre propre message.');
+            throw new RunCommentException(__('server.reports.cannot_report_own'));
         }
 
         return Report::query()->firstOrCreate([

@@ -16,7 +16,7 @@ fetchGames().then((data) => {
 
 <template>
   <div class="relative min-h-48 grid grid-cols-2 sm:grid-cols-3 gap-4">
-    <Loader v-if="isLoading">Chargement des jeux...</Loader>
+    <Loader v-if="isLoading">{{ $t('clan_game_picker.loading') }}</Loader>
     <button
       v-for="game in games"
       :key="game.id"
@@ -29,7 +29,7 @@ fetchGames().then((data) => {
       <img
         v-if="game.is_favorite"
         src="/gfx/iconGameLiked.gif"
-        alt="Jeu favori"
+        :alt="$t('clan_game_picker.favorite')"
         class="absolute z-[3] left-[3.54%] top-[39.4%] w-[7.96%] h-auto"
       />
       <div class="absolute left-[15.93%] top-[5.63%] w-[77.88%]">

@@ -593,7 +593,7 @@ class Game implements kado.GameInterface {
 		});
 		mc.field.x = KadoKadeoManager.I(15);
 		mc.field.y = KadoKadeoManager.I(0);
-		mc.field.text = Cs.OPTION_INFOS[id].name;
+		mc.field.text = Lang.resolve("option_" + id);
 		// mc.bg._visible = false;
 		mc.id = id;
 		// Filt.glow(cast mc.field, 2, 10, 0x375073);

@@ -346,7 +346,7 @@ class Game implements kado.GameInterface {
 					addScore(KKApi.const(Std.int(dx)));
 				maxHeight = Math.max(-blob.y, maxHeight);
 				var n = Std.int(maxHeight * 0.2);
-				panel.txt.text = n + "m";
+				panel.txt.text = Lang.height({height: n});
 				stats.hm = n;
 			case 1:
 				initDecor(genStep);

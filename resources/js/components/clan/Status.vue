@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '@/i18n'
 // "Statut": the attacks launched by the clan and the attacks against it still waiting for a defense, as on the old site
 // (the finished ones are in "Historique"), then the wars declared by the clan and against it
 const props = defineProps({
@@ -22,8 +23,8 @@ onClanUpdated(() => props.clan.id, ['status'], load)
 
 // only the kinds of attacks there are
 const sections = computed(() => [
-  { key: 'launched', type: 'atk', title: `Le clan ${props.clan.name} a lancé les attaques suivantes`, attacks: status.value?.launched ?? [] },
-  { key: 'received', type: 'def', title: 'Ce clan est attaqué', attacks: status.value?.received ?? [] },
+  { key: 'launched', type: 'atk', title: t('clan_status.launched_title', { name: props.clan.name }), attacks: status.value?.launched ?? [] },
+  { key: 'received', type: 'def', title: t('clan_status.received_title'), attacks: status.value?.received ?? [] },
 ].filter((section) => section.attacks.length))
 
 const goPlay = (data) => router.push({ name: 'clans.play', params: { action: data.data.id } })
@@ -31,13 +32,13 @@ const doDefend = (attack) => defend(attack.id).then(goPlay)
 const doImprove = (attack) => improveAttack(attack.id).then(goPlay)
 // "Je m'en occupe": reserve the defense, take the place of another member, or give it up
 const doReserve = (attack) => reserveDefense(attack.id).then(load)
-const reserveLabel = (item) => (item.reserved_by_me ? 'Libérer' : item.reserved_by ? 'Prendre' : 'Réserver')
+const reserveLabel = (item) => (item.reserved_by_me ? t('clan_status.release') : item.reserved_by ? t('clan_status.take') : t('clan_status.reserve'))
 const authStore = useAuthStore()
 const doCancel = (attack) => {
   const isMine = attack.attacker.etwin_id === authStore.user?.etwin_id
   const question = isMine
-    ? 'Annuler cette attaque ?'
-    : `Annuler l'attaque de ${attack.attacker.display_name} ? Ce joueur sera prévenu par message privé.`
+    ? t('clan_status.confirm_cancel_own')
+    : t('clan_status.confirm_cancel_other', { name: attack.attacker.display_name })
   if (confirm(question)) {
     cancelAttack(attack.id).then(() => {
       load()
@@ -56,18 +57,18 @@ const doCancel = (attack) => {
       <KadoTable v-if="status" class="w-full text-sm">
         <thead>
           <tr class="uppercase text-2xs">
-            <th class="min-w-28 text-left">Joueur</th>
-            <th class="min-w-28 text-left">Clan</th>
-            <th class="min-w-24 text-left">Jeu</th>
-            <th class="text-right">Score</th>
-            <th>Statut</th>
+            <th class="min-w-28 text-left">{{ $t('common.player') }}</th>
+            <th class="min-w-28 text-left">{{ $t('clan_status.clan') }}</th>
+            <th class="min-w-24 text-left">{{ $t('common.game') }}</th>
+            <th class="text-right">{{ $t('common.score') }}</th>
+            <th>{{ $t('clan_status.status') }}</th>
           </tr>
         </thead>
         <tbody>
           <!-- no attack: the frame of the table with a single line -->
           <tr v-if="!sections.length" class="bg-kado-blue-100">
             <td colspan="5" class="px-2 py-1 italic text-kado-blue-700">
-              Aucune attaque en cours de ce clan ni contre ce clan.
+              {{ $t('clan_status.no_attack') }}
             </td>
           </tr>
           <template v-for="section in sections" :key="section.key">
@@ -99,22 +100,22 @@ const doCancel = (attack) => {
                 <!-- the countdown, then the small buttons of what the player can do -->
                 <div class="flex flex-col items-center justify-center gap-2">
                   <ClanCountdown :until="attack.expires_at" @done="load" />
-                  <FormButton v-if="attack.can_defend" size="sm" @click="doDefend(attack)">Défendre</FormButton>
+                  <FormButton v-if="attack.can_defend" size="sm" @click="doDefend(attack)">{{ $t('clan_status.defend') }}</FormButton>
                   <FormButton v-if="attack.can_improve"
                               size="sm"
-                              title="Rejouer pour améliorer cette attaque : le nouveau score ne compte que s'il est meilleur"
-                              @click="doImprove(attack)">Améliorer</FormButton>
+                              :title="$t('clan_status.improve_title')"
+                              @click="doImprove(attack)">{{ $t('clan_status.improve') }}</FormButton>
                   <FormButton v-if="attack.can_cancel"
                               size="sm"
                               variant="pink"
-                              title="Annuler cette attaque"
-                              @click="doCancel(attack)">Annuler</FormButton>
+                              :title="$t('clan_status.cancel_title')"
+                              @click="doCancel(attack)">{{ $t('common.cancel') }}</FormButton>
                   <FormButton v-if="attack.can_reserve"
                               size="sm"
                               :variant="attack.reserved_by_me ? 'pink' : 'green'"
-                              title="Je m'en occupe : prévenez votre clan que vous battrez ce score plus tard"
+                              :title="$t('clan_status.reserve_title')"
                               @click="doReserve(attack)">{{ reserveLabel(attack) }}</FormButton>
-                  <span v-if="attack.reserved_by" class="text-xs italic">Réservée par {{ attack.reserved_by.display_name }}</span>
+                  <span v-if="attack.reserved_by" class="text-xs italic">{{ $t('clan_status.reserved_by', { name: attack.reserved_by.display_name }) }}</span>
                 </div>
               </td>
             </tr>
@@ -125,15 +126,21 @@ const doCancel = (attack) => {
 
     <!-- the wars declared by the clan (its targets) and against it -->
     <template v-if="status?.wars?.length">
-      <KadoSectionTitle>Clans en guerre</KadoSectionTitle>
+      <KadoSectionTitle>{{ $t('clan_status.wars') }}</KadoSectionTitle>
       <ul class="list-inside list-kado ml-4 space-y-1">
-        <li v-for="war in status.wars" :key="war.id">
-          <template v-for="(side, index) in [war.clan, war.target]" :key="side.id">
-            <strong v-if="side.id === clan.id">{{ side.name }}</strong>
-            <RouterLink v-else :to="{ name: 'clans.status', params: { id: side.id } }" class="font-bold">{{ side.name }}</RouterLink>
-            <template v-if="index === 0"> a déclaré la guerre à </template>
+        <i18n-t v-for="war in status.wars"
+                :key="war.id"
+                keypath="clan_status.war_declared"
+                tag="li">
+          <template #clan>
+            <strong v-if="war.clan.id === clan.id">{{ war.clan.name }}</strong>
+            <RouterLink v-else :to="{ name: 'clans.status', params: { id: war.clan.id } }" class="font-bold">{{ war.clan.name }}</RouterLink>
           </template>
-        </li>
+          <template #target>
+            <strong v-if="war.target.id === clan.id">{{ war.target.name }}</strong>
+            <RouterLink v-else :to="{ name: 'clans.status', params: { id: war.target.id } }" class="font-bold">{{ war.target.name }}</RouterLink>
+          </template>
+        </i18n-t>
       </ul>
     </template>
   </div>

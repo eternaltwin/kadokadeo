@@ -76,23 +76,23 @@ const chartLabels = computed(() => {
 
 <template>
   <div>
-    <Loader v-if="isLoading">Chargement des scores...</Loader>
-    <MessageError v-else-if="error">Error: {{ error }}</MessageError>
+    <Loader v-if="isLoading">{{ $t('games.loading_scores') }}</Loader>
+    <MessageError v-else-if="error">{{ $t('common.error_with', { error }) }}</MessageError>
     <template v-else-if="history">
       <KadoPageTitle class="mb-5">{{ history.game.name }}</KadoPageTitle>
       <div class="grid gap-8 px-4 py-4 sm:px-6 lg:grid-cols-2">
         <section>
-          <KadoSectionTitle>Historique</KadoSectionTitle>
+          <KadoSectionTitle>{{ $t('common.history') }}</KadoSectionTitle>
           <KadoTable class="w-full">
             <thead>
               <tr class="text-kado-orange-500 uppercase text-sm *:px-2">
-                <th class="text-left">Période</th>
-                <th class="text-right">Meilleur score</th>
+                <th class="text-left">{{ $t('games.period') }}</th>
+                <th class="text-right">{{ $t('games.best_score') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="period in scoredPeriods" :key="period.id">
-                <td class="text-left">Période {{ period.id }}</td>
+                <td class="text-left">{{ $t('competition.period', { period: period.id }) }}</td>
                 <td class="text-right">
                   <Number v-if="period.score !== null" color="blue" :value="period.score" />
                   <span v-else>-</span>
@@ -103,13 +103,13 @@ const chartLabels = computed(() => {
         </section>
 
         <section>
-          <KadoSectionTitle>Évolution</KadoSectionTitle>
+          <KadoSectionTitle>{{ $t('games.evolution') }}</KadoSectionTitle>
           <svg
             v-if="scoredChartPoints.length"
             viewBox="0 0 720 340"
             class="w-full h-auto"
             role="img"
-            :aria-label="`Meilleur score par période pour ${history.game.name}`"
+            :aria-label="$t('games.best_score_chart', { game: history.game.name })"
           >
             <g v-for="tick in chartYTicks" :key="tick.y">
               <line :x1="chartFrame.left"
@@ -150,15 +150,15 @@ const chartLabels = computed(() => {
                   y="312"
                   text-anchor="middle"
                   class="fill-kado-slate-700 text-xs">
-              P{{ point.periodId }}
+              {{ $t('games.period_short', { period: point.periodId }) }}
             </text>
           </svg>
-          <p class="mx-2.5 my-4" v-else>Aucun score enregistré pour ce jeu.</p>
+          <p class="mx-2.5 my-4" v-else>{{ $t('games.no_scores_recorded') }}</p>
         </section>
       </div>
       <p class="mx-2.5 my-4 text-center">
         <RouterLink :to="{ name: 'games.show', params: { id: history.game.id } }">
-          Jouer à {{ history.game.name }}
+          {{ $t('games.play', { game: history.game.name }) }}
         </RouterLink>
       </p>
     </template>

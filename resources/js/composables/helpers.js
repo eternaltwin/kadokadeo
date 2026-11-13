@@ -1,3 +1,4 @@
+import { t } from '@/i18n'
 import { intlLocale } from '@/i18n/locale'
 // import pako from 'pako'
 
@@ -26,9 +27,9 @@ export function formatMinutes(minutes) {
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
   if (h === 0) {
-    return `${m} min`
+    return t('duration.minutes', { minutes: m })
   }
-  return m ? `${h} h ${String(m).padStart(2, '0')}` : `${h} h`
+  return m ? t('duration.hours_minutes', { hours: h, minutes: String(m).padStart(2, '0') }) : t('duration.hours', { hours: h })
 }
 
 export function updateAtMidnight() {

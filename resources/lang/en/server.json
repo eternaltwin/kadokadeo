@@ -1,5 +1,214 @@
 {
   "account": {
+    "login_expired": "The login has expired or was started in another browser. Please log in again.",
+    "banned": "Your account has been banned.",
+    "banned_cheat": "Your account has been banned for cheating.",
+    "banned_multi_account": "Your account has been banned for using multiple accounts.",
     "unknown_preferences": "Unknown preference: :keys."
+  },
+  "themes": {
+    "not_found": "Theme not found.",
+    "already_owned": "You already own this theme.",
+    "not_enough_points": "You do not have enough Kado points to buy this theme.",
+    "buy_first": "You must buy this theme first."
+  },
+  "runs": {
+    "already_completed": "Game already finished.",
+    "no_games_left": "You have no games left today: come back tomorrow!",
+    "no_clan_games_left": "You have no clan games left. You can buy some with your Kado points."
+  },
+  "daily": {
+    "cannot_reroll": "The game of the day cannot be changed.",
+    "not_today": "This game is not the game of the day.",
+    "already_played": "You have already played the game of the day: come back tomorrow!",
+    "period_over": "The period of this game of the day is over."
+  },
+  "comments": {
+    "empty": "The comment is empty.",
+    "too_long": "The comment must not exceed :max characters.",
+    "frame_missing": "The moment of the replay is missing.",
+    "disabled": "Comments are disabled for the moment.",
+    "gone": "This comment no longer exists.",
+    "no_nested_reply": "You cannot reply to a reply.",
+    "replay_full": "This replay has reached the maximum number of comments.",
+    "too_many": "You have already commented a lot on this replay.",
+    "cannot_edit": "You cannot edit this comment.",
+    "cannot_delete": "You cannot delete this comment.",
+    "cannot_like_own": "You cannot like your own comment."
+  },
+  "reports": {
+    "reason_required": "Choose a reason.",
+    "details_too_long": "The details must not exceed 500 characters.",
+    "already_deleted": "This content has already been deleted.",
+    "cannot_report_own": "You cannot report your own message.",
+    "reasons": {
+      "spam": "Spam or advertising",
+      "abuse": "Insult or harassment",
+      "inappropriate": "Inappropriate content",
+      "other": "Other"
+    }
+  },
+  "messages": {
+    "recipient_required": "Enter the recipient.",
+    "subject_required": "Enter the subject of the message.",
+    "body_required": "Your message is empty.",
+    "unknown_player": "No player has this name.",
+    "cannot_write_to_self": "You cannot write to yourself.",
+    "recipient_banned": "This player cannot receive messages."
+  },
+  "forum": {
+    "login_to_write": "To write on the forum, log in again and allow Kadokadéo to post for you.",
+    "no_answer": "The Eternaltwin forum is not answering, try again later.",
+    "error": "The Eternaltwin forum returned an error.",
+    "refusals": {
+      "bad_request": "The forum could not read the message (invalid Marktwin) or this section does not accept topics.",
+      "unauthorized": "Your Eternaltwin authorization is no longer valid: log in again.",
+      "forbidden": "The Eternaltwin forum refused this action.",
+      "not_found": "This topic or section does not exist.",
+      "conflict": "This is already done: reload the page.",
+      "unprocessable": "The request is not consistent."
+    }
+  },
+  "clans": {
+    "coming_soon": "Clans will be available soon.",
+    "no_period": "No period in progress.",
+    "not_a_member": "You are not a member of this clan.",
+    "no_longer_member": "You are no longer a member of this clan.",
+    "leader_only": "Only the clan leader can do this.",
+    "managers_only": "Only the clan leader and their seconds-in-command can do this.",
+    "already_in_a_clan": "You are already in a clan.",
+    "creation_price": "You need :price Kado points to create a clan.",
+    "not_recruiting": "This clan is not recruiting at the moment.",
+    "full": "This clan is full.",
+    "application_already_sent": "You have already applied to this clan.",
+    "application_price": "You need :price Kado points to send an application.",
+    "application_cannot_cancel": "This application cannot be cancelled.",
+    "application_already_handled": "This application has already been handled.",
+    "player_in_a_clan": "This player is already in a clan.",
+    "not_in_a_clan": "You are not in a clan.",
+    "name_new_leader_first": "You must name a new clan leader first.",
+    "leave_next_period": "You joined this clan during this period: you can leave it from the next period on.",
+    "cannot_kick_self": "You cannot kick yourself.",
+    "cannot_kick_leader": "The clan leader cannot be kicked.",
+    "kick_next_period": "This player joined the clan during this period: they can be kicked from the next period on.",
+    "gone": "This clan no longer exists.",
+    "use_name_leader": "Use “Name leader” to hand over the clan.",
+    "leader_role_fixed": "The role of the clan leader cannot be changed.",
+    "seat_next_period": "This player's seat has already been chosen during this period: it can change at the next period.",
+    "seats_full": "All the :role seats are taken (:seats for this clan).",
+    "mission_number": "Mission :number",
+    "names": {
+      "too_short": "The name of the clan must be at least 3 characters long.",
+      "too_long": "The name of the clan must be at most 32 characters long.",
+      "taken": "This clan name is already taken.",
+      "invalid_characters": "The name of the clan can only contain letters, digits, spaces and the signs - ' . ! ?",
+      "needs_a_letter": "The name of the clan must contain at least one letter."
+    },
+    "in_progress": {
+      "improvement": "Improvement in progress…",
+      "attack": "Attack in progress…",
+      "defense": "Defense in progress…",
+      "mission_step": "Mission step in progress…"
+    },
+    "war": {
+      "needs_a_clan": "You must be in a clan to attack.",
+      "cannot_attack_own": "You cannot attack your own clan.",
+      "protected": "This clan is protected from your attacks: its score is too far from yours.",
+      "attacks_closed": "The period is about to end, you can no longer launch an attack.",
+      "no_clan": "You do not have a clan.",
+      "cannot_declare_on_own": "You cannot declare war on your own clan.",
+      "too_many_wars": "Your clan is already at war with :max clans: make peace with one of them first.",
+      "no_attack_games": "You have no attack games left today. You can buy clan games with your Kado points.",
+      "game_unavailable": "This game is not available.",
+      "max_attacks": "You already have the maximum number of attacks in progress.",
+      "max_attacks_with_hint": "You already have the maximum number of attacks in progress. You can improve or cancel an attack from the status page of your clan.",
+      "attacker_only": "Only the attacker can improve their attack.",
+      "attack_over": "This attack is over.",
+      "defenders_only": "Only the members of the attacked clan can defend.",
+      "cannot_defend_while_attacking": "You cannot defend while you have an attack in progress.",
+      "defenders_only_booking": "Only the members of the attacked clan can book the defense.",
+      "cancel_not_allowed": "Only the attacker, the clan leader and their seconds-in-command can cancel this attack."
+    },
+    "runs": {
+      "not_in_progress": "This clan game is not in progress.",
+      "closed_back_to_missions": ":reason Go back to the missions page of your clan.",
+      "closed_back_to_clan": ":reason Go back to the page of your clan.",
+      "attack_launched": "Your attack is launched! The opposing clan has :hours hours to repel it.",
+      "attack_improved": "Your attack is improved: the opposing clan will have to beat this new score.",
+      "attack_not_improved": "This score is not better than the one of your attack: it keeps its score.",
+      "defense_repelled": "Well done, you repelled the attack!",
+      "defense_failed": "Your score is not enough to repel the attack.",
+      "step_completed": "Mission step completed!",
+      "step_failed": "The score to reach for this step has not been reached.",
+      "does_not_count": "This game does not count for your clan.",
+      "too_late": "Too late: this clan action is over."
+    },
+    "missions": {
+      "over": "This mission is over.",
+      "step_done": "This step has already been completed.",
+      "none": "No mission in progress.",
+      "choose_step": "Choose a step of the current mission that has not been completed yet.",
+      "double_already": "The next mission will already give twice as many points.",
+      "already_banned": "This game is already one of the clan's poop games.",
+      "already_forced": "This game is already one of the clan's cool games.",
+      "forced_cannot_ban": "This game is one of the clan's cool games: it cannot also be a poop game.",
+      "banned_cannot_force": "This game is one of the clan's poop games: it cannot also be a cool game.",
+      "option_used": "This option has already been used.",
+      "options_reset": "The options are reset at the end of the clan tournament.",
+      "choose_game": "Choose a game."
+    },
+    "games": {
+      "unknown_pack": "This pack of games does not exist.",
+      "not_enough_points": "You do not have enough Kado points to buy these games.",
+      "not_enough_to_give": "You do not have enough purchased clan games (the free games of the day cannot be given).",
+      "clan_not_enough": "The clan does not have enough games to distribute."
+    },
+    "forum": {
+      "title_required": "The title is required.",
+      "title_too_short": "The title must be at least 3 characters long.",
+      "title_too_long": "The title must not exceed :max characters.",
+      "message_empty": "The message is empty.",
+      "message_too_long": "The message must not exceed :max characters.",
+      "topic_locked": "This topic is locked.",
+      "cannot_edit": "You cannot edit this message.",
+      "author_only_title": "Only the author of the topic can change its title."
+    },
+    "roles": {
+      "leader": "Clan leader",
+      "right_hand": "Second-in-command",
+      "member": "Member"
+    },
+    "combat_roles": {
+      "attacker": "Attacker",
+      "defender": "Defender",
+      "attacker_description": "Can launch two attacks at the same time.",
+      "defender_description": "Can defend even with an attack in progress."
+    },
+    "action_types": {
+      "attack": "Attack",
+      "defense": "Defense",
+      "mission": "Mission step"
+    },
+    "attack_status": {
+      "active": "In progress",
+      "repelled": "Repelled",
+      "won": "Successful",
+      "cancelled": "Cancelled",
+      "not_repelled": "Not repelled"
+    },
+    "bonuses": {
+      "more_time": "More time",
+      "ban_game": "Poop game",
+      "force_game": "Cool game",
+      "next_mission": "Next mission",
+      "skip_step": "Skip step",
+      "double_points": "Double points",
+      "more_time_description": "Pushes back the end of the mission by :hours hours to have more time to finish it.",
+      "ban_game_description": "Adds a game to the clan's poop games: they will never be in the future missions of the period.",
+      "force_game_description": "Adds a game to the clan's cool games: they will be in the future missions of the period (some of them at random if there are more than steps).",
+      "next_mission_description": "Cancels the current mission, without losing points, and generates a new mission.",
+      "skip_step_description": "Removes a step of your choice from your mission.",
+      "double_points_description": "The next mission will give your clan twice as many points if you complete it."
+    }
   }
 }

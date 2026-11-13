@@ -1,4 +1,7 @@
 <script setup>
+import { t } from '@/i18n'
+import { intlLocale } from '@/i18n/locale'
+
 // the help as on KadoKado (HelpUI of kk.js, 2008): a box of 400px showing one section at a time with its art on the
 // left, the table of content in roman numbers, a "Suivant" button, and the sections sliding from one to the next
 const leagueStore = useLeagueStore()
@@ -7,29 +10,29 @@ const route = useRoute()
 const router = useRouter()
 
 const stars = [
-  { name: 'étoile verte', image: '/gfx/starGreenMedium.gif' },
-  { name: 'étoile orange', image: '/gfx/starOrangeMedium.gif' },
-  { name: 'étoile rouge', image: '/gfx/starRedMedium.gif' },
+  { name: t('help.stars.green'), withArticle: t('help.stars.green_with_article'), image: '/gfx/starGreenMedium.gif' },
+  { name: t('help.stars.orange'), withArticle: t('help.stars.orange_with_article'), image: '/gfx/starOrangeMedium.gif' },
+  { name: t('help.stars.red'), withArticle: t('help.stars.red_with_article'), image: '/gfx/starRedMedium.gif' },
 ]
 
 const art = (name) => `/assets/img/gfx/art/${name}.jpg`
 // level 2: a part of the table of content, level 3: one of its sections (those of the clans only once they are open)
 const sections = [
-  { id: 'bienvenue', title: 'Bienvenue', level: 2, art: art('general') },
-  { id: 'periodes', title: 'Les périodes', level: 2, art: art('periode') },
-  { id: 'jeudujour', title: 'Le jeu du jour', level: 2, art: art('general') },
-  { id: 'etoiles', title: 'Les étoiles', level: 2, art: art('star') },
-  { id: 'niveaux', title: 'Les niveaux', level: 2, art: art('scoring') },
-  { id: 'clans', title: 'Les clans', level: 2, art: art('clan'), clan: true },
-  { id: 'attaques', title: 'Les attaques', level: 3, art: art('clan'), clan: true },
-  { id: 'defenses', title: 'Les défenses', level: 3, art: art('clan'), clan: true },
-  { id: 'roles', title: 'Les rôles', level: 3, art: art('clan'), clan: true },
-  { id: 'missions', title: 'Les missions', level: 3, art: art('clan'), clan: true },
-  { id: 'options', title: 'Les options', level: 3, art: art('clan'), clan: true },
-  { id: 'classement', title: 'Le classement des clans', level: 3, art: art('clan'), clan: true },
-  { id: 'classementv1', title: 'Le classement V1', level: 2, art: art('general') },
-  { id: 'compte', title: 'Mon compte', level: 2, art: art('pks') },
-  { id: 'questions', title: 'Questions', level: 2, art: art('gem') },
+  { id: 'bienvenue', title: t('help.sections.welcome'), level: 2, art: art('general') },
+  { id: 'periodes', title: t('help.sections.periods'), level: 2, art: art('periode') },
+  { id: 'jeudujour', title: t('help.sections.daily'), level: 2, art: art('general') },
+  { id: 'etoiles', title: t('help.sections.stars'), level: 2, art: art('star') },
+  { id: 'niveaux', title: t('help.sections.levels'), level: 2, art: art('scoring') },
+  { id: 'clans', title: t('help.sections.clans'), level: 2, art: art('clan'), clan: true },
+  { id: 'attaques', title: t('help.sections.attacks'), short: t('help.sections.attacks_short'), level: 3, art: art('clan'), clan: true },
+  { id: 'defenses', title: t('help.sections.defenses'), short: t('help.sections.defenses_short'), level: 3, art: art('clan'), clan: true },
+  { id: 'roles', title: t('help.sections.roles'), short: t('help.sections.roles_short'), level: 3, art: art('clan'), clan: true },
+  { id: 'missions', title: t('help.sections.missions'), short: t('help.sections.missions_short'), level: 3, art: art('clan'), clan: true },
+  { id: 'options', title: t('help.sections.options'), short: t('help.sections.options_short'), level: 3, art: art('clan'), clan: true },
+  { id: 'classement', title: t('help.sections.clan_ranking'), short: t('help.sections.clan_ranking_short'), level: 3, art: art('clan'), clan: true },
+  { id: 'classementv1', title: t('help.sections.v1_ranking'), level: 2, art: art('general') },
+  { id: 'compte', title: t('help.sections.account'), level: 2, art: art('pks') },
+  { id: 'questions', title: t('help.sections.questions'), level: 2, art: art('gem') },
 ].filter((section) => clanStore.enabled || !section.clan)
 
 // the kado points of a point of the daily ranking, set in the admin (App\Settings\SiteSettings)
@@ -52,11 +55,6 @@ const current = ref(indexOf(route.hash))
 watch(() => route.hash, (hash) => {
   current.value = indexOf(hash)
 })
-// "Les attaques" -> "Attaques"
-const shortTitle = (section) => {
-  const title = section.title.replace(/^(Les?|La) /, '')
-  return title.charAt(0).toUpperCase() + title.slice(1)
-}
 // the part of a section, and of the section shown
 const partOf = (index) => [...toc].reverse().find((part) => part.index <= index)
 const openPart = computed(() => partOf(current.value) ?? null)
@@ -69,12 +67,18 @@ if (!clanStore.rules) {
   clanStore.reload()
 }
 const rules = computed(() => clanStore.rules ?? {})
-// "1er", "2e à 5e"
-const rank = (n) => (n === 1 ? '1er' : `${n}e`)
-const ranks = (reward) => (reward.from === reward.to ? rank(reward.from) : `${rank(reward.from)} à ${rank(reward.to)}`)
+// 1er, 2e / 1st, 2nd, 3rd, 4th: the ordinal categories of the language
+const ORDINALS = {
+  one: () => t('last_period.ordinal_one'),
+  two: () => t('last_period.ordinal_two'),
+  few: () => t('last_period.ordinal_few'),
+  other: () => t('last_period.ordinal_other'),
+}
+const rank = (n) => `${n}${(ORDINALS[new Intl.PluralRules(intlLocale(), { type: 'ordinal' }).select(n)] ?? ORDINALS.other)()}`
+const ranks = (reward) => (reward.from === reward.to ? rank(reward.from) : t('help.clan_ranking.range', { from: rank(reward.from), to: rank(reward.to) }))
 const clanRewards = computed(() => [
-  { title: 'Classement des attaques', rewards: rules.value.rewards?.war ?? [] },
-  { title: 'Classement des missions', rewards: rules.value.rewards?.missions ?? [] },
+  { title: t('help.clan_ranking.war'), rewards: rules.value.rewards?.war ?? [] },
+  { title: t('help.clan_ranking.missions'), rewards: rules.value.rewards?.missions ?? [] },
 ])
 // the seats of a role for a clan of n members (App\Services\ClanService::combatSeats): at least one (nothing while
 // the rules load)
@@ -82,14 +86,14 @@ const seatsFor = (members, share) => (members && share != null ? Math.max(1, Mat
 // "1 Jeu cool et 2 Jeu caca": the options given at the start of the period
 const startingBonuses = computed(() => {
   const parts = (rules.value.bonuses ?? []).filter((bonus) => bonus.starting > 0).map((bonus) => `${bonus.starting} ${bonus.label}`)
-  return parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts.at(-1)}` : parts[0]
+  return parts.length > 1 ? t('help.options.last_bonus', { bonuses: parts.slice(0, -1).join(', '), last: parts.at(-1) }) : parts[0]
 })
-const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `${pack.count} pour ${formatScore(pack.price)} points`).join(', '))
+const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => t('help.attacks.pack', { games: pack.count, price: formatScore(pack.price) })).join(', '))
 </script>
 
 <template>
   <div class="p-2">
-    <KadoPageTitle class="mb-5">Aide</KadoPageTitle>
+    <KadoPageTitle class="mb-5">{{ $t('help.title') }}</KadoPageTitle>
 
     <!-- the table of content: the parts as the tabs of the site, the sections of the open part below -->
     <nav class="mb-3">
@@ -123,45 +127,62 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
             <nav v-if="partOf(index).children.length" class="mb-2 text-xs">
               <template v-for="(s, i) in [partOf(index), ...partOf(index).children]" :key="s.id">
                 <span v-if="i" class="mx-1 text-kado-teal-500">·</span>
-                <strong v-if="s.index === index" class="text-kado-blue-700">{{ i ? shortTitle(s) : 'Présentation' }}</strong>
-                <a v-else href="#" @click.prevent="go(s.index)">{{ i ? shortTitle(s) : 'Présentation' }}</a>
+                <strong v-if="s.index === index" class="text-kado-blue-700">{{ i ? s.short : $t('help.overview') }}</strong>
+                <a v-else href="#" @click.prevent="go(s.index)">{{ i ? s.short : $t('help.overview') }}</a>
               </template>
             </nav>
 
             <template v-if="section.id === 'bienvenue'">
-              <p>Bienvenue sur <strong>KadoKadéo</strong>, le retour de KadoKado par le projet Eternaltwin ! Retrouvez les jeux de Motion-Twin, battez vos records et grimpez dans les niveaux de chaque jeu.</p>
-              <p>Chaque jour, vous disposez d'un nombre de parties à jouer sur les jeux que vous préférez. Le jeu du jour vous propose en plus un contrat : un score à battre pour remporter des <strong>points Kado</strong> <img src="/gfx/skpoint.gif" alt="Kado" class="inline size-4" />.</p>
-              <p><template v-if="clanStore.enabled">Rejoignez un clan pour jouer en équipe, et utilisez</template><template v-else>Utilisez</template> ce menu ou le bouton « Suivant » pour découvrir le reste du site !</p>
+              <i18n-t keypath="help.welcome.intro" tag="p">
+                <template #site><strong>{{ $t('common.site_name') }}</strong></template>
+              </i18n-t>
+              <i18n-t keypath="help.welcome.contract" tag="p">
+                <template #points><strong>{{ $t('help.kado_points') }}</strong></template>
+                <template #icon><img src="/gfx/skpoint.gif" :alt="$t('help.kado_alt')" class="inline size-4" /></template>
+              </i18n-t>
+              <p>{{ clanStore.enabled ? $t('help.welcome.navigation_with_clans') : $t('help.welcome.navigation') }}</p>
             </template>
 
             <template v-else-if="section.id === 'periodes'">
-              <p>Une période KadoKadéo se déroule sur deux semaines, soit <strong>14 jours</strong>. Le Kalendrier affiché en haut à droite du site indique la période actuelle ainsi que le jour actuel.</p>
-              <p>Quand une période se termine, les classements sont remis à zéro : les meilleurs joueurs de chaque niveau montent au niveau supérieur et remportent des points Kado<template v-if="clanStore.enabled">, et le tournoi des clans recommence</template>. Le classement du jeu du jour est lui aussi récompensé à ce moment-là.</p>
+              <i18n-t keypath="help.periods.length" tag="p">
+                <template #days><strong>{{ $t('help.periods.days') }}</strong></template>
+              </i18n-t>
+              <p>{{ clanStore.enabled ? $t('help.periods.close_with_clans') : $t('help.periods.close') }}</p>
             </template>
 
             <template v-else-if="section.id === 'jeudujour'">
-              <p>Chaque jour à minuit (UTC), un jeu est tiré au sort. La partie est <strong>identique pour tous les joueurs</strong>, et vous n'avez droit qu'à <strong>une seule tentative</strong>. Elle vous propose aussi un contrat : un score à battre pour remporter des points Kado <img src="/gfx/skpoint.gif" alt="Kado" class="inline size-4" />.</p>
-              <p>Le top 10 de chaque jour gagne des <strong>points de classement</strong> : 10 points pour le 1er, 9 pour le 2e, et ainsi de suite jusqu'à 1 point pour le 10e. Ils s'additionnent jour après jour dans le classement de la période, visible à côté du jeu.</p>
-              <p>A la fin de la période, <strong>chaque joueur ayant au moins un point</strong> reçoit {{ dailyKadoPerPoint }} <img src="/gfx/skpoint.gif" alt="Kado" class="inline size-4" /> par point de classement. Le détail de votre récompense apparaît dans l'onglet « Dernière période » de votre profil.</p>
+              <i18n-t keypath="help.daily.draw" tag="p">
+                <template #same><strong>{{ $t('help.daily.same') }}</strong></template>
+                <template #attempt><strong>{{ $t('help.daily.attempt') }}</strong></template>
+                <template #icon><img src="/gfx/skpoint.gif" :alt="$t('help.kado_alt')" class="inline size-4" /></template>
+              </i18n-t>
+              <i18n-t keypath="help.daily.top10" tag="p">
+                <template #ranking_points><strong>{{ $t('help.daily.ranking_points') }}</strong></template>
+              </i18n-t>
+              <i18n-t keypath="help.daily.reward" tag="p">
+                <template #every_player><strong>{{ $t('help.daily.every_player') }}</strong></template>
+                <template #kado>{{ dailyKadoPerPoint }}</template>
+                <template #icon><img src="/gfx/skpoint.gif" :alt="$t('help.kado_alt')" class="inline size-4" /></template>
+              </i18n-t>
             </template>
 
             <template v-else-if="section.id === 'etoiles'">
-              <p>Si vous faites un très bon score à un jeu, vous remportez une étoile. Il y a trois niveaux d'étoile pour chaque jeu :</p>
+              <p>{{ $t('help.stars.intro') }}</p>
               <ul>
-                <li v-for="star in stars" :key="star.name"><img :src="star.image" :alt="star.name" class="inline size-5" /> l'{{ star.name }}</li>
+                <li v-for="star in stars" :key="star.name"><img :src="star.image" :alt="star.name" class="inline size-5" /> {{ star.withArticle }}</li>
               </ul>
-              <p>L'étoile que vous possédez est indiquée sur la boîte de chaque jeu. Les étoiles comptent aussi pour passer au niveau supérieur : il faudra une étoile minimum selon le niveau où vous vous trouvez.</p>
+              <p>{{ $t('help.stars.outro') }}</p>
             </template>
 
             <template v-else-if="section.id === 'niveaux'">
-              <p>A chaque passage de niveau, vous obtenez des points Kado supplémentaires, qui augmentent au fur et à mesure que votre niveau progresse :</p>
+              <p>{{ $t('help.levels.intro') }}</p>
               <KadoTable class="w-full">
                 <thead>
                   <tr>
-                    <th>Niveau</th>
-                    <th>Qualifiés</th>
-                    <th>Etoile</th>
-                    <th>Points Kado</th>
+                    <th>{{ $t('help.levels.level') }}</th>
+                    <th>{{ $t('help.levels.qualified') }}</th>
+                    <th>{{ $t('help.levels.star') }}</th>
+                    <th>{{ $t('help.levels.kado_points') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -173,7 +194,7 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
                       </div>
                     </td>
                     <td class="text-left">
-                      <span v-if="league.promotion_ratio">{{ league.promotion_ratio }}% (max {{ league.promotion_max_slots }})</span>
+                      <span v-if="league.promotion_ratio">{{ $t('help.levels.ratio', { ratio: league.promotion_ratio, max: league.promotion_max_slots }) }}</span>
                       <span v-else>{{ league.promotion_max_slots }}</span>
                     </td>
                     <td>
@@ -183,98 +204,147 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
                            class="inline h-5">
                     </td>
                     <td class="text-right whitespace-nowrap">
-                      {{ formatScore(league.promotion_reward) }} <img src="/gfx/skpoint.gif" alt="Kado" class="inline size-4">
+                      {{ formatScore(league.promotion_reward) }} <img src="/gfx/skpoint.gif" :alt="$t('help.kado_alt')" class="inline size-4">
                     </td>
                   </tr>
                 </tbody>
               </KadoTable>
-              <p>Si un joueur est seul dans son niveau, il ne pourra monter que s'il y a des joueurs dans le niveau suivant. Sinon, il faudra au moins 2 joueurs pour prétendre à monter.</p>
+              <p>{{ $t('help.levels.alone') }}</p>
             </template>
 
             <template v-else-if="section.id === 'clans'">
-              <p>Un Clan est un groupe de joueurs (maximum {{ rules.max_members }}) qui se rassemblent pour combattre ensemble contre d'autres clans.</p>
-              <p>Vous pouvez soit rejoindre un Clan existant en envoyant votre candidature depuis sa page, soit créer votre propre Clan à partir de la rubrique <RouterLink :to="{ name: 'clans.index' }">Clans</RouterLink>.</p>
-              <p v-if="rules.creation_price || rules.application_price">Créer un Clan coûte <strong>{{ formatScore(rules.creation_price ?? 0) }} points Kado</strong> et chaque candidature <strong>{{ formatScore(rules.application_price ?? 0) }} points Kado</strong>. Vous pouvez postuler dans plusieurs clans à la fois : dès qu'un clan vous accepte, vos autres candidatures sont retirées et remboursées. Une candidature refusée ou que vous retirez vous est aussi remboursée.</p>
-              <p>Un joueur accepté dans un Clan ne peut pas le quitter ni en être exclu pendant la période où il l'a rejoint.</p>
-              <p>Le Clan est dirigé par son <strong>chef</strong>, qui peut nommer des <strong>bras droits</strong> : ils ont tous les droits du chef (candidatures, exclusions, options, rôles), sauf dissoudre le Clan et nommer un nouveau chef.</p>
-              <p>Chaque Clan a deux scores et deux positions : une dans le classement des attaques et une dans le classement des missions. Vous pouvez participer à l'un ou l'autre de ces classements, ou aux deux !</p>
-              <p>Dans le Clan, les joueurs ont aussi leur classement : 1 point par étape de mission réussie, et les points de chaque attaque et de chaque défense réussies.</p>
+              <p>{{ $t('help.clans.intro', { max: rules.max_members }) }}</p>
+              <i18n-t keypath="help.clans.join" tag="p">
+                <template #link><RouterLink :to="{ name: 'clans.index' }">{{ $t('help.clans.join_link') }}</RouterLink></template>
+              </i18n-t>
+              <i18n-t v-if="rules.creation_price || rules.application_price" keypath="help.clans.prices" tag="p">
+                <template #creation><strong>{{ $t('help.clans.price', { points: formatScore(rules.creation_price ?? 0) }) }}</strong></template>
+                <template #application><strong>{{ $t('help.clans.price', { points: formatScore(rules.application_price ?? 0) }) }}</strong></template>
+              </i18n-t>
+              <p>{{ $t('help.clans.locked') }}</p>
+              <i18n-t keypath="help.clans.leaders" tag="p">
+                <template #chief><strong>{{ $t('help.clans.chief') }}</strong></template>
+                <template #right_hands><strong>{{ $t('help.clans.right_hands') }}</strong></template>
+              </i18n-t>
+              <p>{{ $t('help.clans.two_rankings') }}</p>
+              <p>{{ $t('help.clans.player_ranking') }}</p>
             </template>
 
             <template v-else-if="section.id === 'attaques'">
-              <p><img src="/assets/img/gfx/icons/atk.gif" alt="Attaque" class="inline" /> Pour gagner des points, un Clan doit attaquer un autre Clan : allez sur la page d'un Clan adverse, cliquez sur « Attaquer ce clan », choisissez un jeu et effectuez une partie.</p>
-              <p>Votre score devient une attaque. Pour la repousser, le Clan adverse devra faire un score supérieur au vôtre. Une attaque repoussée est annulée, et votre Clan ne perd rien.</p>
-              <p>Si au bout de <strong>{{ rules.attack_hours }} heures</strong> l'attaque n'a pas été repoussée, votre Clan remporte de 1 à <strong>{{ rules.attack_max_points }} points</strong> et le Clan adverse perd autant (jamais en dessous de zéro). Contre un Clan qui a autant de points que le vôtre ou plus, l'attaque rapporte {{ rules.attack_max_points }} points ; c'est un point de moins par tranche de {{ rules.attack_points_palier }} points qu'il a de moins que vous. Le nombre de points est affiché avant d'attaquer. Attaquez des clans au score proche du vôtre : ceux qui ont plus de {{ rules.protection_range }} points d'écart avec vous sont protégés de vos attaques.</p>
-              <p>Chaque joueur peut avoir une attaque en cours à la fois. Pour l'améliorer, cliquez sur « Améliorer » dans l'onglet Statut et rejouez sur le même jeu : le nouveau score ne remplace celui de l'attaque que s'il est meilleur, et le Clan adverse a de nouveau {{ rules.attack_hours }} heures pour le battre.</p>
-              <p>Une attaque doit pouvoir se terminer avant la fin de la période : les attaques et les améliorations ferment <strong>{{ rules.attack_hours }} heures avant la fin de la période</strong>. Les défenses restent possibles jusqu'au bout.</p>
-              <p>Chaque jour, vous avez <strong>{{ rules.attack_games_per_day }} parties gratuites</strong> pour attaquer et défendre (la gemme verte dans le menu du Clan), à part de vos parties normales. Quand elles sont jouées, vous pouvez attaquer et défendre avec des <strong>parties de clan</strong>, achetées avec vos points Kado ({{ gamePacks }}). Vous pouvez les garder pour vous ou les donner à votre Clan : le chef et ses bras droits les distribuent ensuite aux membres. Les parties gratuites du jour ne peuvent pas être données.</p>
+              <i18n-t keypath="help.attacks.how" tag="p">
+                <template #icon><img src="/assets/img/gfx/icons/atk.gif" :alt="$t('help.attacks.icon_alt')" class="inline" /></template>
+              </i18n-t>
+              <p>{{ $t('help.attacks.repel') }}</p>
+              <i18n-t keypath="help.attacks.reward" tag="p">
+                <template #hours><strong>{{ $t('help.attacks.hours', { hours: rules.attack_hours }) }}</strong></template>
+                <template #points><strong>{{ $t('help.attacks.points', { points: rules.attack_max_points }) }}</strong></template>
+                <template #max>{{ rules.attack_max_points }}</template>
+                <template #palier>{{ rules.attack_points_palier }}</template>
+                <template #range>{{ rules.protection_range }}</template>
+              </i18n-t>
+              <p>{{ $t('help.attacks.upgrade', { hours: rules.attack_hours }) }}</p>
+              <i18n-t keypath="help.attacks.closing" tag="p">
+                <template #before_end><strong>{{ $t('help.attacks.before_end', { hours: rules.attack_hours }) }}</strong></template>
+              </i18n-t>
+              <i18n-t keypath="help.attacks.games" tag="p">
+                <template #free><strong>{{ $t('help.attacks.free', { games: rules.attack_games_per_day }) }}</strong></template>
+                <template #clan_games><strong>{{ $t('help.attacks.clan_games') }}</strong></template>
+                <template #packs>{{ gamePacks }}</template>
+              </i18n-t>
             </template>
 
             <template v-else-if="section.id === 'defenses'">
-              <p><img src="/assets/img/gfx/icons/def.gif" alt="Défense" class="inline" /> Les attaques lancées par votre Clan et celles menées contre lui sont indiquées dans l'onglet Statut de votre clan. Cliquez sur « Défendre » et battez le score de l'attaque sur le même jeu.</p>
-              <p>Sachez que tant que vous avez une attaque en cours, vous ne pouvez pas défendre ! Il faudra donc coordonner les membres du Clan entre attaquants et défenseurs.</p>
-              <p>Un <strong>Défenseur</strong> peut défendre même quand il a une attaque en cours : voyez <a href="#" @click.prevent="go(sections.findIndex((s) => s.id === 'roles'))">les rôles</a>.</p>
-              <p>Vous battrez le score d'une attaque plus tard ? Cliquez sur « Réserver » dans l'onglet Statut pour prévenir votre Clan. N'importe quel membre peut prendre la réservation à son tour : c'est seulement une information.</p>
-              <p>Pour progresser dans le classement, il faudra à la fois remporter des attaques et défendre efficacement contre les clans ennemis.</p>
+              <i18n-t keypath="help.defenses.where" tag="p">
+                <template #icon><img src="/assets/img/gfx/icons/def.gif" :alt="$t('help.defenses.icon_alt')" class="inline" /></template>
+              </i18n-t>
+              <p>{{ $t('help.defenses.blocked') }}</p>
+              <i18n-t keypath="help.defenses.defender" tag="p">
+                <template #defender><strong>{{ $t('help.roles.defender') }}</strong></template>
+                <template #link><a href="#" @click.prevent="go(sections.findIndex((s) => s.id === 'roles'))">{{ $t('help.defenses.defender_link') }}</a></template>
+              </i18n-t>
+              <p>{{ $t('help.defenses.reserve') }}</p>
+              <p>{{ $t('help.defenses.progress') }}</p>
             </template>
 
             <template v-else-if="section.id === 'roles'">
-              <p>Pour les attaques et les défenses, chaque joueur du Clan a un rôle. Sans siège, c'est un simple <strong>Membre</strong>. Le chef et ses bras droits peuvent donner les sièges d'<strong>Attaquant</strong> et de <strong>Défenseur</strong> depuis « Gérer le clan ».</p>
+              <i18n-t keypath="help.roles.intro" tag="p">
+                <template #member><strong>{{ $t('help.roles.member') }}</strong></template>
+                <template #attacker><strong>{{ $t('help.roles.attacker') }}</strong></template>
+                <template #defender><strong>{{ $t('help.roles.defender') }}</strong></template>
+              </i18n-t>
               <KadoTable class="w-full">
                 <thead>
                   <tr>
-                    <th class="text-left">Rôle</th>
-                    <th>Attaques en même temps</th>
-                    <th>Défendre avec une attaque en cours</th>
-                    <th>Sièges</th>
+                    <th class="text-left">{{ $t('help.roles.role') }}</th>
+                    <th>{{ $t('help.roles.attacks_at_once') }}</th>
+                    <th>{{ $t('help.roles.defend_while_attacking') }}</th>
+                    <th>{{ $t('help.roles.seats') }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td class="text-left"><strong>Attaquant</strong></td>
+                    <td class="text-left"><strong>{{ $t('help.roles.attacker') }}</strong></td>
                     <td>2</td>
-                    <td>Non</td>
-                    <td>{{ rules.attacker_seats }} % des membres</td>
+                    <td>{{ $t('help.roles.no') }}</td>
+                    <td>{{ $t('help.roles.seats_share', { percent: rules.attacker_seats }) }}</td>
                   </tr>
                   <tr>
-                    <td class="text-left"><strong>Défenseur</strong></td>
+                    <td class="text-left"><strong>{{ $t('help.roles.defender') }}</strong></td>
                     <td>1</td>
-                    <td>Oui</td>
-                    <td>{{ rules.defender_seats }} % des membres</td>
+                    <td>{{ $t('help.roles.yes') }}</td>
+                    <td>{{ $t('help.roles.seats_share', { percent: rules.defender_seats }) }}</td>
                   </tr>
                   <tr>
-                    <td class="text-left"><strong>Membre</strong></td>
+                    <td class="text-left"><strong>{{ $t('help.roles.member') }}</strong></td>
                     <td>1</td>
-                    <td>Non</td>
-                    <td>Les autres</td>
+                    <td>{{ $t('help.roles.no') }}</td>
+                    <td>{{ $t('help.roles.seats_others') }}</td>
                   </tr>
                 </tbody>
               </KadoTable>
-              <p>Le nombre de sièges dépend du nombre de membres, arrondi en dessous, avec au moins un siège de chaque rôle. Par exemple, un Clan de {{ rules.max_members }} joueurs a {{ seatsFor(rules.max_members, rules.attacker_seats) }} sièges d'Attaquant et {{ seatsFor(rules.max_members, rules.defender_seats) }} de Défenseur ; un Clan de 4 joueurs en a un de chaque.</p>
-              <p>Attention, un rôle donné est <strong>bloqué jusqu'à la fin de la période</strong> : il ne peut plus être changé ni retiré avant la période suivante. Choisissez bien vos Attaquants et vos Défenseurs ! Les rôles de chacun sont indiqués dans l'onglet Membres.</p>
+              <p>{{ $t('help.roles.example', { max: rules.max_members, attackers: seatsFor(rules.max_members, rules.attacker_seats), defenders: seatsFor(rules.max_members, rules.defender_seats) }) }}</p>
+              <i18n-t keypath="help.roles.locked" tag="p">
+                <template #locked_until><strong>{{ $t('help.roles.locked_until') }}</strong></template>
+              </i18n-t>
             </template>
 
             <template v-else-if="section.id === 'missions'">
-              <p>Votre Clan reçoit des missions : plusieurs étapes, chacune étant un score à atteindre sur un jeu. Vous avez <strong>{{ rules.mission_hours }} heures</strong> pour toutes les réussir<template v-if="rules.mission_minutes_less > 0"> lors de la première mission de la période, puis {{ formatMinutes(rules.mission_minutes_less) }} de moins à chaque mission réussie (au moins {{ formatMinutes(Math.min(rules.mission_min_minutes, rules.mission_hours * 60)) }})</template>. Chacun peut faire les étapes sur les jeux où il est le meilleur, et les parties des missions sont <strong>gratuites et illimitées</strong> !</p>
-              <p>Comme pour les défenses, chacun peut « Réserver » une étape pour prévenir le Clan qu'il s'en occupe.</p>
-              <p>Plus votre Clan a de membres, plus les missions ont d'étapes : {{ rules.mission_steps_alone }} pour un joueur seul, jusqu'à {{ rules.mission_steps_full }} pour {{ rules.max_members }} joueurs. Le score à atteindre augmente avec les missions, jusqu'à dépasser l'étoile rouge. Chaque mission mélange des étapes de toutes les difficultés, jusqu'à l'étoile rouge et au-delà, et garde des étapes plus faciles (dès la moitié de l'étoile verte, un peu plus dures à chaque mission), pour que chacun puisse participer.</p>
-              <p>Une mission réussie rapporte <strong>{{ rules.mission_points_first }} points</strong> (un point de moins toutes les {{ rules.mission_points_every }} missions, au moins {{ rules.mission_points_min }}) et ouvre la mission suivante. Si le temps est écoulé, votre Clan perd un point par étape non réussie, moins une, et reçoit une nouvelle mission. Combien de missions votre Clan réussira-t-il ?</p>
+              <i18n-t v-if="rules.mission_minutes_less > 0" keypath="help.missions.time_decreasing" tag="p">
+                <template #hours><strong>{{ $t('help.missions.hours', { hours: rules.mission_hours }) }}</strong></template>
+                <template #less>{{ formatMinutes(rules.mission_minutes_less) }}</template>
+                <template #min>{{ formatMinutes(Math.min(rules.mission_min_minutes, rules.mission_hours * 60)) }}</template>
+                <template #free><strong>{{ $t('help.missions.free') }}</strong></template>
+              </i18n-t>
+              <i18n-t v-else keypath="help.missions.time" tag="p">
+                <template #hours><strong>{{ $t('help.missions.hours', { hours: rules.mission_hours }) }}</strong></template>
+                <template #free><strong>{{ $t('help.missions.free') }}</strong></template>
+              </i18n-t>
+              <p>{{ $t('help.missions.reserve') }}</p>
+              <p>{{ $t('help.missions.steps', { alone: rules.mission_steps_alone, full: rules.mission_steps_full, max: rules.max_members }) }}</p>
+              <i18n-t keypath="help.missions.reward" tag="p">
+                <template #points><strong>{{ $t('help.missions.points', { points: rules.mission_points_first }) }}</strong></template>
+                <template #every>{{ rules.mission_points_every }}</template>
+                <template #min>{{ rules.mission_points_min }}</template>
+              </i18n-t>
             </template>
 
             <template v-else-if="section.id === 'options'">
-              <p><template v-if="startingBonuses">Au début de chaque période, votre Clan reçoit les options suivantes : {{ startingBonuses }}. </template>Chaque mission réussie a {{ rules.bonus_chance }} % de chances de lui faire gagner une option. C'est le chef de clan ou un bras droit qui les utilise. Chaque Jeu caca et chaque Jeu cool ajoute un jeu à la liste des jeux caca ou des jeux cool du Clan ; un jeu ne peut être que dans une seule liste. S'il y a plus de jeux cool que d'étapes, la mission en prend une partie au hasard. Elles sont remises à zéro à la fin de la période.</p>
+              <p>{{ startingBonuses ? $t('help.options.intro_with_starting', { bonuses: startingBonuses, chance: rules.bonus_chance }) : $t('help.options.intro', { chance: rules.bonus_chance }) }}</p>
               <KadoTable class="w-full">
                 <tbody>
                   <tr v-for="bonus in rules.bonuses ?? []" :key="bonus.type">
                     <td class="w-10"><img :src="bonus.icon" :alt="bonus.label" class="size-9 max-w-none"></td>
-                    <td class="text-left text-xs"><strong>{{ bonus.label }}</strong> : {{ bonus.description }}</td>
+                    <i18n-t keypath="help.options.bonus" tag="td" class="text-left text-xs">
+                      <template #label><strong>{{ bonus.label }}</strong></template>
+                      <template #description>{{ bonus.description }}</template>
+                    </i18n-t>
                   </tr>
                 </tbody>
               </KadoTable>
             </template>
 
             <template v-else-if="section.id === 'classement'">
-              <p>Le tournoi des clans dure une période. A la fin, les clans les mieux classés de chaque classement remportent des points Kado, répartis à parts égales entre leurs membres. « L'union fait la force » !</p>
+              <p>{{ $t('help.clan_ranking.intro') }}</p>
               <div class="flex flex-wrap gap-4">
                 <KadoTable v-for="ranking in clanRewards" :key="ranking.title" class="min-w-48 flex-1">
                   <thead>
@@ -283,7 +353,7 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
                   <tbody>
                     <tr v-for="reward in ranking.rewards" :key="reward.from">
                       <td class="text-left">{{ ranks(reward) }}</td>
-                      <td class="text-right">{{ formatScore(reward.points) }} <img src="/gfx/skpoint.gif" alt="Kado" class="inline size-4"></td>
+                      <td class="text-right">{{ formatScore(reward.points) }} <img src="/gfx/skpoint.gif" :alt="$t('help.kado_alt')" class="inline size-4"></td>
                     </tr>
                   </tbody>
                 </KadoTable>
@@ -291,31 +361,31 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
             </template>
 
             <template v-else-if="section.id === 'classementv1'">
-              <p>Chaque période, la compétition du classement V1 a lieu. Il s'agit d'un classement dans lequel les 12 meilleurs scores de chaque joueur sont additionnés pour atteindre un maximum de 18.000 points</p>
-              <p>Les scores de chaque jeu sont convertis dans une échelle allant de 0 à 1500 selon les critères suivants : </p>
+              <p>{{ $t('help.v1_ranking.intro') }}</p>
+              <p>{{ $t('help.v1_ranking.scale') }}</p>
 
               <KadoTable>
                 <thead>
                   <tr>
-                    <th>Score atteint</th>
-                    <th>Nombre de points V1</th>
+                    <th>{{ $t('help.v1_ranking.score_reached') }}</th>
+                    <th>{{ $t('help.v1_ranking.v1_points') }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><img src="/gfx/iconGreenStar.gif" alt="Etoile verte" /></td>
+                    <td><img src="/gfx/iconGreenStar.gif" :alt="$t('help.v1_ranking.green_star')" /></td>
                     <td>1000</td>
                   </tr>
                   <tr>
-                    <td><img src="/gfx/iconOrangeStar.gif" alt="Etoile orange" /></td>
+                    <td><img src="/gfx/iconOrangeStar.gif" :alt="$t('help.v1_ranking.orange_star')" /></td>
                     <td>1100</td>
                   </tr>
                   <tr>
-                    <td><img src="/gfx/iconRedStar.gif" alt="Etoile rouge" /></td>
+                    <td><img src="/gfx/iconRedStar.gif" :alt="$t('help.v1_ranking.red_star')" /></td>
                     <td>1150</td>
                   </tr>
                   <tr>
-                    <td>Score V1</td>
+                    <td>{{ $t('help.v1_ranking.v1_score') }}</td>
                     <td>1500</td>
                   </tr>
                 </tbody>
@@ -323,13 +393,19 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
             </template>
 
             <template v-else-if="section.id === 'compte'">
-              <p>Dans <RouterLink :to="{ name: 'account' }">Mon compte</RouterLink>, vous pouvez changer l'apparence du site.</p>
-              <p>Le thème <strong>Karbon</strong> s'achète une seule fois avec vos points Kado : vous pourrez ensuite passer d'un thème à l'autre quand vous le voulez.</p>
+              <i18n-t keypath="help.account.look" tag="p">
+                <template #link><RouterLink :to="{ name: 'account' }">{{ $t('help.account.look_link') }}</RouterLink></template>
+              </i18n-t>
+              <i18n-t keypath="help.account.karbon" tag="p">
+                <template #theme><strong>{{ $t('help.account.karbon_theme') }}</strong></template>
+              </i18n-t>
             </template>
 
             <template v-else-if="section.id === 'questions'">
-              <p>Vous avez d'autres questions ? Les joueurs de KadoKadéo et l'équipe Eternaltwin vous répondent sur le <a href="https://discord.gg/cqasFsD" target="_blank">Discord KadoKadéo</a>.</p>
-              <p>Bon jeu sur KadoKadéo !</p>
+              <i18n-t keypath="help.questions.other" tag="p">
+                <template #discord><a href="https://discord.gg/cqasFsD" target="_blank">{{ $t('help.questions.discord') }}</a></template>
+              </i18n-t>
+              <p>{{ $t('help.questions.enjoy') }}</p>
             </template>
           </div>
         </section>
@@ -340,9 +416,9 @@ const gamePacks = computed(() => (rules.value.game_packs ?? []).map((pack) => `$
       <FormButton v-if="current > 0"
                   size="lg"
                   variant="pink"
-                  @click="go(current - 1)">Précédent</FormButton>
+                  @click="go(current - 1)">{{ $t('help.previous') }}</FormButton>
       <span v-else></span>
-      <FormButton v-if="current < sections.length - 1" size="lg" @click="go(current + 1)">Suivant</FormButton>
+      <FormButton v-if="current < sections.length - 1" size="lg" @click="go(current + 1)">{{ $t('help.next') }}</FormButton>
     </p>
   </div>
 </template>

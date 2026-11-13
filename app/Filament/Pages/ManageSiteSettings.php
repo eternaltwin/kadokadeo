@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\LocalePreference;
 use App\Settings\SiteSettings;
 use BackedEnum;
 use Filament\Forms\Components\Select;
@@ -31,7 +32,7 @@ class ManageSiteSettings extends SettingsPage
         return $schema
             ->components([
                 Section::make('Annonce')
-                    ->description('Message affiché en haut de chaque page.')
+                    ->description('Message affiché en haut de chaque page. Une langue sans texte montre le texte français ; sans texte français, pas d\'annonce.')
                     ->schema([
                         Toggle::make('announcement_enabled')
                             ->label('Activée'),
@@ -42,11 +43,11 @@ class ManageSiteSettings extends SettingsPage
                                 'success' => 'Information (vert)',
                             ])
                             ->required(),
-                        Textarea::make('announcement_content')
-                            ->label('Contenu')
+                        ...array_map(fn (LocalePreference $language) => Textarea::make("announcement_contents.{$language->value}")
+                            ->label("Contenu ({$language->frenchName()})")
                             ->helperText('Markdown inline : **gras**, *italique*, [lien](https://...). Les retours à la ligne sont conservés.')
                             ->rows(4)
-                            ->maxLength(2000),
+                            ->maxLength(2000), LocalePreference::languages()),
                     ]),
                 Section::make('Parties')
                     ->columns(3)

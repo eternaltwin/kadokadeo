@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '@/i18n'
 import { formatDate } from '@/i18n/dates'
 import { intlLocale } from '@/i18n/locale'
 // the threads of a section of the forum, as on the forum of Twinoid: the pinned ones ("Post-It") first, then the others
@@ -12,7 +13,7 @@ const rows = computed(() => {
   const rows = []
   let group = null
   for (const thread of props.threads) {
-    const label = thread.is_pinned ? 'Post-It' : `Le ${day(thread.last_post?.ctime ?? thread.ctime)}`
+    const label = thread.is_pinned ? t('etwin_forum.pinned') : t('etwin_forum.day_group', { day: day(thread.last_post?.ctime ?? thread.ctime) })
     if (label !== group) {
       rows.push({ key: `group-${label}`, separator: label })
       group = label
@@ -36,14 +37,14 @@ const cellClasses = (thread, align = 'text-left') => [
     <thead>
       <tr class="text-2xs text-kado-blue-700">
         <th :class="headerClasses" class="w-5 text-left"></th>
-        <th :class="headerClasses" class="text-left">Sujets</th>
-        <th :class="headerClasses" class="w-10 text-center">Rép.</th>
-        <th :class="headerClasses" class="w-28 text-left">Dernier</th>
+        <th :class="headerClasses" class="text-left">{{ $t('etwin_forum.topics') }}</th>
+        <th :class="headerClasses" class="w-10 text-center">{{ $t('etwin_forum.replies_short') }}</th>
+        <th :class="headerClasses" class="w-28 text-left">{{ $t('etwin_forum.last_post') }}</th>
       </tr>
     </thead>
     <tbody>
       <tr v-if="!threads.length">
-        <td colspan="4" class="bg-kado-slate-500 p-3 text-center text-white italic">Aucun sujet pour le moment.</td>
+        <td colspan="4" class="bg-kado-slate-500 p-3 text-center text-white italic">{{ $t('etwin_forum.no_topics') }}</td>
       </tr>
       <template v-for="row in rows" :key="row.key">
         <tr v-if="row.separator">
@@ -53,12 +54,12 @@ const cellClasses = (thread, align = 'text-left') => [
           <td :class="cellClasses(row.thread, 'text-center')">
             <img v-if="row.thread.is_locked"
                  src="/gfx/forum/twinoid/lock.png"
-                 alt="Verrouillé"
-                 title="Sujet verrouillé" />
+                 :alt="$t('forum.locked_short')"
+                 :title="$t('forum.locked_title')" />
             <img v-else-if="row.thread.has_admin_announcement"
                  src="/gfx/forum/twinoid/announce.png"
-                 alt="Annonce"
-                 title="Annonce" />
+                 :alt="$t('etwin_forum.announcement')"
+                 :title="$t('etwin_forum.announcement')" />
           </td>
           <td :class="cellClasses(row.thread)">
             <RouterLink :to="{ name: 'forum.thread', params: { thread: row.thread.id } }" class="block text-sm text-white no-underline hover:text-white hover:no-underline">

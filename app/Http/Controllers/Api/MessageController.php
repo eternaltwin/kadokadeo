@@ -70,16 +70,16 @@ class MessageController extends Controller implements HasMiddleware
             'subject' => ['required', 'string', 'max:100'],
             'body' => ['required', 'string', 'max:5000'],
         ], [
-            'to.required' => 'Indiquez le destinataire.',
-            'subject.required' => 'Indiquez le sujet du message.',
-            'body.required' => 'Votre message est vide.',
+            'to.required' => __('server.messages.recipient_required'),
+            'subject.required' => __('server.messages.subject_required'),
+            'body.required' => __('server.messages.body_required'),
         ]);
         $sender = $request->user();
         $recipient = User::query()->where('display_name', $validated['to'])->orWhere('etwin_id', $validated['to'])->first();
 
-        abort_unless($recipient, 422, 'Aucun joueur ne porte ce nom.');
-        abort_if($recipient->id === $sender->id, 422, 'Vous ne pouvez pas vous écrire à vous-même.');
-        abort_if($recipient->isBanned(), 422, 'Ce joueur ne peut pas recevoir de message.');
+        abort_unless($recipient, 422, __('server.messages.unknown_player'));
+        abort_if($recipient->id === $sender->id, 422, __('server.messages.cannot_write_to_self'));
+        abort_if($recipient->isBanned(), 422, __('server.messages.recipient_banned'));
 
         $message = $this->messageService->send($sender, $recipient, $validated['subject'], $validated['body']);
 

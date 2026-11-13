@@ -53,19 +53,19 @@ const save = () =>
                         :icons="etwinIcons(grammar?.icons)"
                         :icon-url="etwinIconUrl" />
         <div class="flex gap-2">
-          <FormButton type="submit" :disabled="isLoading || !draft.trim()">Enregistrer</FormButton>
-          <FormButton variant="pink" @click="editing = false">Annuler</FormButton>
+          <FormButton type="submit" :disabled="isLoading || !draft.trim()">{{ $t('common.save') }}</FormButton>
+          <FormButton variant="pink" @click="editing = false">{{ $t('common.cancel') }}</FormButton>
         </div>
       </form>
       <EtwinForumContent v-else-if="revision?.content?.html" :html="revision.content.html" />
-      <p v-else class="m-0 italic opacity-75">Ce message a été retiré par la modération.</p>
+      <p v-else class="m-0 italic opacity-75">{{ $t('etwin_forum.removed') }}</p>
 
       <div class="mt-2 flex flex-wrap items-center justify-end gap-2 text-2xs opacity-80">
-        <span v-if="(post.revisions?.count ?? 1) > 1" class="mr-auto italic">Modifié {{ etwinForumDate(revision?.time) }}</span>
+        <span v-if="(post.revisions?.count ?? 1) > 1" class="mr-auto italic">{{ $t('etwin_forum.edited', { date: etwinForumDate(revision?.time) }) }}</span>
         <EtwinForumButton v-if="post.self?.can_edit && !editing"
                           icon="edit"
                           :disabled="isLoading"
-                          @click="startEditing">Éditer</EtwinForumButton>
+                          @click="startEditing">{{ $t('common.edit') }}</EtwinForumButton>
       </div>
     </div>
   </article>

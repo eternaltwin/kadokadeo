@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '@/i18n'
 import { intlLocale } from '@/i18n/locale'
 // a private message: read (marked as read), answer, delete
 const route = useRoute()
@@ -27,7 +28,7 @@ const answer = () => router.push({
   },
 })
 const remove = () => {
-  if (confirm('Supprimer ce message ?')) {
+  if (confirm(t('messages.confirm_delete'))) {
     deleteMessage(message.value.id).then(() => router.push({ name: received.value ? 'messages.inbox' : 'messages.sent' }))
   }
 }
@@ -37,10 +38,10 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'lon
 <template>
   <NavTabs
     :items="[
-      { label: 'Reçus', value: 'inbox', route: { name: 'messages.inbox' } },
-      { label: 'Envoyés', value: 'sent', route: { name: 'messages.sent' } },
-      { label: 'Écrire', value: 'new', route: { name: 'messages.new' } },
-      { label: messagesStore.notificationsUnread ? `Notifications (${messagesStore.notificationsUnread})` : 'Notifications', value: 'notifications', route: { name: 'messages.notifications' } },
+      { label: $t('messages.inbox'), value: 'inbox', route: { name: 'messages.inbox' } },
+      { label: $t('messages.sent'), value: 'sent', route: { name: 'messages.sent' } },
+      { label: $t('messages.write'), value: 'new', route: { name: 'messages.new' } },
+      { label: messagesStore.notificationsUnread ? $t('messages.notifications_count', { count: messagesStore.notificationsUnread }) : $t('messages.notifications'), value: 'notifications', route: { name: 'messages.notifications' } },
     ]"
     :selected-index="received ? 0 : 1"
   />
@@ -51,25 +52,33 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'lon
 
     <template v-if="message">
       <KadoSectionTitle>{{ message.subject }}</KadoSectionTitle>
-      <p class="text-sm">
-        <template v-if="received">
-          De
+      <i18n-t v-if="received"
+              keypath="messages.from_on"
+              tag="p"
+              class="text-sm">
+        <template #sender>
           <RouterLink v-if="message.sender" :to="{ name: 'profile.show', params: { id: message.sender.etwin_id } }" class="font-bold">{{ message.sender.display_name }}</RouterLink>
-          <strong v-else class="text-kado-orange-500">KadoKado</strong>,
+          <strong v-else class="text-kado-orange-500">{{ $t('messages.system_sender') }}</strong>
         </template>
-        <template v-else>
-          À <RouterLink :to="{ name: 'profile.show', params: { id: message.recipient.etwin_id } }" class="font-bold">{{ message.recipient.display_name }}</RouterLink>,
+        <template #date>{{ date(message.created_at) }}</template>
+      </i18n-t>
+      <i18n-t v-else
+              keypath="messages.to_on"
+              tag="p"
+              class="text-sm">
+        <template #recipient>
+          <RouterLink :to="{ name: 'profile.show', params: { id: message.recipient.etwin_id } }" class="font-bold">{{ message.recipient.display_name }}</RouterLink>
         </template>
-        le {{ date(message.created_at) }}
-      </p>
+        <template #date>{{ date(message.created_at) }}</template>
+      </i18n-t>
       <MarktwinContent :text="message.body" class="border-2 border-white bg-white/70 p-3" />
 
       <div class="flex gap-2">
-        <FormButton v-if="received && message.sender" size="lg" @click="answer">Répondre</FormButton>
+        <FormButton v-if="received && message.sender" size="lg" @click="answer">{{ $t('common.reply') }}</FormButton>
         <FormButton variant="pink"
                     size="lg"
                     :disabled="isLoading"
-                    @click="remove">Supprimer</FormButton>
+                    @click="remove">{{ $t('common.delete') }}</FormButton>
       </div>
     </template>
   </div>

@@ -45,7 +45,7 @@ const answered = () => {
 <template>
   <div class="space-y-2">
     <p v-if="!threads.length" class="m-0 text-xs italic text-kado-slate-400">
-      Aucun commentaire pour l'instant{{ canComment ? ' : soyez le premier !' : '.' }}
+      {{ canComment ? $t('runs.no_comments_be_first') : $t('runs.no_comments') }}
     </p>
     <div v-for="{ comment, replies } in threads" :key="comment.id">
       <RunsCommentsItem :run-id="runId"

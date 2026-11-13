@@ -1,6 +1,8 @@
 <script setup>
 // "Mission": the mission in progress (a score to reach on several games), the previous ones and the options of the clan.
 // Another clan sees the missions only: no buttons, no reservations, no options (the API does not give them)
+import { t } from '@/i18n'
+
 const props = defineProps({
   clan: { type: Object, required: true },
 })
@@ -16,9 +18,9 @@ const bonusGame = ref(null)
 // a game is in the "Jeux caca" or in the "Jeux cool", once: it can't be chosen again
 const gameTag = (id) => {
   if (data.value?.banned_games?.some((g) => g.id === id)) {
-    return 'jeu caca'
+    return t('clan_missions.tag_banned')
   }
-  return data.value?.forced_games?.some((g) => g.id === id) ? 'jeu cool' : null
+  return data.value?.forced_games?.some((g) => g.id === id) ? t('clan_missions.tag_forced') : null
 }
 const gameNames = (list) => list.map((g) => g.name).join(', ')
 const bonusStep = ref(null)
@@ -42,13 +44,17 @@ if (props.clan.viewer.can_manage) {
 
 const mission = computed(() => data.value?.mission)
 // the star of the score to reach of a step (-1: under the green star), a "+" above the red one
-const stars = {
-  '-1': { img: '/gfx/iconGreyStar.gif', alt: 'Sous l\'étoile verte' },
-  0: { img: '/gfx/iconGreenStar.gif', alt: 'Étoile verte' },
-  1: { img: '/gfx/iconOrangeStar.gif', alt: 'Étoile orange' },
-  2: { img: '/gfx/iconRedStar.gif', alt: 'Étoile rouge' },
-}
-const statusLabels = { completed: 'Réussie', failed: 'Échouée', skipped: 'Remplacée' }
+const stars = computed(() => ({
+  '-1': { img: '/gfx/iconGreyStar.gif', alt: t('clan_missions.star_below_green') },
+  0: { img: '/gfx/iconGreenStar.gif', alt: t('clan_missions.star_green') },
+  1: { img: '/gfx/iconOrangeStar.gif', alt: t('clan_missions.star_orange') },
+  2: { img: '/gfx/iconRedStar.gif', alt: t('clan_missions.star_red') },
+}))
+const statusLabels = computed(() => ({
+  completed: t('clan_missions.status_completed'),
+  failed: t('clan_missions.status_failed'),
+  skipped: t('clan_missions.status_skipped'),
+}))
 // the options of the same kind shown once with their count ("x3"): the first one is used
 const stackedBonuses = computed(() => {
   const byType = new Map()
@@ -65,7 +71,7 @@ const stackedBonuses = computed(() => {
 
 // "Je m'en occupe": reserve the step, take the place of another member, or give it up
 const reserve = (step) => reserveStep(step.id).then(load)
-const reserveLabel = (step) => (step.reserved_by_me ? 'Libérer' : step.reserved_by ? 'Prendre' : 'Réserver')
+const reserveLabel = (step) => (step.reserved_by_me ? t('clan_missions.release') : step.reserved_by ? t('clan_missions.take') : t('clan_missions.reserve'))
 const play = (step) => playStep(step.id).then((response) => router.push({ name: 'clans.play', params: { action: response.data.id } }))
 
 const openBonus = (bonus) => {
@@ -88,39 +94,40 @@ const confirmBonus = () => {
     <Loader v-if="isLoading && !data" />
 
     <template v-if="data">
-      <p>
-        Score de mission du clan : <Number :value="data.mission_score" color="violet" />
-        ({{ data.missions_completed }} mission(s) réussie(s))
-      </p>
+      <i18n-t keypath="clan_missions.score" tag="p" :plural="data.missions_completed">
+        <template #score><Number :value="data.mission_score" color="violet" /></template>
+        <template #count>{{ data.missions_completed }}</template>
+      </i18n-t>
 
       <template v-if="mission">
-        <KadoSectionTitle>Mission {{ mission.number }}</KadoSectionTitle>
-        <p v-if="isMember">
-          Réussissez toutes les étapes avant la fin du temps imparti
-          (<ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" />) : votre clan remportera
-          <Number :value="mission.reward" color="violet" /> points<template v-if="mission.double_points">
-            (<img src="/gfx/clan/opt/optDoublePoints.gif" alt="" class="inline h-4 align-middle" /> Double points)</template>
-          et passera à la mission suivante (<strong>{{ formatMinutes(mission.next_minutes) }}</strong> pour la réussir).
-          Sinon, il perdra un point par étape non réussie, moins une. Les parties des missions sont gratuites !
-        </p>
-        <p v-else>
-          Si le clan réussit toutes les étapes avant la fin du temps imparti
-          (<ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" />), il remportera
-          <Number :value="mission.reward" color="violet" /> points<template v-if="mission.double_points">
-            (<img src="/gfx/clan/opt/optDoublePoints.gif" alt="" class="inline h-4 align-middle" /> Double points)</template>
-          et passera à la mission suivante (<strong>{{ formatMinutes(mission.next_minutes) }}</strong> pour la réussir).
-        </p>
+        <KadoSectionTitle>{{ $t('clan_missions.mission', { number: mission.number }) }}</KadoSectionTitle>
+        <i18n-t v-if="isMember" keypath="clan_missions.rules_member" tag="p">
+          <template #countdown><ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" /></template>
+          <template #reward><Number :value="mission.reward" color="violet" /></template>
+          <template #double><template v-if="mission.double_points">
+            (<img src="/gfx/clan/opt/optDoublePoints.gif" alt="" class="inline h-4 align-middle" /> {{ $t('clan_missions.double_points') }})</template></template>
+          <template #next><strong>{{ formatMinutes(mission.next_minutes) }}</strong></template>
+        </i18n-t>
+        <i18n-t v-else keypath="clan_missions.rules_other" tag="p">
+          <template #countdown><ClanCountdown :until="mission.expires_at" class="font-bold" @done="load" /></template>
+          <template #reward><Number :value="mission.reward" color="violet" /></template>
+          <template #double><template v-if="mission.double_points">
+            (<img src="/gfx/clan/opt/optDoublePoints.gif" alt="" class="inline h-4 align-middle" /> {{ $t('clan_missions.double_points') }})</template></template>
+          <template #next><strong>{{ formatMinutes(mission.next_minutes) }}</strong></template>
+        </i18n-t>
         <p v-if="data.double_points_pending" class="flex items-center gap-1">
           <img src="/gfx/clan/opt/optDoublePoints.gif" alt="" class="h-5" />
-          <strong>Double points</strong> : la prochaine mission rapportera deux fois plus de points.
+          <i18n-t keypath="clan_missions.double_pending" tag="span">
+            <template #double><strong>{{ $t('clan_missions.double_points') }}</strong></template>
+          </i18n-t>
         </p>
         <div class="overflow-x-auto">
           <KadoTable class="w-full">
             <thead>
               <tr class="text-2xs uppercase">
-                <th class="min-w-24">Jeu</th>
-                <th>Score à atteindre</th>
-                <th>Étape</th>
+                <th class="min-w-24">{{ $t('common.game') }}</th>
+                <th>{{ $t('clan_missions.target_score') }}</th>
+                <th>{{ $t('clan_missions.step') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -132,7 +139,7 @@ const confirmBonus = () => {
                   <span class="inline-flex items-center gap-1">
                     <span v-if="stars[step.star]"
                           class="inline-flex items-center"
-                          :title="step.beyond_last_star ? 'Au-delà de l\'étoile rouge' : stars[step.star].alt">
+                          :title="step.beyond_last_star ? $t('clan_missions.star_beyond_red') : stars[step.star].alt">
                       <img :src="stars[step.star].img" :alt="stars[step.star].alt" />
                       <img v-if="step.beyond_last_star"
                            src="/gfx/typo/pink/plus.svg"
@@ -143,18 +150,21 @@ const confirmBonus = () => {
                   </span>
                 </td>
                 <td>
-                  <template v-if="step.skipped">Étape passée</template>
+                  <template v-if="step.skipped">{{ $t('clan_missions.step_skipped') }}</template>
                   <template v-else-if="step.done">
                     <img src="/gfx/clan/clan_home.gif" alt="" class="h-4" />
-                    Réussie par {{ step.completed_by?.display_name }} (<Number :value="step.score" color="blue" />)
+                    <i18n-t keypath="clan_missions.step_done_by" tag="span">
+                      <template #player>{{ step.completed_by?.display_name }}</template>
+                      <template #score><Number :value="step.score" color="blue" /></template>
+                    </i18n-t>
                   </template>
-                  <span v-else-if="!isMember" class="italic">À réussir</span>
+                  <span v-else-if="!isMember" class="italic">{{ $t('clan_missions.step_to_do') }}</span>
                   <div v-else class="flex flex-wrap items-center justify-center gap-1">
-                    <FormButton @click="play(step)">Jouer</FormButton>
+                    <FormButton @click="play(step)">{{ $t('clan_missions.play') }}</FormButton>
                     <FormButton :variant="step.reserved_by_me ? 'pink' : 'green'"
-                                title="Je m'en occupe : prévenez votre clan que vous réussirez cette étape plus tard"
+                                :title="$t('clan_missions.reserve_title')"
                                 @click="reserve(step)">{{ reserveLabel(step) }}</FormButton>
-                    <span v-if="step.reserved_by" class="w-full text-xs italic">Réservée par {{ step.reserved_by.display_name }}</span>
+                    <span v-if="step.reserved_by" class="w-full text-xs italic">{{ $t('clan_missions.reserved_by', { player: step.reserved_by.display_name }) }}</span>
                   </div>
                 </td>
               </tr>
@@ -163,17 +173,27 @@ const confirmBonus = () => {
         </div>
       </template>
       <p v-else class="italic">
-        Aucune mission en cours : une nouvelle mission sera proposée à la prochaine période.
+        {{ $t('clan_missions.no_mission') }}
       </p>
 
       <p v-if="isMember && (data.banned_games.length || data.forced_games.length)" class="text-sm">
-        <span v-if="data.banned_games.length">{{ data.banned_games.length > 1 ? 'Jeux caca' : 'Jeu caca' }} : <strong>{{ gameNames(data.banned_games) }}</strong>. </span>
-        <span v-if="data.forced_games.length">{{ data.forced_games.length > 1 ? 'Jeux cool' : 'Jeu cool' }} : <strong>{{ gameNames(data.forced_games) }}</strong>.</span>
+        <i18n-t v-if="data.banned_games.length"
+                keypath="clan_missions.banned_games"
+                tag="span"
+                :plural="data.banned_games.length">
+          <template #games><strong>{{ gameNames(data.banned_games) }}</strong></template>
+        </i18n-t>
+        <i18n-t v-if="data.forced_games.length"
+                keypath="clan_missions.forced_games"
+                tag="span"
+                :plural="data.forced_games.length">
+          <template #games><strong>{{ gameNames(data.forced_games) }}</strong></template>
+        </i18n-t>
       </p>
 
-      <KadoSectionTitle v-if="isMember">Options du clan</KadoSectionTitle>
+      <KadoSectionTitle v-if="isMember">{{ $t('clan_missions.options') }}</KadoSectionTitle>
       <p v-if="isMember && !data.bonuses.length" class="italic">
-        Votre clan n'a aucune option. Chaque mission réussie peut vous en faire gagner une !
+        {{ $t('clan_missions.no_options') }}
       </p>
       <div v-if="isMember" class="relative flex flex-wrap gap-2">
         <div v-for="bonus in stackedBonuses" :key="bonus.type" class="relative w-[81px] text-center">
@@ -197,11 +217,11 @@ const confirmBonus = () => {
           <p class="m-1 text-xs">{{ selectedBonus.description }}</p>
 
           <template v-if="!canManage">
-            <p class="m-1 text-xs italic">C'est le chef de clan ou un bras droit qui décide de l'utilisation des options.</p>
+            <p class="m-1 text-xs italic">{{ $t('clan_missions.options_managers_only') }}</p>
           </template>
           <template v-else>
             <FormSelect v-if="['ban_game', 'force_game'].includes(selectedBonus.type)" v-model="bonusGame" class="m-1">
-              <option :value="null" disabled>Choisir un jeu</option>
+              <option :value="null" disabled>{{ $t('clan_missions.choose_game') }}</option>
               <!-- the games already in a list can't be chosen -->
               <option v-for="g in games"
                       :key="g.id"
@@ -211,41 +231,46 @@ const confirmBonus = () => {
               </option>
             </FormSelect>
             <FormSelect v-if="selectedBonus.type === 'skip_step'" v-model="bonusStep" class="m-1">
-              <option :value="null" disabled>Choisir une étape</option>
+              <option :value="null" disabled>{{ $t('clan_missions.choose_step') }}</option>
               <option v-for="s in (mission?.steps ?? []).filter((s) => !s.done)" :key="s.id" :value="s.id">{{ s.game.name }} ({{ s.target_score }})</option>
             </FormSelect>
           </template>
 
           <div class="clear-both flex justify-end gap-2 p-1">
-            <FormButton v-if="canManage" @click="confirmBonus">Utiliser</FormButton>
-            <FormButton variant="pink" @click="selectedBonus = null">Fermer</FormButton>
+            <FormButton v-if="canManage" @click="confirmBonus">{{ $t('clan_missions.use') }}</FormButton>
+            <FormButton variant="pink" @click="selectedBonus = null">{{ $t('common.close') }}</FormButton>
           </div>
         </div>
       </div>
 
       <template v-if="data.missions.length">
-        <KadoSectionTitle>Missions de la période</KadoSectionTitle>
+        <KadoSectionTitle>{{ $t('clan_missions.period_missions') }}</KadoSectionTitle>
         <ul class="list-inside list-kado ml-4 space-y-1">
           <li v-for="m in data.missions" :key="m.id">
-            Mission {{ m.number }} : {{ statusLabels[m.status] ?? m.status }}
+            {{ $t('clan_missions.mission_status', { number: m.number, status: statusLabels[m.status] ?? m.status }) }}
             <template v-if="m.status === 'completed'">
-              (<Number :value="m.points" color="violet" signed /> points<template v-if="m.double_points">,
-                <img src="/gfx/clan/opt/optDoublePoints.gif"
-                     alt="Double points"
-                     title="Double points"
-                     class="h-4 align-middle" /></template>)
+              <i18n-t keypath="clan_missions.points_double" tag="span">
+                <template #points><Number :value="m.points" color="violet" signed /></template>
+                <template #double><template v-if="m.double_points">,
+                  <img src="/gfx/clan/opt/optDoublePoints.gif"
+                       :alt="$t('clan_missions.double_points')"
+                       :title="$t('clan_missions.double_points')"
+                       class="h-4 align-middle" /></template></template>
+              </i18n-t>
               <template v-if="m.bonus">
-                — option gagnée :
+                — {{ $t('clan_missions.option_won') }}
                 <img :src="m.bonus.icon"
                      :alt="m.bonus.label"
                      :title="m.bonus.description"
                      class="h-5 align-middle" />
                 <strong>{{ m.bonus.label }}</strong>
-                <span v-if="m.bonus.used" class="italic">(utilisée)</span>
+                <span v-if="m.bonus.used" class="italic">({{ $t('clan_missions.option_used') }})</span>
               </template>
-              <span v-else-if="isMember" class="italic">— aucune option gagnée</span>
+              <span v-else-if="isMember" class="italic">— {{ $t('clan_missions.no_option_won') }}</span>
             </template>
-            <template v-else-if="m.status === 'failed' && m.points < 0">(<Number :value="m.points" color="violet" signed /> points)</template>
+            <template v-else-if="m.status === 'failed' && m.points < 0"><i18n-t keypath="clan_missions.points" tag="span">
+              <template #points><Number :value="m.points" color="violet" signed /></template>
+            </i18n-t></template>
           </li>
         </ul>
       </template>

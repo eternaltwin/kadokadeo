@@ -206,19 +206,19 @@ class Ent {
 
 				if (Game.me.hero == this) {
 					if (damage != null && damage > 0)
-						Game.me.log("Vous infligez " + damage + " dégat(s) à " + trg.getName() + ".");
+						Game.me.log(Lang.you_hit({damage: damage, name: trg.getName()}));
 					else if (damage == 0)
-						Game.me.log(trg.getName() + " encaisse votre attaque sans broncher.");
+						Game.me.log(Lang.it_takes_your_hit({name: trg.getName()}));
 					else
-						Game.me.log(trg.getName() + " évite votre coups.");
+						Game.me.log(Lang.it_dodges({name: trg.getName()}));
 				}
 				if (Game.me.hero == trg) {
 					if (damage != null && damage > 0)
-						Game.me.log(getName() + " vous inflige " + damage + " dégat(s).");
+						Game.me.log(Lang.it_hits_you({name: getName(), damage: damage}));
 					else if (damage == 0)
-						Game.me.log(getName() + " ne parvient pas a vous blesser.");
+						Game.me.log(Lang.it_misses_you({name: getName()}));
 					else
-						Game.me.log("Vous esquivez l'attaque de " + getName() + ".");
+						Game.me.log(Lang.you_dodge({name: getName()}));
 				}
 			}
 		}
@@ -274,7 +274,7 @@ class Ent {
 	public function fxDamage(n:Null<Int>) {
 		var mc = floor.dm.empty(Square.DP_FX);
 		var top = root != null ? root.getLocalBounds().y : -Cs.CS;
-		new LossPart(mc, (x + 0.5) * Cs.CS, (y + 0.5) * Cs.CS + top, n == null ? "miss" : Std.string(n), n == null ? 0x000000 : 0xFF0000);
+		new LossPart(mc, (x + 0.5) * Cs.CS, (y + 0.5) * Cs.CS + top, n == null ? Lang.miss : Std.string(n), n == null ? 0x000000 : 0xFF0000);
 	}
 
 	public function fxStrike(id:Null<Int>, di:Int) {

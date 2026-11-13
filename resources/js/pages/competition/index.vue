@@ -1,6 +1,8 @@
 <script setup>
 import KadoPoints from '@svg/k.svg'
 
+import { t } from '@/i18n'
+
 const { isLoading: isRankingV1Loading, error: leaderboardError, fetchRankingV1 } = useCompetition()
 const { isLoading: isFeathersLoading, error: feathersError, fetchFeathers } = useCompetition()
 const { isLoading: isGamesLoading, error: gamesError, fetchGames } = useGames()
@@ -23,7 +25,7 @@ const currentPeriod = computed(() => periodStore.period?.id ?? null)
 const isCurrentPeriod = computed(() => selectedPeriod.value === null)
 const displayedPeriod = computed(() => selectedPeriod.value ?? currentPeriod.value)
 const canGoPrevious = computed(() => displayedPeriod.value !== null && displayedPeriod.value > 1)
-const periodLabel = computed(() => (isCurrentPeriod.value ? 'Période courante' : `Période ${selectedPeriod.value}`))
+const periodLabel = computed(() => (isCurrentPeriod.value ? t('competition.current_period') : t('competition.period', { period: selectedPeriod.value })))
 const page = computed(() => Number(route.query.page) || 1)
 const pageRoute = (pageNumber) => ({ query: { ...route.query, page: pageNumber } })
 const isMe = (player) => player.user.etwin_id === myRanking.value?.user.etwin_id
@@ -134,12 +136,12 @@ const scoreOn1500 = computed(() => {
 
 <template>
   <NavTabs :items="[
-    { label: 'Ranking V1', value: 'rankingv1' },
-    { label: 'Poids plumes', value: 'feathers' },
+    { label: $t('competition.ranking_tab'), value: 'rankingv1' },
+    { label: $t('competition.feathers'), value: 'feathers' },
   ]">
     <template #panel="{ item }">
       <div v-if="item.value === 'rankingv1'">
-        <KadoPageTitle class="mb-5">Le classement V1</KadoPageTitle>
+        <KadoPageTitle class="mb-5">{{ $t('competition.ranking_title') }}</KadoPageTitle>
 
         <CompetitionPeriodNavigator
           :label="periodLabel"
@@ -151,21 +153,21 @@ const scoreOn1500 = computed(() => {
         />
 
         <section class="mx-2 mb-4 grid gap-3 border border-kado-teal-500 p-3 md:grid-cols-3">
-          <KadoSectionTitle class="col-span-full">Calculateur 1500</KadoSectionTitle>
+          <KadoSectionTitle class="col-span-full">{{ $t('competition.calculator') }}</KadoSectionTitle>
           <label for="score-game" class="flex flex-col gap-1">
-            Jeu
+            {{ $t('competition.game') }}
             <select id="score-game"
                     v-model="selectedGameId"
                     :disabled="isGamesLoading || !!gamesError"
                     class="min-h-10 border border-kado-teal-500 bg-white px-2">
-              <option value="">Sélectionner un jeu</option>
+              <option value="">{{ $t('competition.select_game') }}</option>
               <option v-for="game in games" :key="game.id" :value="String(game.id)">
                 {{ game.name }}
               </option>
             </select>
           </label>
           <label for="score-input" class="flex flex-col gap-1">
-            Votre score
+            {{ $t('competition.your_score') }}
             <input id="score-input"
                    v-model="scoreInput"
                    type="number"
@@ -175,25 +177,25 @@ const scoreOn1500 = computed(() => {
                    class="min-h-10 border border-kado-teal-500 bg-white px-2" />
           </label>
           <label for="score-1500" class="flex flex-col gap-1">
-            Score en mode 1500
+            {{ $t('competition.score_1500') }}
             <input id="score-1500"
                    :value="scoreOn1500"
                    type="text"
                    readonly
                    class="min-h-10 border border-kado-teal-500 bg-kado-blue-50 px-2" />
           </label>
-          <MessageError v-if="gamesError" class="md:col-span-full">Error: {{ gamesError }}</MessageError>
+          <MessageError v-if="gamesError" class="md:col-span-full">{{ $t('common.error_with', { error: gamesError }) }}</MessageError>
         </section>
 
-        <Loader v-if="isRankingV1Loading">Chargement du classement...</Loader>
-        <MessageError v-else-if="leaderboardError">Error: {{ leaderboardError }}</MessageError>
+        <Loader v-if="isRankingV1Loading">{{ $t('competition.loading') }}</Loader>
+        <MessageError v-else-if="leaderboardError">{{ $t('common.error_with', { error: leaderboardError }) }}</MessageError>
         <div v-else class="px-8 sm:px-16">
           <KadoTable class="w-full">
             <thead>
               <tr class="text-kado-orange-500 uppercase text-sm *:px-2 *:text-right">
-                <th>Rang</th>
-                <th class="text-left">Joueur</th>
-                <th>Points</th>
+                <th>{{ $t('competition.rank') }}</th>
+                <th class="text-left">{{ $t('competition.player') }}</th>
+                <th>{{ $t('competition.points') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -224,7 +226,7 @@ const scoreOn1500 = computed(() => {
                         <strong>{{ selectedPlayer.user.display_name }}</strong>
                         <button type="button"
                                 class="cursor-pointer"
-                                aria-label="Fermer le détail"
+                                :aria-label="$t('competition.close_detail')"
                                 @click="selectedPlayerId = null">×</button>
                       </div>
                       <div class="grid gap-2 sm:grid-cols-2">
@@ -247,7 +249,7 @@ const scoreOn1500 = computed(() => {
       </div>
 
       <div v-else>
-        <KadoPageTitle class="mb-5">Poids plumes</KadoPageTitle>
+        <KadoPageTitle class="mb-5">{{ $t('competition.feathers') }}</KadoPageTitle>
         <CompetitionPeriodNavigator
           :label="periodLabel"
           :can-go-previous="canGoPrevious"
@@ -257,21 +259,20 @@ const scoreOn1500 = computed(() => {
           @next="goNext"
         />
         <p class="mx-2 my-4 text-center text-sm">
-          Les joueurs ayant le plus de plumes se partagent le jackpot. Les autres joueurs ayant au moins 2 plumes se partagent
-          à parts égales une récompense supplémentaire.
-          <template v-if="isCurrentPeriod">Les récompenses de la période courante sont potentielles, elles sont versées à sa clôture.</template>
+          {{ $t('competition.feathers_rules') }}
+          <template v-if="isCurrentPeriod">{{ $t('competition.potential_rewards') }}</template>
         </p>
 
-        <Loader v-if="isFeathersLoading">Chargement du classement...</Loader>
-        <MessageError v-else-if="feathersError">Error: {{ feathersError }}</MessageError>
+        <Loader v-if="isFeathersLoading">{{ $t('competition.loading') }}</Loader>
+        <MessageError v-else-if="feathersError">{{ $t('common.error_with', { error: feathersError }) }}</MessageError>
         <div v-else class="px-8 sm:px-16">
           <KadoTable class="w-full">
             <thead>
               <tr class="text-kado-orange-500 uppercase text-sm *:px-2 *:text-right">
-                <th>Rang</th>
-                <th class="text-left">Joueur</th>
-                <th>Plumes</th>
-                <th>{{ isCurrentPeriod ? 'Récompense potentielle' : 'Récompense' }}</th>
+                <th>{{ $t('competition.rank') }}</th>
+                <th class="text-left">{{ $t('competition.player') }}</th>
+                <th>{{ $t('competition.feathers_column') }}</th>
+                <th>{{ isCurrentPeriod ? $t('competition.potential_reward') : $t('competition.reward') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -293,7 +294,7 @@ const scoreOn1500 = computed(() => {
                       class="feather-icon size-4"
                       :style="{ marginLeft: index === 0 ? '0' : '-8px', zIndex: index + 1 }"
                     />
-                    <span class="sr-only">{{ player.feathers_count }} plume(s)</span>
+                    <span class="sr-only">{{ $t('competition.feathers_count', { count: player.feathers_count }) }}</span>
                   </span>
                 </td>
                 <td class="text-right whitespace-nowrap">

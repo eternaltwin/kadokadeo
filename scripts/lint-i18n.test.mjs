@@ -23,8 +23,8 @@ const codeIsRejected = (code, frenchKeys = []) =>
 const codeIsAccepted = (code, frenchKeys = []) =>
   assert.deepEqual(findUsageProblems(code, new Set(frenchKeys), 'page.vue'), [])
 
-// remove the skip once English is complete: from then on, a new text comes with its translation
-test('English translates every key of the site', { skip: 'English not implemented yet' }, () => {
+// a new text of the site comes with its English
+test('English translates every key of the site', () => {
   const french = siteCatalogOf('fr').messages
   const english = siteCatalogOf('en').messages
 
@@ -211,6 +211,10 @@ test('a key that is not a literal is rejected', () => {
   codeIsRejected('t(key)')
   codeIsRejected('t(`login.${name}`)')
   codeIsRejected('<i18n-t :keypath="key" />')
+})
+
+test('the function t itself is not a use of a key', () => {
+  codeIsAccepted('export function t(...args) {}')
 })
 
 test('the words that only end with a t are not translations', () => {

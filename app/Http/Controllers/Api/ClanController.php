@@ -57,7 +57,7 @@ class ClanController extends Controller implements HasMiddleware
             'q' => ['sometimes', 'nullable', 'string', 'max:32'],
         ]);
         $period = $this->clanService->currentPeriod();
-        abort_unless($period, 404, 'Aucune période en cours.');
+        abort_unless($period, 404, __('server.clans.no_period'));
         $this->warService->resolveExpired();
 
         $ranking = $validated['ranking'] ?? 'war';
@@ -135,8 +135,8 @@ class ClanController extends Controller implements HasMiddleware
             'name' => ['required', 'string', 'min:3', 'max:32', new ClanName()],
             'description' => ['nullable', 'string', 'max:5000'],
         ], [
-            'name.min' => 'Le nom du clan doit faire au moins 3 caractères.',
-            'name.max' => 'Le nom du clan doit faire au plus 32 caractères.',
+            'name.min' => __('server.clans.names.too_short'),
+            'name.max' => __('server.clans.names.too_long'),
         ]);
 
         $clan = $this->clanService->create($request->user(), $validated['name'], $validated['description'] ?? null);
@@ -339,16 +339,16 @@ class ClanController extends Controller implements HasMiddleware
                 'id' => $action->id,
                 'type' => $action->type->value,
                 'label' => match (true) {
-                    $isImprovement => 'Amélioration en cours…',
-                    $action->type === ClanActionType::ATTACK => 'Attaque en cours…',
-                    $action->type === ClanActionType::DEFENSE => 'Défense en cours…',
-                    default => 'Étape de mission en cours…',
+                    $isImprovement => __('server.clans.in_progress.improvement'),
+                    $action->type === ClanActionType::ATTACK => __('server.clans.in_progress.attack'),
+                    $action->type === ClanActionType::DEFENSE => __('server.clans.in_progress.defense'),
+                    default => __('server.clans.in_progress.mission_step'),
                 },
                 'game' => ['id' => $action->game->id, 'name' => $action->game->name],
                 'target' => match ($action->type) {
                     ClanActionType::ATTACK => $action->defenderClan?->name,
                     ClanActionType::DEFENSE => $action->attack?->attackerClan?->name,
-                    ClanActionType::MISSION => 'Mission '.$action->missionStep?->mission?->number,
+                    ClanActionType::MISSION => __('server.clans.mission_number', ['number' => $action->missionStep?->mission?->number]),
                 },
                 // a new attack blocks the next attacks and the defenses
                 'blocks' => $action->type === ClanActionType::ATTACK && !$isImprovement,
@@ -418,21 +418,21 @@ class ClanController extends Controller implements HasMiddleware
     private function attackBlockedReason($user, ?Clan $myClan, Clan $clan, $period): ?string
     {
         if (!$myClan) {
-            return 'Vous devez faire partie d\'un clan pour attaquer.';
+            return __('server.clans.war.needs_a_clan');
         }
         if ($myClan->id === $clan->id) {
-            return 'Vous ne pouvez pas attaquer votre propre clan.';
+            return __('server.clans.war.cannot_attack_own');
         }
         if (!$period) {
-            return 'Aucune période en cours.';
+            return __('server.clans.no_period');
         }
         if ($this->warService->attacksClosed($period)) {
-            return ClanWarService::ATTACKS_CLOSED;
+            return __('server.clans.war.attacks_closed');
         }
         $attackerScore = $this->clanService->warScore($myClan, $period);
         $defenderScore = $this->clanService->warScore($clan, $period);
         if ($this->clanService->isProtected($attackerScore, $defenderScore)) {
-            return 'Ce clan est protégé de vos attaques : son score est trop éloigné du vôtre.';
+            return __('server.clans.war.protected');
         }
 
         return null;

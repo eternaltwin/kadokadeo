@@ -40,16 +40,16 @@ class ThemeController extends Controller implements HasMiddleware
 
     public function buy(Request $request, string $theme)
     {
-        abort_unless(array_key_exists($theme, config('kado.themes')), 404, 'Thème introuvable.');
+        abort_unless(array_key_exists($theme, config('kado.themes')), 404, __('server.themes.not_found'));
         $price = app(SiteSettings::class)->themePrice($theme);
 
         DB::transaction(function () use ($request, $theme, $price) {
             $user = User::query()->lockForUpdate()->findOrFail($request->user()->id);
             if ($user->hasTheme($theme)) {
-                abort(422, 'Vous possédez déjà ce thème.');
+                abort(422, __('server.themes.already_owned'));
             }
             if ($user->kado_points < $price) {
-                abort(422, 'Vous n\'avez pas assez de points Kado pour acheter ce thème.');
+                abort(422, __('server.themes.not_enough_points'));
             }
 
             $user->kado_points -= $price;
@@ -72,7 +72,7 @@ class ThemeController extends Controller implements HasMiddleware
     {
         $validated = $request->validate(['theme' => ['required', 'string', Rule::in(array_keys(config('kado.themes')))]]);
         $user = $request->user();
-        abort_unless($user->hasTheme($validated['theme']), 422, 'Vous devez d\'abord acheter ce thème.');
+        abort_unless($user->hasTheme($validated['theme']), 422, __('server.themes.buy_first'));
 
         $user->update(['theme' => $validated['theme']]);
 

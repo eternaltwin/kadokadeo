@@ -1,4 +1,6 @@
 <script setup>
+import { t } from '@/i18n'
+
 const props = defineProps({
   game: { type: Object, required: true },
   args: { type: Object, default: () => ({}) },
@@ -48,18 +50,18 @@ async function copyTechnicalDetails() {
   try {
     if (navigator?.clipboard?.writeText) {
       await navigator.clipboard.writeText(text)
-      copyFeedback.value = 'Détails techniques copiés.'
+      copyFeedback.value = t('games.crash_copied')
       return
     }
   } catch {
-    copyFeedback.value = 'Copie impossible. Veuillez copier manuellement.'
+    copyFeedback.value = t('games.crash_copy_failed')
   }
 }
 
 // « Changer de partie » : la run commencée est remplacée par une nouvelle (KadoKadeoManager.changeRun). Confirmée par
 // un second clic (ou Maj+R) dans les CONFIRM_MS : le jeu n'est jamais bloqué. Possible seulement quand le jeu le dit
 // (contrat affiché ou partie en cours, hors replay et partie du jour)
-const CHANGE_RUN_SHORTCUT = 'Maj+R'
+const CHANGE_RUN_SHORTCUT = t('games.change_run_shortcut')
 const CONFIRM_MS = 3000
 const canChangeRun = ref(false)
 const confirmingChangeRun = ref(false)
@@ -82,7 +84,7 @@ function onRunState(event) {
 }
 
 function onRunChangeFailed(event) {
-  changeRunError.value = event.detail?.message || 'Impossible de changer de partie.'
+  changeRunError.value = event.detail?.message || t('games.change_run_failed')
 }
 
 function askChangeRun() {
@@ -167,22 +169,22 @@ onBeforeUnmount(() => {
   <div class="relative w-full">
     <KadoNotice v-if="crash" variant="error" class="absolute top-2 right-2 left-2 z-20">
       <div class="text-xs">
-        <p class="mx-2.5 my-4 font-bold text-kado-pink-400">Un problème technique est survenu pendant la partie.</p>
-        <p class="mx-2.5 my-4 font-bold text-kado-pink-400">Vous pouvez nous envoyer les détails techniques pour faciliter le diagnostic.</p>
+        <p class="mx-2.5 my-4 font-bold text-kado-pink-400">{{ $t('games.crash_title') }}</p>
+        <p class="mx-2.5 my-4 font-bold text-kado-pink-400">{{ $t('games.crash_text') }}</p>
         <div class="mt-2 flex flex-wrap gap-2">
           <button
             type="button"
             class="cursor-pointer border border-kado-pink-400 bg-white px-2.5 py-1.5 text-xs leading-none font-bold text-kado-pink-600"
             @click="showTechnicalDetails = !showTechnicalDetails"
           >
-            {{ showTechnicalDetails ? 'Masquer les détails techniques' : 'Voir les détails techniques' }}
+            {{ showTechnicalDetails ? $t('games.crash_hide_details') : $t('games.crash_show_details') }}
           </button>
           <button
             type="button"
             class="cursor-pointer border border-kado-pink-400 bg-white px-2.5 py-1.5 text-xs leading-none font-bold text-kado-pink-600"
             @click="copyTechnicalDetails"
           >
-            Copier les détails techniques
+            {{ $t('games.crash_copy') }}
           </button>
           <div v-if="copyFeedback">{{ copyFeedback }}</div>
           <button
@@ -190,7 +192,7 @@ onBeforeUnmount(() => {
             class="cursor-pointer border border-kado-pink-400 bg-white px-2.5 py-1.5 text-xs leading-none font-bold text-kado-pink-600"
             @click="crash = null"
           >
-            Fermer ce message
+            {{ $t('games.crash_close') }}
           </button>
         </div>
         <textarea
@@ -221,8 +223,7 @@ onBeforeUnmount(() => {
         :style="props.canvasStyle"
       >
         <p>
-          Votre navigateur ne supporte pas Canvas. Veuillez installer un navigateur plus moderne afin
-          de jouer.
+          {{ $t('games.no_canvas') }}
         </p>
       </canvas>
     </div>

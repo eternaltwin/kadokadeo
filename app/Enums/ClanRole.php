@@ -12,12 +12,13 @@ enum ClanRole: string implements HasLabel
     case RIGHT_HAND = 'right_hand';
     case MEMBER = 'member';
 
-    public function getLabel(): string
+    // (a locale for a text written for another player)
+    public function getLabel(?string $locale = null): string
     {
         return match ($this) {
-            self::LEADER => 'Chef de clan',
-            self::RIGHT_HAND => 'Bras droit',
-            self::MEMBER => 'Membre',
+            self::LEADER => __('server.clans.roles.leader', [], $locale),
+            self::RIGHT_HAND => __('server.clans.roles.right_hand', [], $locale),
+            self::MEMBER => __('server.clans.roles.member', [], $locale),
         };
     }
 

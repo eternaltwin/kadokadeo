@@ -70,15 +70,15 @@ class RunCommentService
     public function create(User $user, Run $run, int $frame, string $content, ?RunComment $parent = null): RunComment
     {
         if (!$this->canComment()) {
-            throw new RunCommentException('Les commentaires sont désactivés pour le moment.');
+            throw new RunCommentException(__('server.comments.disabled'));
         }
         $content = $this->clean($content);
         if ($parent) {
             if ($parent->run_id !== $run->id || $parent->trashed()) {
-                throw new RunCommentException('Ce commentaire n\'existe plus.');
+                throw new RunCommentException(__('server.comments.gone'));
             }
             if ($parent->parent_id !== null) {
-                throw new RunCommentException('On ne peut pas répondre à une réponse.');
+                throw new RunCommentException(__('server.comments.no_nested_reply'));
             }
             $frame = $parent->frame;
         }
@@ -88,12 +88,12 @@ class RunCommentService
             // the run locked until the comment is counted: comments sent at once can't all pass the limits
             $run->comments_count = (int) Run::withTrashed()->whereKey($run->id)->lockForUpdate()->value('comments_count');
             if ($run->comments_count >= $this->settings->comments_max_per_run) {
-                throw new RunCommentException('Ce replay a atteint le nombre maximum de commentaires.');
+                throw new RunCommentException(__('server.comments.replay_full'));
             }
             // the deleted ones too: deleting does not give the right to write again
             $written = RunComment::withTrashed()->where('user_id', $user->id)->where('run_id', $run->id)->count();
             if ($written >= $this->settings->comments_max_per_user_per_run) {
-                throw new RunCommentException('Vous avez déjà beaucoup commenté ce replay.');
+                throw new RunCommentException(__('server.comments.too_many'));
             }
 
             $comment = RunComment::create([
@@ -135,7 +135,7 @@ class RunCommentService
     public function update(User $user, RunComment $comment, string $content): RunComment
     {
         if (!$this->canEdit($user, $comment) && !$user->is_admin) {
-            throw new RunCommentException('Vous ne pouvez pas modifier ce commentaire.');
+            throw new RunCommentException(__('server.comments.cannot_edit'));
         }
         $comment->update(['content' => $this->clean($content), 'edited_at' => now()]);
         Realtime::send(RunCommentsChanged::comment($comment, $user));
@@ -150,7 +150,7 @@ class RunCommentService
             return;
         }
         if (!$this->canDelete($user, $comment)) {
-            throw new RunCommentException('Vous ne pouvez pas supprimer ce commentaire.');
+            throw new RunCommentException(__('server.comments.cannot_delete'));
         }
         DB::transaction(function () use ($user, $comment) {
             // only if it is still there: of two deletes sent at once, the second one deletes nothing and counts nothing
@@ -214,7 +214,7 @@ class RunCommentService
     public function like(User $user, RunComment $comment): int
     {
         if ($comment->user_id === $user->id) {
-            throw new RunCommentException('Vous ne pouvez pas aimer votre propre commentaire.');
+            throw new RunCommentException(__('server.comments.cannot_like_own'));
         }
         $added = RunCommentLike::query()->insertOrIgnore([
             'comment_id' => $comment->id,
@@ -253,7 +253,7 @@ class RunCommentService
     {
         $content = trim(preg_replace('/\s+/u', ' ', $content) ?? '');
         if ($content === '') {
-            throw new RunCommentException('Le commentaire est vide.');
+            throw new RunCommentException(__('server.comments.empty'));
         }
 
         return $content;

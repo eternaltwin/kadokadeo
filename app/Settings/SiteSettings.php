@@ -2,6 +2,7 @@
 
 namespace App\Settings;
 
+use App\Enums\LocalePreference;
 use Illuminate\Support\Str;
 use Spatie\LaravelSettings\Settings;
 
@@ -11,7 +12,8 @@ class SiteSettings extends Settings
 
     public string $announcement_level;
 
-    public ?string $announcement_content;
+    // [language => text], the languages of the site (LocalePreference::languages()): without the French one, no announcement
+    public array $announcement_contents;
 
     // kado points of the players with the most feathers of a period (shared between the tied ones)
     public int $poids_plume_jackpot;
@@ -67,23 +69,32 @@ class SiteSettings extends Settings
     /**
      * Announcement displayed on every page, or null when there is nothing to display.
      *
-     * @return array{level: string, html: string}|null
+     * Every language, without the ones with no text: the page shows its own, or the French one. The same answer for
+     * every player, publicly cached.
+     *
+     * @return array{level: string, html: array<string, string>}|null
      */
     public function announcement(): ?array
     {
-        if (!$this->announcement_enabled || blank($this->announcement_content)) {
+        $writtenContents = array_filter($this->announcement_contents, fn (?string $content) => !blank($content));
+        if (!$this->announcement_enabled || !isset($writtenContents[LocalePreference::FR->value])) {
             return null;
         }
 
         return [
             'level' => $this->announcement_level,
-            // Inline markdown only (bold, italic, links): the front renders it inside a <p>.
-            // Raw HTML is stripped so the result is safe to inject with v-html.
-            'html' => Str::inlineMarkdown(trim($this->announcement_content), [
-                'html_input' => 'strip',
-                'allow_unsafe_links' => false,
-                'renderer' => ['soft_break' => "<br />\n"],
-            ]),
+            'html' => array_map(self::announcementHtml(...), $writtenContents),
         ];
+    }
+
+    // Inline markdown only (bold, italic, links): the front renders it inside a <p>.
+    // Raw HTML is stripped so the result is safe to inject with v-html.
+    private static function announcementHtml(string $content): string
+    {
+        return Str::inlineMarkdown(trim($content), [
+            'html_input' => 'strip',
+            'allow_unsafe_links' => false,
+            'renderer' => ['soft_break' => "<br />\n"],
+        ]);
     }
 }

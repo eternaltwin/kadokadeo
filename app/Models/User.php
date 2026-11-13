@@ -185,7 +185,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function banMessage(): string
     {
-        return $this->ban_reason?->message() ?? 'Votre compte a été banni.';
+        return $this->ban_reason?->message() ?? __('server.account.banned');
     }
 
     // players log in with Eternaltwin and have no password, but Laravel compares it (as a string) with the hash

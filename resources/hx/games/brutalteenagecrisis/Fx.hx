@@ -296,7 +296,7 @@ class Fx {
 		register(halo);
 
 		var p = new Particle(x, 6);
-		var tf = mode.createField("Danger", 0xFFFF00, true);
+		var tf = mode.createField(Lang.danger, 0xFFFF00, true);
 		tf.scaleX = tf.scaleY = 2;
 		tf.x = Std.int(-tf.width * 0.5);
 		tf.y = 0;

@@ -196,11 +196,12 @@ class BroadcastTest extends TestCase
     {
         Event::fake([AnnouncementUpdated::class]);
 
-        $this->setSettings(SiteSettings::class, ['announcement_enabled' => true, 'announcement_level' => 'success', 'announcement_content' => 'Nouveau jeu **ce soir**']);
+        $this->setSettings(SiteSettings::class, ['announcement_enabled' => true, 'announcement_level' => 'success', 'announcement_contents' => ['fr' => 'Nouveau jeu **ce soir**', 'en' => 'New game **tonight**']]);
 
         Event::assertDispatched(AnnouncementUpdated::class, fn (AnnouncementUpdated $e) => $e->broadcastOn()->name === 'site'
             && $e->broadcastWith()['announcement']['level'] === 'success'
-            && str_contains($e->broadcastWith()['announcement']['html'], '<strong>ce soir</strong>'));
+            && str_contains($e->broadcastWith()['announcement']['html']['fr'], '<strong>ce soir</strong>')
+            && str_contains($e->broadcastWith()['announcement']['html']['en'], '<strong>tonight</strong>'));
     }
 
     // the leaderboards change only for a run in the top 10 of its league or a record (and a run taken out)

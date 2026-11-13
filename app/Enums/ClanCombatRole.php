@@ -16,16 +16,16 @@ enum ClanCombatRole: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::ATTACKER => 'Attaquant',
-            self::DEFENDER => 'Défenseur',
+            self::ATTACKER => __('server.clans.combat_roles.attacker'),
+            self::DEFENDER => __('server.clans.combat_roles.defender'),
         };
     }
 
     public function description(): string
     {
         return match ($this) {
-            self::ATTACKER => 'Peut lancer deux attaques en même temps.',
-            self::DEFENDER => 'Peut défendre même quand il a une attaque en cours.',
+            self::ATTACKER => __('server.clans.combat_roles.attacker_description'),
+            self::DEFENDER => __('server.clans.combat_roles.defender_description'),
         };
     }
 }

@@ -26,11 +26,13 @@ class Lang {
 	public static var epoch(default, null):Int = 0;
 	static var loaded = false;
 
-	// the language kept by the browser (once)
+	// the language kept by the browser (once), else the one of the site
 	public static function load():Void {
 		if (loaded)
 			return;
 		loaded = true;
+		if (LANGS.indexOf(kado.I18n.locale()) >= 0)
+			current = kado.I18n.locale();
 		try {
 			var saved = js.Browser.window.localStorage.getItem(STORAGE);
 			if (saved != null && LANGS.indexOf(saved) >= 0)

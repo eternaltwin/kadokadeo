@@ -76,11 +76,11 @@ class ClanForumController extends Controller implements HasMiddleware
             'title' => ['required', 'string', 'min:3', 'max:'.self::TITLE_MAX],
             'content' => ['required', 'string', 'max:'.self::CONTENT_MAX],
         ], [
-            'title.required' => 'Le titre est obligatoire.',
-            'title.min' => 'Le titre doit faire au moins 3 caractères.',
-            'title.max' => 'Le titre ne doit pas dépasser '.self::TITLE_MAX.' caractères.',
-            'content.required' => 'Le message est vide.',
-            'content.max' => 'Le message ne doit pas dépasser '.self::CONTENT_MAX.' caractères.',
+            'title.required' => __('server.clans.forum.title_required'),
+            'title.min' => __('server.clans.forum.title_too_short'),
+            'title.max' => __('server.clans.forum.title_too_long', ['max' => self::TITLE_MAX]),
+            'content.required' => __('server.clans.forum.message_empty'),
+            'content.max' => __('server.clans.forum.message_too_long', ['max' => self::CONTENT_MAX]),
         ]);
         $topic = $this->forumService->createTopic($request->user(), $clan, $validated['title'], $validated['content']);
 
@@ -127,8 +127,8 @@ class ClanForumController extends Controller implements HasMiddleware
             'is_pinned' => ['sometimes', 'boolean'],
             'is_locked' => ['sometimes', 'boolean'],
         ], [
-            'title.min' => 'Le titre doit faire au moins 3 caractères.',
-            'title.max' => 'Le titre ne doit pas dépasser '.self::TITLE_MAX.' caractères.',
+            'title.min' => __('server.clans.forum.title_too_short'),
+            'title.max' => __('server.clans.forum.title_too_long', ['max' => self::TITLE_MAX]),
         ]);
         $this->forumService->updateTopic($request->user(), $topic, $validated);
 
@@ -148,8 +148,8 @@ class ClanForumController extends Controller implements HasMiddleware
     {
         $this->assertTopicOf($clan, $topic);
         $validated = $request->validate(['content' => ['required', 'string', 'max:'.self::CONTENT_MAX]], [
-            'content.required' => 'Le message est vide.',
-            'content.max' => 'Le message ne doit pas dépasser '.self::CONTENT_MAX.' caractères.',
+            'content.required' => __('server.clans.forum.message_empty'),
+            'content.max' => __('server.clans.forum.message_too_long', ['max' => self::CONTENT_MAX]),
         ]);
         $message = $this->forumService->reply($request->user(), $topic, $validated['content']);
 
@@ -160,8 +160,8 @@ class ClanForumController extends Controller implements HasMiddleware
     {
         $message = $this->messageOf($clan, $message);
         $validated = $request->validate(['content' => ['required', 'string', 'max:'.self::CONTENT_MAX]], [
-            'content.required' => 'Le message est vide.',
-            'content.max' => 'Le message ne doit pas dépasser '.self::CONTENT_MAX.' caractères.',
+            'content.required' => __('server.clans.forum.message_empty'),
+            'content.max' => __('server.clans.forum.message_too_long', ['max' => self::CONTENT_MAX]),
         ]);
         $this->forumService->editMessage($request->user(), $message, $validated['content']);
 

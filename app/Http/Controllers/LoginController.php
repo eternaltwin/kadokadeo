@@ -107,7 +107,7 @@ class LoginController extends Controller implements HasMiddleware
         $expectedState = $request->cookie(self::OAUTH_STATE_COOKIE);
         if (!is_string($expectedState) || !hash_equals($expectedState, $data['state'])) {
             return response()->json([
-                'message' => 'La connexion a expiré ou a été commencée dans un autre navigateur. Reconnectez-vous.',
+                'message' => __('server.account.login_expired'),
             ], 422)->withoutCookie(self::OAUTH_STATE_COOKIE, self::OAUTH_STATE_COOKIE_PATH);
         }
 

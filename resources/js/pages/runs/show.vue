@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '@/i18n'
 import { formatDate } from '@/i18n/dates'
 const route = useRoute()
 const authStore = useAuthStore()
@@ -9,7 +10,7 @@ const run = ref(null)
 
 fetchRun(runId).then((data) => {
   run.value = data.data
-  document.title = `Replay de ${data.data.user?.display_name} sur ${data.data.game.name} - KadoKadéo`
+  document.title = `${t('runs.document_title', { player: data.data.user?.display_name, game: data.data.game.name })} - ${t('common.site_name')}`
   goToLinkedComment()
 })
 
@@ -159,17 +160,17 @@ watch(clock.frame, (frame, previous) => {
 </script>
 
 <template>
-  <template v-if="isLoading || !run">Chargement...</template>
+  <template v-if="isLoading || !run">{{ $t('common.loading') }}</template>
   <template v-else>
-    <KadoPageTitle class="mt-6.25 mb-5">Replay</KadoPageTitle>
-    <KadoSectionTitle>Vous regardez {{ run.user?.display_name }}</KadoSectionTitle>
-    <KadoSectionTitle>Score: {{ run.score }}</KadoSectionTitle>
-    <KadoSectionTitle>Jeu: {{ run.game.name }}</KadoSectionTitle>
-    <KadoSectionTitle>Date: {{ formatDate(run.completed_at, 'dateTime') }}</KadoSectionTitle>
-    <KadoSectionTitle>Temps: {{ formatTime(run.play_time_seconds) }}</KadoSectionTitle>
-    <KadoSectionTitle>Vues: {{ run.views_count }} · Commentaires: {{ run.comments_count }}</KadoSectionTitle>
+    <KadoPageTitle class="mt-6.25 mb-5">{{ $t('runs.title') }}</KadoPageTitle>
+    <KadoSectionTitle>{{ $t('runs.watching', { player: run.user?.display_name }) }}</KadoSectionTitle>
+    <KadoSectionTitle>{{ $t('runs.score', { score: run.score }) }}</KadoSectionTitle>
+    <KadoSectionTitle>{{ $t('runs.game', { game: run.game.name }) }}</KadoSectionTitle>
+    <KadoSectionTitle>{{ $t('runs.date', { date: formatDate(run.completed_at, 'dateTime') }) }}</KadoSectionTitle>
+    <KadoSectionTitle>{{ $t('runs.time', { time: formatTime(run.play_time_seconds) }) }}</KadoSectionTitle>
+    <KadoSectionTitle>{{ $t('runs.counts', { views: run.views_count, comments: run.comments_count }) }}</KadoSectionTitle>
     <p class="mt-2 text-center">
-      <FormButton @click="share">{{ linkCopied ? 'Lien copié' : 'Partager ce replay' }}</FormButton>
+      <FormButton @click="share">{{ linkCopied ? $t('runs.link_copied') : $t('runs.share') }}</FormButton>
     </p>
 
     <div ref="gameBox" class="max-w-full w-fit max-h-full h-fit m-auto overflow-y-auto pt-5">
@@ -195,14 +196,14 @@ watch(clock.frame, (frame, previous) => {
 
     <section class="mx-auto mt-4 max-w-2xl space-y-2">
       <h3 class="m-0 border border-solid border-kado-green-600 font-semibold bg-kado-green-500 bg-[url(/assets/img/gfx/gui/base/greenh2_bg.jpg)] bg-[position:-25px_-5px] bg-no-repeat px-2 text-base tracking-widest text-kado-green-600">
-        Commentaires
+        {{ $t('runs.comments') }}
       </h3>
       <RunsCommentsComposer v-if="canComment"
                             :run-id="runId"
                             :frame="clock.frame.value"
                             :max-length="limits.max_length"
                             @created="loadComments" />
-      <p v-else class="m-0 text-xs italic text-kado-slate-400">Les commentaires sont fermés pour le moment.</p>
+      <p v-else class="m-0 text-xs italic text-kado-slate-400">{{ $t('runs.comments_closed') }}</p>
       <RunsCommentsList :run-id="runId"
                         :comments="comments"
                         :can-comment="canComment"

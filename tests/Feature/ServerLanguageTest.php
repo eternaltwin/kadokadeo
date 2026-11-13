@@ -16,6 +16,9 @@ class ServerLanguageTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // (read before the demo texts: a catalog with lines already in it is not read from its file)
+        app('translator')->load('*', 'server', 'fr');
+        app('translator')->load('*', 'server', 'en');
         app('translator')->addLines(['server.demo.hello' => 'Bonjour :name', 'server.demo.only_french' => 'Texte français'], 'fr');
         app('translator')->addLines(['server.demo.hello' => 'Hello :name'], 'en');
         Route::middleware('api')->get('/api/test-language', fn () => [
@@ -88,6 +91,27 @@ class ServerLanguageTest extends TestCase
         $this->languagesOn();
 
         $this->askInEnglish()->assertJsonPath('validation', 'The nom field is required.');
+    }
+
+    public function test_a_message_of_the_api_is_in_english_for_an_english_request(): void
+    {
+        $this->languagesOn();
+
+        $message = $this->askInEnglish('/api/oauth/callback?code=a&state=b')->assertStatus(422)->json('message');
+
+        $this->assertNotSame('server.account.login_expired', $message);
+        $this->assertNotSame(__('server.account.login_expired', [], 'fr'), $message);
+        $this->assertSame(__('server.account.login_expired', [], 'en'), $message);
+    }
+
+    public function test_a_message_of_the_api_is_in_french_for_a_french_request(): void
+    {
+        $this->languagesOn();
+
+        $message = $this->withHeader('Accept-Language', 'fr')->getJson('/api/oauth/callback?code=a&state=b')->assertStatus(422)->json('message');
+
+        $this->assertNotSame('server.account.login_expired', $message);
+        $this->assertSame(__('server.account.login_expired', [], 'fr'), $message);
     }
 
     public function test_a_catalog_of_the_server_is_read_from_its_json(): void

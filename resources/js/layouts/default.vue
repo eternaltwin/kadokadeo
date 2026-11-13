@@ -19,7 +19,7 @@ const sidebarOpen = ref(false)
     <NavTopBar @menu="sidebarOpen = true" />
     <header id="topPage" class="mx-auto w-full max-w-5xl h-[100px] flex relative justify-center z-10">
       <div class="flex flex-col items-center justify-center">
-        <img src="/gfx/logoBasic.png" alt="KadoKadéo" class="h-fit w-auto mx-auto mb-5" />
+        <img src="/gfx/logoBasic.png" :alt="$t('common.site_name')" class="h-fit w-auto mx-auto mb-5" />
         <Starbar v-if="authStore.isAuthenticated" />
       </div>
       <template v-if="authStore.isAuthenticated">
@@ -60,8 +60,8 @@ const sidebarOpen = ref(false)
         <li class="min-w-0">
           <button type="button"
                   class="block cursor-pointer"
-                  title="Menu"
-                  aria-label="Menu"
+                  :title="$t('common.menu')"
+                  :aria-label="$t('common.menu')"
                   @click="sidebarOpen = true">
             <svg width="117"
                  height="95"

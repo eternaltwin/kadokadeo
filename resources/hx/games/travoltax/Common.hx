@@ -115,24 +115,25 @@ class Cs {
 		]
 	];
 
+	// the names of the options: Lang, option_<id>
 	public static var OPTION_INFOS = [
-		{name: "laser", weight: 50}, // 0
-		{name: "laser 2", weight: 3}, // 1
-		{name: "puce", weight: 30}, // 2
-		{name: "puce 2", weight: 3}, // 3
-		{name: "contrat", weight: 45}, // 4
-		{name: "calme", weight: 1}, // 5
-		{name: "tresor", weight: 20}, // 6
-		{name: "tresor 2", weight: 2}, // 7
-		{name: "mini", weight: 60}, // 8
-		{name: "maxi", weight: 15}, // 9
-		{name: "riche", weight: 2}, // 10
-		{name: "coupe", weight: 20}, // 11
-		{name: "faille", weight: 20}, // 12
-		{name: "envol", weight: 20}, // 13
-		{name: "envol 2", weight: 2}, // 14
-		{name: "psycho", weight: 15}, // 15
-		{name: "xxx", weight: 0}
+		{weight: 50}, // 0
+		{weight: 3}, // 1
+		{weight: 30}, // 2
+		{weight: 3}, // 3
+		{weight: 45}, // 4
+		{weight: 1}, // 5
+		{weight: 20}, // 6
+		{weight: 2}, // 7
+		{weight: 60}, // 8
+		{weight: 15}, // 9
+		{weight: 2}, // 10
+		{weight: 20}, // 11
+		{weight: 20}, // 12
+		{weight: 20}, // 13
+		{weight: 2}, // 14
+		{weight: 15}, // 15
+		{weight: 0}
 	];
 
 	public static function getRandomOptionId() {

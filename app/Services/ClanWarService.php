@@ -34,8 +34,6 @@ class ClanWarService
     // the wars a clan can declare at the same time
     public const MAX_WARS = 3;
 
-    public const ATTACKS_CLOSED = 'Fin de période imminente, vous ne pouvez plus lancer d\'attaque.';
-
     public function __construct(private readonly ClanService $clanService, private readonly MessageService $messageService) {}
 
     // ---------------------------------------------------------------- wars
@@ -46,11 +44,11 @@ class ClanWarService
     {
         $clan = $this->clanService->clanOf($user);
         if (!$clan) {
-            throw new ClanException('Vous n\'avez pas de clan.');
+            throw new ClanException(__('server.clans.war.no_clan'));
         }
         $this->clanService->assertManager($user, $clan);
         if ($clan->id === $target->id) {
-            throw new ClanException('Vous ne pouvez pas déclarer la guerre à votre propre clan.');
+            throw new ClanException(__('server.clans.war.cannot_declare_on_own'));
         }
 
         return DB::transaction(function () use ($user, $clan, $target) {
@@ -61,7 +59,7 @@ class ClanWarService
                 return $existing;
             }
             if (ClanWar::query()->where('clan_id', $clan->id)->count() >= self::MAX_WARS) {
-                throw new ClanException('Votre clan est déjà en guerre contre '.self::MAX_WARS.' clans : faites la paix avec l\'un d\'eux d\'abord.');
+                throw new ClanException(__('server.clans.war.too_many_wars', ['max' => self::MAX_WARS]));
             }
 
             $war = ClanWar::query()->create([
@@ -80,7 +78,7 @@ class ClanWarService
     {
         $clan = $this->clanService->clanOf($user);
         if (!$clan) {
-            throw new ClanException('Vous n\'avez pas de clan.');
+            throw new ClanException(__('server.clans.war.no_clan'));
         }
         $this->clanService->assertManager($user, $clan);
 
@@ -104,7 +102,7 @@ class ClanWarService
     {
         $user = $user->fresh();
         if ($user->clan_attack_games <= 0 && $user->clan_games <= 0) {
-            throw new ClanException('Vous n\'avez plus de parties d\'attaque aujourd\'hui. Vous pouvez acheter des parties de clan avec vos points Kado.');
+            throw new ClanException(__('server.clans.war.no_attack_games'));
         }
     }
 
@@ -120,22 +118,22 @@ class ClanWarService
     {
         $period = $this->clanService->assertPeriod();
         if ($this->attacksClosed($period)) {
-            throw new ClanException(self::ATTACKS_CLOSED);
+            throw new ClanException(__('server.clans.war.attacks_closed'));
         }
         $clan = $this->clanService->clanOf($user);
         if (!$clan) {
-            throw new ClanException('Vous devez faire partie d\'un clan pour attaquer.');
+            throw new ClanException(__('server.clans.war.needs_a_clan'));
         }
         if ($clan->id === $defender->id) {
-            throw new ClanException('Vous ne pouvez pas attaquer votre propre clan.');
+            throw new ClanException(__('server.clans.war.cannot_attack_own'));
         }
         if (!$game->is_active) {
-            throw new ClanException('Ce jeu n\'est pas disponible.');
+            throw new ClanException(__('server.clans.war.game_unavailable'));
         }
         $attackerScore = $this->clanService->warScore($clan, $period);
         $defenderScore = $this->clanService->warScore($defender, $period);
         if ($this->clanService->isProtected($attackerScore, $defenderScore)) {
-            throw new ClanException('Ce clan est protégé de vos attaques : son score est trop éloigné du vôtre.');
+            throw new ClanException(__('server.clans.war.protected'));
         }
 
         return DB::transaction(function () use ($user, $clan, $defender, $game) {
@@ -145,7 +143,7 @@ class ClanWarService
             $this->clanService->forgetUnplayedActions($user);
             $this->assertClanGame($user);
             if ($this->runningAttacksCount($user) >= $this->maxAttacks($user, $clan)) {
-                throw new ClanException('Vous avez déjà le maximum d\'attaques en cours. Vous pouvez améliorer ou annuler une attaque depuis la page statut de votre clan.');
+                throw new ClanException(__('server.clans.war.max_attacks_with_hint'));
             }
 
             return ClanAction::query()->create([
@@ -170,13 +168,13 @@ class ClanWarService
         $this->resolveExpired();
         $attack->refresh();
         if (!$this->isAttacker($user, $attack)) {
-            throw new ClanException('Seul l\'attaquant peut améliorer son attaque.');
+            throw new ClanException(__('server.clans.war.attacker_only'));
         }
         if ($attack->status !== ClanAttackStatus::ACTIVE) {
-            throw new ClanException('Cette attaque est terminée.');
+            throw new ClanException(__('server.clans.war.attack_over'));
         }
         if ($this->attacksClosed($attack->period)) {
-            throw new ClanException(self::ATTACKS_CLOSED);
+            throw new ClanException(__('server.clans.war.attacks_closed'));
         }
         $this->clanService->forgetUnplayedActions($user);
         $this->assertClanGame($user);
@@ -198,16 +196,16 @@ class ClanWarService
 
         $clan = $this->clanService->clanOf($user);
         if (!$clan || $clan->id !== $attack->defender_clan_id) {
-            throw new ClanException('Seuls les membres du clan attaqué peuvent défendre.');
+            throw new ClanException(__('server.clans.war.defenders_only'));
         }
         if ($attack->status !== ClanAttackStatus::ACTIVE) {
-            throw new ClanException('Cette attaque est terminée.');
+            throw new ClanException(__('server.clans.war.attack_over'));
         }
         $this->clanService->forgetUnplayedActions($user);
         $this->assertClanGame($user);
         // a "Défenseur" defends while he attacks
         if ($this->runningAttacksCount($user) > 0 && $this->clanService->combatRoleOf($user, $clan) !== ClanCombatRole::DEFENDER) {
-            throw new ClanException('Vous ne pouvez pas défendre tant que vous avez une attaque en cours.');
+            throw new ClanException(__('server.clans.war.cannot_defend_while_attacking'));
         }
 
         return ClanAction::query()->create([
@@ -225,10 +223,10 @@ class ClanWarService
     {
         $clan = $this->clanService->clanOf($user);
         if (!$clan || $clan->id !== $attack->defender_clan_id) {
-            throw new ClanException('Seuls les membres du clan attaqué peuvent réserver la défense.');
+            throw new ClanException(__('server.clans.war.defenders_only_booking'));
         }
         if ($attack->status !== ClanAttackStatus::ACTIVE || $attack->expires_at->isPast()) {
-            throw new ClanException('Cette attaque est terminée.');
+            throw new ClanException(__('server.clans.war.attack_over'));
         }
 
         $attack->update($attack->reserved_by_user_id === $user->id
@@ -244,13 +242,13 @@ class ClanWarService
         $isAttacker = $this->isAttacker($user, $attack);
         $role = $isAttacker ? null : $this->clanService->roleOf($user, $attack->attackerClan);
         if (!$isAttacker && !$role?->canManage()) {
-            throw new ClanException('Seuls l\'attaquant, le chef de clan et ses bras droits peuvent annuler cette attaque.');
+            throw new ClanException(__('server.clans.war.cancel_not_allowed'));
         }
 
         $attack = DB::transaction(function () use ($attack) {
             $attack = ClanAttack::query()->lockForUpdate()->findOrFail($attack->id);
             if ($attack->status !== ClanAttackStatus::ACTIVE) {
-                throw new ClanException('Cette attaque est terminée.');
+                throw new ClanException(__('server.clans.war.attack_over'));
             }
 
             $attack->update(['status' => ClanAttackStatus::CANCELLED, 'resolved_at' => now()]);
@@ -260,10 +258,11 @@ class ClanWarService
         });
 
         if ($attack->attacker_user_id !== $user->id) {
+            // written once, in French, for another player: not in the language of the one who cancels
             $this->messageService->system(
                 $attack->attacker_user_id,
                 'Attaque annulée',
-                "{$user->display_name} ({$role?->getLabel()}) a annulé votre attaque contre le clan {$attack->defenderClan->name} "
+                "{$user->display_name} ({$role?->getLabel('fr')}) a annulé votre attaque contre le clan {$attack->defenderClan->name} "
                 ."sur {$attack->game->name} ({$attack->score} pts).",
             );
         }

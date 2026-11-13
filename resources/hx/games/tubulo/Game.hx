@@ -504,7 +504,7 @@ class Game implements kado.GameInterface {
 
 	function genLevel() {
 		// DISPLAY
-		bg.field.text = "niveau " + (lvl + 1);
+		bg.field.text = Lang.level({level: (lvl + 1).get()});
 
 		// GAIN
 		score = KadoKadeoManager.kkm.score;

@@ -20,7 +20,7 @@ const submit = () =>
     <form class="space-y-3 px-2 pb-2" @submit.prevent="submit">
       <MessageError v-if="error">{{ error }}</MessageError>
       <div>
-        <label for="forumTitle" class="block font-bold">Titre du sujet</label>
+        <label for="forumTitle" class="block font-bold">{{ $t('forum.topic_title') }}</label>
         <FormInput id="forumTitle"
                    v-model="title"
                    maxlength="100"
@@ -28,7 +28,7 @@ const submit = () =>
                    class="w-full" />
       </div>
       <MarktwinEditor v-model="content" />
-      <FormButton type="submit" size="lg" :disabled="isLoading || !title.trim() || !content.trim()">Créer le sujet</FormButton>
+      <FormButton type="submit" size="lg" :disabled="isLoading || !title.trim() || !content.trim()">{{ $t('forum.create_topic') }}</FormButton>
     </form>
   </div>
 </template>

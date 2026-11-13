@@ -97,7 +97,7 @@ class ClanRunService
     public function cancel(User $user, ClanAction $action): void
     {
         if ($action->user_id !== $user->id || $action->run_id === null || $action->completed_at !== null) {
-            throw new ClanException('Cette partie de clan n\'est pas en cours.');
+            throw new ClanException(__('server.clans.runs.not_in_progress'));
         }
 
         $action->update(['result' => 'cancelled', 'completed_at' => now()]);
@@ -140,7 +140,7 @@ class ClanRunService
             if ($closed !== null) {
                 $action?->update(['result' => 'too_late', 'completed_at' => now()]);
 
-                throw new ClanException($closed.' Retournez sur la page des missions de votre clan.');
+                throw new ClanException(__('server.clans.runs.closed_back_to_missions', ['reason' => $closed]));
             }
 
             // (refused out of the clan)
@@ -156,7 +156,7 @@ class ClanRunService
         if ($closed !== null) {
             $action->update(['result' => 'too_late', 'completed_at' => now()]);
 
-            throw new ClanException($closed.' Retournez sur la page de votre clan.');
+            throw new ClanException(__('server.clans.runs.closed_back_to_clan', ['reason' => $closed]));
         }
 
         return $action;
@@ -181,28 +181,28 @@ class ClanRunService
     {
         $clanId = (int) $user->clanMember()->value('clan_id');
         if ($action->type === ClanActionType::ATTACK && $this->attacksClosed($action)) {
-            return ClanWarService::ATTACKS_CLOSED;
+            return __('server.clans.war.attacks_closed');
         }
         if ($action->clan_attack_id === null) {
             $clan = Clan::query()->find($action->clan_id);
             if (!$clan || $clanId !== $clan->id) {
-                return 'Vous ne faites plus partie de ce clan.';
+                return __('server.clans.no_longer_member');
             }
 
             // (an "Attaquant" whose seat was taken back, attacks launched from another page)
             return $this->warService->runningAttacksCount($user) >= $this->warService->maxAttacks($user, $clan)
-                ? 'Vous avez déjà le maximum d\'attaques en cours.'
+                ? __('server.clans.war.max_attacks')
                 : null;
         }
 
         $attack = ClanAttack::query()->find($action->clan_attack_id);
         if (!$attack || $attack->status !== ClanAttackStatus::ACTIVE || $attack->expires_at->isPast()) {
-            return 'Cette attaque est terminée.';
+            return __('server.clans.war.attack_over');
         }
         // the attacker for an improvement, a member of the clan attacked for a defense
         $side = $action->type === ClanActionType::ATTACK ? $attack->attacker_clan_id : $attack->defender_clan_id;
         if ($clanId !== (int) $side) {
-            return 'Vous ne faites plus partie de ce clan.';
+            return __('server.clans.no_longer_member');
         }
 
         return null;
@@ -225,8 +225,8 @@ class ClanRunService
         $mission = $step ? ClanMission::query()->find($step->clan_mission_id) : null;
 
         return match (true) {
-            !$mission || $mission->status !== ClanMission::ACTIVE || $mission->expires_at->isPast() => 'Cette mission est terminée.',
-            $step->isDone() => 'Cette étape a déjà été réussie.',
+            !$mission || $mission->status !== ClanMission::ACTIVE || $mission->expires_at->isPast() => __('server.clans.missions.over'),
+            $step->isDone() => __('server.clans.missions.step_done'),
             default => null,
         };
     }
@@ -251,7 +251,7 @@ class ClanRunService
             if ($closed !== null) {
                 $action->update(['result' => 'too_late', 'completed_at' => now()]);
 
-                throw new ClanException($closed.' Retournez sur la page des missions de votre clan.');
+                throw new ClanException(__('server.clans.runs.closed_back_to_missions', ['reason' => $closed]));
             }
         }
 
@@ -260,7 +260,7 @@ class ClanRunService
         if ($action?->type === ClanActionType::ATTACK && $this->attacksClosed($action)) {
             $action->update(['result' => 'too_late', 'completed_at' => now()]);
 
-            throw new ClanException(ClanWarService::ATTACKS_CLOSED.' Retournez sur la page de votre clan.');
+            throw new ClanException(__('server.clans.runs.closed_back_to_clan', ['reason' => __('server.clans.war.attacks_closed')]));
         }
 
         // a new attack checked again when it begins (out of the clan, or the maximum of attacks reached meanwhile: his seat
@@ -406,14 +406,14 @@ class ClanRunService
     private function message(ClanActionType $type, string $result): string
     {
         return match ([$type, $result]) {
-            [ClanActionType::ATTACK, 'launched'] => 'Votre attaque est lancée ! Le clan adverse a '.app(ClanSettings::class)->attack_hours.' heures pour la repousser.',
-            [ClanActionType::ATTACK, 'improved'] => 'Votre attaque est améliorée : le clan adverse devra battre ce nouveau score.',
-            [ClanActionType::ATTACK, 'not_improved'] => 'Ce score n\'est pas meilleur que celui de votre attaque : elle garde son score.',
-            [ClanActionType::DEFENSE, 'repelled'] => 'Bravo, vous avez repoussé l\'attaque !',
-            [ClanActionType::DEFENSE, 'failed'] => 'Votre score n\'est pas suffisant pour repousser l\'attaque.',
-            [ClanActionType::MISSION, 'completed'] => 'Étape de mission réussie !',
-            [ClanActionType::MISSION, 'failed'] => 'Le score à atteindre pour cette étape n\'est pas atteint.',
-            default => $result === 'cheat' ? 'Cette partie ne compte pas pour votre clan.' : 'Trop tard : cette action de clan est terminée.',
+            [ClanActionType::ATTACK, 'launched'] => __('server.clans.runs.attack_launched', ['hours' => app(ClanSettings::class)->attack_hours]),
+            [ClanActionType::ATTACK, 'improved'] => __('server.clans.runs.attack_improved'),
+            [ClanActionType::ATTACK, 'not_improved'] => __('server.clans.runs.attack_not_improved'),
+            [ClanActionType::DEFENSE, 'repelled'] => __('server.clans.runs.defense_repelled'),
+            [ClanActionType::DEFENSE, 'failed'] => __('server.clans.runs.defense_failed'),
+            [ClanActionType::MISSION, 'completed'] => __('server.clans.runs.step_completed'),
+            [ClanActionType::MISSION, 'failed'] => __('server.clans.runs.step_failed'),
+            default => $result === 'cheat' ? __('server.clans.runs.does_not_count') : __('server.clans.runs.too_late'),
         };
     }
 }

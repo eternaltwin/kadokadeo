@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '@/i18n'
 // a topic of the forum of a clan: its messages (10 a page) and the answer. The leader and the right hands pin it
 // ("Post-it"), lock it (only they can still answer) and delete it; its author or a moderator renames it.
 const route = useRoute()
@@ -48,13 +49,13 @@ const reply = () =>
 
 const update = (changes) => actions.updateTopic(clanId.value, topicId.value, changes).then(load)
 const rename = () => {
-  const title = prompt('Nouveau titre du sujet', topic.value.title)
+  const title = prompt(t('clan_forum.new_title'), topic.value.title)
   if (title && title.trim() && title.trim() !== topic.value.title) {
     update({ title: title.trim() })
   }
 }
 const remove = () => {
-  if (confirm(`Supprimer le sujet « ${topic.value.title} » et tous ses messages ? Cette action est définitive.`)) {
+  if (confirm(t('clan_forum.confirm_delete_topic', { title: topic.value.title }))) {
     actions.deleteTopic(clanId.value, topicId.value).then(() => router.push({ name: 'clans.forum', params: { id: clanId.value } }))
   }
 }
@@ -72,18 +73,18 @@ const pageRoute = (page) => ({ query: { page } })
 
       <template v-if="topic">
         <div class="flex flex-wrap gap-2">
-          <FormButton v-if="viewer.can_reply" @click="toReply">Répondre</FormButton>
-          <FormButton v-if="viewer.can_rename" @click="rename">Renommer</FormButton>
+          <FormButton v-if="viewer.can_reply" @click="toReply">{{ $t('common.reply') }}</FormButton>
+          <FormButton v-if="viewer.can_rename" @click="rename">{{ $t('clan_forum.rename') }}</FormButton>
           <template v-if="viewer.can_moderate">
-            <FormButton variant="pink" @click="update({ is_pinned: !topic.is_pinned })">{{ topic.is_pinned ? 'Retirer des post-it' : 'Mettre en post-it' }}</FormButton>
-            <FormButton variant="pink" @click="update({ is_locked: !topic.is_locked })">{{ topic.is_locked ? 'Déverrouiller' : 'Verrouiller' }}</FormButton>
-            <FormButton variant="pink" @click="remove">Supprimer le sujet</FormButton>
+            <FormButton variant="pink" @click="update({ is_pinned: !topic.is_pinned })">{{ topic.is_pinned ? $t('clan_forum.unpin') : $t('clan_forum.pin') }}</FormButton>
+            <FormButton variant="pink" @click="update({ is_locked: !topic.is_locked })">{{ topic.is_locked ? $t('clan_forum.unlock') : $t('clan_forum.lock') }}</FormButton>
+            <FormButton variant="pink" @click="remove">{{ $t('clan_forum.delete_topic') }}</FormButton>
           </template>
         </div>
 
         <div class="space-y-2">
           <div class="border border-solid border-kado-green-600 bg-kado-green-500 bg-[url(/assets/img/gfx/gui/base/greenh2_bg.jpg)] bg-[position:-25px_-5px] bg-no-repeat px-2 text-base tracking-widest text-kado-green-600">
-            <span v-if="topic.is_locked" title="Sujet verrouillé">🔒 </span>{{ topic.title }}
+            <span v-if="topic.is_locked" :title="$t('forum.locked_title')">🔒 </span>{{ topic.title }}
           </div>
           <ClanForumMessage v-for="message in result.data"
                             :id="`message-${message.id}`"
@@ -100,11 +101,11 @@ const pageRoute = (page) => ({ query: { page } })
               id="reply"
               class="space-y-2"
               @submit.prevent="reply">
-          <p v-if="topic.is_locked" class="m-0 text-sm italic">Ce sujet est verrouillé : seuls le chef et les bras droits peuvent encore y répondre.</p>
+          <p v-if="topic.is_locked" class="m-0 text-sm italic">{{ $t('clan_forum.locked_reply') }}</p>
           <MarktwinEditor v-model="draft" />
-          <FormButton type="submit" size="lg" :disabled="actions.isLoading.value || !draft.trim()">Envoyer</FormButton>
+          <FormButton type="submit" size="lg" :disabled="actions.isLoading.value || !draft.trim()">{{ $t('common.send') }}</FormButton>
         </form>
-        <p v-else class="m-0 text-center italic">Ce sujet est verrouillé.</p>
+        <p v-else class="m-0 text-center italic">{{ $t('forum.locked') }}</p>
       </template>
     </div>
   </div>

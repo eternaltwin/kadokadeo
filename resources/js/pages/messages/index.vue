@@ -1,5 +1,6 @@
 <script setup>
 import { useChannel, userChannel } from '@/composables/useRealtime'
+import { t } from '@/i18n'
 import { intlLocale } from '@/i18n/locale'
 import { messageDraft } from '@/messages/draft'
 
@@ -41,10 +42,10 @@ const send = () =>
   })
 
 const tabs = computed(() => [
-  { label: messagesStore.unread ? `Reçus (${messagesStore.unread})` : 'Reçus', value: 'inbox', route: { name: 'messages.inbox' } },
-  { label: 'Envoyés', value: 'sent', route: { name: 'messages.sent' } },
-  { label: 'Écrire', value: 'new', route: { name: 'messages.new' } },
-  { label: messagesStore.notificationsUnread ? `Notifications (${messagesStore.notificationsUnread})` : 'Notifications', value: 'notifications', route: { name: 'messages.notifications' } },
+  { label: messagesStore.unread ? t('messages.inbox_count', { count: messagesStore.unread }) : t('messages.inbox'), value: 'inbox', route: { name: 'messages.inbox' } },
+  { label: t('messages.sent'), value: 'sent', route: { name: 'messages.sent' } },
+  { label: t('messages.write'), value: 'new', route: { name: 'messages.new' } },
+  { label: messagesStore.notificationsUnread ? t('messages.notifications_count', { count: messagesStore.notificationsUnread }) : t('messages.notifications'), value: 'notifications', route: { name: 'messages.notifications' } },
 ])
 const selectedIndex = computed(() => tabs.value.findIndex((t) => t.value === box.value))
 const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
@@ -54,14 +55,14 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit
   <NavTabs :items="tabs" :selected-index="selectedIndex" />
 
   <div class="relative px-2 space-y-4">
-    <KadoPageTitle>{{ box === 'notifications' ? 'Notifications' : 'Messages' }}</KadoPageTitle>
+    <KadoPageTitle>{{ box === 'notifications' ? $t('messages.notifications') : $t('messages.title') }}</KadoPageTitle>
 
     <NotificationsList v-if="box === 'notifications'" />
 
     <template v-else-if="box === 'new'">
       <form class="max-w-xl space-y-3" @submit.prevent="send">
         <div>
-          <label for="messageTo" class="block font-bold">Destinataire (nom du joueur)</label>
+          <label for="messageTo" class="block font-bold">{{ $t('messages.recipient') }}</label>
           <FormInput id="messageTo"
                      v-model="to"
                      type="text"
@@ -70,7 +71,7 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit
                      class="w-full" />
         </div>
         <div>
-          <label for="messageSubject" class="block font-bold">Sujet</label>
+          <label for="messageSubject" class="block font-bold">{{ $t('messages.subject') }}</label>
           <FormInput id="messageSubject"
                      v-model="subject"
                      type="text"
@@ -79,19 +80,19 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit
                      class="w-full" />
         </div>
         <div>
-          <label for="messageBody" class="block font-bold">Message</label>
+          <label for="messageBody" class="block font-bold">{{ $t('messages.body') }}</label>
           <MarktwinEditor id="messageBody"
                           v-model="body"
                           :maxlength="5000"
                           :rows="10" />
         </div>
-        <FormButton type="submit" size="lg" :disabled="isSending || !body.trim()">Envoyer</FormButton>
+        <FormButton type="submit" size="lg" :disabled="isSending || !body.trim()">{{ $t('common.send') }}</FormButton>
       </form>
       <MessageError v-if="sendError">{{ sendError }}</MessageError>
     </template>
 
     <template v-else>
-      <MessageSuccess v-if="route.query.sent">Votre message a bien été envoyé.</MessageSuccess>
+      <MessageSuccess v-if="route.query.sent">{{ $t('messages.sent_notice') }}</MessageSuccess>
       <MessageError v-if="error">{{ error }}</MessageError>
       <div class="relative overflow-x-auto">
         <Loader v-if="isLoading && !messages.length" />
@@ -99,14 +100,14 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit
           <thead>
             <tr class="text-2xs uppercase">
               <th></th>
-              <th>{{ box === 'sent' ? 'À' : 'De' }}</th>
-              <th>Sujet</th>
-              <th>Date</th>
+              <th>{{ box === 'sent' ? $t('messages.to') : $t('messages.from') }}</th>
+              <th>{{ $t('messages.subject') }}</th>
+              <th>{{ $t('messages.date') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="!messages.length && !isLoading" class="bg-kado-blue-100">
-              <td colspan="4" class="py-4 italic">{{ box === 'sent' ? 'Vous n\'avez envoyé aucun message.' : 'Vous n\'avez aucun message.' }}</td>
+              <td colspan="4" class="py-4 italic">{{ box === 'sent' ? $t('messages.none_sent') : $t('messages.none') }}</td>
             </tr>
             <tr
               v-for="(message, index) in messages"
@@ -116,12 +117,12 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit
               @click="router.push({ name: 'messages.show', params: { id: message.id } })"
             >
               <td class="w-8">
-                <img :src="box === 'inbox' && !message.is_read ? '/assets/img/gfx/icons/newMail.gif' : '/assets/img/gfx/icons/readedMail.gif'" :alt="message.is_read ? 'lu' : 'nouveau'" />
+                <img :src="box === 'inbox' && !message.is_read ? '/assets/img/gfx/icons/newMail.gif' : '/assets/img/gfx/icons/readedMail.gif'" :alt="message.is_read ? $t('messages.read_alt') : $t('messages.new_alt')" />
               </td>
               <td class="text-left small-caps">
                 <template v-if="box === 'sent'">{{ message.recipient.display_name }}</template>
                 <template v-else-if="message.sender">{{ message.sender.display_name }}</template>
-                <template v-else><span class="text-kado-orange-500">KadoKadéo</span></template>
+                <template v-else><span class="text-kado-orange-500">{{ $t('common.site_name') }}</span></template>
               </td>
               <td class="text-left">
                 <RouterLink :to="{ name: 'messages.show', params: { id: message.id } }">{{ message.subject }}</RouterLink>
@@ -132,7 +133,7 @@ const date = (iso) => new Date(iso).toLocaleString(intlLocale(), { day: '2-digit
         </KadoTable>
       </div>
       <div v-if="hasNextPage" class="text-center">
-        <FormButton size="lg" :disabled="isLoading" @click="loadMore()">Messages précédents</FormButton>
+        <FormButton size="lg" :disabled="isLoading" @click="loadMore()">{{ $t('messages.previous') }}</FormButton>
       </div>
     </template>
   </div>

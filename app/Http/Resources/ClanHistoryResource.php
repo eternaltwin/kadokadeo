@@ -36,8 +36,8 @@ class ClanHistoryResource extends JsonResource
             'status' => $this->status->value,
             'status_label' => match (true) {
                 $isAttack => $this->status->getLabel(),
-                $won => 'Non repoussée',
-                default => 'Repoussée',
+                $won => __('server.clans.attack_status.not_repelled'),
+                default => __('server.clans.attack_status.repelled'),
             },
             // the other player: the defender who repelled an attack, the attacker of an attack not repelled
             'other_player' => match (true) {

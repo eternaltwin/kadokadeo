@@ -1,6 +1,8 @@
 <script setup>
 // "Gestion" (the leader and the right hands): the presentation of the clan, the applications, the roles of the members.
 // Only the leader names a new leader and disbands the clan.
+import { t } from '@/i18n'
+
 const props = defineProps({
   clan: { type: Object, required: true },
 })
@@ -59,7 +61,7 @@ const accept = (application) => decide(application, acceptApplication).then(() =
 })
 const refuse = (application) => decide(application, refuseApplication)
 const doKick = (member) => {
-  if (confirm(`Exclure ${member.user.display_name} du clan ?`)) {
+  if (confirm(t('clan_manage.confirm_kick', { player: member.user.display_name }))) {
     kick(props.clan.id, member.user.etwin_id).then(() => {
       loadMembers()
       emit('updated')
@@ -67,7 +69,7 @@ const doKick = (member) => {
   }
 }
 const doPromote = (member) => {
-  if (confirm(`Nommer ${member.user.display_name} chef de clan ? Vous deviendrez son bras droit.`)) {
+  if (confirm(t('clan_manage.confirm_promote', { player: member.user.display_name }))) {
     promote(props.clan.id, member.user.etwin_id).then(() => {
       clanStore.reload()
       emit('updated')
@@ -77,7 +79,7 @@ const doPromote = (member) => {
 const changeRole = (member, role) => setRole(props.clan.id, member.user.etwin_id, role).finally(loadMembers)
 const changeCombatRole = (member, role) => setCombatRole(props.clan.id, member.user.etwin_id, role || null).finally(loadMembers)
 const doDissolve = () => {
-  if (confirm(`Dissoudre le clan ${props.clan.name} ? Tous ses membres le quitteront et ses scores seront perdus.`)) {
+  if (confirm(t('clan_manage.confirm_dissolve', { clan: props.clan.name }))) {
     dissolve(props.clan.id).then(() => {
       clanStore.reload()
       router.push({ name: 'clans.index' })
@@ -90,8 +92,8 @@ const doDissolve = () => {
   <div class="space-y-4">
     <MessageError v-if="error">{{ error }}</MessageError>
 
-    <KadoSectionTitle>Candidatures</KadoSectionTitle>
-    <p v-if="!applications.length" class="italic">Aucune candidature en attente.</p>
+    <KadoSectionTitle>{{ $t('clan_manage.applications') }}</KadoSectionTitle>
+    <p v-if="!applications.length" class="italic">{{ $t('clan_manage.no_applications') }}</p>
     <div v-else class="overflow-x-auto">
       <KadoTable class="w-full">
         <tbody>
@@ -101,39 +103,46 @@ const doDissolve = () => {
               <div v-if="application.message" class="text-sm italic whitespace-pre-line">{{ application.message }}</div>
             </td>
             <td class="whitespace-nowrap">
-              <FormButton :disabled="deciding !== null" @click="accept(application)">Accepter</FormButton>
+              <FormButton :disabled="deciding !== null" @click="accept(application)">{{ $t('clan_manage.accept') }}</FormButton>
               <FormButton variant="pink"
                           class="ml-1"
                           :disabled="deciding !== null"
-                          @click="refuse(application)">Refuser</FormButton>
+                          @click="refuse(application)">{{ $t('clan_manage.refuse') }}</FormButton>
             </td>
           </tr>
         </tbody>
       </KadoTable>
     </div>
 
-    <KadoSectionTitle>Présentation du clan</KadoSectionTitle>
+    <KadoSectionTitle>{{ $t('clan_manage.presentation') }}</KadoSectionTitle>
     <form @submit.prevent="save">
       <FormTextarea v-model="description" rows="10" maxlength="5000" />
-      <p class="mx-0 mt-1 mb-2 text-xs text-kado-blue-800">
-        Mise en forme (Markdown) : <code># Titre</code>, <code>## Sous-titre</code>, <code>### Petit titre</code>,
-        <code>- liste</code>, <code>1. liste numérotée</code>, <code>**gras**</code>, <code>*italique*</code>,
-        <code>[lien](https://…)</code>, <code>![image](https://….png)</code>.
-      </p>
+      <i18n-t keypath="clan_manage.markdown" tag="p" class="mx-0 mt-1 mb-2 text-xs text-kado-blue-800">
+        <template #title><code>{{ $t('clan_manage.markdown_title') }}</code></template>
+        <template #subtitle><code>{{ $t('clan_manage.markdown_subtitle') }}</code></template>
+        <template #small_title><code>{{ $t('clan_manage.markdown_small_title') }}</code></template>
+        <template #list><code>{{ $t('clan_manage.markdown_list') }}</code></template>
+        <template #numbered_list><code>{{ $t('clan_manage.markdown_numbered_list') }}</code></template>
+        <template #bold><code>{{ $t('clan_manage.markdown_bold') }}</code></template>
+        <template #italic><code>{{ $t('clan_manage.markdown_italic') }}</code></template>
+        <template #link><code>{{ $t('clan_manage.markdown_link') }}</code></template>
+        <template #image><code>{{ $t('clan_manage.markdown_image') }}</code></template>
+      </i18n-t>
       <label class="flex items-center gap-2 font-bold">
         <input v-model="isRecruiting" type="checkbox" />
-        Le clan recrute de nouveaux membres
+        {{ $t('clan_manage.recruiting') }}
       </label>
-      <MessageSuccess v-if="saved">Présentation enregistrée.</MessageSuccess>
-      <FormButton type="submit" size="lg">Enregistrer</FormButton>
+      <MessageSuccess v-if="saved">{{ $t('clan_manage.saved') }}</MessageSuccess>
+      <FormButton type="submit" size="lg">{{ $t('common.save') }}</FormButton>
     </form>
 
-    <KadoSectionTitle>Membres</KadoSectionTitle>
+    <KadoSectionTitle>{{ $t('clan_manage.members') }}</KadoSectionTitle>
     <p class="text-sm">
-      Un <strong>bras droit</strong> a tous les droits du chef de clan, sauf dissoudre le clan et nommer un nouveau chef.
-      Un siège choisi ne peut plus changer avant la prochaine période.
+      <i18n-t keypath="clan_manage.right_hand_help" tag="span">
+        <template #right_hand><strong>{{ $t('clan_manage.right_hand_help_strong') }}</strong></template>
+      </i18n-t>
       <template v-for="(seat, role) in seats" :key="role">
-        <br /><strong>{{ seat.label }}</strong> ({{ taken(role) }} / {{ seat.count }}) : {{ seat.description }}
+        <br /><strong>{{ seat.label }}</strong> {{ $t('clan_manage.seat', { taken: taken(role), count: seat.count, description: seat.description }) }}
       </template>
     </p>
     <div class="overflow-x-auto">
@@ -143,27 +152,27 @@ const doDissolve = () => {
             <td class="min-w-28 text-left small-caps">
               <img v-if="m.is_leader"
                    src="/gfx/clan/clanleader.gif"
-                   alt="Chef de Clan"
-                   title="Chef de Clan"
+                   :alt="$t('clan_manage.leader_icon')"
+                   :title="$t('clan_manage.leader_icon')"
                    class="mr-1" />
               {{ m.user.display_name }}
             </td>
             <td class="whitespace-nowrap">
-              <template v-if="m.is_leader">Chef de clan</template>
+              <template v-if="m.is_leader">{{ $t('clan_manage.leader') }}</template>
               <FormSelect v-else
                           :model-value="m.role"
-                          title="Rôle dans le clan"
+                          :title="$t('clan_manage.role')"
                           @update:model-value="changeRole(m, $event)">
-                <option value="member">Membre</option>
-                <option value="right_hand">Bras droit</option>
+                <option value="member">{{ $t('clan_manage.role_member') }}</option>
+                <option value="right_hand">{{ $t('clan_manage.role_right_hand') }}</option>
               </FormSelect>
             </td>
             <td class="whitespace-nowrap">
               <FormSelect :model-value="m.combat_role ?? ''"
                           :disabled="m.combat_role_locked"
-                          :title="m.combat_role_locked ? 'Siège choisi pendant cette période : il pourra changer à la prochaine période' : 'Siège pour les attaques et les défenses'"
+                          :title="m.combat_role_locked ? $t('clan_manage.seat_locked') : $t('clan_manage.seat_title')"
                           @update:model-value="changeCombatRole(m, $event)">
-                <option value="">Sans siège</option>
+                <option value="">{{ $t('clan_manage.no_seat') }}</option>
                 <option v-for="(seat, role) in seats"
                         :key="role"
                         :value="role"
@@ -172,12 +181,12 @@ const doDissolve = () => {
             </td>
             <td class="whitespace-nowrap">
               <template v-if="m.user.etwin_id !== authStore.user?.etwin_id && !m.is_leader">
-                <FormButton v-if="isLeader" @click="doPromote(m)">Nommer chef</FormButton>
+                <FormButton v-if="isLeader" @click="doPromote(m)">{{ $t('clan_manage.promote') }}</FormButton>
                 <FormButton v-if="!m.is_new"
                             variant="pink"
                             class="ml-1"
-                            @click="doKick(m)">Exclure</FormButton>
-                <span v-else class="ml-1 text-xs italic" title="Un membre accepté pendant la période ne peut être exclu qu'à partir de la prochaine.">Nouveau</span>
+                            @click="doKick(m)">{{ $t('clan_manage.kick') }}</FormButton>
+                <span v-else class="ml-1 text-xs italic" :title="$t('clan_manage.new_member_title')">{{ $t('clan_manage.new_member') }}</span>
               </template>
             </td>
           </tr>
@@ -186,9 +195,9 @@ const doDissolve = () => {
     </div>
 
     <template v-if="isLeader">
-      <KadoSectionTitle>Dissoudre le clan</KadoSectionTitle>
-      <p class="text-sm">Tous les membres quitteront le clan, et ses scores de la période seront perdus.</p>
-      <FormButton variant="pink" @click="doDissolve">Dissoudre le clan</FormButton>
+      <KadoSectionTitle>{{ $t('clan_manage.dissolve') }}</KadoSectionTitle>
+      <p class="text-sm">{{ $t('clan_manage.dissolve_help') }}</p>
+      <FormButton variant="pink" @click="doDissolve">{{ $t('clan_manage.dissolve') }}</FormButton>
     </template>
   </div>
 </template>

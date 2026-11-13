@@ -37,7 +37,7 @@ class ClanMissionController extends Controller implements HasMiddleware
     public function index(Request $request, Clan $clan)
     {
         $period = $this->clanService->currentPeriod();
-        abort_unless($period, 404, 'Aucune période en cours.');
+        abort_unless($period, 404, __('server.clans.no_period'));
         $isMember = $this->clanService->isMember($request->user(), $clan);
 
         // (another clan looking does not start the next mission and its countdown: only the members do)

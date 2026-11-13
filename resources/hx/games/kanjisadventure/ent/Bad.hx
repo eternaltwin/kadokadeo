@@ -349,7 +349,7 @@ class Bad extends Ent {
 
 	// TEXT
 	override function getName() {
-		return Lang.getBadName(bid);
+		return Lang.monsterName(bid);
 	}
 
 	//

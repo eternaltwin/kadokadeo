@@ -19,24 +19,24 @@ enum ClanBonusType: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::MORE_TIME => 'Plus de temps',
-            self::BAN_GAME => 'Jeu caca',
-            self::FORCE_GAME => 'Jeu cool',
-            self::NEXT_MISSION => 'Mission suivante',
-            self::SKIP_STEP => 'Passe étape',
-            self::DOUBLE_POINTS => 'Double points',
+            self::MORE_TIME => __('server.clans.bonuses.more_time'),
+            self::BAN_GAME => __('server.clans.bonuses.ban_game'),
+            self::FORCE_GAME => __('server.clans.bonuses.force_game'),
+            self::NEXT_MISSION => __('server.clans.bonuses.next_mission'),
+            self::SKIP_STEP => __('server.clans.bonuses.skip_step'),
+            self::DOUBLE_POINTS => __('server.clans.bonuses.double_points'),
         };
     }
 
     public function description(): string
     {
         return match ($this) {
-            self::MORE_TIME => 'Repousse la fin de la mission de '.app(ClanSettings::class)->mission_more_time_hours.' heures pour avoir plus de temps pour la terminer.',
-            self::BAN_GAME => 'Ajoute un jeu aux jeux caca du clan : ils ne seront jamais présents dans les futures missions de la période.',
-            self::FORCE_GAME => 'Ajoute un jeu aux jeux cool du clan : ils seront présents dans les futures missions de la période (une partie d\'entre eux au hasard s\'il y en a plus que d\'étapes).',
-            self::NEXT_MISSION => 'Annule la mission en cours, sans perdre de points, et génère une nouvelle mission.',
-            self::SKIP_STEP => 'Supprime une étape au choix de votre mission.',
-            self::DOUBLE_POINTS => 'La prochaine mission rapportera deux fois plus de points à votre clan si vous la réussissez.',
+            self::MORE_TIME => __('server.clans.bonuses.more_time_description', ['hours' => app(ClanSettings::class)->mission_more_time_hours]),
+            self::BAN_GAME => __('server.clans.bonuses.ban_game_description'),
+            self::FORCE_GAME => __('server.clans.bonuses.force_game_description'),
+            self::NEXT_MISSION => __('server.clans.bonuses.next_mission_description'),
+            self::SKIP_STEP => __('server.clans.bonuses.skip_step_description'),
+            self::DOUBLE_POINTS => __('server.clans.bonuses.double_points_description'),
         };
     }
 

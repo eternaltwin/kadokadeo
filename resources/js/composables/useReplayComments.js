@@ -1,6 +1,7 @@
 import { computed, onScopeDispose, ref, toValue, watch } from 'vue'
 
 import { formatFrame, REPLAY_FPS } from '@/composables/useReplayClock'
+import { t } from '@/i18n'
 
 const SHOW_MS = 3000
 // more than this between two readings of the clock: a jump, not the replay playing (8x at most)
@@ -68,7 +69,7 @@ export function useReplayComments({ comments, frame, seeking, hovered, hidden, o
 
   watch([shown, waiting], ([comment, more]) => {
     onChange(comment
-      ? { time: formatFrame(comment.frame), author: comment.author?.display_name ?? 'Ancien joueur', text: comment.content, more }
+      ? { time: formatFrame(comment.frame), author: comment.author?.display_name ?? t('common.former_player'), text: comment.content, more }
       : null)
   })
 }

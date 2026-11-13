@@ -1,4 +1,6 @@
 <script setup>
+import { t } from '@/i18n'
+
 // writes a comment of a replay on one line, SoundCloud style: at the moment of the replay shown when the field gets the
 // focus (kept while writing), or an answer to a comment (at its moment)
 const props = defineProps({
@@ -19,8 +21,8 @@ const input = ref(null)
 
 const at = computed(() => pinned.value ?? Math.max(0, props.frame))
 const placeholder = computed(() => props.parent
-  ? `Répondre à ${props.parent.author?.display_name ?? 'Ancien joueur'}…`
-  : `Commenter à ${formatFrame(at.value)}…`)
+  ? t('runs.reply_to', { name: props.parent.author?.display_name ?? t('common.former_player') })
+  : t('runs.comment_at', { time: formatFrame(at.value) }))
 
 const pin = () => {
   if (pinned.value === null) {
@@ -52,7 +54,7 @@ defineExpose({ focus: () => input.value?.$el?.focus() })
   <form class="flex flex-wrap items-center gap-2" @submit.prevent="send">
     <span v-if="!parent"
           class="shrink-0 border border-solid border-kado-orange-500 bg-kado-orange-50 px-1 text-2xs leading-4 font-bold text-kado-slate-700"
-          :title="`Frame ${at}`">{{ formatFrame(at) }}</span>
+          :title="$t('runs.frame', { frame: at })">{{ formatFrame(at) }}</span>
     <FormInput ref="input"
                v-model="draft"
                class="min-w-0 flex-1 text-xs"
@@ -60,11 +62,11 @@ defineExpose({ focus: () => input.value?.$el?.focus() })
                :placeholder="placeholder"
                @focus="pin"
                @blur="unpin" />
-    <FormButton type="submit" size="sm" :disabled="isLoading || !draft.trim()">Envoyer</FormButton>
+    <FormButton type="submit" size="sm" :disabled="isLoading || !draft.trim()">{{ $t('common.send') }}</FormButton>
     <FormButton v-if="parent"
                 size="sm"
                 variant="pink"
-                @click="emit('cancel')">Annuler</FormButton>
+                @click="emit('cancel')">{{ $t('common.cancel') }}</FormButton>
     <MessageError v-if="error" class="basis-full">{{ error }}</MessageError>
   </form>
 </template>

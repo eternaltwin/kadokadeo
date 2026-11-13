@@ -15,9 +15,6 @@ class ClanName implements ValidationRule
     // after the accents are dropped and in lower case
     private const CHARACTERS = '/^[a-z0-9 \-\'’.!?]+$/u';
 
-    // (also when two clans get the same name at the same time: App\Services\ClanService::create)
-    public const TAKEN = 'Ce nom de clan est déjà pris.';
-
     public function __construct(private readonly ?int $ignoreClanId = null) {}
 
     // the spaces at the ends removed, several spaces in a row as one
@@ -34,12 +31,12 @@ class ClanName implements ValidationRule
 
         $plain = mb_strtolower(preg_replace('/\p{Mn}/u', '', \Normalizer::normalize($value, \Normalizer::FORM_D)));
         if (!preg_match(self::CHARACTERS, $plain)) {
-            $fail('Le nom du clan ne peut contenir que des lettres, des chiffres, des espaces et les signes - \' . ! ?');
+            $fail(__('server.clans.names.invalid_characters'));
 
             return;
         }
         if (!preg_match('/[a-z]/', $plain)) {
-            $fail('Le nom du clan doit contenir au moins une lettre.');
+            $fail(__('server.clans.names.needs_a_letter'));
 
             return;
         }
@@ -49,7 +46,7 @@ class ClanName implements ValidationRule
             ->when($this->ignoreClanId, fn ($query) => $query->whereKeyNot($this->ignoreClanId))
             ->exists();
         if ($taken) {
-            $fail(self::TAKEN);
+            $fail(__('server.clans.names.taken'));
         }
     }
 }

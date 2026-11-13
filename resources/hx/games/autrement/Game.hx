@@ -39,7 +39,7 @@ class Game implements kado.GameInterface {
 		buttons: [
 			{
 				id: "action",
-				label: "GO",
+				label: Lang.go,
 				rightPx: 14,
 				bottomPx: 14,
 				size: 84,

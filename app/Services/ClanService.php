@@ -16,7 +16,6 @@ use App\Models\ClanMemberStat;
 use App\Models\ClanPeriodScore;
 use App\Models\Period;
 use App\Models\User;
-use App\Rules\ClanName;
 use App\Settings\ClanSettings;
 use App\Support\Realtime;
 use Illuminate\Database\Eloquent\Builder;
@@ -53,7 +52,7 @@ class ClanService
 
     public function assertPeriod(): Period
     {
-        return $this->currentPeriod() ?? throw new ClanException('Aucune période en cours.');
+        return $this->currentPeriod() ?? throw new ClanException(__('server.clans.no_period'));
     }
 
     public function clanOf(User $user): ?Clan
@@ -69,7 +68,7 @@ class ClanService
     public function assertMember(User $user, Clan $clan): void
     {
         if (!$this->isMember($user, $clan)) {
-            throw new ClanException('Vous ne faites pas partie de ce clan.');
+            throw new ClanException(__('server.clans.not_a_member'));
         }
     }
 
@@ -88,7 +87,7 @@ class ClanService
     public function assertLeader(User $user, Clan $clan): void
     {
         if ($clan->leader_id !== $user->id || !$this->isMember($user, $clan)) {
-            throw new ClanException('Seul le chef de clan peut faire ça.');
+            throw new ClanException(__('server.clans.leader_only'));
         }
     }
 
@@ -96,7 +95,7 @@ class ClanService
     public function assertManager(User $user, Clan $clan): void
     {
         if (!$this->roleOf($user, $clan)?->canManage()) {
-            throw new ClanException('Seuls le chef de clan et ses bras droits peuvent faire ça.');
+            throw new ClanException(__('server.clans.managers_only'));
         }
     }
 
@@ -123,11 +122,11 @@ class ClanService
             // the player locked: one payment at a time
             $user = User::query()->lockForUpdate()->findOrFail($user->id);
             if ($this->clanOf($user)) {
-                throw new ClanException('Vous faites déjà partie d\'un clan.');
+                throw new ClanException(__('server.clans.already_in_a_clan'));
             }
             $price = app(ClanSettings::class)->creation_price;
             if ($user->kado_points < $price) {
-                throw new ClanException('Il vous faut '.number_format($price, 0, ',', '.').' points Kado pour créer un clan.');
+                throw new ClanException(__('server.clans.creation_price', ['price' => $this->formatPrice($price)]));
             }
 
             $clan = $this->createClanRow([
@@ -151,8 +150,14 @@ class ClanService
             // (a savepoint: PostgreSQL refuses anything else in a transaction after the error)
             return DB::transaction(fn () => Clan::query()->create($attributes));
         } catch (UniqueConstraintViolationException) {
-            throw ValidationException::withMessages(['name' => ClanName::TAKEN]);
+            throw ValidationException::withMessages(['name' => __('server.clans.names.taken')]);
         }
+    }
+
+    // 1.000 in French, 1,000 in English
+    private function formatPrice(int $price): string
+    {
+        return number_format($price, 0, ',', app()->isLocale('en') ? ',' : '.');
     }
 
     // an application costs ClanSettings::$application_price Kado points; several clans can be asked at once, each once
@@ -162,13 +167,13 @@ class ClanService
             // the player locked: the clicks sent together wait for each other, and the next ones find the application
             $user = User::query()->lockForUpdate()->findOrFail($user->id);
             if ($this->clanOf($user)) {
-                throw new ClanException('Vous faites déjà partie d\'un clan.');
+                throw new ClanException(__('server.clans.already_in_a_clan'));
             }
             if (!$clan->is_recruiting) {
-                throw new ClanException('Ce clan ne recrute pas pour le moment.');
+                throw new ClanException(__('server.clans.not_recruiting'));
             }
             if ($clan->members()->count() >= app(ClanSettings::class)->max_members) {
-                throw new ClanException('Ce clan est complet.');
+                throw new ClanException(__('server.clans.full'));
             }
             $pending = ClanApplication::query()
                 ->where('clan_id', $clan->id)
@@ -176,11 +181,11 @@ class ClanService
                 ->where('status', ClanApplication::PENDING)
                 ->exists();
             if ($pending) {
-                throw new ClanException('Vous avez déjà envoyé votre candidature à ce clan.');
+                throw new ClanException(__('server.clans.application_already_sent'));
             }
             $price = app(ClanSettings::class)->application_price;
             if ($user->kado_points < $price) {
-                throw new ClanException('Il vous faut '.number_format($price, 0, ',', '.').' points Kado pour envoyer une candidature.');
+                throw new ClanException(__('server.clans.application_price', ['price' => $this->formatPrice($price)]));
             }
 
             $application = $clan->applications()->create([
@@ -204,7 +209,7 @@ class ClanService
         DB::transaction(function () use ($user, $application) {
             $application = ClanApplication::query()->lockForUpdate()->findOrFail($application->id);
             if ($application->user_id !== $user->id || $application->status !== ClanApplication::PENDING) {
-                throw new ClanException('Cette candidature ne peut pas être annulée.');
+                throw new ClanException(__('server.clans.application_cannot_cancel'));
             }
 
             $this->refund($application);
@@ -227,10 +232,10 @@ class ClanService
             User::query()->lockForUpdate()->find($application->user_id);
             $application = ClanApplication::query()->lockForUpdate()->findOrFail($application->id);
             if ($application->status !== ClanApplication::PENDING) {
-                throw new ClanException('Cette candidature a déjà été traitée.');
+                throw new ClanException(__('server.clans.application_already_handled'));
             }
             if ($clan->members()->count() >= app(ClanSettings::class)->max_members) {
-                throw new ClanException('Ce clan est complet.');
+                throw new ClanException(__('server.clans.full'));
             }
             if (ClanMember::query()->where('user_id', $application->user_id)->exists()) {
                 $this->closeApplication($application, ClanApplication::REFUSED);
@@ -250,7 +255,7 @@ class ClanService
         });
 
         if ($alreadyInClan) {
-            throw new ClanException('Ce joueur fait déjà partie d\'un clan.');
+            throw new ClanException(__('server.clans.player_in_a_clan'));
         }
     }
 
@@ -262,7 +267,7 @@ class ClanService
         DB::transaction(function () use ($manager, $application) {
             $application = ClanApplication::query()->lockForUpdate()->findOrFail($application->id);
             if ($application->status !== ClanApplication::PENDING) {
-                throw new ClanException('Cette candidature a déjà été traitée.');
+                throw new ClanException(__('server.clans.application_already_handled'));
             }
 
             $this->closeApplication($application, ClanApplication::REFUSED);
@@ -332,7 +337,7 @@ class ClanService
     {
         $clan = $this->clanOf($user);
         if (!$clan) {
-            throw new ClanException('Vous ne faites partie d\'aucun clan.');
+            throw new ClanException(__('server.clans.not_in_a_clan'));
         }
 
         DB::transaction(function () use ($clan, $user) {
@@ -341,10 +346,10 @@ class ClanService
             $this->assertMember($user, $clan);
             $membersCount = $clan->members()->count();
             if ($clan->leader_id === $user->id && $membersCount > 1) {
-                throw new ClanException('Vous devez d\'abord nommer un nouveau chef de clan.');
+                throw new ClanException(__('server.clans.name_new_leader_first'));
             }
             if ($this->isNewMember($user, $clan)) {
-                throw new ClanException('Vous avez rejoint ce clan pendant cette période : vous pourrez le quitter à partir de la prochaine période.');
+                throw new ClanException(__('server.clans.leave_next_period'));
             }
 
             $clan->members()->where('user_id', $user->id)->delete();
@@ -363,14 +368,14 @@ class ClanService
             $clan = $this->lockClan($clan, [$manager->id, $member->id]);
             $this->assertManager($manager, $clan);
             if ($member->id === $manager->id) {
-                throw new ClanException('Vous ne pouvez pas vous exclure vous-même.');
+                throw new ClanException(__('server.clans.cannot_kick_self'));
             }
             if ($member->id === $clan->leader_id) {
-                throw new ClanException('Le chef de clan ne peut pas être exclu.');
+                throw new ClanException(__('server.clans.cannot_kick_leader'));
             }
             $this->assertMember($member, $clan);
             if ($this->isNewMember($member, $clan)) {
-                throw new ClanException('Ce joueur a rejoint le clan pendant cette période : il pourra être exclu à partir de la prochaine période.');
+                throw new ClanException(__('server.clans.kick_next_period'));
             }
 
             $clan->members()->where('user_id', $member->id)->delete();
@@ -402,7 +407,7 @@ class ClanService
      */
     private function lockClan(Clan $clan, array $userIds): Clan
     {
-        $clan = Clan::query()->lockForUpdate()->find($clan->id) ?? throw new ClanException('Ce clan n\'existe plus.');
+        $clan = Clan::query()->lockForUpdate()->find($clan->id) ?? throw new ClanException(__('server.clans.gone'));
         ClanMember::query()->where('clan_id', $clan->id)->whereIn('user_id', $userIds)->orderBy('id')->lockForUpdate()->get();
 
         return $clan;
@@ -422,10 +427,10 @@ class ClanService
     {
         $this->assertManager($manager, $clan);
         if ($role === ClanRole::LEADER) {
-            throw new ClanException('Utilisez « Nommer chef » pour donner la direction du clan.');
+            throw new ClanException(__('server.clans.use_name_leader'));
         }
         if ($member->id === $clan->leader_id) {
-            throw new ClanException('Le rôle du chef de clan ne peut pas être changé.');
+            throw new ClanException(__('server.clans.leader_role_fixed'));
         }
         $this->assertMember($member, $clan);
 
@@ -446,7 +451,7 @@ class ClanService
                 return;
             }
             if ($current->combat_role_period_id === $period->id) {
-                throw new ClanException('Le siège de ce joueur a déjà été choisi pendant cette période : il pourra changer à la prochaine période.');
+                throw new ClanException(__('server.clans.seat_next_period'));
             }
             if ($role) {
                 // the clan is locked (PostgreSQL does not lock an aggregate): one seat given at a time
@@ -454,7 +459,7 @@ class ClanService
                 $taken = $clan->members()->where('combat_role', $role)->where('user_id', '!=', $member->id)->count();
                 $seats = $this->combatSeats($clan, $role);
                 if ($taken >= $seats) {
-                    throw new ClanException("Tous les sièges de {$role->getLabel()} sont pris ({$seats} pour ce clan).");
+                    throw new ClanException(__('server.clans.seats_full', ['role' => $role->getLabel(), 'seats' => $seats]));
                 }
             }
             $clan->members()->where('user_id', $member->id)->update(['combat_role' => $role, 'combat_role_period_id' => $period->id]);

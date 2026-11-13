@@ -120,7 +120,7 @@ class Trader extends Event {
 			var field = Txt.make(KadoKadeoManager.S(tn[3]), Txt.VERDANA, "left", 0x1D2161, 4);
 			field.x = KadoKadeoManager.S(tn[0]);
 			field.y = KadoKadeoManager.S(tn[1]);
-			field.text = Lang.ITEMS[o.id];
+			field.text = Lang.item(o.id);
 			mc.addChild(field);
 			var tg = Data.TEXT_SHOPGOLD;
 			var fieldGold = Txt.make(KadoKadeoManager.S(tg[3]), Txt.VERDANA, "left", 0x1D2161, 4);
@@ -149,7 +149,7 @@ class Trader extends Event {
 
 	public function updateSlots() {
 		var flNoRoom = false;
-		var str = Lang.TRADER[0];
+		var str = Lang.trader_what_to_buy;
 		var n = 0;
 
 		for (s in slots) {
@@ -175,9 +175,9 @@ class Trader extends Event {
 		}
 
 		if (n == 0) {
-			str = Lang.TRADER[1];
+			str = Lang.trader_not_enough_gold;
 			if (flNoRoom)
-				str = Lang.TRADER[2];
+				str = Lang.trader_no_room;
 		}
 		panelText.text = str;
 	}

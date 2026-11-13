@@ -168,7 +168,7 @@ class Game implements kado.GameInterface {
 				});
 				mc.root._x = 0;
 				mc.root._y = 0;
-				txt.text = "SECTEUR " + lvl;
+				txt.text = Lang.sector({sector: lvl});
 				mc.timer = 64;
 				mc.fadeLimit = 20;
 				mc.fadeType = 3;

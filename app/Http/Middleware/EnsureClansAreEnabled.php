@@ -15,7 +15,7 @@ class EnsureClansAreEnabled
 {
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless(app(ClanSettings::class)->enabled, Response::HTTP_FORBIDDEN, 'Les clans seront bientôt disponibles.');
+        abort_unless(app(ClanSettings::class)->enabled, Response::HTTP_FORBIDDEN, __('server.clans.coming_soon'));
 
         return $next($request);
     }

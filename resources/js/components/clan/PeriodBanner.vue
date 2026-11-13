@@ -7,7 +7,9 @@ defineProps({
 
 <template>
   <div v-if="tournament" class="border-l-4 border-kado-teal-500 bg-kado-blue-50 px-2 py-1 text-sm">
-    <strong>Tournoi des clans - Période {{ tournament.period_id }}</strong> :
-    les scores des clans seront remis à zéro dans <ClanCountdown :until="tournament.ends_at" class="font-bold" />.
+    <i18n-t keypath="clan_period_banner.reset" tag="span">
+      <template #title><strong>{{ $t('clan_period_banner.title', { period: tournament.period_id }) }}</strong></template>
+      <template #countdown><ClanCountdown :until="tournament.ends_at" class="font-bold" /></template>
+    </i18n-t>
   </div>
 </template>

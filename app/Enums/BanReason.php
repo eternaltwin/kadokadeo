@@ -21,8 +21,8 @@ enum BanReason: string implements HasLabel
     public function message(): string
     {
         return match ($this) {
-            self::CHEAT => 'Votre compte a été banni pour tricherie.',
-            self::MULTI_ACCOUNT => 'Votre compte a été banni pour multicompte.',
+            self::CHEAT => __('server.account.banned_cheat'),
+            self::MULTI_ACCOUNT => __('server.account.banned_multi_account'),
         };
     }
 }

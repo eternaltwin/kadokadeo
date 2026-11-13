@@ -1,5 +1,8 @@
 <script setup>
 import KadoPoints from '@svg/k.svg'
+
+import { t } from '@/i18n'
+
 // "Parties de clan": the paid games of the player for the attacks and the defenses (used once the games of the day are),
 // bought by packs with Kado points, given to the clan, distributed by the leader and the right hands
 const props = defineProps({
@@ -33,16 +36,15 @@ const done = (message) => {
   emit('updated')
 }
 const buy = (pack) => {
-  const s = pack.count > 1 ? 's' : ''
-  if (confirm(`Acheter ${pack.count} partie${s} de clan pour ${pack.price} points Kado ?`)) {
-    buyClanGames(pack.count).then(() => done(`${pack.count} partie${s} de clan achetée${pack.count > 1 ? 's' : ''} !`))
+  if (confirm(t('clan_games.confirm_buy', { count: pack.count, price: pack.price }, pack.count))) {
+    buyClanGames(pack.count).then(() => done(t('clan_games.bought', { count: pack.count }, pack.count)))
   }
 }
-const donate = () => donateClanGames(props.clan.id, donateCount.value).then(() => done(`${donateCount.value} partie${donateCount.value > 1 ? 's' : ''} donnée${donateCount.value > 1 ? 's' : ''} au clan.`))
+const donate = () => donateClanGames(props.clan.id, donateCount.value).then(() => done(t('clan_games.donated', { count: donateCount.value }, donateCount.value)))
 const distribute = () => {
   const member = members.value.find((m) => m.user.etwin_id === distribution.member)
   distributeClanGames(props.clan.id, distribution.member, distribution.count)
-    .then(() => done(`${distribution.count} partie${distribution.count > 1 ? 's' : ''} donnée${distribution.count > 1 ? 's' : ''} à ${member?.user.display_name}.`))
+    .then(() => done(t('clan_games.distributed', { count: distribution.count, name: member?.user.display_name }, distribution.count)))
 }
 </script>
 
@@ -53,45 +55,44 @@ const distribute = () => {
     <Loader v-if="isLoading && !data" />
 
     <template v-if="data">
-      <p>
-        Chaque jour, vous avez <Number :value="data.attack_games" color="green" /> partie(s) gratuite(s) pour attaquer et
-        défendre (sur {{ data.attack_games_per_day }} par jour). Une fois jouées, les attaques et les défenses utilisent vos
-        parties de clan achetées. Les missions, elles, sont gratuites et illimitées. Vous avez
-        <Number :value="data.games" color="blue" /> partie(s) de clan et <strong>{{ formatScore(data.kado_points) }}</strong>
-        points Kado.
-      </p>
+      <i18n-t keypath="clan_games.intro" tag="p">
+        <template #free><Number :value="data.attack_games" color="green" /></template>
+        <template #per_day>{{ data.attack_games_per_day }}</template>
+        <template #games><Number :value="data.games" color="blue" /></template>
+        <template #points><strong>{{ formatScore(data.kado_points) }}</strong></template>
+      </i18n-t>
 
-      <KadoSectionTitle>Acheter des parties</KadoSectionTitle>
+      <KadoSectionTitle>{{ $t('clan_games.buy_title') }}</KadoSectionTitle>
       <div class="space-y-2">
         <FormButton v-for="pack in data.packs"
                     :key="pack.count"
                     :disabled="data.kado_points < pack.price"
-                    :title="data.kado_points < pack.price ? 'Vous n\'avez pas assez de points Kado' : `${pack.unit_price} points Kado la partie`"
+                    :title="data.kado_points < pack.price ? $t('account.not_enough_points') : $t('clan_games.unit_price', { price: pack.unit_price })"
                     @click="buy(pack)"
                     class="flex items-center gap-1">
-          {{ pack.count }} partie{{ pack.count > 1 ? 's' : '' }} : {{ formatScore(pack.price) }} <KadoPoints class="inline size-4"/>
+          {{ $t('clan_games.pack', { count: pack.count, price: formatScore(pack.price) }, pack.count) }} <KadoPoints class="inline size-4"/>
         </FormButton>
       </div>
 
-      <KadoSectionTitle>Donner au clan</KadoSectionTitle>
-      <p class="text-sm">
-        Vous pouvez donner à votre clan les parties que vous avez achetées (pas vos parties gratuites du jour). Le chef et ses bras
-        droits les distribueront aux membres. Le clan possède <Number :value="data.clan.games" color="orange" /> <img src="/gfx/gemOrange.svg" class="w-5 max-w-none"> parties en stock.
-      </p>
+      <KadoSectionTitle>{{ $t('clan_games.donate_title') }}</KadoSectionTitle>
+      <i18n-t keypath="clan_games.donate_help" tag="p" class="text-sm">
+        <template #games><Number :value="data.clan.games" color="orange" /></template>
+        <template #gem><img src="/gfx/gemOrange.svg" class="w-5 max-w-none"></template>
+      </i18n-t>
       <form class="flex items-center gap-2" @submit.prevent="donate">
         <FormInput v-model.number="donateCount"
                    type="number"
                    min="1"
                    :max="data.games"
                    class="w-20" />
-        <FormButton type="submit" size="lg" :disabled="data.games < 1">Donner</FormButton>
+        <FormButton type="submit" size="lg" :disabled="data.games < 1">{{ $t('clan_games.donate') }}</FormButton>
       </form>
 
       <template v-if="data.clan.can_distribute">
-        <KadoSectionTitle>Distribuer les parties du clan</KadoSectionTitle>
+        <KadoSectionTitle>{{ $t('clan_games.distribute_title') }}</KadoSectionTitle>
         <form class="flex flex-wrap items-center gap-2" @submit.prevent="distribute">
           <FormSelect v-model="distribution.member">
-            <option :value="null" disabled>Choisir un joueur</option>
+            <option :value="null" disabled>{{ $t('clan_games.choose_player') }}</option>
             <option v-for="m in members" :key="m.user.etwin_id" :value="m.user.etwin_id">{{ m.user.display_name }}</option>
           </FormSelect>
           <FormInput v-model.number="distribution.count"
@@ -99,16 +100,16 @@ const distribute = () => {
                      min="1"
                      :max="data.clan.games"
                      class="w-20" />
-          <FormButton type="submit" size="lg" :disabled="!distribution.member || data.clan.games < 1">Distribuer</FormButton>
+          <FormButton type="submit" size="lg" :disabled="!distribution.member || data.clan.games < 1">{{ $t('clan_games.distribute') }}</FormButton>
         </form>
       </template>
 
       <template v-if="data.clan.transfers.length">
-        <KadoSectionTitle>Derniers dons</KadoSectionTitle>
+        <KadoSectionTitle>{{ $t('clan_games.last_donations') }}</KadoSectionTitle>
         <ul class="list-inside list-kado ml-4 space-y-1 text-sm">
           <li v-for="(transfer, index) in data.clan.transfers" :key="index">
-            <template v-if="transfer.type === 'donation'">{{ transfer.from?.display_name }} a donné {{ transfer.count }} partie(s) au clan</template>
-            <template v-else>{{ transfer.from?.display_name }} a donné {{ transfer.count }} partie(s) à {{ transfer.to?.display_name }}</template>
+            <template v-if="transfer.type === 'donation'">{{ $t('clan_games.donation', { from: transfer.from?.display_name, count: transfer.count }) }}</template>
+            <template v-else>{{ $t('clan_games.transfer', { from: transfer.from?.display_name, count: transfer.count, to: transfer.to?.display_name }) }}</template>
           </li>
         </ul>
       </template>

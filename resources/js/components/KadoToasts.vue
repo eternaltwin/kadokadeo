@@ -33,7 +33,7 @@ const open = (toast) => {
         </div>
         <button type="button"
                 class="shrink-0 cursor-pointer border-0 bg-transparent px-1 font-bold text-kado-teal-500"
-                aria-label="Fermer"
+                :aria-label="$t('common.close')"
                 @click.stop="toastStore.dismiss(toast.id)">
           ×
         </button>

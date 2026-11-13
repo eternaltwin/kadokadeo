@@ -5,6 +5,9 @@ const INTL_LOCALES = { fr: 'fr-FR' }
 
 export const pageLocale = () => window.Kado?.locale ?? 'fr'
 
+// a text the server gives in each language ({ fr, en }), French when the page's one is not written
+export const inPageLanguage = (texts) => texts[pageLocale()] ?? texts.fr
+
 export const intlLocale = () => INTL_LOCALES[pageLocale()] ?? pageLocale()
 
 // the page was loaded for a visitor, in the language of the browser: the account decides once logged in

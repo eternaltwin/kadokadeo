@@ -65,7 +65,7 @@ class ClanForumService
     {
         $this->clanService->assertMember($user, $topic->clan);
         if ($topic->is_locked && !$this->canModerate($user, $topic->clan)) {
-            throw new ClanException('Ce sujet est verrouillé.');
+            throw new ClanException(__('server.clans.forum.topic_locked'));
         }
 
         return DB::transaction(function () use ($user, $topic, $content) {
@@ -98,7 +98,7 @@ class ClanForumService
         $clan = $message->topic->clan;
         $this->clanService->assertMember($user, $clan);
         if (!$this->canEdit($user, $message, $this->canModerate($user, $clan))) {
-            throw new ClanException('Vous ne pouvez pas modifier ce message.');
+            throw new ClanException(__('server.clans.forum.cannot_edit'));
         }
         $message->update(['content' => $content, 'edited_at' => now(), 'edited_by' => $user->id]);
         $this->changed($message->topic);
@@ -138,10 +138,10 @@ class ClanForumService
         $this->clanService->assertMember($user, $clan);
         $isModerator = $this->canModerate($user, $clan);
         if (array_key_exists('title', $changes) && !$isModerator && $topic->user_id !== $user->id) {
-            throw new ClanException('Seul l\'auteur du sujet peut changer son titre.');
+            throw new ClanException(__('server.clans.forum.author_only_title'));
         }
         if ((array_key_exists('is_pinned', $changes) || array_key_exists('is_locked', $changes)) && !$isModerator) {
-            throw new ClanException('Seuls le chef de clan et ses bras droits peuvent faire ça.');
+            throw new ClanException(__('server.clans.managers_only'));
         }
         $topic->update($changes);
         $this->changed($topic);

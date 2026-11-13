@@ -26,17 +26,17 @@ watch(league, (newVal) => {
 <template>
   <Loader v-if="isGameLoading" />
   <div v-else-if="game" class="relative w-full">
-    <KadoSectionTitle>Classement général de {{ game.name }}</KadoSectionTitle>
+    <KadoSectionTitle>{{ $t('games.ranking_title', { game: game.name }) }}</KadoSectionTitle>
 
     <div class="flex gap-4 my-4 justify-center items-center">
       <select id="period" v-model="period">
-        <option :value="null">Toutes les périodes</option>
+        <option :value="null">{{ $t('games.all_periods') }}</option>
         <option v-for="periodOption in periodStore.period?.id" :key="periodOption" :value="periodOption">
-          Période {{ periodOption }}
+          {{ $t('competition.period', { period: periodOption }) }}
         </option>
       </select>
       <select id="league" v-model="league">
-        <option :value="null">Toutes les ligues</option>
+        <option :value="null">{{ $t('games.all_leagues') }}</option>
         <option v-for="leagueOption in leagueStore.leagues" :key="leagueOption.level" :value="leagueOption.level">
           {{ leagueOption.name }}
         </option>
@@ -50,7 +50,7 @@ watch(league, (newVal) => {
         :disabled="isLoading"
         class="text-kado-orange-500 underline cursor-pointer hover:text-kado-orange-700"
       >
-        Charger plus de résultats
+        {{ $t('common.load_more_results') }}
       </button>
       <Loader v-if="isLoading" />
       <MessageError v-else-if="error">{{ error }}</MessageError>

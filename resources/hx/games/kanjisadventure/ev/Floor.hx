@@ -20,14 +20,14 @@ class Floor extends Event {
 
 		this.lvl = Game.me.cfl.id + inc;
 
-		var etage = lvl + "ème étage";
+		var etage = Lang.floor({floor: lvl});
 		if (lvl == 0)
-			etage = "rez-de-chaussée";
+			etage = Lang.ground_floor;
 		if (lvl == 1)
-			etage = "1er sous-sol";
+			etage = Lang.first_basement;
 		if (lvl == 2)
-			etage = "2d sous-sol";
-		Game.me.log("Vous " + ["grimpez", "descendez"][inc < 0 ? 0 : 1] + " les escaliers vers le " + etage);
+			etage = Lang.second_basement;
+		Game.me.log(inc < 0 ? Lang.you_climb({floor: etage}) : Lang.you_go_down({floor: etage}));
 
 		bstep = 0;
 		spc = 0.035;

@@ -1,4 +1,5 @@
 import { formatScore } from '@/composables/helpers'
+import { t } from '@/i18n'
 
 import { useApi } from './useApi'
 import { usePaginatedList } from './usePaginatedList'
@@ -6,28 +7,28 @@ import { usePaginatedList } from './usePaginatedList'
 // the text and the link of a notification of the player (App\Http\Resources\UserNotificationResource), in the tab
 // « Notifications » and in the toasts
 export function notificationText(notification) {
-  const actor = notification.actor?.display_name ?? 'Un joueur'
+  const actor = notification.actor?.display_name ?? t('notifications.a_player')
   const game = notification.run?.game?.name
-  const ofGame = game ? ` de ${game}` : ''
+  const ofGame = game ? t('notifications.of_game', { game }) : ''
   switch (notification.type) {
     case 'run_comment':
-      return `${actor} a commenté votre replay${ofGame}.`
+      return t('notifications.run_comment', { actor, ofGame })
     case 'comment_reply':
-      return `${actor} a répondu à votre commentaire sur le replay${ofGame}.`
+      return t('notifications.comment_reply', { actor, ofGame })
     case 'comment_likes': {
       const others = notification.count - 1
       return others > 0
-        ? `${actor} et ${others} autre${others > 1 ? 's' : ''} ont aimé votre commentaire sur le replay${ofGame}.`
-        : `${actor} a aimé votre commentaire sur le replay${ofGame}.`
+        ? t('notifications.comment_likes_others', { actor, ofGame, count: others }, others)
+        : t('notifications.comment_like', { actor, ofGame })
     }
     case 'clan_application':
-      return `${actor} demande à rejoindre votre clan ${notification.clan?.name ?? ''}.`
+      return t('notifications.clan_application', { actor, clan: notification.clan?.name ?? '' })
     case 'clan_accepted':
-      return `Vous avez été accepté dans le clan ${notification.clan?.name ?? ''} !`
+      return t('notifications.clan_accepted', { clan: notification.clan?.name ?? '' })
     case 'clan_refused':
-      return `Votre candidature au clan ${notification.clan?.name ?? ''} a été refusée : vos points Kado vous ont été rendus.`
+      return t('notifications.clan_refused', { clan: notification.clan?.name ?? '' })
     default:
-      return 'Nouvelle notification.'
+      return t('notifications.new')
   }
 }
 
@@ -53,11 +54,11 @@ export function clanToast(event) {
   const game = event.game?.name
   switch (event.kind) {
     case 'defense_repelled':
-      return { title: 'Défense réussie !', text: `${player} a réussi la défense sur ${game} (${formatScore(event.score)})`, to: { name: 'clans.status', params: { id: event.clan_id } } }
+      return { title: t('notifications.defense_title'), text: t('notifications.defense_text', { player, game, score: formatScore(event.score) }), to: { name: 'clans.status', params: { id: event.clan_id } } }
     case 'step_completed':
-      return { title: 'Étape réussie !', text: `${player} a réussi l'étape ${game} (${formatScore(event.score)})`, to: { name: 'clans.missions', params: { id: event.clan_id } } }
+      return { title: t('notifications.step_title'), text: t('notifications.step_text', { player, game, score: formatScore(event.score) }), to: { name: 'clans.missions', params: { id: event.clan_id } } }
     case 'mission_available':
-      return { title: 'Clan', text: 'Nouvelle mission disponible', to: { name: 'clans.missions', params: { id: event.clan_id } } }
+      return { title: t('notifications.clan_toast_title'), text: t('notifications.mission_text'), to: { name: 'clans.missions', params: { id: event.clan_id } } }
     default:
       return null
   }

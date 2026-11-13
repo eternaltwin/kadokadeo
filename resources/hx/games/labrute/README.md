@@ -46,7 +46,7 @@ All the tunable values of the game (prices, rewards, levels of the opponents, sp
 
 - The texts in 8 languages (`Lang.hx`, `lang/`: the data of LaBrute in `<Lang>Data.hx` from the translations of
   labrute-react by `build_lang.mjs`, the texts of the screens in `<Lang>.hx` by hand), the key L for the next one
-  (remembered by the browser): pictures and texts only, nothing of the game.
+  (remembered by the browser; at first the language of the site): pictures and texts only, nothing of the game.
 - The replay: the clicks on the buttons are its events; the moves of the mouse and the changes of the pointer
   (mouse, touch, out of the game) are recorded too (`Game.hx`), the replay shows the hovers, the tooltips, a cursor
   (the live game keeps the cursor of the system) and the taps of a touch screen. The game never reads them: the

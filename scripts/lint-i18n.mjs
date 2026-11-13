@@ -130,7 +130,7 @@ const withoutComments = (code) =>
 export function findUsageProblems(code, frenchKeys, file) {
   const readable = withoutComments(code)
   const quotedArguments = [
-    ...[...readable.matchAll(/\bt\(\s*([^\s,)]*)/g)].map((match) => match[1]),
+    ...[...readable.matchAll(/(?<!function\s)\bt\(\s*([^\s,)]*)/g)].map((match) => match[1]),
     ...[...readable.matchAll(/(?<![:\w-])keypath="([^"]*)"/g)].map((match) => `'${match[1]}'`),
     ...[...readable.matchAll(/:keypath="([^"]*)"/g)].map((match) => match[1]),
   ]

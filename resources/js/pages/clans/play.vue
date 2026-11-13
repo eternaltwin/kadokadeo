@@ -1,4 +1,6 @@
 <script setup>
+import { t } from '@/i18n'
+
 // a clan run: an attack, a defense or a mission step, on the page of the game (rules, paliers, ranking) with the score of
 // the clan in the paliers. The game sends the action when a run begins: the run is bound to it on the server while its
 // target is open, however long the page stays open (ClanRunService::pageAction).
@@ -68,11 +70,11 @@ const goals = computed(() => {
     return []
   }
   if (action.value.type === 'mission') {
-    return [{ score: target.score, img: '/gfx/clan/clan_mission_points.png', alt: `Étape de la mission ${target.mission}` }]
+    return [{ score: target.score, img: '/gfx/clan/clan_mission_points.png', alt: t('clans_play.mission_step_alt', { mission: target.mission }) }]
   }
   return action.value.is_improvement
-    ? [{ score: target.score + 1, img: '/gfx/clan/atksmall.gif', alt: 'Améliorer votre attaque' }]
-    : [{ score: target.score + 1, img: '/gfx/clan/defsmall.gif', alt: `Repousser l'attaque de ${target.attacker}` }]
+    ? [{ score: target.score + 1, img: '/gfx/clan/atksmall.gif', alt: t('clans_play.improve_alt') }]
+    : [{ score: target.score + 1, img: '/gfx/clan/defsmall.gif', alt: t('clans_play.repel_alt', { attacker: target.attacker }) }]
 })
 const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed'].includes(result.value?.result))
 </script>
@@ -80,7 +82,7 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
 <template>
   <div class="relative min-h-48 px-2">
     <MessageError v-if="error">{{ error }}</MessageError>
-    <Loader v-else-if="!action">Chargement ...</Loader>
+    <Loader v-else-if="!action">{{ $t('clans_play.loading') }}</Loader>
 
     <template v-else>
       <KadoPageTitle class="mb-5">{{ action.type_label }}</KadoPageTitle>
@@ -89,19 +91,19 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
         <MessageSuccess v-if="isSuccess">{{ result.message }}</MessageSuccess>
         <MessageError v-else>{{ result.message }}</MessageError>
         <p v-if="closedMessage" class="mx-2.5 my-4 text-center">
-          {{ closedMessage }} Retour à la page des missions dans quelques secondes...
+          {{ closedMessage }} {{ $t('clans_play.back_to_missions') }}
         </p>
         <p v-else class="mx-2.5 my-4 text-center text-sm">
-          <template v-if="countsAgain">Si vous rejouez, votre nouvelle partie comptera aussi pour votre clan.</template>
-          <template v-else>Si vous rejouez, ce sera une partie normale : elle ne comptera plus pour votre clan.</template>
+          <template v-if="countsAgain">{{ $t('clans_play.counts_again') }}</template>
+          <template v-else>{{ $t('clans_play.normal_run') }}</template>
         </p>
       </template>
 
       <MessageError v-if="!action.is_open && !result">
-        Cette action de clan est terminée ou a expiré. Retournez sur la page de votre clan pour en lancer une nouvelle.
+        {{ $t('clans_play.closed') }}
       </MessageError>
       <div v-else-if="!game && !result" class="relative min-h-48">
-        <Loader>Chargement du jeu ...</Loader>
+        <Loader>{{ $t('clans_play.loading_game') }}</Loader>
       </div>
       <template v-else-if="game">
         <KadoSectionTitle class="text-center">{{ game.name }}</KadoSectionTitle>
@@ -114,32 +116,33 @@ const isSuccess = computed(() => ['launched', 'improved', 'repelled', 'completed
       <div class="flex items-center gap-2 border-l-4 px-2 py-1" :class="action.type === 'attack' ? 'border-kado-pink-400 bg-kado-pink-50 text-kado-pink-400' : 'border-kado-teal-500 bg-kado-blue-50'">
         <img :src="action.type === 'attack' ? '/assets/img/gfx/icons/atk.gif' : action.type === 'defense' ? '/assets/img/gfx/icons/def.gif' : '/gfx/clan/clan_mission_points.png'" alt="" />
         <div>
-          <template v-if="action.is_improvement">
-            Améliorez votre attaque contre le clan <strong>{{ action.target.clan.name }}</strong> : votre score ne
-            remplacera celui de l'attaque (<strong>{{ action.target.score }} pts</strong>) que s'il est meilleur.
-          </template>
-          <template v-else-if="action.type === 'attack'">
-            Votre score deviendra une attaque du clan <strong>{{ action.clan.name }}</strong> contre le clan
-            <strong>{{ action.target.clan.name }}</strong>. Faites le meilleur score possible !
-          </template>
-          <template v-else-if="action.type === 'defense'">
-            Battez le score de <strong>{{ action.target.score }} pts</strong> de {{ action.target.attacker }}
-            (clan {{ action.target.clan.name }}) pour repousser son attaque.
-          </template>
-          <template v-else>
-            Mission {{ action.target.mission }} : atteignez <strong>{{ action.target.score }} pts</strong> pour réussir cette étape.
-            Les parties des missions sont gratuites.
-          </template>
+          <i18n-t v-if="action.is_improvement" keypath="clans_play.improve">
+            <template #clan><strong>{{ action.target.clan.name }}</strong></template>
+            <template #score><strong>{{ $t('clans_play.points', { score: action.target.score }) }}</strong></template>
+          </i18n-t>
+          <i18n-t v-else-if="action.type === 'attack'" keypath="clans_play.attack">
+            <template #clan><strong>{{ action.clan.name }}</strong></template>
+            <template #target><strong>{{ action.target.clan.name }}</strong></template>
+          </i18n-t>
+          <i18n-t v-else-if="action.type === 'defense'" keypath="clans_play.defense">
+            <template #score><strong>{{ $t('clans_play.points', { score: action.target.score }) }}</strong></template>
+            <template #attacker>{{ action.target.attacker }}</template>
+            <template #clan>{{ action.target.clan.name }}</template>
+          </i18n-t>
+          <i18n-t v-else keypath="clans_play.mission">
+            <template #mission>{{ action.target.mission }}</template>
+            <template #score><strong>{{ $t('clans_play.points', { score: action.target.score }) }}</strong></template>
+          </i18n-t>
         </div>
       </div>
       <p class="mx-2.5 my-4 text-center">
-        <RouterLink :to="backRoute">Retour à la page du clan</RouterLink>
+        <RouterLink :to="backRoute">{{ $t('clans_play.back_to_clan') }}</RouterLink>
       </p>
       <p v-if="action.type !== 'mission' && authStore.user" class="mx-2.5 my-4 flex items-center justify-center gap-1 text-sm">
         <img src="/gfx/gemGreen.svg" alt="" class="w-4" />
-        {{ authStore.user.clan_attack_games }} partie(s) d'attaque gratuite(s) aujourd'hui, puis
+        {{ $t('clans_play.free_games', { count: authStore.user.clan_attack_games }) }}
         <img src="/gfx/gemOrange.svg" alt="" class="w-4" />
-        {{ authStore.user.clan_games }} partie(s) de clan achetée(s)
+        {{ $t('clans_play.bought_games', { count: authStore.user.clan_games }) }}
       </p>
     </template>
   </div>

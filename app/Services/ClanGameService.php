@@ -29,12 +29,12 @@ class ClanGameService
 
     public function buy(User $user, int $count): void
     {
-        $price = $this->packs()[$count] ?? throw new ClanException('Ce lot de parties n\'existe pas.');
+        $price = $this->packs()[$count] ?? throw new ClanException(__('server.clans.games.unknown_pack'));
 
         DB::transaction(function () use ($user, $count, $price) {
             $user = User::query()->lockForUpdate()->findOrFail($user->id);
             if ($user->kado_points < $price) {
-                throw new ClanException('Vous n\'avez pas assez de points Kado pour acheter ces parties.');
+                throw new ClanException(__('server.clans.games.not_enough_points'));
             }
 
             $user->kado_points -= $price;
@@ -56,7 +56,7 @@ class ClanGameService
         DB::transaction(function () use ($user, $clan, $count) {
             $user = User::query()->lockForUpdate()->findOrFail($user->id);
             if ($count < 1 || $user->clan_games < $count) {
-                throw new ClanException('Vous n\'avez pas assez de parties de clan achetées (les parties gratuites du jour ne peuvent pas être données).');
+                throw new ClanException(__('server.clans.games.not_enough_to_give'));
             }
 
             $user->decrement('clan_games', $count);
@@ -75,7 +75,7 @@ class ClanGameService
         DB::transaction(function () use ($manager, $clan, $member, $count) {
             $clan = Clan::query()->lockForUpdate()->findOrFail($clan->id);
             if ($count < 1 || $clan->clan_games < $count) {
-                throw new ClanException('Le clan n\'a pas assez de parties à distribuer.');
+                throw new ClanException(__('server.clans.games.clan_not_enough'));
             }
 
             $clan->decrement('clan_games', $count);

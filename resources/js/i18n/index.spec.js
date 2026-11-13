@@ -3,7 +3,7 @@ import { expect, test } from 'vitest'
 import { h } from 'vue'
 import { Translation } from 'vue-i18n'
 
-import { createAppI18n } from './index'
+import { createAppI18n, t } from './index'
 
 const PLAYERS = { players: 'Un joueur | {n} joueurs' }
 const ENGLISH_PLAYERS = { players: 'One player | {n} players' }
@@ -63,4 +63,11 @@ test.each([
   [2, '2 players'],
 ])('in English, %i gives "%s"', (count, expected) => {
   expect(inEnglish(PLAYERS, ENGLISH_PLAYERS).t('players', { n: count }, count)).toBe(expected)
+})
+
+test('a store reads a text outside a component, in the language of the page', () => {
+  createAppI18n('en', { fr: { hello: 'Bonjour {name}', bye: 'Salut' }, en: { hello: 'Hello {name}' } })
+
+  expect(t('hello', { name: 'Mel' })).toBe('Hello Mel')
+  expect(t('bye')).toBe('Salut')
 })

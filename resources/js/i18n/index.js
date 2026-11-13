@@ -17,8 +17,16 @@ function pluralRuleOf(locale) {
   return (count, branches) => (branches > 1 && rules.select(count) !== 'one' ? 1 : 0)
 }
 
-export const createAppI18n = (locale, messages) =>
-  createI18n({
+let appI18n
+
+// for what is not a component: a store, a composable. Read when it is called, never when a module is imported
+export function t(...args) {
+  const { t: translate } = appI18n.global
+  return translate(...args)
+}
+
+export function createAppI18n(locale, messages) {
+  appI18n = createI18n({
     legacy: false,
     locale,
     fallbackLocale: SOURCE_LANGUAGE,
@@ -32,3 +40,5 @@ export const createAppI18n = (locale, messages) =>
       [SOURCE_LANGUAGE]: pluralRuleOf(SOURCE_LANGUAGE),
     },
   })
+  return appI18n
+}

@@ -18,11 +18,11 @@ const pages = computed(() => {
 
 <template>
   <nav v-if="lastPage > 1" class="my-3 text-center">
-    <div class="italic">Page {{ currentPage }} / {{ lastPage }}</div>
+    <div class="italic">{{ $t('nav.page', { current: currentPage, last: lastPage }) }}</div>
     <ul class="m-0 flex list-none flex-wrap justify-center gap-x-2 p-0">
       <li>
-        <RouterLink v-if="currentPage > 1" :to="to(currentPage - 1)">&lt; précédent</RouterLink>
-        <span v-else class="text-kado-slate-400">&lt; précédent</span>
+        <RouterLink v-if="currentPage > 1" :to="to(currentPage - 1)">&lt; {{ $t('nav.previous') }}</RouterLink>
+        <span v-else class="text-kado-slate-400">&lt; {{ $t('nav.previous') }}</span>
       </li>
       <li v-for="(page, index) in pages" :key="`${page}-${index}`">
         <span v-if="page === '…'">…</span>
@@ -30,8 +30,8 @@ const pages = computed(() => {
         <RouterLink v-else :to="to(page)">{{ page }}</RouterLink>
       </li>
       <li>
-        <RouterLink v-if="currentPage < lastPage" :to="to(currentPage + 1)">suivant &gt;</RouterLink>
-        <span v-else class="text-kado-slate-400">suivant &gt;</span>
+        <RouterLink v-if="currentPage < lastPage" :to="to(currentPage + 1)">{{ $t('nav.next') }} &gt;</RouterLink>
+        <span v-else class="text-kado-slate-400">{{ $t('nav.next') }} &gt;</span>
       </li>
     </ul>
   </nav>

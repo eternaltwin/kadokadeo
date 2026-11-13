@@ -77,7 +77,7 @@ class Dispenser extends Entity {
 				if( t==game.hero.turretType )
 					fx.pop(xx,yy, Lang.TurretReloaded, true);
 				else
-					fx.pop(xx,yy, Lang.ALL.get("Turret"+Type.enumIndex(t)), true);
+					fx.pop(xx,yy, Lang.resolve("Turret"+Type.enumIndex(t)), true);
 				game.hero.setTurret(t);
 				S.BANK.item02().play();
 				
@@ -85,7 +85,7 @@ class Dispenser extends Entity {
 				if( w==game.hero.weaponType )
 					fx.pop(xx,yy, Lang.WeaponReloaded, true);
 				else
-					fx.pop(xx,yy, Lang.ALL.get("Weapon"+Type.enumIndex(w)), true);
+					fx.pop(xx,yy, Lang.resolve("Weapon"+Type.enumIndex(w)), true);
 				game.hero.setWeapon(w);
 				delay = 8;
 				S.BANK.item02().play();

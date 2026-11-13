@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { ref } from 'vue'
 
+import { t } from '@/i18n'
+
 // the player is authenticated by the session cookie of the site (Sanctum, HttpOnly: no script reads it); the CSRF token
 // is the one of the cookie XSRF-TOKEN, sent back as X-XSRF-TOKEN (it changes at the login: not the one of the page)
 export const client = axios.create({
@@ -28,7 +30,7 @@ export function useApi() {
       const response = await requestFn()
       return response
     } catch(e) {
-      const message = e.response?.data?.message || 'An error occurred while doing the request.'
+      const message = e.response?.data?.message || t('common.request_failed')
       error.value = message
       throw e
     } finally {

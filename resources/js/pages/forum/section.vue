@@ -42,13 +42,13 @@ const create = () =>
 
     <template v-if="section">
       <EtwinForumBar :title="section.display_name" :crumbs="section.parent ? [{ label: section.parent.display_name, to: { name: 'forum.index' } }] : []">
-        <EtwinForumButton v-if="section.self?.can_create_thread" icon="reply" @click="writing = !writing">Nouveau sujet</EtwinForumButton>
+        <EtwinForumButton v-if="section.self?.can_create_thread" icon="reply" @click="writing = !writing">{{ $t('forum.new_topic') }}</EtwinForumButton>
       </EtwinForumBar>
 
       <form v-if="writing" class="mb-4 space-y-2" @submit.prevent="create">
         <MessageError v-if="creation.error.value">{{ creation.error.value }}</MessageError>
         <div>
-          <label for="threadTitle" class="block font-bold">Titre du sujet</label>
+          <label for="threadTitle" class="block font-bold">{{ $t('forum.topic_title') }}</label>
           <FormInput id="threadTitle"
                      v-model="title"
                      maxlength="100"
@@ -59,7 +59,7 @@ const create = () =>
                         :grammar="grammar"
                         :icons="etwinIcons(grammar?.icons)"
                         :icon-url="etwinIconUrl" />
-        <FormButton type="submit" size="lg" :disabled="creation.isLoading.value || !title.trim() || !body.trim()">Créer le sujet</FormButton>
+        <FormButton type="submit" size="lg" :disabled="creation.isLoading.value || !title.trim() || !body.trim()">{{ $t('forum.create_topic') }}</FormButton>
       </form>
 
       <EtwinForumThreadTable :threads="section.threads.items" />
