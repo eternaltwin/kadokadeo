@@ -33,7 +33,16 @@ class Game implements kado.GameInterface {
 
 	public var parts:Array<Particule>;
 
-	var stats:{n:Int, s:Array<Int>, t:Array<Int>};
+	var stats:{n:Int, s:Array<Int>, t:Array<Int>, a:Int, tk:Int, vi:Int, po:Int, bg:Int};
+
+	// achievements only (read from the state, no effect on the game): a total animals exploded, tk big token gems (ID_TOKENS)
+	// grabbed, vi most violet animals (id 3) on the board at once, po most apples (bonus gems) lined up on a row, bg
+	// biggest group exploded in one move
+	var aElim:Int;
+	var tkGrab:Int;
+	var viMax:Int;
+	var poMax:Int;
+	var bgMax:Int;
 
 	var start_timer:Float;
 	var isReplayMode:Bool;
@@ -73,11 +82,17 @@ class Game implements kado.GameInterface {
 		turns = new Array();
 		moves = new Array();
 		parts = new Array();
+		aElim = 0;
+		tkGrab = 0;
+		viMax = 0;
+		poMax = 0;
+		bgMax = 0;
 		updateTokens();
 		initLevel();
 		hoverSide = true;
 		hoverY = 0;
 		setCur(new Gem(this, randId(), -1, 0));
+		scanBoard();
 	}
 
 	function randId():Int {
@@ -276,6 +291,10 @@ class Game implements kado.GameInterface {
 		for (g in groups) {
 			if (g.length > Cs.NEXPLS - 1 && g[0].id < Cs.ID_BONUS) {
 				expl = true;
+				// achievements only: the animals eliminated, and the biggest group of one move
+				aElim += g.length;
+				if (g.length > bgMax)
+					bgMax = g.length;
 				for (b in g) {
 					gems[b.x][b.y] = null;
 					b.explode();
@@ -378,9 +397,12 @@ class Game implements kado.GameInterface {
 		scores.push(combo_score);
 		turns.push(turn);
 
+		// achievements only: the board has settled
+		scanBoard();
+
 		if (KKApi.val(tokens) == 0 && (cur.id == null || cur.id < Cs.ID_BONUS)) {
 			dmanager.getMC().cursor = "default";
-			stats = {n: tottokens, s: scores, t: turns};
+			stats = {n: tottokens, s: scores, t: turns, a: aElim, tk: tkGrab, vi: viMax, po: poMax, bg: bgMax};
 			KadoKadeoManager.kkm.gameOver(stats);
 			return;
 		}
@@ -410,6 +432,28 @@ class Game implements kado.GameInterface {
 		b.removeOnFrame = 16;
 		b._x = Cs.POSX;
 		b._y = Cs.YFALAISE - KadoKadeoManager.I(6);
+	}
+
+	// achievements only (read the board, no effect on the game): the most violet animals (id 3, the gem4 sprite) on the
+	// board at once, and the most apples (bonus gems, id ID_BONUS) lined up on a single row
+	function scanBoard():Void {
+		var violet = 0;
+		var rows = [for (y in 0...Cs.LVL_HEIGHT) 0];
+		for (x in 0...Cs.LVL_WIDTH)
+			for (y in 0...Cs.LVL_HEIGHT) {
+				var g = gems[x][y];
+				if (g == null)
+					continue;
+				if (g.id == 3)
+					violet++;
+				if (g.id == Cs.ID_BONUS)
+					rows[y]++;
+			}
+		if (violet > viMax)
+			viMax = violet;
+		for (c in rows)
+			if (c > poMax)
+				poMax = c;
 	}
 
 	public function update(delta:Float):Void {
@@ -475,6 +519,8 @@ class Game implements kado.GameInterface {
 				cur.setId(randId());
 			} else if (cur.id == Cs.ID_TOKENS) {
 				attachGloup(2);
+				// achievements only: a big token gem grabbed
+				tkGrab++;
 				tokens = KKApi.cadd(tokens, Cs.BIG_BONUS);
 				if (KKApi.val(tokens) > KKApi.val(Cs.NTOKENS))
 					tokens = Cs.NTOKENS;

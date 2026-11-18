@@ -273,6 +273,32 @@ class AchievementsSeeder extends Seeder
                 [1, 2000, 'Second life', 'Descendre à moins de 5 % de vie puis remonter au maximum.'],
             ],
         ],
+        'flushee' => [
+            'total_animals_eliminated' => [
+                [100, 100, 'Chasseur en herbe', 'Éliminer un total de 100 animaux.'],
+                [750, 500, 'Prédateur confirmé', 'Éliminer un total de 750 animaux.'],
+                [3000, 1000, 'Tueur de squale', 'Éliminer un total de 3.000 animaux.'],
+            ],
+            'total_tokens_grabbed' => [
+                [10, 100, 'Encore un p\'tit coup', 'Récupérer un total de 10 tokens.'],
+                [50, 500, 'Jamais à court', 'Récupérer un total de 50 tokens.'],
+                [200, 1000, 'Banquier du bonus', 'Récupérer un total de 200 tokens.'],
+            ],
+            'combo_points' => [
+                [2000, 100, 'Joli coup', 'Faire un coup à 2.000 points.'],
+                [3500, 500, 'Coup de maître', 'Faire un coup à 3.500 points.'],
+                [5000, 1000, 'Coup de génie', 'Faire un coup à 5.000 points.'],
+            ],
+            'violet_animals' => [
+                [12, 250, 'Invasion de monstres', 'Avoir 12 animaux violets à l\'écran en même temps.'],
+            ],
+            'apples_row' => [
+                [4, 1000, 'Gratuité', 'Pousser 4 pommes sur la même ligne.'],
+            ],
+            'big_group' => [
+                [8, 2000, 'Tarif groupé', 'Éliminer 8 animaux d\'une même couleur en un coup.'],
+            ],
+        ],
         'interwheel' => [
             'total_elevation' => [
                 [25000, 100, 'Apprenti grimpeur', 'Monter d\'une hauteur cumulée de 25.000 mètres.'],
