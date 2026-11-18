@@ -179,7 +179,10 @@ class Robot {
 				var h = Game.me.getMainHero();
 				var dx = h.x - p.x;
 				var dy = h.y - p.y;
-				shoot(Cs.atan2(dy, dx) + (p.seed.rand() * 2 - 1) * ra * 3.14, sp);
+				var shot = shoot(Cs.atan2(dy, dx) + (p.seed.rand() * 2 - 1) * ra * 3.14, sp);
+				var mh = Game.me.heros[0];
+				if (shot != null && mh != null)
+					shot.targetId = mh.id;
 
 			case ShotType(n):
 				setShotType(n);
@@ -278,7 +281,7 @@ class Robot {
 		}
 	}
 
-	public function shoot(a:Float, ?sp:Null<Float>) {
+	public function shoot(a:Float, ?sp:Null<Float>):BadShot {
 		if (sp == null)
 			sp = shotSpeed;
 
@@ -307,5 +310,7 @@ class Robot {
 
 		shot.updatePos();
 		shot.root.updateState();
+
+		return shot;
 	}
 }

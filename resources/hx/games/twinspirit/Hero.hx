@@ -146,6 +146,9 @@ class Hero extends Phys {
 							Game.me.robertId = shot.owner;
 							Game.me.shotId = shot.bsid;
 						}
+						// Futuna (id 1) takes a bullet that was aimed at Wallis (id 0)
+						if (id == 1 && shot.targetId == 0)
+							Game.me.acShieldFutuna = 1;
 						shot.kill();
 						death();
 					}
@@ -247,7 +250,7 @@ class Hero extends Phys {
 			case 0:
 				for (i in 0...2) {
 					var sens = i * 2 - 1;
-					var shot = new HeroShot(Game.me.dm.add(new Clip("mcHeroShot"), Game.DP_SHOTS));
+					var shot = new HeroShot(Game.me.dm.add(new Clip("mcHeroShot"), Game.DP_SHOTS), id);
 					var a = -1.57 + sens * 0.2;
 					var ca = Cs.cos(a);
 					var sa = Cs.sin(a);
@@ -265,7 +268,7 @@ class Hero extends Phys {
 			case 1:
 				for (i in 0...2) {
 					var sens = i * 2 - 1;
-					var shot = new HeroShot(Game.me.dm.add(new Clip("mcHeroShot"), Game.DP_SHOTS));
+					var shot = new HeroShot(Game.me.dm.add(new Clip("mcHeroShot"), Game.DP_SHOTS), id);
 					var a = -1.57;
 					var ca = Cs.cos(a);
 					var sa = Cs.sin(a);
@@ -304,6 +307,9 @@ class Hero extends Phys {
 			} else {
 				Game.me.initBomb(this, Standard);
 			}
+			// the first twin to die in twin mode (for "Futuna dies before Wallis")
+			if (Game.me.acFirstTwinDeath == -1)
+				Game.me.acFirstTwinDeath = id;
 			kill();
 		}
 

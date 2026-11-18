@@ -4,6 +4,9 @@ class BadShot extends Phys {
 	public var owner:Int;
 	public var bsid:Int;
 
+	// id of the hero this shot was aimed at (-1: not an aimed shot): for achievements, no effect on gameplay
+	public var targetId:Int = -1;
+
 	var flDeath:Bool;
 	var px:Null<Int>;
 	var py:Null<Int>;

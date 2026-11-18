@@ -3,10 +3,14 @@ package twinspirit;
 class HeroShot extends Phys {
 	public var damage:Float;
 
-	public function new(mc:ASprite) {
+	// id of the hero who fired this shot (to credit kills): no effect on gameplay
+	public var owner:Int;
+
+	public function new(mc:ASprite, ?owner:Int = -1) {
 		super(mc);
 		damage = 1;
 		ray = 4;
+		this.owner = owner;
 		Game.me.shots.push(this);
 	}
 

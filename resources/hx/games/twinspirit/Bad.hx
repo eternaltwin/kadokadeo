@@ -14,6 +14,9 @@ class Bad extends Phys {
 	public var rid:Int;
 	public var bsid:Int;
 
+	// id of the hero whose shot last hit this enemy (-1: none): credits the kill for achievements
+	public var lastHitBy:Int;
+
 	var px:Null<Int>;
 	var py:Null<Int>;
 
@@ -41,6 +44,7 @@ class Bad extends Phys {
 		ray = 10;
 		scy = 1;
 		flDeath = false;
+		lastHitBy = -1;
 
 		x = -100;
 		y = 0;
@@ -171,6 +175,7 @@ class Bad extends Phys {
 		}
 
 		shot.fxImpact();
+		lastHitBy = shot.owner;
 		damage(shot.damage);
 	}
 
@@ -190,10 +195,20 @@ class Bad extends Phys {
 			if (rid == Game.me.robertId) {
 				col = 0xFF0000;
 				sc = Cs.SCORE_ROBERT;
+				Game.me.acRobertKilled = 1;
 			}
 			Game.me.genScore(x, y, sc, col);
 			Game.me.addScore(sc);
 			Game.me.incBonus(1);
+
+			// achievement counters: gated like addScore so they match the recorded score
+			if (!Game.me.over) {
+				Game.me.acKills++;
+				if (fam == VOLT_BALL)
+					Game.me.acVolt++;
+				if (lastHitBy == 0)
+					Game.me.acWallisScore += sc;
+			}
 		}
 
 		fxExplode();

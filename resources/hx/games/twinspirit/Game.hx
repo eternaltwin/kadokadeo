@@ -122,9 +122,18 @@ class Game implements kado.GameInterface {
 	public var mcs:Array<Mc>;
 
 	var star:StarMc;
-	var over:Bool;
+	public var over:Bool;
 	var frameCount:Int;
 	var greyRoot:ColorMatrixFilter;
+
+	// achievement stats: read-only counters, no effect on gameplay or RNG
+	public var acKills:Int; // enemies killed (scored)
+	public var acVolt:Int; // electric balls (VOLT_BALL) killed
+	public var acMaxCombo:Int; // best combo (bonus) reached in the run
+	public var acFirstTwinDeath:Int; // id of the first twin to die in twin mode (-1: none)
+	public var acRobertKilled:Int; // 1 once Robert is killed
+	public var acShieldFutuna:Int; // 1 once Futuna takes a bullet aimed at Wallis
+	public var acWallisScore:Int; // score from kills dealt by Wallis (id 0)
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		KadoKadeoManager.kkm.replay.init({
@@ -160,6 +169,14 @@ class Game implements kado.GameInterface {
 		initInter();
 
 		fayot = {_k: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], _m: []};
+
+		acKills = 0;
+		acVolt = 0;
+		acMaxCombo = 0;
+		acFirstTwinDeath = -1;
+		acRobertKilled = 0;
+		acShieldFutuna = 0;
+		acWallisScore = 0;
 
 		// SID
 		sid = Seed.random(100000);
@@ -520,7 +537,15 @@ class Game implements kado.GameInterface {
 			twin: flTwinMode
 		};
 		#end
-		KadoKadeoManager.kkm.gameOver({});
+		KadoKadeoManager.kkm.gameOver({
+			k: acKills,
+			v: acVolt,
+			mc: acMaxCombo,
+			fd: acFirstTwinDeath,
+			r: acRobertKilled,
+			sf: acShieldFutuna,
+			ws: acWallisScore
+		});
 	}
 
 	public function addScore(n:Int) {
@@ -539,6 +564,8 @@ class Game implements kado.GameInterface {
 
 	public function setBonus(n:Int) {
 		bonus = n;
+		if (n > acMaxCombo)
+			acMaxCombo = n;
 		star.setText(Std.string(n));
 		if (n > 0)
 			star.gotoAndPlay(2);

@@ -341,6 +341,32 @@ class AchievementsSeeder extends Seeder
                 [1, 2000, 'Bicolor', 'Atteindre un score de 200.000 en utilisant seulement 2 couleurs.'],
             ],
         ],
+        'kavern' => [
+            'legumes' => [
+                [100, 100, 'Amateur de pomme de terre', 'Ramasser un total de 100 légumes.'],
+                [1000, 500, 'Doryphore', 'Ramasser un total de 1.000 légumes.'],
+                [10000, 1000, 'Adorateur de la patate dorée', 'Ramasser un total de 10.000 légumes.'],
+            ],
+            'energies' => [
+                [10, 100, 'Sprinteur', 'Ramasser un total de 10 énergies.'],
+                [100, 500, 'Coureur de semi-fond', 'Ramasser un total de 100 énergies.'],
+                [500, 1000, 'Marathonien', 'Ramasser un total de 500 énergies.'],
+            ],
+            'depth' => [
+                [40, 100, 'Fossoyeur', 'Atteindre 40 mètres de profondeur.'],
+                [50, 500, 'Mineur de fond', 'Atteindre 50 mètres de profondeur.'],
+                [60, 1000, 'Into the core', 'Atteindre 60 mètres de profondeur.'],
+            ],
+            'rock' => [
+                [1, 250, 'Tailleur de pierre', 'Détruire un caillou.'],
+            ],
+            'oxygen' => [
+                [1, 1000, 'Bouffée d\'air frais', 'Remplir la jauge d\'oxygène à fond.'],
+            ],
+            'cauliflowers' => [
+                [2, 2000, 'T\'es chou', 'Ramasser deux choux-fleurs dans un même niveau.'],
+            ],
+        ],
         'killbulle' => [
             'total_bubbles_popped' => [
                 [1500, 100, 'Fragmenteur', 'Éclater 1.500 bulles.'],
@@ -762,6 +788,35 @@ class AchievementsSeeder extends Seeder
             ],
             'mafia' => [
                 [1, 2000, 'Mafieux', 'Réussir un contrat à 8.000 points minimum.'],
+            ],
+        ],
+        'twinspirit' => [
+            'ships_killed' => [
+                [1000, 100, 'Premier Sang Spatial', 'Tuer 1.000 vaisseaux.'],
+                [10000, 500, 'Casseur de Carlingues', 'Tuer 10.000 vaisseaux.'],
+                [100000, 1000, 'Légende du Ciel', 'Tuer 100.000 vaisseaux.'],
+            ],
+            'volt_kills' => [
+                [5, 100, 'Coup de Jus', 'Tuer 5 boules électriques.'],
+                [25, 500, 'Court-Circuit en Chaîne', 'Tuer 25 boules électriques.'],
+                [75, 1000, 'Expert EDF', 'Tuer 75 boules électriques.'],
+            ],
+            'max_combo' => [
+                [100, 100, 'Premières étincelles', 'Atteindre un combo de 100 en une seule partie.'],
+                [200, 500, 'Virtuose du tir', 'Atteindre un combo de 200 en une seule partie.'],
+                [300, 1000, 'Vous ne passerez paaas !', 'Atteindre un combo de 300 en une seule partie.'],
+            ],
+            'futuna_first' => [
+                [1, 250, 'Si j\'ai besoin de rien, je t\'appelle...', 'Faire mourir Futuna avant Wallis.'],
+            ],
+            'kill_robert' => [
+                [1, 1000, 'Vengeaaaance !', 'Tuer Robert.'],
+            ],
+            'shield_futuna' => [
+                [1, 1000, 'Garde rapprochée', 'Prendre avec Futuna une balle destinée à Wallis.'],
+            ],
+            'wallis_score' => [
+                [40000, 2000, 'Wallis Maverick', 'Faire 40.000 points avec Wallis en une seule partie.'],
             ],
         ],
         'xianxiang' => [

@@ -239,6 +239,44 @@ class RunEndTest extends TestCase
         $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
     }
 
+    public function test_the_stats_of_a_run_of_twin_spirit_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Twin Spirit']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 39815,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => [
+                'k' => 246,
+                'v' => 0,
+                'mc' => 113,
+                'fd' => 1,
+                'r' => 1,
+                'sf' => 1,
+                'ws' => 27572,
+            ],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(246, $values['ships_killed']);
+        $this->assertSame(0, $values['volt_kills']);
+        $this->assertSame(113, $values['max_combo']);
+        $this->assertSame(1, $values['futuna_first']);
+        $this->assertSame(1, $values['kill_robert']);
+        $this->assertSame(1, $values['shield_futuna']);
+        $this->assertSame(27572, $values['wallis_score']);
+        // Premières étincelles, Si j'ai besoin de rien..., Vengeaaaance !, Garde rapprochée
+        $this->assertSame(100 + 250 + 1000 + 1000, $user->fresh()->kado_points);
+    }
+
     // what the game sends at its game over (pioutch.Game.gameOver), read by the rules of its achievements
     public function test_the_stats_of_a_run_of_pioutch_reach_its_achievements(): void
     {
@@ -295,6 +333,36 @@ class RunEndTest extends TestCase
         $this->assertSame(0, $values['palace']);
         $this->assertSame(3, $values['stones']);
         $this->assertSame(0, $values['tricolor']);
+    }
+
+    // what the game sends at its game over (kavern.Hero.animDone), read by the rules of its achievements
+    public function test_the_stats_of_a_run_of_kavern_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Kavern']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 63000,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => ['b' => [12, 0, 40, 30, 20, 15, 8, 2], 'd' => 40, 'k' => 1, 'c' => 200, 'l' => 60, 'o' => 1, 'cf' => 2],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(115, $values['legumes']);
+        $this->assertSame(12, $values['energies']);
+        $this->assertSame(40, $values['depth']);
+        $this->assertSame(1, $values['rock']);
+        $this->assertSame(1, $values['oxygen']);
+        $this->assertSame(2, $values['cauliflowers']);
+        // Amateur de pomme de terre, Sprinteur, Fossoyeur, Tailleur de pierre, Bouffée d'air frais, T'es chou
+        $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
     }
 
     public function test_only_the_player_of_a_run_finishes_it(): void
