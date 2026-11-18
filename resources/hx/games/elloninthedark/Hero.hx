@@ -406,6 +406,7 @@ class Hero extends Phys {
 						shot.root._xscale = scale;
 						shot.root._yscale = scale;
 						shot.flPierce = true;
+						shot.flCharged = true;
 						shot.ray = KadoKadeoManager.S(6) * (scale / 100);
 						shot.bList.push(1);
 					}
@@ -489,8 +490,10 @@ class Hero extends Phys {
 	}
 
 	public function hit(shot:Shot) {
-		if (shot.ray > KadoKadeoManager.S(15))
+		if (shot.ray > KadoKadeoManager.S(15)) {
 			setBodyFrame(BODY_GUM);
+			Cs.game.stats.g = 1;
+		}
 		death();
 	}
 
@@ -611,6 +614,9 @@ class Hero extends Phys {
 			}
 			sideType = id;
 		}
+		// the most tentacles held at once (the tentacle side weapon, id 1)
+		if (sideType == 1 && tList.length > Cs.game.stats.t)
+			Cs.game.stats.t = tList.length;
 	}
 
 	public function initShield() {

@@ -7,6 +7,9 @@ class Shot extends Phys {
 	public var flPierce:Bool;
 	public var flInvincible:Bool;
 
+	// the charged fireball (achievements only): set when the shot is the hero's big charged shot
+	public var flCharged:Bool;
+
 	public var damage:Float;
 
 	public var timer:Null<Float>;
@@ -24,6 +27,7 @@ class Shot extends Phys {
 		root.stop();
 		flPierce = false;
 		flInvincible = false;
+		flCharged = false;
 		ray = KadoKadeoManager.I(4);
 		damage = 0;
 		bList = new Array();

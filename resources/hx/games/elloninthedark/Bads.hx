@@ -168,6 +168,9 @@ class Bads extends Phys {
 	}
 
 	public function hit(shot:Shot) {
+		// the charged shot dealing the killing blow to a Golgoth (big green head, gid 4)
+		if (gid == 4 && shot.flCharged && hp - shot.damage <= 0)
+			Cs.game.stats.h = 1;
 		damage(shot.damage);
 	}
 

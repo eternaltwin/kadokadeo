@@ -79,6 +79,9 @@ class Bonus extends Phys {
 				} else {
 					h.shotType = id;
 				}
+				// the level (shotPower + 1) reached on a blue (2) or violet (1) weapon
+				if (h.shotType == 1 || h.shotType == 2)
+					Cs.game.stats.w = Std.int(Math.max(Cs.game.stats.w, h.shotPower + 1));
 			case 10 | 11 | 12:
 				h.takeSide(id - 10);
 			case 20:

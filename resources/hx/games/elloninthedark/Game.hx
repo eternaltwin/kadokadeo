@@ -56,7 +56,11 @@ class Game implements kado.GameInterface {
 	static var KANJI_SIT_POS = [379.2, 327.25];
 
 	//
-	public var stats:{k:Array<Int>, b:Array<Int>, d:Null<Float>};
+	// k: kills by enemy gid (araignée = Medusa, gid 8), b: bonus ids taken (secondary upgrades: 10, 11, 12), d: the
+	// difficulty reached. Achievements only, read from the state (no effect on the game): w: highest level reached on a
+	// blue/violet weapon (shotType 1 or 2, shotPower+1), t: most tentacles held at once, g: 1 once hit by a gum ball,
+	// h: 1 once a Golgoth (big green head, gid 4) was killed by the charged shot
+	public var stats:{k:Array<Int>, b:Array<Int>, d:Null<Float>, w:Int, t:Int, g:Int, h:Int};
 
 	public var dif:Float;
 	public var monsterLevel:Float;
@@ -137,7 +141,11 @@ class Game implements kado.GameInterface {
 		stats = {
 			k: [for (i in 0...23) 0],
 			b: [],
-			d: null
+			d: null,
+			w: 0,
+			t: 0,
+			g: 0,
+			h: 0
 		};
 	}
 

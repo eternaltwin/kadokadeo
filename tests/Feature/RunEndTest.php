@@ -497,6 +497,44 @@ class RunEndTest extends TestCase
         $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
     }
 
+    // what the game sends at its game over (elloninthedark.Hero.update), read by the rules of its achievements
+    public function test_the_stats_of_a_run_of_ellon_in_the_dark_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Ellon In The Dark']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 80000,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => [
+                'k' => [0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                'b' => [10, 11, 12, 10, 11],
+                'd' => 30000,
+                'w' => 1,
+                't' => 3,
+                'g' => 1,
+                'h' => 1,
+            ],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(10, $values['spiders']);
+        $this->assertSame(5, $values['secondary_upgrades']);
+        $this->assertSame(1, $values['weapon_level']);
+        $this->assertSame(1, $values['gum']);
+        $this->assertSame(3, $values['tentacles']);
+        $this->assertSame(1, $values['charged_head']);
+        // Menthe poivrée, Surplus militaire, Modèle de base, Gardez le sourire frais, Tentaculaire, Dans ta face !
+        $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
+    }
+
     public function test_only_the_player_of_a_run_finishes_it(): void
     {
         $run = Run::factory()->create(['score' => 0, 'completed_at' => null]);

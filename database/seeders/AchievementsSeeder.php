@@ -192,6 +192,32 @@ class AchievementsSeeder extends Seeder
                 [25, 2000, 'Total blackout', 'Faire tomber un groupe de 25 boules noires.'],
             ],
         ],
+        'elloninthedark' => [
+            'spiders' => [
+                [10, 100, 'Menthe poivrée', 'Tuer un total de 10 araignées.'],
+                [100, 500, 'Anti-arthropode', 'Tuer un total de 100 araignées.'],
+                [500, 1000, 'Arachnophobe', 'Tuer un total de 500 araignées.'],
+            ],
+            'secondary_upgrades' => [
+                [5, 100, 'Surplus militaire', 'Attraper un total de 5 améliorations secondaires.'],
+                [50, 500, 'Balai survolté', 'Attraper un total de 50 améliorations secondaires.'],
+                [500, 1000, 'Arsenal maximal', 'Attraper un total de 500 améliorations secondaires.'],
+            ],
+            'weapon_level' => [
+                [1, 100, 'Modèle de base', 'Obtenir le niveau 1 des armes bleues ou violettes en une seule partie.'],
+                [2, 500, 'Package en option', 'Obtenir le niveau 2 des armes bleues ou violettes en une seule partie.'],
+                [3, 1000, 'Tout équipé', 'Obtenir le niveau 3 des armes bleues ou violettes en une seule partie.'],
+            ],
+            'gum' => [
+                [1, 250, 'Gardez le sourire frais', 'Se prendre une boule de chewing-gum.'],
+            ],
+            'tentacles' => [
+                [3, 1000, 'Tentaculaire', 'Obtenir les 3 tentacules.'],
+            ],
+            'charged_head' => [
+                [1, 2000, 'Dans ta face !', 'Tuer une grosse tête verte avec le tir chargé.'],
+            ],
+        ],
         'f1champion' => [
             'total_km' => [
                 [2000, 100, 'Rodage', 'Parcourir un total cumulé de 2.000 km.'],
