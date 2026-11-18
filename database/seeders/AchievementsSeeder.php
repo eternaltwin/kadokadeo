@@ -683,6 +683,32 @@ class AchievementsSeeder extends Seeder
                 [100000, 2000, 'Survivant', 'Gagner 100.000 points en n\'ayant plus qu\'un seul point de vie.'],
             ],
         ],
+        'toutcaen' => [
+            'golden_fish' => [
+                [5, 100, 'Écaille Brillante', 'Attraper 5 poissons dorés.'],
+                [50, 500, 'Pêche Dorée', 'Attraper 50 poissons dorés.'],
+                [500, 1000, 'La Ruée vers l\'Or', 'Attraper 500 poissons dorés.'],
+            ],
+            'big_combo' => [
+                [6, 100, 'Joli coup de bec', 'Attraper 6 poissons d\'un coup.'],
+                [8, 500, 'Filet vivant', 'Attraper 8 poissons d\'un coup.'],
+                [10, 1000, 'En mode chalutier', 'Attraper 10 poissons d\'un coup.'],
+            ],
+            'dives' => [
+                [30, 100, 'Petite Trempette', 'Plonger dans l\'eau 30 fois en une partie.'],
+                [40, 500, 'Grand Plongeur', 'Plonger dans l\'eau 40 fois en une partie.'],
+                [50, 1000, 'Infatigable du Splash', 'Plonger dans l\'eau 50 fois en une partie.'],
+            ],
+            'solo_golden' => [
+                [1, 250, 'Pêche à la ligne', 'Attraper un poisson doré tout seul.'],
+            ],
+            'fast_level' => [
+                [1, 1000, 'Pas le temps de niaiser', 'Finir un niveau 10 ou plus en 3 plongeons ou moins.'],
+            ],
+            'level1_score' => [
+                [2450, 2000, 'One shot!', 'Faire 2.450 points au niveau 1.'],
+            ],
+        ],
         'tubulo' => [
             'level_resets' => [
                 [25, 100, 'On recommence', 'Redémarrer 25 niveaux.'],

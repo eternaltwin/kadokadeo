@@ -203,6 +203,42 @@ class RunEndTest extends TestCase
         $this->assertSame(100 + 500 + 250 + 1000 + 2000, $user->fresh()->kado_points);
     }
 
+    public function test_the_stats_of_a_run_of_tout_caen_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Tout-Caen']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 79400,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => [
+                'g' => 8,
+                'c' => 7,
+                'd' => 32,
+                'sg' => 1,
+                'fl' => 3,
+                'l1' => 2450,
+            ],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(8, $values['golden_fish']);
+        $this->assertSame(7, $values['big_combo']);
+        $this->assertSame(32, $values['dives']);
+        $this->assertSame(1, $values['solo_golden']);
+        $this->assertSame(1, $values['fast_level']);
+        $this->assertSame(2450, $values['level1_score']);
+        // Écaille Brillante, Joli coup de bec, Petite Trempette, Pêche à la ligne, Pas le temps de niaiser, One shot!
+        $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
+    }
+
     // what the game sends at its game over (pioutch.Game.gameOver), read by the rules of its achievements
     public function test_the_stats_of_a_run_of_pioutch_reach_its_achievements(): void
     {

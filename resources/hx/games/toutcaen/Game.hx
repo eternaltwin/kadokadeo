@@ -76,6 +76,15 @@ class Game implements kado.GameInterface {
 	var pool:Int;
 	var step:Step;
 
+	// achievement stats: read-only counters, no effect on gameplay or RNG
+	var acGold:Int; // golden fish caught in the run
+	var acCombo:Int; // best catch eaten in a single dive
+	var acDives:Int; // total dives in the run
+	var acSoloGold:Int; // 1 once a golden fish is eaten alone (combo of 1)
+	var acFastLvl:Int; // fewest dives used to clear a level >= 10 (-1: none cleared)
+	var acLvl1Score:Int; // score earned while on level 1
+	var acLvlDives:Int; // dives used in the current level
+
 	var fList:Array<Fish>;
 	var gList:Array<Phys>;
 	var bList:Array<Phys>;
@@ -121,6 +130,14 @@ class Game implements kado.GameInterface {
 		frame = 0;
 		lvl = new ProtectedInt(0);
 		pool = 0;
+
+		acGold = 0;
+		acCombo = 0;
+		acDives = 0;
+		acSoloGold = 0;
+		acFastLvl = -1;
+		acLvl1Score = 0;
+		acLvlDives = 0;
 
 		gList = [];
 		bList = [];
@@ -194,6 +211,8 @@ class Game implements kado.GameInterface {
 			if (flAbove) {
 				splash();
 				flAbove = false;
+				acDives++;
+				acLvlDives++;
 			}
 			if (Seed.randVfx() < 0.8) {
 				var p = new Phys(dm.attach("partPelicanBubble", DP_BUBBLES));
@@ -244,8 +263,10 @@ class Game implements kado.GameInterface {
 						fList.remove(fish);
 						fish.kill();
 						pool++;
-						if (fish.type == 1)
+						if (fish.type == 1) {
 							flGoldenFish = true;
+							acGold++;
+						}
 						var frame = pool + 1;
 						if (flGoldenFish)
 							frame += 20;
@@ -296,16 +317,24 @@ class Game implements kado.GameInterface {
 			mcBar.slot.gotoAndPlay(2);
 			fishDisplayTimer = 20;
 
+			if (pool > acCombo)
+				acCombo = pool;
+
 			var sc:Float = (2 * pool - 1) * KKApi.val(Cs.SCORE);
 			sc *= 0.5 + (timer / 100) * 0.5;
 			var sci = Math.ceil(sc / 50) * 50;
 
 			if (flGoldenFish) {
 				flGoldenFish = false;
+				if (pool == 1)
+					acSoloGold = 1;
 				sci *= 2;
 			}
 
 			KadoKadeoManager.kkm.addScore(KKApi.const(sci));
+
+			if (lvl.get() == 1)
+				acLvl1Score += sci;
 
 			if (FL_DISPLAY_SCORE) {
 				var mc = dm.empty(DP_FRONT);
@@ -328,8 +357,12 @@ class Game implements kado.GameInterface {
 			freeze = 0;
 			pool = 0;
 			head.gotoAndStop(1);
-			if (fList.length == 0)
+			if (fList.length == 0) {
+				var finished = lvl.get();
+				if (finished >= 10 && (acFastLvl == -1 || acLvlDives < acFastLvl))
+					acFastLvl = acLvlDives;
 				nextLevel();
+			}
 		}
 
 		// GFX
@@ -408,6 +441,7 @@ class Game implements kado.GameInterface {
 		lvl += 1;
 		genFish();
 		mcBar.fieldLevel.text = "NIVEAU " + lvl.get();
+		acLvlDives = 0;
 	}
 
 	// INTERFACE
@@ -465,7 +499,14 @@ class Game implements kado.GameInterface {
 
 		if (timer == 0 && fList.length > 0) {
 			step = _GameOver;
-			KadoKadeoManager.kkm.gameOver({});
+			KadoKadeoManager.kkm.gameOver({
+				g: acGold,
+				c: acCombo,
+				d: acDives,
+				sg: acSoloGold,
+				fl: acFastLvl,
+				l1: acLvl1Score
+			});
 		}
 
 		//
