@@ -138,6 +138,10 @@ class Ball extends Phys {
 		x = ox;
 		y = oy;
 
+		// achievements: a frozen ball of the dark navy colour (7) was placed on the board
+		if (flIce && color == 7)
+			Cs.game.stats.nv = 1;
+
 		Cs.game.initStep(Cs.STEP_BLAST);
 	}
 

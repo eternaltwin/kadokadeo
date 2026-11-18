@@ -140,6 +140,32 @@ class AchievementsSeeder extends Seeder
                 [1, 2000, 'J\'AI FAIM !', 'Terminer le niveau 1 en moins de 15 secondes.'],
             ],
         ],
+        'drakhan' => [
+            'black_balls' => [
+                [100, 100, 'Black listée', 'Faire tomber un total de 100 boules noires.'],
+                [1000, 500, 'Black Friday', 'Faire tomber un total de 1.000 boules noires.'],
+                [5000, 1000, 'Mo-mo-motus', 'Faire tomber un total de 5.000 boules noires.'],
+            ],
+            'board_points' => [
+                [8000, 100, 'On fait table rase', 'Atteindre le plateau qui donne 8.000 points.'],
+                [10000, 500, 'Grand ménage', 'Atteindre le plateau qui donne 10.000 points.'],
+                [12000, 1000, 'Pro du Kärcher', 'Atteindre le plateau qui donne 12.000 points.'],
+            ],
+            'combo' => [
+                [6, 100, 'Effet domino', 'Atteindre un combo de 6.'],
+                [8, 500, 'Combo magique', 'Atteindre un combo de 8.'],
+                [10, 1000, 'Cascade légendaire', 'Atteindre un combo de 10.'],
+            ],
+            'clear_board' => [
+                [1, 250, 'Tout beau tout propre', 'Vider un plateau.'],
+            ],
+            'navy_ball' => [
+                [1, 1000, 'Dernière couleur', 'Poser une boule gelée bleu marine foncé.'],
+            ],
+            'black_group' => [
+                [25, 2000, 'Total blackout', 'Faire tomber un groupe de 25 boules noires.'],
+            ],
+        ],
         'f1champion' => [
             'total_km' => [
                 [2000, 100, 'Rodage', 'Parcourir un total cumulé de 2.000 km.'],

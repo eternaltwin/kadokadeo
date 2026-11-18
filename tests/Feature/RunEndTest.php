@@ -431,6 +431,36 @@ class RunEndTest extends TestCase
         $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
     }
 
+    // what the game sends at its game over (drakhan.Game.gameOver), read by the rules of its achievements
+    public function test_the_stats_of_a_run_of_drakhan_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Drakhan']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 90000,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => ['s' => 4, 'mc' => 6, 'nb' => 100, 'gb' => 25, 'nv' => 1],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(100, $values['black_balls']);
+        $this->assertSame(8000, $values['board_points']);
+        $this->assertSame(6, $values['combo']);
+        $this->assertSame(1, $values['clear_board']);
+        $this->assertSame(1, $values['navy_ball']);
+        $this->assertSame(25, $values['black_group']);
+        // Black listée, On fait table rase, Effet domino, Tout beau tout propre, Dernière couleur, Total blackout
+        $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
+    }
+
     public function test_only_the_player_of_a_run_finishes_it(): void
     {
         $run = Run::factory()->create(['score' => 0, 'completed_at' => null]);

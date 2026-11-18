@@ -88,7 +88,10 @@ class Game implements kado.GameInterface {
 
 	var endBonus:Int;
 	var generator:{ray:Int, dir:Int, dist:Int};
-	var stats:{sp:Int, sc:Array<{c:Int, s:Int, t:Int}>};
+	// stats sent at the game over, read from the state for the achievements (no effect on the game):
+	// s: boards emptied, mc: highest combo reached, nb: black (mu) balls dropped, gb: most black balls in one drop,
+	// nv: 1 once a frozen ball of the dark navy colour (7) was placed
+	public var stats:{s:Int, mc:Int, nb:Int, gb:Int, nv:Int};
 	var isReplayMode:Bool;
 	var lastAimSampleFrame = -1;
 	var replayAimStartFrame = 0;
@@ -118,7 +121,7 @@ class Game implements kado.GameInterface {
 
 		bList = new Array();
 		pList = new Array();
-		stats = {sp: 0, sc: []};
+		stats = {s: 0, mc: 0, nb: 0, gb: 0, nv: 0};
 
 		grid = new Array();
 		for (x in 0...2 * Cs.GRID_RAY * 2)
@@ -256,7 +259,7 @@ class Game implements kado.GameInterface {
 			KadoKadeoManager.kkm.addScore(endBonus);
 			setMsg("+" + KKApi.val(endBonus));
 			endBonus = KKApi.cadd(endBonus, Cs.C2000);
-			stats.sp++;
+			stats.s++;
 			return;
 		}
 
@@ -344,7 +347,7 @@ class Game implements kado.GameInterface {
 				}
 			case Cs.STEP_DEATH:
 				if (timer < 0) {
-					KadoKadeoManager.kkm.gameOver({});
+					KadoKadeoManager.kkm.gameOver(stats);
 					initStep(99);
 				}
 			case _:
@@ -550,21 +553,31 @@ class Game implements kado.GameInterface {
 				}
 			}
 		}
-		if (exploList.length > 0)
-			stats.sc.push({c: combo, s: KKApi.val(toScore.n), t: turn});
 		combo++;
+		// the "xN" multiplier shown is combo after this increment (initStep STEP_BLAST): keep the highest reached
+		if (exploList.length > 0 && combo > stats.mc)
+			stats.mc = combo;
 	}
 
 	function genFallList():Bool {
 		cleanGid();
 		stick(center);
 		var flFall = false;
+		var black = 0;
 		var list = bList.copy();
 		for (b in list) {
 			if (b.gid == null) {
+				// the mu balls are the "black" balls (color 20); count those dropped in this fall
+				if (b.color == 20)
+					black++;
 				b.fall();
 				flFall = true;
 			}
+		}
+		if (black > 0) {
+			stats.nb += black;
+			if (black > stats.gb)
+				stats.gb = black;
 		}
 		return flFall;
 	}
