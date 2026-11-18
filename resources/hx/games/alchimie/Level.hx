@@ -137,6 +137,8 @@ class Level {
 				var miny = g[0].y;
 				var nextId = g[0].id + 1;
 
+				game.onTransform(nextId);
+
 				if (nextId >= Cs.ID_COUNT) {
 					Cs.ID_COUNT = nextId + 1;
 				}

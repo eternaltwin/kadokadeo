@@ -58,6 +58,15 @@ class Game implements kado.GameInterface {
 		b:Array<Int>
 	};
 
+	// achievement stats: read-only counters, no effect on gameplay or RNG
+	var acTransforms:Int; // groups transmuted
+	var acChain:Int; // explosion waves in the current drop's cascade
+	var acMaxChain:Int; // best cascade (waves) in the run
+	var acPious:Int; // owls (id 10) produced
+	var acFirstLeafK:Int; // drops done when the first leaf (id 4) was produced (-1: none)
+	var acFlasksOnly:Int; // 1 if the board holds only basic flasks (id <= 3) at game over
+	var acPepite:Int; // 1 once a gold nugget (id 11) is produced
+
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayKeys = new UInt16Array(11);
 		replayKeys[0] = KeyboardManager.ARROW_LEFT;
@@ -84,6 +93,13 @@ class Game implements kado.GameInterface {
 			k: 0,
 			b: []
 		};
+		acTransforms = 0;
+		acChain = 0;
+		acMaxChain = 0;
+		acPious = 0;
+		acFirstLeafK = -1;
+		acFlasksOnly = 0;
+		acPepite = 0;
 		particules = new Particules(dmanager);
 		level = new Level(this);
 		level.initLevel();
@@ -198,6 +214,7 @@ class Game implements kado.GameInterface {
 		level.coins[p2.x][p2.y] = cc2;
 
 		stats.k++;
+		acChain = 0;
 
 		piece.mc._visible = false;
 		level.gravity();
@@ -208,10 +225,45 @@ class Game implements kado.GameInterface {
 		lock = true;
 	}
 
+	// called for each group that transmutes (Level.explode): nextId is the tier it is promoted to
+	public function onTransform(nextId:Int):Void {
+		acTransforms++;
+		if (nextId == 4 && acFirstLeafK == -1) {
+			acFirstLeafK = stats.k;
+		}
+		if (nextId == 10) {
+			acPious++;
+		}
+		if (nextId == 11) {
+			acPepite = 1;
+		}
+	}
+
+	// 1 if every coin left on the board is a basic flask (id <= 3)
+	function flasksOnly():Int {
+		for (x in 0...Cs.WIDTH) {
+			for (y in 0...Cs.HEIGHT) {
+				var c = level.coins[x][y];
+				if (c != null && c.id > 3) {
+					return 0;
+				}
+			}
+		}
+		return 1;
+	}
+
 	function nextTurn():Void {
 		for (i in 0...Cs.WIDTH) {
 			if (level.coins[i][1] != null) {
-				KadoKadeoManager.kkm.gameOver(stats);
+				acFlasksOnly = flasksOnly();
+				KadoKadeoManager.kkm.gameOver({
+					tr: acTransforms,
+					ch: acMaxChain,
+					pi: acPious,
+					lf: acFirstLeafK,
+					fs: acFlasksOnly,
+					pe: acPepite
+				});
 				lock = true;
 				return;
 			}
@@ -254,6 +306,13 @@ class Game implements kado.GameInterface {
 				lock = level.gravity();
 				if (!lock) {
 					lock = level.explode();
+					if (lock) {
+						// a new wave of explosions: the cascade grows
+						acChain++;
+						if (acChain > acMaxChain) {
+							acMaxChain = acChain;
+						}
+					}
 					calcPoints();
 					updatePoints();
 					if (!lock) {

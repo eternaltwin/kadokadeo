@@ -313,6 +313,42 @@ class RunEndTest extends TestCase
         $this->assertSame(100 + 250, $user->fresh()->kado_points);
     }
 
+    public function test_the_stats_of_a_run_of_alchimie_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Alchimie']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 363300,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => [
+                'tr' => 131,
+                'ch' => 6,
+                'pi' => 3,
+                'lf' => 10,
+                'fs' => 0,
+                'pe' => 1,
+            ],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(131, $values['transformations']);
+        $this->assertSame(6, $values['chain']);
+        $this->assertSame(3, $values['pious']);
+        $this->assertSame(0, $values['leaf_rush']);
+        $this->assertSame(0, $values['flasks_screen']);
+        $this->assertSame(1, $values['gold']);
+        // the three chain levels (Apprenti/Alchimiste/Maître) and Orpailleur
+        $this->assertSame(100 + 500 + 1000 + 2000, $user->fresh()->kado_points);
+    }
+
     // what the game sends at its game over (pioutch.Game.gameOver), read by the rules of its achievements
     public function test_the_stats_of_a_run_of_pioutch_reach_its_achievements(): void
     {

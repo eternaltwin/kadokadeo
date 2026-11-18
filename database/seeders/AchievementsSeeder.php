@@ -17,6 +17,32 @@ class AchievementsSeeder extends Seeder
      * @var array<string, array<string, list<array{int, int, string, string}>>>
      */
     private const ACHIEVEMENTS = [
+        'alchimie' => [
+            'transformations' => [
+                [500, 100, 'Laborantin', 'Faire 500 transformations.'],
+                [5000, 500, 'Maître Alchimiste', 'Faire 5.000 transformations.'],
+                [50000, 1000, 'Docteur ès Transmutations', 'Faire 50.000 transformations.'],
+            ],
+            'chain' => [
+                [3, 100, 'Apprenti des cascades', 'Faire un enchaînement de 3 transformations.'],
+                [4, 500, 'Alchimiste déchaîné', 'Faire un enchaînement de 4 transformations.'],
+                [5, 1000, 'Maître du grand enchaînement', 'Faire un enchaînement de 5 transformations.'],
+            ],
+            'pious' => [
+                [5, 100, 'Ornithologue amateur', 'Déposer 5 pious.'],
+                [20, 500, 'Volailler', 'Déposer 20 pious.'],
+                [75, 1000, 'Maître piou-kemon', 'Déposer 75 pious.'],
+            ],
+            'leaf_rush' => [
+                [1, 250, 'T\'as la main verte', 'Atteindre la feuille en moins de 10 coups.'],
+            ],
+            'flasks_screen' => [
+                [1, 1000, 'Peu importe le flacon pourvu qu\'on ait l\'ivresse', 'Finir une partie avec uniquement des fioles basiques à l\'écran.'],
+            ],
+            'gold' => [
+                [1, 2000, 'Orpailleur', 'Atteindre la pépite.'],
+            ],
+        ],
         'alchimie2' => [
             'transformations' => [
                 [500, 100, 'Alchimiste en herbe', 'Faire 500 transformations.'],
