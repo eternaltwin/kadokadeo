@@ -535,6 +535,57 @@ class RunEndTest extends TestCase
         $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
     }
 
+    // what the game sends at its game over (invasion.Game.end), read by the rules of its achievements
+    public function test_the_stats_of_a_run_of_invasion_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Invasion']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 20000,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => [
+                'l' => 1,
+                's' => 10,
+                'k' => [20, 5, 3],
+                'm' => [0, 0, 0],
+                'g' => [15],
+                'ak' => 16,
+                'al' => 16,
+                'gc' => 3,
+                'ab' => 5,
+                'co' => 0,
+                'fc' => 1,
+                'sym' => 1,
+            ],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(28, $values['monsters_killed']);
+        $this->assertSame(3, $values['orange_monsters']);
+        $this->assertSame(3, $values['orange_in_one_game']);
+        $this->assertSame(0, $values['score_without_orange']);
+        $this->assertSame(1, $values['clear_board']);
+        $this->assertSame(16, $values['big_kill']);
+        $this->assertSame(16, $values['big_loss']);
+        $this->assertSame(1, $values['imperfect']);
+        $this->assertSame(3, $values['triple_jackpot']);
+        $this->assertSame(1, $values['besieged']);
+        $this->assertSame(1, $values['good_student']);
+        $this->assertSame(1, $values['four_corners']);
+        $this->assertSame(1, $values['symmetry']);
+        // Orange pressée + Presseur confirmé, Ménage de printemps, Attaque hexadécimale, Défaite hexadécimale,
+        // L'imparfait, Triple jackpot, Assiégés, Bon élève, 4 à la suite, Maître de la symétrie
+        $this->assertSame(100 + 500 + 250 + 1000 + 1000 + 2000 + 250 + 250 + 1000 + 2000 + 2000, $user->fresh()->kado_points);
+    }
+
     // what the game sends at its game over (cosmocrash.Game.gameOver), read by the rules of its achievements
     public function test_the_stats_of_a_run_of_cosmo_crash_reach_its_achievements(): void
     {

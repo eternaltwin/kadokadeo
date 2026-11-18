@@ -43,13 +43,29 @@ class Game implements kado.GameInterface {
 	public var playerTargetX:Int;
 	public var playerTargetY:Int;
 
+	// l: soldiers lost, s: soldiers kept at the end, k: monsters killed by kind (orange = kind 2), m: monsters left at the
+	// end by kind, g: sizes (minus one) of every group destroyed. Achievements only, read from the game state (no effect
+	// on the game): ak: biggest group of monsters destroyed in one attack, al: biggest group of soldiers lost in one
+	// attack, gc: number of monster groups (size >= 2) destroyed, ab: most monsters on the border (outer ring) at once,
+	// co: soldiers in the four corners at the end, fc: 1 if the last four monsters killed were the four corners, sym: 1 if
+	// the full board was ever mirror-symmetric on the vertical axis (same camp on x and 6 - x)
 	public var stats:{
 		l:Int,
 		s:Int,
 		k:Array<Int>,
 		m:Array<Int>,
 		g:Array<Int>,
+		ak:Int,
+		al:Int,
+		gc:Int,
+		ab:Int,
+		co:Int,
+		fc:Int,
+		sym:Int,
 	};
+
+	// achievements only: the corner index (0-3, or -1) of each monster killed, trimmed to the last four
+	public var lastKills:Array<Int>;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayMouseButtons = new UInt16Array(1);
@@ -110,7 +126,15 @@ class Game implements kado.GameInterface {
 			k: [0, 0, 0],
 			m: [0, 0, 0],
 			g: [],
+			ak: 0,
+			al: 0,
+			gc: 0,
+			ab: 0,
+			co: 0,
+			fc: 0,
+			sym: 0,
 		};
+		lastKills = [];
 		// autoFillInitialGrid();
 		root.useHandCursor = false;
 	}
@@ -232,6 +256,8 @@ class Game implements kado.GameInterface {
 		var p = level[x][y];
 		if (!attackRec(p.hero, x, y, l))
 			l = [p];
+		// achievements only: the destroyed group is all of one camp (the attacked cell's)
+		var groupHero = l[0].hero;
 		var i;
 		for (i in 0...l.length) {
 			p = l[i];
@@ -243,9 +269,21 @@ class Game implements kado.GameInterface {
 				// Stat : Comptage et répartition des monstres tués
 				stats.k[p.kind]++;
 				KadoKadeoManager.kkm.addScore(Cs.MONSTER_POINTS[p.kind]);
+				// achievements only: remember the corner of each monster killed, in order
+				recordKill(p.x, p.y);
 			}
 			p.destroy();
 			level[p.x][p.y] = null;
+		}
+		// achievements only: biggest group destroyed in one attack, and number of monster groups (size >= 2) destroyed
+		if (groupHero) {
+			if (l.length > stats.al)
+				stats.al = l.length;
+		} else {
+			if (l.length > stats.ak)
+				stats.ak = l.length;
+			if (l.length >= 2)
+				stats.gc++;
 		}
 		if (l.length > 1) {
 			// Stat : Liste des groupes de monstres tués
@@ -266,6 +304,8 @@ class Game implements kado.GameInterface {
 			a.att--;
 			anims.push(p);
 		}
+		// achievements only: the board changed (kills and moves)
+		updateBorderMax();
 		state = Game.ANIM;
 		if (a.dy != 0)
 			dmanager.ysort(Cs.PLAN_PERSO);
@@ -477,6 +517,9 @@ class Game implements kado.GameInterface {
 		if (!monsterPlace()) {
 			nextTurn();
 		}
+		// achievements only: a hero (and maybe a monster) was added
+		updateBorderMax();
+		checkFullSymmetry();
 	}
 
 	public function attack(x, y) {
@@ -543,6 +586,9 @@ class Game implements kado.GameInterface {
 				}
 			}
 		}
+		// achievements only: soldiers left in the corners, and whether the last four monsters killed were the four corners
+		stats.co = countCornerHeroes();
+		stats.fc = lastFourAreCorners() ? 1 : 0;
 		KadoKadeoManager.kkm.gameOver(stats);
 		state = Game.EXIT;
 	}
@@ -572,6 +618,75 @@ class Game implements kado.GameInterface {
 			case Game.END:
 				end();
 		}
+	}
+
+	// achievements only (read-only): the monsters standing on the outer ring, keeping the highest count seen
+	function updateBorderMax() {
+		var n = 0;
+		for (x in 0...Cs.WIDTH)
+			for (y in 0...Cs.HEIGHT) {
+				var p = level[x][y];
+				if (p != null && !p.hero && (x == 0 || x == Cs.WIDTH - 1 || y == 0 || y == Cs.HEIGHT - 1))
+					n++;
+			}
+		if (n > stats.ab)
+			stats.ab = n;
+	}
+
+	// achievements only (read-only): once the board is full, flag it if it mirrors on the vertical axis (same camp on x and 6 - x)
+	function checkFullSymmetry() {
+		if (stats.sym == 1)
+			return;
+		for (x in 0...Cs.WIDTH)
+			for (y in 0...Cs.HEIGHT)
+				if (level[x][y] == null)
+					return;
+		for (x in 0...Std.int(Cs.WIDTH / 2))
+			for (y in 0...Cs.HEIGHT)
+				if (level[x][y].hero != level[Cs.WIDTH - 1 - x][y].hero)
+					return;
+		stats.sym = 1;
+	}
+
+	// achievements only (read-only): the corner index of a cell (0-3), or -1
+	function cornerIndex(x:Int, y:Int):Int {
+		if (y == 0)
+			return x == 0 ? 0 : (x == Cs.WIDTH - 1 ? 1 : -1);
+		if (y == Cs.HEIGHT - 1)
+			return x == 0 ? 2 : (x == Cs.WIDTH - 1 ? 3 : -1);
+		return -1;
+	}
+
+	// achievements only (read-only): remember where a monster was killed, keeping the last four
+	function recordKill(x:Int, y:Int) {
+		lastKills.push(cornerIndex(x, y));
+		if (lastKills.length > 4)
+			lastKills.shift();
+	}
+
+	// achievements only (read-only): the last four monsters killed are the four distinct corners
+	function lastFourAreCorners():Bool {
+		if (lastKills.length < 4)
+			return false;
+		var seen = [false, false, false, false];
+		for (c in lastKills) {
+			if (c < 0)
+				return false;
+			seen[c] = true;
+		}
+		return seen[0] && seen[1] && seen[2] && seen[3];
+	}
+
+	// achievements only (read-only): soldiers standing in the four corners
+	function countCornerHeroes():Int {
+		var n = 0;
+		var corners = [[0, 0], [Cs.WIDTH - 1, 0], [0, Cs.HEIGHT - 1], [Cs.WIDTH - 1, Cs.HEIGHT - 1]];
+		for (c in corners) {
+			var p = level[c[0]][c[1]];
+			if (p != null && p.hero)
+				n++;
+		}
+		return n;
 	}
 
 	public function destroy():Void {}

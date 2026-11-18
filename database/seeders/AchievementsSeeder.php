@@ -343,6 +343,55 @@ class AchievementsSeeder extends Seeder
                 [3500, 2000, 'Challenge accepted', 'Toucher la roue du bas puis monter à plus de 3.500 mètres.'],
             ],
         ],
+        'invasion' => [
+            'monsters_killed' => [
+                [1000, 100, 'L\'attaquant', 'Tuer 1.000 ennemis.'],
+                [3000, 500, 'Le mercenaire', 'Tuer 3.000 ennemis.'],
+                [5000, 1000, 'Hitman', 'Tuer 5.000 ennemis.'],
+            ],
+            'orange_monsters' => [
+                [100, 100, 'Orange sanguine', 'Tuer 100 monstres oranges.'],
+                [500, 500, 'Pulpe et sang', 'Tuer 500 monstres oranges.'],
+                [1000, 1000, 'Marmelade de guerre', 'Tuer 1.000 monstres oranges.'],
+            ],
+            'orange_in_one_game' => [
+                [2, 100, 'Orange pressée', 'Tuer au moins 2 monstres oranges en une partie.'],
+                [3, 500, 'Presseur confirmé', 'Tuer au moins 3 monstres oranges en une partie.'],
+                [5, 1000, 'Maître du jus', 'Tuer au moins 5 monstres oranges en une partie.'],
+            ],
+            'score_without_orange' => [
+                [9000, 100, 'Quartier libre', 'Faire un score de 9.000 sans tuer de monstre orange.'],
+                [10000, 500, 'Régime sans pulpe', 'Faire un score de 10.000 sans tuer de monstre orange.'],
+                [11000, 1000, 'Allergique aux agrumes', 'Faire un score de 11.000 sans tuer de monstre orange.'],
+            ],
+            'clear_board' => [
+                [1, 250, 'Ménage de printemps', 'Détruire tous les ennemis d\'une partie.'],
+            ],
+            'big_kill' => [
+                [16, 1000, 'Attaque hexadécimale', 'Détruire 16 ennemis en un coup.'],
+            ],
+            'big_loss' => [
+                [16, 1000, 'Défaite hexadécimale', 'Se faire détruire 16 soldats en un coup.'],
+            ],
+            'imperfect' => [
+                [1, 2000, 'L\'imparfait', 'Tuer tous les ennemis d\'une partie en ayant perdu au moins une unité.'],
+            ],
+            'triple_jackpot' => [
+                [3, 250, 'Triple jackpot', 'Détruire 3 groupes d\'ennemis en une partie.'],
+            ],
+            'besieged' => [
+                [1, 250, 'Assiégés', 'Finir une partie sans jamais avoir laissé plus de 5 ennemis au bord de la carte.'],
+            ],
+            'good_student' => [
+                [1, 1000, 'Bon élève', 'Tuer tous les ennemis en ne laissant aucun soldat dans un coin.'],
+            ],
+            'four_corners' => [
+                [1, 2000, '4 à la suite', 'Tuer tous les ennemis en terminant par les 4 coins du plateau.'],
+            ],
+            'symmetry' => [
+                [1, 2000, 'Maître de la symétrie', 'Remplir toutes les cases du plateau en formant une symétrie.'],
+            ],
+        ],
         'ironchouquette' => [
             'kill_shield' => [
                 [1, 250, 'Tous tes bonus ne m\'atteignent pas', 'Détruire un champ magnétique.'],
