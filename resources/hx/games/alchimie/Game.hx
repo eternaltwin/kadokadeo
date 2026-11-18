@@ -257,6 +257,8 @@ class Game implements kado.GameInterface {
 			if (level.coins[i][1] != null) {
 				acFlasksOnly = flasksOnly();
 				KadoKadeoManager.kkm.gameOver({
+					k: stats.k,
+					b: stats.b,
 					tr: acTransforms,
 					ch: acMaxChain,
 					pi: acPious,
