@@ -47,6 +47,8 @@ class Element extends StageObject {
 			case Elt(i):
 				if (i == 11 || i == 15) // gold or flocinne (ça fait purée vico, "flocinne")
 					gTimer = 0.0;
+				if (i == 11) // gold: the pépite achievement
+					Game.me.acGold = 1;
 			case _:
 		}
 		if (updateMc && omc != null)

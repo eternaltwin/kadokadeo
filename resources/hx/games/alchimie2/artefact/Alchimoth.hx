@@ -32,6 +32,8 @@ class Alchimoth extends StageObject {
 	override public function onGround() {
 		super.onGround();
 
+		Game.me.acFly = 1;
+
 		effectTimer = 100;
 		effectStep = 0;
 		Game.me.setStep(ArtefactInUse, this);

@@ -17,6 +17,32 @@ class AchievementsSeeder extends Seeder
      * @var array<string, array<string, list<array{int, int, string, string}>>>
      */
     private const ACHIEVEMENTS = [
+        'alchimie2' => [
+            'transformations' => [
+                [500, 100, 'Alchimiste en herbe', 'Faire 500 transformations.'],
+                [5000, 500, 'Maître des Réactions', 'Faire 5.000 transformations.'],
+                [25000, 1000, 'Sorcier de la Fusion', 'Faire 25.000 transformations.'],
+            ],
+            'rocks' => [
+                [10, 100, 'Géologue', 'Faire exploser 10 cailloux.'],
+                [100, 500, 'Sculpteur', 'Faire exploser 100 cailloux.'],
+                [1000, 1000, 'Vétéran du bagne', 'Faire exploser 1.000 cailloux.'],
+            ],
+            'dynamites' => [
+                [3, 100, 'Pro du pétard', 'Utiliser 3 dynamites.'],
+                [10, 500, 'Dynamiteur de mine', 'Utiliser 10 dynamites.'],
+                [30, 1000, 'Artificier', 'Utiliser 30 dynamites.'],
+            ],
+            'fly' => [
+                [1, 250, 'Option mouche à merde', 'Utiliser une mouche.'],
+            ],
+            'rock_overflow' => [
+                [1, 1000, 'Les calculs sont pas bons...', 'Faire une colonne de cailloux qui dépasse la ligne.'],
+            ],
+            'gold' => [
+                [1, 2000, 'Nicolas Flamel', 'Atteindre la pépite.'],
+            ],
+        ],
         'atlanteine' => [
             'ghosts_killed' => [
                 [1, 100, 'Bouh !', 'Tuer 1 fantôme.'],
@@ -282,6 +308,32 @@ class AchievementsSeeder extends Seeder
             ],
             'fly_streak' => [
                 [25, 2000, 'I believe I can fly', 'Rester 25 secondes en l\'air.'],
+            ],
+        ],
+        'kanjisadventure' => [
+            'witches' => [
+                [10, 100, 'Vade retro satanas', 'Tuer un total de 10 sorcières.'],
+                [100, 500, 'Sorcière ! Au bûcher !', 'Tuer un total de 100 sorcières.'],
+                [500, 1000, 'Nobody expects the Spanish Inquisition', 'Tuer un total de 500 sorcières.'],
+            ],
+            'steps' => [
+                [1000, 100, 'Marcheur', 'Faire un total de 1.000 pas.'],
+                [10000, 500, 'Promeneur', 'Faire un total de 10.000 pas.'],
+                [100000, 1000, 'Randonneur', 'Faire un total de 100.000 pas.'],
+            ],
+            'gold_spent' => [
+                [1000, 100, 'Dépensier', 'Dépenser un total de 1.000 pièces d\'or.'],
+                [10000, 500, 'Dilapideur', 'Dépenser un total de 10.000 pièces d\'or.'],
+                [50000, 1000, 'Richissime', 'Dépenser un total de 50.000 pièces d\'or.'],
+            ],
+            'food' => [
+                [1000, 250, 'Survivaliste', 'Atteindre 1.000 de nourriture.'],
+            ],
+            'scrolls' => [
+                [4, 1000, 'Archimage', 'Obtenir les 4 types de parchemins dans le sac.'],
+            ],
+            'bear_paws' => [
+                [2, 2000, 'Grigri en doublon', 'Avoir 2 pattes d\'ours dans son sac.'],
             ],
         ],
         'kanjisnightmare' => [

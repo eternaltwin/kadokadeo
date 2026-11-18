@@ -30,6 +30,8 @@ class Dynamit extends StageObject {
 	override public function onGround() {
 		super.onGround();
 
+		Game.me.acDynamites++;
+
 		effectTimer = 100;
 		effectStep = 0;
 		Game.me.setStep(ArtefactInUse, this);

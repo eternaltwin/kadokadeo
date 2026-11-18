@@ -74,6 +74,14 @@ class Game implements kado.GameInterface {
 	public var mode:alchimie2.mode.GameMode;
 	public var stage:Stage;
 
+	// achievement stats: read-only counters, no effect on gameplay or RNG
+	public var acTransforms:Int; // groups transmuted
+	public var acRocks:Int; // parasite blocks (cailloux) destroyed
+	public var acDynamites:Int; // dynamites used
+	public var acFly:Int; // 1 once an Alchimoth (fly) is used
+	public var acGold:Int; // 1 once a gold element (pépite) is produced
+	public var acRockOverflow:Int; // 1 if a parasite overflows the limit line at game over
+
 	var gTimer:Float;
 	var kl:Dynamic;
 	var ckl:Dynamic;
@@ -112,6 +120,13 @@ class Game implements kado.GameInterface {
 		score = 0;
 		step = Fall;
 		picks = [];
+
+		acTransforms = 0;
+		acRocks = 0;
+		acDynamites = 0;
+		acFly = 0;
+		acGold = 0;
+		acRockOverflow = 0;
 
 		pLeft = false;
 		pRight = false;
@@ -413,7 +428,14 @@ class Game implements kado.GameInterface {
 	}
 
 	public function setGameOver() {
-		KadoKadeoManager.kkm.gameOver({});
+		KadoKadeoManager.kkm.gameOver({
+			t: acTransforms,
+			c: acRocks,
+			d: acDynamites,
+			f: acFly,
+			g: acGold,
+			ro: acRockOverflow
+		});
 		setStep(GameOver);
 	}
 

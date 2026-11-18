@@ -277,6 +277,42 @@ class RunEndTest extends TestCase
         $this->assertSame(100 + 250 + 1000 + 1000, $user->fresh()->kado_points);
     }
 
+    public function test_the_stats_of_a_run_of_alchimie2_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Alchimie 2']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 175160,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => [
+                't' => 56,
+                'c' => 18,
+                'd' => 2,
+                'f' => 1,
+                'g' => 0,
+                'ro' => 0,
+            ],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(56, $values['transformations']);
+        $this->assertSame(18, $values['rocks']);
+        $this->assertSame(2, $values['dynamites']);
+        $this->assertSame(1, $values['fly']);
+        $this->assertSame(0, $values['rock_overflow']);
+        $this->assertSame(0, $values['gold']);
+        // Géologue (10 cailloux), Option mouche à merde
+        $this->assertSame(100 + 250, $user->fresh()->kado_points);
+    }
+
     // what the game sends at its game over (pioutch.Game.gameOver), read by the rules of its achievements
     public function test_the_stats_of_a_run_of_pioutch_reach_its_achievements(): void
     {

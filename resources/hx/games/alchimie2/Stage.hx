@@ -329,6 +329,8 @@ class Stage {
 				continue;
 			}
 
+			Game.me.acTransforms++;
+
 			var tt = Game.me.mode.transformInfos(cast g);
 			for (t in tt) {
 				for (o in t.g) {
@@ -395,6 +397,8 @@ class Stage {
 		falls.remove(o);
 		if (noKill || Game.me.hasInUse(o))
 			return;
+		if (o.isParasit)
+			Game.me.acRocks++;
 		o.kill();
 	}
 
@@ -757,10 +761,16 @@ class Stage {
 	}
 
 	public function checkEnd() {
+		var overflow = false;
 		for (x in 0...WIDTH) {
-			if (grid[x][LIMIT] != null)
-				return true;
+			if (grid[x][LIMIT] != null) {
+				overflow = true;
+				if (grid[x][LIMIT].isParasit)
+					Game.me.acRockOverflow = 1;
+			}
 		}
+		if (overflow)
+			return true;
 
 		if (Game.me.mode.checkEnd())
 			return true;
