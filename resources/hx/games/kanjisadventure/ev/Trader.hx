@@ -228,6 +228,7 @@ class Trader extends Event {
 		Game.me.pickUp(s.id);
 		Game.me.flMute = false;
 		Game.me.gold -= s.price;
+		Game.me.stats.gs += s.price;
 		Game.me.displayGold();
 		updateSlots();
 	}

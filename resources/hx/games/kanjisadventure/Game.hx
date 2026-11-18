@@ -127,6 +127,11 @@ class Game implements kado.GameInterface {
 
 	public var inventory:Array<Int>;
 
+	// stats sent at the game over, read from the state for the achievements (no effect on the game):
+	// wk: witches (bid 7) killed, st: steps walked, gs: gold spent at the trader, mf: most food held at once,
+	// s4: most distinct scroll types in the bag at once (25,26,29,30), bp: most bear paws (24) in the bag at once
+	public var stats:{wk:Int, st:Int, gs:Int, mf:Int, s4:Int, bp:Int};
+
 	public var flhColor:Int;
 	public var flh:Null<Float>;
 
@@ -194,6 +199,7 @@ class Game implements kado.GameInterface {
 		bagSize = 3;
 		food = 250;
 		gold = 0;
+		stats = {wk: 0, st: 0, gs: 0, mf: food, s4: 0, bp: 0};
 		shuriken = 3;
 		armorId = 0;
 		weaponId = 0;
@@ -419,6 +425,7 @@ class Game implements kado.GameInterface {
 			return;
 		if (sq.isHeroFree()) {
 			flMove = true;
+			stats.st++;
 			hero.setFuturAction(Goto(dir));
 			gogogo();
 		} else if (sq.ent != null) {
@@ -427,6 +434,7 @@ class Game implements kado.GameInterface {
 				gogogo();
 			} else if (sq.ent.flGood) {
 				flMove = true;
+				stats.st++;
 				hero.setFuturAction(Goto(dir));
 				var ally:Bad = cast(sq.ent);
 				ally.swapDir = (dir + 2) % 4;
@@ -579,8 +587,48 @@ class Game implements kado.GameInterface {
 		inventory.push(id);
 		if (inventory.length > bagSize)
 			dropItem(inventory.shift());
+		updateBagStats();
 		displayItems();
 		hero.buildCaracs();
+	}
+
+	// achievements: the bag only grows by take(), so its records are read here. s4: distinct scroll types (Pr. Feu 25,
+	// Pr. Glace 26, Pr. Teleport. 29, Pr. Chaos 30) held at once, bp: bear paws (24) held at once.
+	function updateBagStats() {
+		var scrolls = 0;
+		var hasScroll = [false, false, false, false];
+		var paws = 0;
+		for (it in inventory) {
+			switch (it) {
+				case 25:
+					if (!hasScroll[0]) {
+						hasScroll[0] = true;
+						scrolls++;
+					}
+				case 26:
+					if (!hasScroll[1]) {
+						hasScroll[1] = true;
+						scrolls++;
+					}
+				case 29:
+					if (!hasScroll[2]) {
+						hasScroll[2] = true;
+						scrolls++;
+					}
+				case 30:
+					if (!hasScroll[3]) {
+						hasScroll[3] = true;
+						scrolls++;
+					}
+				case 24:
+					paws++;
+				case _:
+			}
+		}
+		if (scrolls > stats.s4)
+			stats.s4 = scrolls;
+		if (paws > stats.bp)
+			stats.bp = paws;
 	}
 
 	function useItem(n:Int) {
@@ -771,6 +819,8 @@ class Game implements kado.GameInterface {
 		food += inc;
 		if (food < 0)
 			food = 0;
+		if (food > stats.mf)
+			stats.mf = food;
 		displayFood();
 	}
 
@@ -937,7 +987,7 @@ class Game implements kado.GameInterface {
 					}
 				} else {
 					endStep++;
-					KadoKadeoManager.kkm.gameOver({});
+					KadoKadeoManager.kkm.gameOver(stats);
 				}
 		}
 	}

@@ -299,6 +299,9 @@ class Bad extends Ent {
 			var sc = (bid + 1) * Cs.SCORE_MONSTER;
 			KadoKadeoManager.kkm.addScore(sc);
 			sq.fxScore(sc);
+			// achievements: the witch is the sorcerer (bid 7, « mage des Lumbs »)
+			if (bid == 7)
+				Game.me.stats.wk++;
 		}
 		// the clip plays its "die" frames (sinks into the floor) then removes itself
 		if (root != null) {

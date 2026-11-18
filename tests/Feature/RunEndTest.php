@@ -401,6 +401,36 @@ class RunEndTest extends TestCase
         $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
     }
 
+    // what the game sends at its game over (kanjisadventure.Game.gameOver), read by the rules of its achievements
+    public function test_the_stats_of_a_run_of_kanjis_adventure_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Kanji\'s Adventure']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 120000,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => ['wk' => 10, 'st' => 1000, 'gs' => 1000, 'mf' => 1000, 's4' => 4, 'bp' => 2],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(10, $values['witches']);
+        $this->assertSame(1000, $values['steps']);
+        $this->assertSame(1000, $values['gold_spent']);
+        $this->assertSame(1000, $values['food']);
+        $this->assertSame(4, $values['scrolls']);
+        $this->assertSame(2, $values['bear_paws']);
+        // Vade retro satanas, Marcheur, Dépensier, Survivaliste, Archimage, Grigri en doublon
+        $this->assertSame(100 + 100 + 100 + 250 + 1000 + 2000, $user->fresh()->kado_points);
+    }
+
     public function test_only_the_player_of_a_run_finishes_it(): void
     {
         $run = Run::factory()->create(['score' => 0, 'completed_at' => null]);
