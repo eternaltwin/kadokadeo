@@ -166,6 +166,32 @@ class AchievementsSeeder extends Seeder
                 [1, 2000, 'J\'AI FAIM !', 'Terminer le niveau 1 en moins de 15 secondes.'],
             ],
         ],
+        'cosmocrash' => [
+            'shuttle_launches' => [
+                [25, 100, 'Apollo', 'Faire partir un total de 25 navettes.'],
+                [100, 500, 'Discovery', 'Faire partir un total de 100 navettes.'],
+                [250, 1000, 'Artemis', 'Faire partir un total de 250 navettes.'],
+            ],
+            'total_astronauts' => [
+                [1000, 100, 'Blablacar aérien', 'Déposer un total de 1.000 astronautes sur les plateformes.'],
+                [10000, 500, 'G7 interstellaire', 'Déposer un total de 10.000 astronautes sur les plateformes.'],
+                [50000, 1000, 'Uber de l\'espace', 'Déposer un total de 50.000 astronautes sur les plateformes.'],
+            ],
+            'shuttles_one_game' => [
+                [8, 100, 'Baïkonour', 'Faire décoller 8 navettes en une seule partie.'],
+                [10, 500, 'Kourou', 'Faire décoller 10 navettes en une seule partie.'],
+                [12, 1000, 'Cap Canaveral', 'Faire décoller 12 navettes en une seule partie.'],
+            ],
+            'out_of_fuel' => [
+                [1, 250, 'Surchargé', 'Se retrouver à court de carburant.'],
+            ],
+            'vip' => [
+                [1, 1000, 'VIP', 'Faire partir une navette avec au moins un astronaute vert, un bleu et un rouge.'],
+            ],
+            'full_shuttle' => [
+                [1, 2000, 'Va chez Total !', 'Déposer 8 astronautes en même temps sur une plateforme.'],
+            ],
+        ],
         'drakhan' => [
             'black_balls' => [
                 [100, 100, 'Black listée', 'Faire tomber un total de 100 boules noires.'],

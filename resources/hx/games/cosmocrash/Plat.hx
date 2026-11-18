@@ -8,6 +8,11 @@ class Plat {
 	public var capacity:Int;
 	public var shuttleLevel:Int;
 
+	// achievements only (read from the state, no effect on the game): how many astronauts boarded the current shuttle,
+	// and a mask of their types (bit per type: 1 white, 2 green, 4 blue, 8 the rare type 3)
+	var boardedCount:Int;
+	var boardedMask:Int;
+
 	static var SIDE = 10;
 
 	public var flUp:Null<Bool>;
@@ -79,6 +84,10 @@ class Plat {
 				folk.kill();
 				nextFolk = null;
 				incCapacity(-1);
+				// achievements only: an astronaut boarded this shuttle
+				Game.me.ach.a++;
+				boardedCount++;
+				boardedMask |= 1 << folk.type;
 				if (capacity == 0)
 					takeOf();
 				return null;
@@ -114,6 +123,12 @@ class Plat {
 		#if debug
 		Game.me.stats.launches++;
 		#end
+		// achievements only: a shuttle left; full (8 astronauts), and carrying a green + blue + rare (type 3) astronaut
+		Game.me.ach.l++;
+		if (boardedCount >= 8)
+			Game.me.ach.e = 1;
+		if ((boardedMask & 14) == 14)
+			Game.me.ach.v = 1;
 		shuttleLevel++;
 		if (shuttleLevel > 5)
 			shuttleLevel = 5;
@@ -151,5 +166,8 @@ class Plat {
 		}
 		capacity = Cs.SHUTTLE_CAPACITY + shuttleLevel;
 		incCapacity(0);
+		// achievements only: a fresh shuttle, nobody boarded yet
+		boardedCount = 0;
+		boardedMask = 0;
 	}
 }

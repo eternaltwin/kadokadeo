@@ -123,6 +123,10 @@ class Game implements kado.GameInterface {
 	// the score of KKApi (setScore / addScore), nothing after the game over
 	var score:Int = 0;
 	var over:Bool = false;
+	// achievements only (read from the state, no effect on the game): l total shuttles launched, a total astronauts
+	// dropped into the shuttles, f 1 once out of fuel, v 1 once a shuttle left with a green + blue + red (type 3)
+	// astronaut, e 1 once a shuttle left full with 8 astronauts
+	public var ach:{l:Int, a:Int, f:Int, v:Int, e:Int};
 	#if debug
 	// test harness: events of the game (coverage)
 	public var stats = {crashes: 0, launches: 0, loops: 0, shots: 0, lowFuel: 0};
@@ -181,6 +185,8 @@ class Game implements kado.GameInterface {
 
 		fuel = 100;
 		dif = 0;
+
+		ach = {l: 0, a: 0, f: 0, v: 0, e: 0};
 
 		for (i in 0...12)
 			new Folk();
@@ -506,6 +512,9 @@ class Game implements kado.GameInterface {
 			fuel = 0;
 		if (fuel > 100)
 			fuel = 100;
+		// achievements only: ran out of fuel
+		if (fuel == 0)
+			ach.f = 1;
 
 		var vec = gyro.sub("vector");
 		if (vec != null)
@@ -705,7 +714,7 @@ class Game implements kado.GameInterface {
 		#if debug
 		untyped js.Browser.window.__over = debugState();
 		#end
-		KadoKadeoManager.kkm.gameOver({});
+		KadoKadeoManager.kkm.gameOver(ach);
 	}
 
 	// the glow filter compiles its shader now, not at the first vehicle
