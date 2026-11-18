@@ -160,6 +160,15 @@ class Game implements kado.GameInterface {
 
 	var isClickRegistered:Bool = false;
 
+	// achievements only, read from the game state (no effect on the game): md: missiles destroyed, mu: munitions fired,
+	// me: most missiles destroyed by one explosion (a single wave), gl: missiles that reached the ground, mg: 1 once the
+	// ammo went down to zero then back up to the maximum, rb: 1 once one wave destroyed a missile of each of the three
+	// special colours (0, 1, 2)
+	public var stats:{md:Int, mu:Int, me:Int, gl:Int, mg:Int, rb:Int};
+
+	// achievements only: the ammo reached zero at some point (machine gun)
+	var muniEmptied:Bool;
+
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayMouseButtons = new UInt16Array(1);
 		replayMouseButtons[0] = MouseManager.BUTTON_LEFT;
@@ -195,6 +204,10 @@ class Game implements kado.GameInterface {
 		totalSpeed = 0;
 		replenish = 0;
 		expl = 0;
+
+		// achievements only (read from the state, no effect on the game)
+		stats = {md: 0, mu: 0, me: 0, gl: 0, mg: 0, rb: 0};
+		muniEmptied = false;
 
 		missiles = [];
 		patriots = [];
@@ -366,7 +379,7 @@ class Game implements kado.GameInterface {
 		while (patriots.length > 0)
 			patriots[0].kill();
 		flGameOver = true;
-		KadoKadeoManager.kkm.gameOver({});
+		KadoKadeoManager.kkm.gameOver(stats);
 	}
 
 	function updateGameOver() {}
@@ -382,6 +395,8 @@ class Game implements kado.GameInterface {
 		moveHero();
 
 		incMunition(-1);
+		// achievements only: a munition was fired
+		stats.mu++;
 		var p = new Patriot();
 	}
 
@@ -437,6 +452,11 @@ class Game implements kado.GameInterface {
 
 	public function incMunition(inc) {
 		cmun = Std.int(Num.mm(0, cmun + inc, Cs.MISSILE_MAX));
+		// achievements only: the ammo went down to zero, then back up to the maximum
+		if (cmun == 0)
+			muniEmptied = true;
+		if (muniEmptied && cmun == Cs.MISSILE_MAX)
+			stats.mg = 1;
 		var goal = Num.mm(0, munitions.length + inc, Cs.MISSILE_MAX);
 		muniCount = goal;
 		while (goal < munitions.length)

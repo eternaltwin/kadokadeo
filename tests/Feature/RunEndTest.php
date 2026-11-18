@@ -586,6 +586,43 @@ class RunEndTest extends TestCase
         $this->assertSame(100 + 500 + 250 + 1000 + 1000 + 2000 + 250 + 250 + 1000 + 2000 + 2000, $user->fresh()->kado_points);
     }
 
+    // what the game sends at its game over (crepuscud.Game.initGameOver), read by the rules of its achievements
+    public function test_the_stats_of_a_run_of_crepuscud_reach_its_achievements(): void
+    {
+        $this->setSettings(SiteSettings::class, ['achievements_enabled' => true]);
+        $user = User::factory()->create(['kado_points' => 0]);
+        $game = Game::factory()->create(['name' => 'Crepuscud']);
+        $this->seed(AchievementsSeeder::class);
+        $run = Run::factory()->for($game)->for($user)->create(['score' => 0, 'completed_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson("/api/runs/{$run->id}/finish", $this->encryptRun([
+            'run_id' => $run->id,
+            'score' => 200000,
+            'timestamp' => now()->timestamp,
+            'replay' => null,
+            'data' => [
+                'md' => 500,
+                'mu' => 500,
+                'me' => 7,
+                'gl' => 3,
+                'mg' => 1,
+                'rb' => 1,
+            ],
+            'ac' => 0,
+        ]))->assertOk();
+
+        $values = UserAchievementProgress::query()->with('achievement')->get()->pluck('current_value', 'achievement.key')->all();
+        $this->assertSame(500, $values['missiles_destroyed']);
+        $this->assertSame(500, $values['ammo_used']);
+        $this->assertSame(7, $values['missiles_in_one_explosion']);
+        $this->assertSame(1, $values['machine_gun']);
+        $this->assertSame(1, $values['surgical_strike']);
+        $this->assertSame(1, $values['rainbow']);
+        // Tirailleur, Canonnier, Cinq/Six/Sept en un, Machine Gun, Frappe chirurgicale, Feux d'artifice
+        $this->assertSame(100 + 100 + 100 + 500 + 1000 + 250 + 1000 + 2000, $user->fresh()->kado_points);
+    }
+
     // what the game sends at its game over (cosmocrash.Game.gameOver), read by the rules of its achievements
     public function test_the_stats_of_a_run_of_cosmo_crash_reach_its_achievements(): void
     {

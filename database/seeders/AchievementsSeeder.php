@@ -192,6 +192,32 @@ class AchievementsSeeder extends Seeder
                 [1, 2000, 'Va chez Total !', 'Déposer 8 astronautes en même temps sur une plateforme.'],
             ],
         ],
+        'crepuscud' => [
+            'missiles_destroyed' => [
+                [500, 100, 'Tirailleur', 'Détruire 500 missiles.'],
+                [5000, 500, 'Fusilier', 'Détruire 5.000 missiles.'],
+                [20000, 1000, 'Sniper', 'Détruire 20.000 missiles.'],
+            ],
+            'ammo_used' => [
+                [500, 100, 'Canonnier', 'Utiliser 500 munitions.'],
+                [5000, 500, 'Artilleur', 'Utiliser 5.000 munitions.'],
+                [20000, 1000, 'Munitionnaire', 'Utiliser 20.000 munitions.'],
+            ],
+            'missiles_in_one_explosion' => [
+                [5, 100, 'Cinq en un', 'Détruire 5 missiles en une explosion.'],
+                [6, 500, 'Six en un', 'Détruire 6 missiles en une explosion.'],
+                [7, 1000, 'Sept en un', 'Détruire 7 missiles en une explosion.'],
+            ],
+            'machine_gun' => [
+                [1, 250, 'Machine Gun', 'Utiliser toutes les munitions puis recharger jusqu\'au maximum.'],
+            ],
+            'surgical_strike' => [
+                [1, 1000, 'Frappe chirurgicale', 'Perdre une partie où seulement 3 missiles ont atteint le sol.'],
+            ],
+            'rainbow' => [
+                [1, 2000, 'Feux d\'artifice', 'Détruire un missile de chaque couleur en un seul tir.'],
+            ],
+        ],
         'drakhan' => [
             'black_balls' => [
                 [100, 100, 'Black listée', 'Faire tomber un total de 100 boules noires.'],

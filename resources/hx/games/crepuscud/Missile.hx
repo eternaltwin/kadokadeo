@@ -91,10 +91,16 @@ class Missile extends Projectile {
 		}
 
 		Game.me.expl++;
+		// achievements only: a missile was destroyed by the player (frozen once the game is lost)
+		if (!Game.me.flGameOver)
+			Game.me.stats.md++;
 		kill();
 	}
 
 	public function groundExplode() {
+		// achievements only: a missile reached the ground (frozen once the game is lost, so it counts what led to the loss)
+		if (!Game.me.flGameOver)
+			Game.me.stats.gl++;
 		// HOLE
 		Game.me.makeHole(x, y, 0.15 + Seed.rand() * 0.05);
 

@@ -9,6 +9,10 @@ class Onde extends Sprite {
 
 	public var pool:{n:Int, multi:Int};
 
+	// achievements only: the missiles this wave destroyed, and the special colours among them (bits 0, 1, 2)
+	public var oCnt:Int = 0;
+	public var oCols:Int = 0;
+
 	public function new(x, y, size) {
 		var mc = Game.me.edm.attach("mcOnde", Game.DP_ONDE);
 		mc.play();
@@ -49,6 +53,17 @@ class Onde extends Sprite {
 			var dy = mis.y - y;
 			var dist = Math.sqrt(dx * dx + dy * dy);
 			if (dist < ray && mis.y > KadoKadeoManager.S(15)) {
+				// achievements only: this wave's kills and the special colours it destroys (read before the missile dies,
+				// frozen once the game is lost)
+				if (!Game.me.flGameOver) {
+					oCnt++;
+					if (mis.special != null)
+						oCols |= 1 << mis.special;
+					if (oCnt > Game.me.stats.me)
+						Game.me.stats.me = oCnt;
+					if (oCols == 7)
+						Game.me.stats.rb = 1;
+				}
 				mis.explode(pool);
 				pool.n = Std.int(Math.min(pool.n + 1, Cs.SCORE_MISSILE.length - 1));
 			}
