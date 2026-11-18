@@ -117,13 +117,21 @@ class Game implements kado.GameInterface {
 	var meter:MeterSprite;
 	var jauge:JaugeSprite;
 
+	// b: bonus collected by type (0,1 energies; 2..7 vegetables, 7 cauliflower), l: levels, d: depth (meters, only grows),
+	// k: rocks broken, c: dig actions, o: 1 once the oxygen gauge was filled to the max, cf: most cauliflowers taken in
+	// a single level (achievements only, read from the state: no effect on the game)
 	public var stats:{
 		b:Array<Int>,
 		l:Int,
 		d:Int,
 		k:Int,
-		c:Int
+		c:Int,
+		o:Int,
+		cf:Int
 	};
+
+	// cauliflowers taken in the current level (reset at each level), for stats.cf
+	var levelChou:Int = 0;
 
 	public function new(root:ASprite, ?isReplay:Bool = false) {
 		var replayKeys = new UInt16Array(7);
@@ -159,7 +167,9 @@ class Game implements kado.GameInterface {
 			d: 0,
 			k: 0,
 			c: 0,
-			l: 0
+			l: 0,
+			o: 0,
+			cf: 0
 		};
 		meter = cast dmanager.attach("meter", Cs.PLAN_INTERF);
 		meter._x = KadoKadeoManager.I(1);
@@ -210,16 +220,26 @@ class Game implements kado.GameInterface {
 		if (b == null)
 			return;
 		stats.b[b.t]++;
+		// the cauliflower is the last vegetable (b.t 7): most taken in one level, for the "two in a level" achievement
+		if (b.t == 7) {
+			levelChou++;
+			if (levelChou > stats.cf)
+				stats.cf = levelChou;
+		}
 		var max = Cs.LIFE[3];
 		switch (b.t) {
 			case 0:
 				life += Std.int(Cs.LIFE[1]);
-				if (life.get() >= KKApi.val(max))
+				if (life.get() >= KKApi.val(max)) {
 					life = Std.int(max);
+					stats.o = 1;
+				}
 			case 1:
 				life += Std.int(Cs.LIFE[2]);
-				if (life.get() >= KKApi.val(max))
+				if (life.get() >= KKApi.val(max)) {
 					life = Std.int(max);
+					stats.o = 1;
+				}
 			case _:
 				KadoKadeoManager.kkm.addScore(Cs.LEGUMES_POINTS[b.t - 2]);
 		}
@@ -289,6 +309,7 @@ class Game implements kado.GameInterface {
 		bg.filters = [terreFilter];
 		stats.d += dy;
 		stats.l++;
+		levelChou = 0;
 		meter.field.text = ((diff == 0) ? "0" : ("-" + diff)) + "M";
 		// meter.field.text = "-100m";
 		tmps = new Array();
