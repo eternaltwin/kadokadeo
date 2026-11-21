@@ -112,10 +112,19 @@ class Exporter:
         # nested clips keep their glow filters ('fl': [[blurX, blurY, strength, 0xRRGGBB, alpha, passes]]) and blend
         # mode ('bl'), applied at run time (the game's Clip); off: they are dropped (FLAT images always compose them)
         self.effects = False
+        # (with effects) the outer drop shadows of the nested clips are kept too, as 'fl' entries of 8 values: the 6 of
+        # a glow + [distance, angle in degrees] (Trigo: the hand of the clock); off: dropped with a warning
+        self.shadows = False
         # every CUT / CLIP / MASK layer at this resolution (None: the one its scale needs); with a SWF rendered with
         # `nearest` at the zoom K x fixed_res, the textures are the Flash pixels and the matrices are applied at run time
         self.fixed_res = None
+        # pixels of the images per pixel of their textures: the images drawn finer than the resolution of the defs (the
+        # sheet says so, pack_multi PACK_SCALE: PIXI gives the textures their size divided by it); the defs do not change
+        self.phys = 1.0
         self.frames_for = {}           # sid -> frames used by the game in nested clips (as `frames` of export)
+        # nested sprites exported with their white silhouettes (as `white` of export): a nested clip the code colours
+        # (Trigo: the _col disk of the clock, tinted by mt.fx.Radiate)
+        self.white_for = set()
         # in the FLAT strategy, a mask (clipDepth) whose range holds a dynamic layer (a nested clip: the fruit in
         # Digestomax's beak) stays a MASK layer of it (False: the mask is drawn into the flat group and the dynamic
         # layer above it is not masked)
@@ -135,6 +144,10 @@ class Exporter:
         # a named instance driven by the code is a nested clip even with a single frame (Fafi 360: the code plays the
         # _skin / _shoes of every pose of a player, some have one picture); off: a single picture is a CUT layer
         self.code_clips = False
+        # sid -> filters of its placement drawn on each picture of that sprite's export (Charlotte's Quest: the outline and
+        # the colour matrix of the unicorn, moved off the placement); empty: none (the renders made before it)
+        self.wrap_for = {}
+        self._wrap = None
 
     # ------------------------------------------------------------------ helpers
     @staticmethod
@@ -229,8 +242,11 @@ class Exporter:
 
     # ------------------------------------------------------------------ rendering
     def render(self, cmd_lists, scale, margin=0.5, G=None):
-        """command lists drawn on a common canvas at `scale` px per world unit -> (images, registration px)"""
+        """command lists drawn on a common canvas at `scale` px per world unit (x phys) -> (images, registration px)"""
         G = G or self.G
+        scale = scale * self.phys
+        if self._wrap:
+            cmd_lists = [[('layer', c, self._wrap, None)] if c else c for c in cmd_lists]
         rd = R.Renderer(G, scale)
         bb = None
         for cmds in cmd_lists:
@@ -389,9 +405,17 @@ class Exporter:
         sub = self.subtree(sid)
         ctrl = {k: v for k, v in ctrl.items() if k in sub}
         vkey = (sid, tuple(sorted((str(k), str(v)) for k, v in ctrl.items())), strategy, tuple(code), tuple(frames or ()),
-                cx_key(cx), res, tuple(cut_depths), white, stack)
+                cx_key(cx), res, tuple(cut_depths), white, stack) + ((repr(self.wrap_for[sid]),) if sid in self.wrap_for else ())
         if vkey in self.variants:
             return self.variants[vkey]
+        outer_wrap = self._wrap
+        self._wrap = self.wrap_for.get(sid)
+        try:
+            return self._export(sid, name, ctrl, strategy, code, frames, cx, res, cut_depths, white, stack, vkey)
+        finally:
+            self._wrap = outer_wrap
+
+    def _export(self, sid, name, ctrl, strategy, code, frames, cx, res, cut_depths, white, stack, vkey):
         G = self.G
         sd = G.sprites[sid]
         n = sd.nframes
@@ -562,11 +586,14 @@ class Exporter:
                 continue
             if f['type'] == 'colormatrix' and all(abs(a - b) < 1e-6 for a, b in zip(f['matrix'], IDENTITY_MATRIX)):
                 continue
-            if f['type'] != 'glow' or f.get('inner') or f.get('knockout'):
+            shadow = self.shadows and f['type'] == 'dropshadow'
+            if (f['type'] != 'glow' and not shadow) or f.get('inner') or f.get('knockout'):
                 self.warn('%s layer %d: %s filter dropped' % (cname, li, f['type']))
                 continue
             r, g, b, a = f['color']
             fl.append([f['blurX'], f['blurY'], f['strength'], (r << 16) | (g << 8) | b, round(a / 255.0, 4), f.get('passes', 1)])
+            if shadow:
+                fl[-1] += [f['distance'], round(math.degrees(f['angle']), 4)]
         if fl:
             out['fl'] = fl
         if e.get('blend') not in (None, 'normal', 'layer'):
@@ -743,7 +770,8 @@ class Exporter:
         wh = white or need_white
         if kind == 'clip':
             out['k'] = 2
-            out['a'] = self.export(e0['inst'].sid, ctrl=ctrl, cx=bake, res=child_res, white=wh)
+            out['a'] = self.export(e0['inst'].sid, ctrl=ctrl, cx=bake, res=child_res,
+                                   white=wh or e0['inst'].sid in self.white_for)
             if self.effects:
                 self.clip_effects(cname, li, rows, out, n)
         else:

@@ -74,6 +74,10 @@ class SWF:
         # an export at the zoom of the output, so that nothing is resized)
         self.nearest = False
         self.nested_masks = False   # True: a mask placed under another mask is masked by it (see Renderer.collect)
+        # True: a mask keeps what its shape covers, whatever the alpha of its fill (Flash: a mask is a stencil; Charlotte's
+        # Quest: the mask of lib.Billet is filled at 40 %); off: its alpha multiplies the masked items, as the renders made
+        # before this option
+        self.mask_shape_only = False
         # True: inner glows / inner drop shadows are drawn (Flash: the blurred outside of the shape, drawn atop it); off:
         # they are skipped, as the renders made before this option
         self.inner_filters = False
@@ -581,6 +585,12 @@ class Renderer:
             return None
         return (min(xs), min(ys), max(xs), max(ys))
 
+    def mask_alpha(self, mk):
+        """how much of the masked items a drawn mask keeps (HxWx1): its alpha, or its shape only (SWF.mask_shape_only)"""
+        if getattr(self.swf, 'mask_shape_only', False):
+            return (mk[..., 3:4] > 1e-3).astype(np.float32)
+        return np.clip(mk[..., 3:4], 0, 1)
+
     def draw(self, cmds, canvas, O):
         """canvas: float32 HxWx4 premultiplied at scale Z, O = world coords of canvas (0,0)"""
         Z = self.Z
@@ -594,7 +604,8 @@ class Renderer:
                     if f['type'] == 'blur' and getattr(self.swf, 'blur_filter', False):
                         layer = blur_layer(layer, f, Z)
                     else:
-                        layer = apply_filter(layer, f, Z)
+                        # (inner glows / drop shadows: opt-in, SWF.inner_filters = True)
+                        layer = apply_filter(layer, f, Z, inner=getattr(self.swf, 'inner_filters', False))
                 if len(cmd) > 4:
                     layer = apply_cx(layer, cmd[4])
                 if cmd[3] == 'lighten' and getattr(self.swf, 'lighten', False):
@@ -604,13 +615,26 @@ class Renderer:
                 else:
                     blend_into(canvas, layer, cmd[3])
                 continue
+            if cmd[0] == 'mask' and getattr(self.swf, 'mask_blend', False):
+                # (opt-in, SWF.mask_blend = True) the masked items drawn over what is under them, so that their blend
+                # modes (multiply, overlay) see it like in Flash, then kept where the mask covers (NosuShi's gfx.Plateau);
+                # the same result as below for normal items
+                g = cmd[1]
+                mk = np.zeros_like(canvas)
+                self.draw(g['mask'], mk, O)
+                a = self.mask_alpha(mk)
+                drawn = canvas.copy()
+                self.draw(g['items'], drawn, O)
+                canvas *= (1 - a)
+                canvas += drawn * a
+                continue
             if cmd[0] == 'mask':
                 g = cmd[1]
                 layer = np.zeros_like(canvas)
                 self.draw(g['items'], layer, O)
                 mk = np.zeros_like(canvas)
                 self.draw(g['mask'], mk, O)
-                a = np.clip(mk[..., 3:4], 0, 1)
+                a = self.mask_alpha(mk)
                 layer *= a
                 canvas *= (1 - layer[..., 3:4])
                 canvas += layer
