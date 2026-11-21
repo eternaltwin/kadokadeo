@@ -80,6 +80,9 @@ class ManageSiteSettings extends SettingsPage
                         Toggle::make('i18n_enabled')
                             ->label('Choix de la langue')
                             ->helperText('Désactivé : tout le site reste en français et le sélecteur de langue est masqué.'),
+                        Toggle::make('push_enabled')
+                            ->label('Notifications push')
+                            ->helperText('Désactivées : le bouton « Recevoir les notifications sur cet appareil » est masqué et aucune notification push n\'est envoyée. Les clés VAPID doivent être configurées avant de les activer.'),
                         Toggle::make('achievements_enabled')
                             ->label('Succès')
                             ->helperText('Désactivés : aucune progression n\'est calculée et rien n\'est affiché aux joueurs (l\'administration des succès reste accessible).'),

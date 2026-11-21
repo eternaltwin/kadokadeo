@@ -13,8 +13,10 @@ use App\Models\RunComment;
 use App\Models\RunCommentLike;
 use App\Models\User;
 use App\Models\UserNotification;
+use App\Push\PushChannel;
 use App\Support\Realtime;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 // The notifications of the players, next to their private messages (the tab « Notifications »), sent at once by the
 // realtime (App\Events\NotificationReceived): the comments on their replays and the answers to their comments (each one
@@ -23,6 +25,8 @@ use Illuminate\Database\Eloquent\Builder;
 // for what the player did himself. Deleted by the player, or two months after their last change (UserNotification).
 class NotificationService
 {
+    public function __construct(private readonly PushChannel $push) {}
+
     // a comment on a replay: the author of the comment it answers, the player of the run (once, the answer first)
     public function commentCreated(RunComment $comment): void
     {
@@ -168,13 +172,19 @@ class NotificationService
 
     private function notify(int $userId, NotificationType $type, ?int $actorId, array $about, ?string $groupKey = null): UserNotification
     {
-        $notification = UserNotification::query()->create([
-            'user_id' => $userId,
-            'type' => $type,
-            'actor_id' => $actorId,
-            'group_key' => $groupKey,
-            ...$about,
-        ]);
+        // (the notification and its pushes: both or neither)
+        $notification = DB::transaction(function () use ($userId, $type, $actorId, $groupKey, $about) {
+            $notification = UserNotification::query()->create([
+                'user_id' => $userId,
+                'type' => $type,
+                'actor_id' => $actorId,
+                'group_key' => $groupKey,
+                ...$about,
+            ]);
+            $this->push->notify($notification);
+
+            return $notification;
+        });
         Realtime::send(new NotificationReceived($notification));
 
         return $notification;

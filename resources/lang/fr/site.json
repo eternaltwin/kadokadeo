@@ -970,5 +970,15 @@
     "locked_reply": "Ce sujet est verrouillé : seuls le chef et les bras droits peuvent encore y répondre.",
     "new_title": "Nouveau titre du sujet",
     "confirm_delete_topic": "Supprimer le sujet « {title} » et tous ses messages ? Cette action est définitive."
+  },
+  "push": {
+    "title": "Notifications sur cet appareil",
+    "receive": "Recevoir les notifications sur cet appareil, même quand le site est fermé (commentaires et réponses sur les replays, candidatures au clan)",
+    "unsupported": "Ce navigateur ne peut pas recevoir de notifications. Sur iPhone ou iPad, ajoutez d'abord le site à l'écran d'accueil, puis ouvrez-le depuis son icône.",
+    "denied": "Les notifications sont bloquées pour ce site dans les réglages de votre navigateur. Autorisez-les là pour les recevoir.",
+    "failed": "Les notifications n'ont pas pu être activées sur cet appareil. Réessayez plus tard.",
+    "send_test": "Envoyer une notification de test",
+    "test_sent": "Notification envoyée : elle doit apparaître sur cet appareil dans quelques secondes.",
+    "test_failed": "La notification de test n'a pas pu être envoyée à cet appareil. Désactivez puis réactivez les notifications, ou réessayez plus tard."
   }
 }

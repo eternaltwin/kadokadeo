@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 
 import { client } from '@/composables/useApi'
+import { leavePushAtLogout, resyncPush } from '@/composables/usePush'
 import { onRealtimeReconnect, refetchSoon, useChannel, userChannel } from '@/composables/useRealtime'
 
 const AFTER_LOGIN_KEY = 'kado.after-login'
@@ -76,10 +77,15 @@ export const useAuthStore = defineStore('auth', () => {
     achievementProgress.value = [...p]
   })
 
+  let pushResynced = false
   const setUser = (u) => {
     user.value = u
     if (!u) {
       return
+    }
+    if (!pushResynced) {
+      pushResynced = true
+      resyncPush().catch(() => {})
     }
     if (u.stars) {
       stars.green = u.stars.green_stars
@@ -134,7 +140,7 @@ export const useAuthStore = defineStore('auth', () => {
   // (the player is forgotten even when the server could not be reached)
   const logout = async() => {
     try {
-      await client.post('/logout')
+      await leavePushAtLogout((pushEndpoint) => client.post('/logout', { push_endpoint: pushEndpoint }))
     } finally {
       setUser(null)
     }

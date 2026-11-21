@@ -970,5 +970,15 @@
     "locked_reply": "This topic is locked: only the leader and the right hands can still reply.",
     "new_title": "New title of the topic",
     "confirm_delete_topic": "Delete the topic “{title}” and all its posts? This cannot be undone."
+  },
+  "push": {
+    "title": "Notifications on this device",
+    "receive": "Receive notifications on this device, even when the site is closed (comments and replies on replays, clan applications)",
+    "unsupported": "This browser cannot receive notifications. On iPhone or iPad, first add the site to the home screen, then open it from its icon.",
+    "denied": "Notifications are blocked for this site in your browser settings. Allow them there to receive them.",
+    "failed": "Notifications could not be turned on for this device. Try again later.",
+    "send_test": "Send a test notification",
+    "test_sent": "Notification sent: it should appear on this device within a few seconds.",
+    "test_failed": "The test notification could not be sent to this device. Turn notifications off and on again, or try again later."
   }
 }

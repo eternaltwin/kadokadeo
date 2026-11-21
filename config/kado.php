@@ -25,6 +25,15 @@ return [
         'karbon' => ['name' => 'Karbon', 'price' => 10000],
     ],
 
+    // the push services of the browsers (Chrome, Firefox, Safari, Edge): the only hosts a device subscribed to the pushes
+    // can give (App\Http\Requests\PushSubscriptionRequest), their subdomains included
+    'push_services' => [
+        'fcm.googleapis.com',
+        'push.services.mozilla.com',
+        'push.apple.com',
+        'notify.windows.com',
+    ],
+
     // tools to try the clans without other players (/clans/debug: fake attacks, defenses and mission steps, time going by,
     // end of the period). Never in production.
     'debug_tools' => (bool) env('KADO_DEBUG_TOOLS', false) && env('APP_ENV') !== 'production',
