@@ -271,3 +271,48 @@ Look at the pages (and show them to the user) before saying the graphics are rig
   (`cms`, 0 = none) instead of dropping it, applied at run time by a PIXI ColorMatrixFilter (`puzzlemanda/Clip.hx`
   `setCm`; Flash's offsets are 0..255, PIXI's 0..1). With `effects`, a blurred nested clip in "add" (`bl` + `bf`)
   gets the blend on its blur filter: Flash adds the filtered picture, not each sprite.
+- Blend modes inside a mask (NosuShi: the multiply and overlay layers of gfx.Plateau, each under a clipDepth mask, colour
+  the wood of the Bg under them): `swfrender` draws the masked items on an empty layer, so their blend sees nothing under
+  it. `SWF.mask_blend = True` draws them over what is already drawn and keeps the result where the mask covers (off: the
+  renders made before stay the same). Clips that never move (gfx.Bg and the tray over it) are composed into one picture
+  so that their blends see each other.
+- Texts inside a timeline (Trigo: the "x" and "combo" of gfx_fla.comboTXT_20, a DefineText and DefineEditTexts in an
+  embedded font, with three drop shadows): `swfrender` draws no text. The asset script renders them with `swffont`
+  (DefineText records, or the html text of a DefineEditText laid out like Flash: 2 px gutter, first baseline at
+  2 + ascent) and gives the pictures to the SWF as shapes (`G.shapes[cid]` bounds + `G._shape_cache[cid]` picture at zoom
+  Z): the clip export composes them with their filters like any shape (a FLAT layer: `strategy_for`, a CUT picture would
+  drop them). A dynamic field of a nested clip (the number of the combo) is an `arkadeo.TextField` the game puts in the
+  nested clip (`Clip.attach`: it moves and takes the colour of the timeline).
+- A picture in the blend mode OVERLAY over a whole game (Trigo: gfx.Render, the paper above every plane): PIXI cannot read
+  what is under a sprite; `arkadeo.OverlayFilter` draws it as a filter of the game (the Flash formula on what the game
+  drew), exact where `OverlayBlend` only fits a dark background.
+- Nested clips with a blend mode or a drop shadow driven by the code (Trigo: the `_blink` / `_hili` of a block in "add",
+  the hand of the clock turned by the code with its drop shadow): `Exporter.effects` (+ `shadows` for the drop shadows),
+  applied by `arkadeo.Clip` (`bl`, `fl`); a nested clip the code colours (`mt.fx.Radiate` on the `_col` of the clock)
+  needs its white silhouettes: `Exporter.white_for`.
+- A clip the code drives through a named nested clip whose placement carries filters (Charlotte's Quest: the `_smc` of
+  each pose of lib.Charlotte, an outline, a contrast colour matrix and a drop shadow over the unicorn and its moving parts):
+  a CLIP layer would drop them, and a glow baked in each part would draw outlines inside the picture. Draw the nested clip
+  frame by frame with its nested clips playing with it and the filters wrapped around the whole picture (a simple Clip
+  written by the asset script, `flat_timeline_clip` of `charlottesquest_assets.py`), or give an export the filters of its
+  placement with `Exporter.wrap_for = {sid: filters}` (every picture of that sprite's export drawn through them).
+- Variants of a symbol chosen by AS3 frame scripts of its parts that read a flag of their grandparent (Charlotte's Quest:
+  `if (MovieClip(parent.parent).bad_) gotoAndStop(2)`): no frame script runs in the FFDec sprite export (the variants come
+  out mixed): export each variant with its parts forced on their frame (`ctrl` by sid).
+- `SWF.inner_filters = True` draws the inner glows / drop shadows of the timelines (`Renderer.draw` passes it to
+  `apply_filter`).
+- Sharp on a page at 125 / 150 % or a high density screen (the canvas of an Arkadeo game is 600 x 500 at the resolution
+  of the page, and the site may show it wider): textures at 1 px per Flash pixel are enlarged there. Charlotte's Quest
+  draws its images finer than its defs say: `Exporter.phys = 1.5` (every `render` 1.5 times finer, the defs and
+  `Data.hx` unchanged) and `pack_multi.py` with `PACK_SCALE=1.5` (`meta.scale` of the sheets: PIXI gives the textures
+  their size divided by it, the game sees the same sizes). One scale for the whole spritesheet: the spritesheets of the
+  old versions (`resources/js/games/builds/atlas.mjs`, for the replays) take the scale of the first sheet for all the
+  frames. What was already finer keeps its pixels through its `res` (the bricks of Charlotte's Quest: res 4 / (K x 1.5),
+  still 4 px per Flash pixel). The sheets take about 2 times more memory: only for a game whose pictures are big on the
+  screen. (The `.tps` of `make_tps.py` does not carry the scale: such sheets are rebuilt with `pack_multi.py`.) On the
+  local Docker site, `/assets` goes through Vite, which only knows the files of `public/` it saw at its start: a new
+  sheet (`<game>-3.json`...) is a 404 until `kadokadeo_front` is restarted. Its pictures composed on the GPU (the rooms:
+  `arkadeo.BitmapData.gpuSmoothing` when `BitmapData.screenScale()` is above 1) are smoothed instead of blocky, at the
+  same cost. Drawing them at 2 px per Flash pixel with their filters, and the live filters too (PIXI 6 filters at 1
+  whatever the resolution of the page), was sharper but cost up to 6 times more per frame on an integrated GPU (the frames
+  per second measured without vsync: `--disable-gpu-vsync --disable-frame-rate-limit`, a capped 60 hides it).
