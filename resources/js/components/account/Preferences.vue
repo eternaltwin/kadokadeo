@@ -53,5 +53,6 @@ const save = (key, value) => {
     <p class="mx-0 text-xs italic">
       {{ $t('account.notifications_note') }}
     </p>
+    <AccountPushDevice />
   </div>
 </template>

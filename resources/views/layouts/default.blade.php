@@ -23,6 +23,8 @@
             i18n_enabled: @json(app(App\Settings\SiteSettings::class)->i18n_enabled),
             locales: @json(array_map(fn (App\Enums\LocalePreference $language) => $language->value, App\Enums\LocalePreference::languages())),
             public_key: '{{ str_replace("\n", "\\n", app(App\Services\RunService::class)->getPublicKey()) }}',
+            // the pushes are on (App\Settings\SiteSettings::$push_enabled): the public key of the server (VAPID), else null
+            push_public_key: @json(app(App\Settings\SiteSettings::class)->push_enabled ? config('services.webpush.public_key') : null),
             achievements_enabled: @json(app(App\Settings\SiteSettings::class)->achievements_enabled),
             // the clans are open (App\Settings\ClanSettings::$enabled), else their pages say "Prochainement disponible"
             clans_enabled: @json((bool) app(App\Settings\ClanSettings::class)->enabled),

@@ -210,5 +210,33 @@
       "skip_step_description": "Supprime une étape au choix de votre mission.",
       "double_points_description": "La prochaine mission rapportera deux fois plus de points à votre clan si vous la réussissez."
     }
+  },
+  "push": {
+    "a_player": "Un joueur",
+    "of_game": " de :game",
+    "run_comment": {
+      "title": "Nouveau commentaire",
+      "body": ":actor a commenté votre replay:of_game."
+    },
+    "comment_reply": {
+      "title": "Nouvelle réponse",
+      "body": ":actor a répondu à votre commentaire sur le replay:of_game."
+    },
+    "clan_application": {
+      "title": "Candidature au clan",
+      "body": ":actor demande à rejoindre votre clan :clan."
+    },
+    "clan_accepted": {
+      "title": "Candidature acceptée",
+      "body": "Vous avez été accepté dans le clan :clan !"
+    },
+    "clan_refused": {
+      "title": "Candidature refusée",
+      "body": "Votre candidature au clan :clan a été refusée : vos points Kado vous ont été rendus."
+    },
+    "test": {
+      "title": "Notifications activées",
+      "body": "Cet appareil reçoit bien les notifications de KadoKadéo."
+    }
   }
 }

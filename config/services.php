@@ -35,6 +35,15 @@ return [
         ],
     ],
 
+    // the pushes to the devices of the players (App\Push\WebPushSender): the keys of the server for the push services
+    // (VAPID, generated once by `php artisan kado:vapid-keys`: new keys make every subscription invalid), the address
+    // they can reach the site at (by default the one of the site, app.url)
+    'webpush' => [
+        'public_key' => env('VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+        'subject' => env('VAPID_SUBJECT'),
+    ],
+
     'etwin' => [
         'identityServerUri' => env('ETERNALTWIN_URL', 'https://identity.eternaltwin.com/'),
         'eternaltwinUrl' => env('ETERNALTWIN_URL', 'https://eternaltwin.com/'),

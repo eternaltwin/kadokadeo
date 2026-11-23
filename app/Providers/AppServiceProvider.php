@@ -6,6 +6,8 @@ use App\Achievements\AchievementRule;
 use App\Events\AnnouncementUpdated;
 use App\Models\PersonalAccessToken;
 use App\Models\RunComment;
+use App\Push\PushSender;
+use App\Push\WebPushSender;
 use App\Services\AchievementService;
 use App\Services\GameService;
 use App\Services\LeagueService;
@@ -15,6 +17,7 @@ use App\Services\RunService;
 use App\Services\ScoreService;
 use App\Settings\SiteSettings;
 use App\Support\Realtime;
+use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Database\Events\NoPendingMigrations;
@@ -37,6 +40,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // (the keys are read when a push is sent: no keys while the pushes are off)
+        $this->app->bind(PushSender::class, fn () => new WebPushSender([
+            'subject' => config('services.webpush.subject') ?? config('app.url'),
+            'publicKey' => config('services.webpush.public_key'),
+            'privateKey' => config('services.webpush.private_key'),
+        ], new Client(['timeout' => 10, 'connect_timeout' => 5]), app('log')));
         $this->app->bind(RunService::class, fn () => new RunService(config('kado.security')));
         $this->app->bind(GameService::class, fn () => new GameService());
         $this->app->bind(ScoreService::class, fn () => new ScoreService());

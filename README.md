@@ -112,6 +112,21 @@ location ~ ^/(app|apps)/ {
 | `REVERB_APP_MAX_CONNECTIONS` | Sockets at most (the others poll): above 1000 only with `ext-uv`                    | `1000`                  |
 | `REVERB_APP_RATE_LIMIT_MAX_ATTEMPTS`, `REVERB_APP_RATE_LIMIT_DECAY_SECONDS` | Messages of a socket at most (subscriptions, pings) in that many seconds, then it is cut (`REVERB_APP_RATE_LIMITING_ENABLED=false`: no limit) | `120`, `60` |
 
+### Push notifications
+
+A notification that interrupts the player (a comment on his replay, an answer to his comment, the applications to his clan) also goes to the devices he subscribed in his preferences, through the push services of the browsers (Web Push). Each push is a job of the queue, written with its notification, and tried again for about two hours while a push service is down (then in `failed_jobs`). To turn them on:
+
+1. `php artisan kado:vapid-keys` once, then put the keys in the environment. Never change them after: every device would have to subscribe again.
+2. « Paramètres > Site > Notifications push ».
+3. Subscribe a device (« Mon compte > Préférences »), then `php artisan kado:push-test {user id}`.
+
+On an iPhone or an iPad, only the site added to the home screen gets pushes (iOS 16.4+).
+
+| Variable                    | Description                                                                         | Default                 |
+| --------------------------- | ----------------------------------------------------------------------------------- | ----------------------- |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | The keys of the server for the push services (`kado:vapid-keys`)         |                         |
+| `VAPID_SUBJECT`             | The address of the site given to the push services                                   | `SELF_URL`              |
+
 ### External services
 
 | Variable                    | Description                                         | Default                             |
@@ -161,6 +176,8 @@ openssl rsa -in keypair.pem -pubout -out public.pem
 | `kado:replays:compare {game}`                    | Compares the replays of a game before and after changing it: `--baseline` records the reference, then without it the same runs are played by the rebuilt bundle and a score or frame count changed fails (the database is not changed). Options: `--limit=1000`, `--parallel=4` | ❌                                                             |
 | `kado:clean-old-runs`                            | Deletes for good the runs older than two months without a score                                                                                                       | ❌ (disabled in `routes/console.php`)                          |
 | `kado:reset-scores {gameId?}`                    | ⚠️ Soft-deletes the runs of every game, or of one game, and erases their replays                                                                                                | ❌                                                             |
+| `kado:vapid-keys`                                | Shows a new pair of keys for the pushes (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`), written nowhere. Once, before turning the pushes on | ❌ |
+| `kado:push-test {user}`                          | Sends a test push to each device of a player (his id) and shows what its push service answered (`DELIVERED`, `GONE`, `RETRY`, `REJECTED`) | ❌ |
 | `kado:worker`                                    | The only worker of the production: runs `queue:work` and `reverb:start` as children and starts again the one that stops. Options: `--queue-args=`, `--reverb-args=` | ❌ (a systemd service)                                         |
 
 The schedule is defined in [`routes/console.php`](routes/console.php) and run by the cron of the app container ([`docker/app/conf/crontab`](docker/app/conf/crontab): `artisan schedule:run` every minute). Times are in UTC.

@@ -33,6 +33,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "maxmind-db/reader": "^1.14",
+        "minishlink/web-push": "^11.0",
         "spatie/laravel-discord-alerts": "^1.8"
     },
     "require-dev": {

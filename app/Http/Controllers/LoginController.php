@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\PushSubscriptionService;
 use App\Settings\ClanSettings;
 use App\Settings\SiteSettings;
 use Eternaltwin\Client\Auth as EtwinAuth;
@@ -80,8 +81,12 @@ class LoginController extends Controller implements HasMiddleware
         ));
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request, PushSubscriptionService $pushSubscriptions)
     {
+        // a device shared by two players: the next one does not get the pushes of this one
+        if ($request->filled('push_endpoint')) {
+            $pushSubscriptions->unsubscribe($request->user(), (string) $request->input('push_endpoint'));
+        }
         // a page opened before the session cookies still sends its token: it goes with the logout (whether the request
         // was authenticated by it or by the session)
         if ($bearer = $request->bearerToken()) {

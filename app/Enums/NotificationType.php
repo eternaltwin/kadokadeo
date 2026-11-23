@@ -17,4 +17,13 @@ enum NotificationType: string
     case CLAN_ACCEPTED = 'clan_accepted';
     // his application refused by the leader or a right hand (his Kado points given back)
     case CLAN_REFUSED = 'clan_refused';
+
+    // not the likes: one push by like would make the player turn everything off
+    public function interruptsPlayer(): bool
+    {
+        return match ($this) {
+            self::RUN_COMMENT, self::COMMENT_REPLY, self::CLAN_APPLICATION, self::CLAN_ACCEPTED, self::CLAN_REFUSED => true,
+            self::COMMENT_LIKES => false,
+        };
+    }
 }

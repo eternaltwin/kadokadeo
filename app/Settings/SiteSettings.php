@@ -47,6 +47,9 @@ class SiteSettings extends Settings
     // off: the whole site is in French and the choice of the language is hidden
     public bool $i18n_enabled;
 
+    // off: no device can subscribe to the pushes and none is sent
+    public bool $push_enabled;
+
     public static function group(): string
     {
         return 'site';

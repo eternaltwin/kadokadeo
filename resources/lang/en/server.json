@@ -210,5 +210,33 @@
       "skip_step_description": "Removes a step of your choice from your mission.",
       "double_points_description": "The next mission will give your clan twice as many points if you complete it."
     }
+  },
+  "push": {
+    "a_player": "A player",
+    "of_game": " of :game",
+    "run_comment": {
+      "title": "New comment",
+      "body": ":actor commented on your replay:of_game."
+    },
+    "comment_reply": {
+      "title": "New reply",
+      "body": ":actor replied to your comment on the replay:of_game."
+    },
+    "clan_application": {
+      "title": "Clan application",
+      "body": ":actor asks to join your clan :clan."
+    },
+    "clan_accepted": {
+      "title": "Application accepted",
+      "body": "You have been accepted into the clan :clan!"
+    },
+    "clan_refused": {
+      "title": "Application refused",
+      "body": "Your application to the clan :clan was refused: your Kado points have been given back."
+    },
+    "test": {
+      "title": "Notifications on",
+      "body": "This device receives the notifications of KadoKadéo."
+    }
   }
 }
